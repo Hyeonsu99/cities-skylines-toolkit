@@ -254,11 +254,9 @@ window.addEventListener('resize',resize);
 resize();
 renderer.setAnimationLoop(()=>composer.render());
 
-async function loadDong(dong) {
- const lot = ['105', '106', '107', '108'].includes(String(dong)) ? '5x6' : '5x4';  // C type: 38.4 x 44.6 m OSM outline
- const stem = 'HighriseTower' + dong + '_L1_' + lot;
+async function loadPreviewStem(stem, label) {
  const transfer = new DataTransfer();
- $('status').value = dong + '동 불러오는 중...';
+ $('status').value = label + ' 불러오는 중...';
  try {
   for (const suffix of ['.fbx', '_Win.fbx', '_BaseColor.png', '_Normal.png', '_MaskMap.png', '_Emissive.png']) {
    const name = stem + suffix;
@@ -268,21 +266,38 @@ async function loadDong(dong) {
   }
   $('file').files = transfer.files;
   await $('file').onchange();
-  $('status').value = dong + '동 로드 완료';
+  $('status').value = label + ' 로드 완료';
  } catch (error) {
-  $('status').value = dong + '동 로드 실패: ' + error.message;
+  $('status').value = label + ' 로드 실패: ' + error.message;
  }
+}
+
+function dongStem(dong) {
+ const lot = ['105', '106', '107', '108'].includes(String(dong)) ? '5x6' : '5x4';  // C type: 38.4 x 44.6 m OSM outline
+ return 'HighriseTower' + dong + '_L1_' + lot;
 }
 
 const dongSel = $('dong_select');
 if (dongSel) {
  dongSel.onchange = () => {
-  if (dongSel.value) loadDong(dongSel.value);
+  if (dongSel.value) loadPreviewStem(dongStem(dongSel.value), dongSel.value + '동');
+ };
+}
+
+const factorySel = $('factory_select');
+if (factorySel) {
+ factorySel.onchange = () => {
+  if (factorySel.value) loadPreviewStem(factorySel.value, factorySel.selectedOptions[0].textContent);
  };
 }
 
 const preview = new URLSearchParams(location.search).get('preview');
 if (preview) {
- if (dongSel) dongSel.value = preview;
- loadDong(preview);
+ if (/^\d{3}$/.test(preview)) {
+  if (dongSel) dongSel.value = preview;
+  loadPreviewStem(dongStem(preview), preview + '동');
+ } else {
+  if (factorySel) factorySel.value = preview;
+  loadPreviewStem(preview, preview);
+ }
 }

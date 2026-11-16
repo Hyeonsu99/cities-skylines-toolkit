@@ -1,8 +1,19 @@
 @echo off
-rem Copy the latest exllu-103 build into public\preview so http://127.0.0.1:5183/?preview=103 shows it.
+rem Copy the latest builds of every cs2-kit project into public\preview for the viewer.
+rem Usage: sync_preview.bat [project pattern]   e.g. sync_preview.bat exllu-*   (default: all projects)
 setlocal
-set "SRC=%~dp0..\cs2-kit\projects\exllu-103\output\HighriseTower103_L1_5x4\HighriseTower103_L1_5x4"
+set "PAT=%~1"
+if "%PAT%"=="" set "PAT=*"
 set "DST=%~dp0public\preview"
 if not exist "%DST%" mkdir "%DST%"
-for %%S in (.fbx _Win.fbx _BaseColor.png _Normal.png _MaskMap.png _Emissive.png) do copy /y "%SRC%%%S" "%DST%\" >nul
-echo preview files updated
+set N=0
+for /d %%P in ("%~dp0..\cs2-kit\projects\%PAT%") do (
+ for /d %%A in ("%%P\output\*") do (
+  if exist "%%A\%%~nxA.fbx" (
+   for %%S in (.fbx _Win.fbx _BaseColor.png _Normal.png _MaskMap.png _Emissive.png) do if exist "%%A\%%~nxA%%S" copy /y "%%A\%%~nxA%%S" "%DST%\" >nul
+   echo   %%~nxA
+   set /a N+=1
+  )
+ )
+)
+echo %N% assets copied to public\preview
