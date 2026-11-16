@@ -1,0 +1,362 @@
+{
+ "version": 1,
+ "project": "sintanjin-tollgate",
+ "stages": {
+  "mass": {
+   "at": "2026-11-16T09:29:25",
+   "mode": "quick",
+   "status": "PASS",
+   "label": "mass",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "781619479dd22617770a288426a255ee86860438acd73dceb0ea5810d35dd079",
+   "preview": null,
+   "fbx": null
+  },
+  "visual1": {
+   "at": "2026-11-16T09:29:34",
+   "mode": "visual",
+   "status": "INCOMPLETE",
+   "label": "visual1",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "781619479dd22617770a288426a255ee86860438acd73dceb0ea5810d35dd079",
+   "preview": {
+    "path": "previews/SintanjinTollgate_L1_6x4.png",
+    "exists": true,
+    "sha256": "336fa2c424f95fef2dfae7e790a32384fa14540fd3c217996e0808411dcce242",
+    "key": null
+   },
+   "fbx": null
+  },
+  "mass2": {
+   "at": "2026-11-16T09:32:00",
+   "mode": "quick",
+   "status": "PASS",
+   "label": "mass2",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "13482f8ef7f501e1a4ead24ba69a7e47a7d512b244d9888d2091f35b2300e649",
+   "preview": null,
+   "fbx": null
+  },
+  "visual2": {
+   "at": "2026-11-16T09:32:10",
+   "mode": "visual",
+   "status": "INCOMPLETE",
+   "label": "visual2",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "13482f8ef7f501e1a4ead24ba69a7e47a7d512b244d9888d2091f35b2300e649",
+   "preview": {
+    "path": "previews/SintanjinTollgate_L1_6x4.png",
+    "exists": true,
+    "sha256": "b1937a4bcd98a620352d536c8a5f13747abb317119198c5719c94ba778a00984",
+    "key": null
+   },
+   "fbx": null
+  },
+  "final": {
+   "at": "2026-11-16T14:35:26",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "abf9ab58a9e8ddb8858612b8f04ff142bd33e51c66b32d888c3ffdbd091b6562",
+   "preview": {
+    "path": "previews/SintanjinTollgate_L1_6x4.png",
+    "exists": true,
+    "sha256": "18b46b01e40c94bcccb0d7a0935e79500397e288887d93935d43b27ac9c703a1",
+    "key": null
+   },
+   "fbx": null
+  },
+  "quality_up": {
+   "at": "2026-11-16T09:47:27",
+   "mode": "quick",
+   "status": "PASS",
+   "label": "quality_up",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "bf2c78de410d40ebc38d229b3732e6e04e6c3b563670be2c22eeabd0ad7ac692",
+   "preview": null,
+   "fbx": null
+  },
+  "v2_fix": {
+   "at": "2026-11-16T09:58:01",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "v2_fix",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "1dfc5b8cf04db5297043dba32e49c170f7e63427b262b92bfa393573fc004437",
+   "preview": {
+    "path": "previews/SintanjinTollgate_L1_6x4.png",
+    "exists": true,
+    "sha256": "f4dbb9c48674e063b8c783fcd95f25959e6c6b6fd5b83a64fb04ee6ed8adf85c",
+    "key": null
+   },
+   "fbx": null
+  },
+  "v3_signs": {
+   "at": "2026-11-16T09:59:14",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "v3_signs",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "757f4e94f234a6cd25f753967d0bca519e9d14033e427021eac4f86735cd53c0",
+   "preview": {
+    "path": "previews/SintanjinTollgate_L1_6x4.png",
+    "exists": true,
+    "sha256": "b474f43066749a5792900b2487aa92b723a1c401653a05b57b8440fdb2a87b4a",
+    "key": null
+   },
+   "fbx": null
+  },
+  "v4_quick": {
+   "at": "2026-11-16T10:41:41",
+   "mode": "quick",
+   "status": "FAIL",
+   "label": "v4_quick",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "FAIL",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "de9d48c43d2f171668bf9676397f7a7da6987b6538181d6654f5460c85f5075b",
+   "preview": null,
+   "fbx": null
+  },
+  "v4_quick2": {
+   "at": "2026-11-16T10:44:17",
+   "mode": "quick",
+   "status": "PASS",
+   "label": "v4_quick2",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "e7a647f299cfdf4953b7f36852fae9d59ba248867c744943dc737585f14f3688",
+   "preview": null,
+   "fbx": null
+  },
+  "v4_visual": {
+   "at": "2026-11-16T10:44:37",
+   "mode": "visual",
+   "status": "INCOMPLETE",
+   "label": "v4_visual",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "e7a647f299cfdf4953b7f36852fae9d59ba248867c744943dc737585f14f3688",
+   "preview": {
+    "path": "previews/SintanjinTollgate_L1_6x4.png",
+    "exists": true,
+    "sha256": "d055d51c92f88a4c03677c509c086c7ee2afd21b7edc37b687cfdcd7c6185585",
+    "key": null
+   },
+   "fbx": null
+  },
+  "v4_final": {
+   "at": "2026-11-16T10:46:47",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "v4_final",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "2eeeec7986583e6e9d85b3f9189e3a20d529ae124eb6787fdb85e85e3e1b3992",
+   "preview": {
+    "path": "previews/SintanjinTollgate_L1_6x4.png",
+    "exists": true,
+    "sha256": "8d37fca559fa1f352f892a8717b8724a42d63d84bebcf00fe15d2eea3fe6fc7f",
+    "key": null
+   },
+   "fbx": null
+  },
+  "fix": {
+   "at": "2026-11-16T14:33:05",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "fix",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "abf9ab58a9e8ddb8858612b8f04ff142bd33e51c66b32d888c3ffdbd091b6562",
+   "preview": {
+    "path": "previews/SintanjinTollgate_L1_6x4.png",
+    "exists": true,
+    "sha256": "01dda40a7a942bd7a8ca5b8b69759117853f35cd97b7a61e1237d57fd70c377b",
+    "key": null
+   },
+   "fbx": null
+  },
+  "booth-night": {
+   "at": "2026-11-16T13:46:18",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "booth-night",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "9653595dfd36f1d8cca4a0a45249161da630bb892c30ad14965a820e738a8ded",
+   "preview": {
+    "path": "previews/SintanjinTollgate_L1_6x4.png",
+    "exists": true,
+    "sha256": "cef6a79b3bff81a3299f9e8293ce072a162c397fb96980269a29c48fad839400",
+    "key": null
+   },
+   "fbx": null
+  },
+  "cross-review": {
+   "at": "2026-11-16T14:37:57",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "cross-review",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "abf9ab58a9e8ddb8858612b8f04ff142bd33e51c66b32d888c3ffdbd091b6562",
+   "preview": {
+    "path": "previews/SintanjinTollgate_L1_6x4.png",
+    "exists": true,
+    "sha256": "d5e75aa0bfe7e87d4c76b0da55df05741b4f6981e95644502ed00a1fcfa454f2",
+    "key": null
+   },
+   "fbx": null
+  }
+ },
+ "updated_at": "2026-11-16T14:37:57",
+ "current_stage": "final:INCOMPLETE",
+ "generator": "sintanjin_tollgate_cs2.py",
+ "generator_hash": "abf9ab58a9e8ddb8858612b8f04ff142bd33e51c66b32d888c3ffdbd091b6562",
+ "visual_review": "NOT_CHECKED",
+ "reviewed_preview_hash": "18b46b01e40c94bcccb0d7a0935e79500397e288887d93935d43b27ac9c703a1",
+ "last_gate": {
+  "mode": "final",
+  "status": "INCOMPLETE",
+  "path": "output/SintanjinTollgate_L1_6x4/_check/gate.json"
+ }
+}

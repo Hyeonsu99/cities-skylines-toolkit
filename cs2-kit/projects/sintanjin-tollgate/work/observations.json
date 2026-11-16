@@ -1,0 +1,92 @@
+{
+ "28f3e0f3c96481292a1864bbded3477a9302f72fc17842ec56992ad593496df2": {
+  "file": "photos\\sat_tollgate_z19.png",
+  "side": "top",
+  "note": "Main teal deck 31.6x11.4m; 7 lanes + 6 islands; 4.5m west arch overhang; 8.5m east south-exit arch overhang; adjacent 38.1x12.1m office on south",
+  "observed_at": "2026-11-16T09:22:09"
+ },
+ "dfdbc16e8e0cf7597b455521abc72745108eb0fae96bbeb808058db63740b480": {
+  "file": "photos\\west_far_look_e.png",
+  "side": "front",
+  "note": "7 lanes (2 entry north + 5 exit south); trapezoidal sky-blue fascia with 신탄진/Sintanjin twin navy signboards; 4 arch bays; lime-green 2-lane exit Hi-Pass gantry on south",
+  "observed_at": "2026-11-16T09:22:09"
+ },
+ "8dd6feacc39973ae61b2439e9765e39882f6286baa26ceee7ff09b978780e932": {
+  "file": "photos\\east_far_look_w.png",
+  "side": "back",
+  "note": "Orange freight Hi-Pass/ticket gantry on north Lane 1; grey Hi-Pass gantry on Lane 2; extended east polycarbonate arch over south exit lanes 4-7; red X lane 3",
+  "observed_at": "2026-11-16T09:22:09"
+ },
+ "cf41e7d10d4e33349ae68073a11520528e3f853c1f42fec34619d720c82c6ec7": {
+  "file": "photos\\mid_south_look_nw.png",
+  "side": "right",
+  "note": "8.5m east polycarbonate arch supported by white tubular pipe columns and V-struts; brown corrugated soffit under main deck; rectangular concrete pillars; orange-silver toll booths",
+  "observed_at": "2026-11-16T09:22:09"
+ },
+ "18d4dec4275535bae78e3151b5d89f941cd2f4c7e8c595975474dc5867944378": {
+  "file": "photos\\east_near_look_w.png",
+  "side": "back",
+  "note": "Lane 2 exposed sky-blue fascia and inner sensor arch with no east polycarb arch; E1 short arch over Lane 3 only with Red X; Orange gantry 3-part LED [화물|하이패스|통행권] above crossbeam",
+  "observed_at": "2026-11-16T10:51:16"
+ },
+ "648df9ae6efd6f04570686a66705c0ca9d3b94961cd8a25590828598c704bc21": {
+  "file": "photos\\west_close_look_ne.png",
+  "side": "front",
+  "note": "West arches cantilever from y=-5.7 columns with diagonal V-struts and no front-tip columns; Lane 1 W-beam curb guardrail and yellow U-loop terminal guards",
+  "observed_at": "2026-11-16T10:51:16"
+ },
+ "73ed6b884e5db00f75f196417c524cc39d00dbfe9b8fe6dfb0b09b63f0149ad1": {
+  "file": "photos\\west_close_look_se.png",
+  "side": "front",
+  "note": "Rooftop sign 신탄진|Sintanjin centered on main canopy with borderless navy face and 3 colored anemometer pinwheel masts; Red X mounted just above W1 arch crown",
+  "observed_at": "2026-11-16T10:51:16"
+ },
+ "f0feaebc5b7ea4fdb2d6f5116c596e994973bf967b8ac92cd93ce203248cc333": {
+  "file": "photos\\mid_south_look_n.png",
+  "side": "right",
+  "note": "East long arches E2/E3 pale aqua translucent polycarb with clean white purlin grid, y=+5.7 V-struts and y=+13.5 outer columns",
+  "observed_at": "2026-11-16T10:51:16"
+ },
+ "6bf6bd5d75f11eca0fb7a24bb76a564b5d30a033cf075276eccccb76740bf45a": {
+  "file": "photos\\east_far_look_sw.png",
+  "side": "back",
+  "note": "East SW: E2 over Lanes 4-5, E3 upturned cantilever over Lane 6 only with no Lane 7 east arch, open sky above Lane 7",
+  "observed_at": "2026-11-16T14:18:05"
+ },
+ "a915fe8d8265928ddea4274b9f9dc7a6ac0661edda38f4596879e44b0207e666": {
+  "file": "photos\\mid_south_look_s.png",
+  "side": "right",
+  "note": "South employee parking carport with green translucent barrier wall adjacent to brick office building (excluded from plaza lot)",
+  "observed_at": "2026-11-16T14:18:05"
+ },
+ "cb306a7e091f24db4607387cfbf89f109b1291b08a617388761bb9b8eac12cd3": {
+  "file": "photos\\north_side_look_s.png",
+  "side": "left",
+  "note": "North vegetated slope looking south at main blue fascia end and Wing 0 lower canopy",
+  "observed_at": "2026-11-16T14:18:05"
+ },
+ "26c5fe068706970a54da9a7a0dbf4d09b315ca520954d7e7948aab32f66ca96a": {
+  "file": "photos\\south_side_look_n.png",
+  "side": "right",
+  "note": "South rear brick office building and adjacent employee carport",
+  "observed_at": "2026-11-16T14:18:05"
+ },
+ "9c6534ef5d644e5d21cd0a03b418f97c160d0adb446b987f87f2fadcd64b3ad1": {
+  "file": "photos\\under_look_n.png",
+  "side": "left",
+  "note": "Under canopy looking north: warm bronze-taupe E-W ribbed soffit, continuous linear LED bars, silver rim trim, lower Lane 1 vault on 2 curb posts",
+  "observed_at": "2026-11-16T14:18:05"
+ },
+ "6c36a11d80e96e1593508731997a698aea1d08cf09f5c9a59c4caa1fb3996694": {
+  "file": "photos\\under_look_s.png",
+  "side": "right",
+  "note": "Under canopy looking south: warm metallic taupe-brown E-W ribbed soffit, full-span double light bars, concrete pier capitals with cone lights, Booth 4 dark window frames",
+  "observed_at": "2026-11-16T14:18:05"
+ },
+ "74940a84b7e95d07f7f7eac5933a933c1fd0a3c399aa7226276abf3cc16a13af": {
+  "file": "photos\\west_near_look_e.png",
+  "side": "front",
+  "note": "West near Lane 2: compact navy sign 신탄진/Sintanjin on visible legs, Red X over Lane 3, Green down over Lane 4, Wing 0 flared upper wing over lower Lane 1 vault",
+  "observed_at": "2026-11-16T14:18:05"
+ }
+}
