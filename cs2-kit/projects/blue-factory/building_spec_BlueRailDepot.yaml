@@ -1,0 +1,29 @@
+name: BlueRailDepot
+lot:
+  width: 4
+  depth: 8
+dimensions:
+  width_m: 28.97   # main body 26.0 m + substation/gutter overhang (TASK.md target 26 m)
+  depth_m: 57.50   # main depot hall 55.0 m + front/rear 1.25 m track portal aprons (TASK.md target 56 m)
+  height_m: 14.49  # eave 10.20 m + ridge 2.15 m + raised clerestory monitor (TASK.md target 14.5 m)
+floors: 1          # high-bay through-track rail inspection shed + roof monitor
+style: rail_maintenance_depot
+zone: SignatureIndustrial
+subservice: Industrial
+signature: true    # lot 4x8 > 6x6 max zoned footprint; must register as signature building
+evidence:
+  photos: []       # none (photos/ empty; web roadview photos unavailable via text search)
+  plan: TASK.md preset target (26 x 56 x 14.5 m, lot 4x8); maps/sintanjin/preview_map_regions_annotated.png (~7.0 m/px Daejeon Rail Vehicle Maintenance Depot elongated sheds with roof monitor/solar strips)
+  regional_standards: Daejeon Rail Vehicle Maintenance Depot (Pyeongchon-dong, 7 inspection sheds totaling 28,433 m2 roof solar PV arrays); through-track 2-bay portals (5.2x6.6 m), entry signals, roof ventilation/daylight monitor, 4000-5500K cool-white workshop lighting
+estimated:
+  - roof pitch 1:6.0 (9.4 deg, ridge_rise 2.15 m) with 6.4m-wide monitor raising apex to 14.49 m # estimated
+  - symmetric rooftop photovoltaic solar banks along outer slopes + 4 framed bay FRP skylight cassettes per slope between monitor & solar banks # estimated
+  - front & rear 2-bay rail track doors (5.2 x 6.6 m) with track rail stubs, rain hoods, signal beacons # estimated
+  - depot MEP equipment on left flank (substation switchgear, compressed-air receiver tank, eave access ladder) + 3 personnel exit doors # estimated
+  - clerestory workshop glass (cells 0..3 wire/frosted cool white, floor=0 invariant mapping so all 16 bays 100% lit) and red portal signal beacons # estimated
+metrics:
+  tris_main: 5518
+  tris_lod1: 244
+  tris_lod2: 86
+  windows_total: 32
+  lod_check: "main max 0.002%, bad_views 0/64"

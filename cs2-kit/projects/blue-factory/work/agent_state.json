@@ -1,0 +1,161 @@
+{
+ "visual_review": "PASS",
+ "current_stage": "review:PASS",
+ "generator": "blue_rail_depot_cs2.py",
+ "generator_hash": "31cba983e9bcce6f6fd186c7180eaa07e70b7539e53b3b7dac7d07e48aa6489b",
+ "current_preview_hash": "afa6437cf0dbaa97332724dc09b9d068ce1bae7cabacab2be74f05ccd31e1f71",
+ "last_gate": {
+  "status": "PASS",
+  "project": "blue-factory",
+  "generator": "blue_rail_depot_cs2.py",
+  "mode": "final",
+  "checks": {
+   "build": "PASS",
+   "geometry": "PASS",
+   "preview": "PASS",
+   "photo": "NOT_APPLICABLE",
+   "tiles": "NOT_APPLICABLE",
+   "lod": "PASS",
+   "fbx": "PASS",
+   "visual_review": "PASS"
+  },
+  "errors": [],
+  "next_action": {
+   "command": null,
+   "reason": "no fix needed"
+  },
+  "artifacts": {
+   "preview": "previews\\BlueRailDepot_L1_4x8.png",
+   "report": "output\\BlueRailDepot_L1_4x8\\_check\\report.json"
+  },
+  "asset": "BlueRailDepot_L1_4x8",
+  "label": "cross-review",
+  "time": "2026-11-16 14:28:16",
+  "build": {
+   "asset": "BlueRailDepot_L1_4x8",
+   "fbx": true,
+   "warnings": [
+    "[cs2kit][WARN] lot 4x8 > 6x6 -> register as signature building"
+   ]
+  },
+  "check": {
+   "errors": [],
+   "warnings": [
+    "lot 4x8 > 6x6 -> not zonable, register as signature building"
+   ],
+   "info": {
+    "size": [
+     28.97,
+     57.5,
+     14.49
+    ],
+    "pivot_offset": [
+     0.0,
+     0.0
+    ],
+    "zmin": 0.0,
+    "coords": "generator coordinates (before pivot move)",
+    "tris": {
+     "main": 5518,
+     "win": 64,
+     "lod1": 244,
+     "lod1_win": 64,
+     "lod2": 86,
+     "lod2_win": 64
+    },
+    "verts": {
+     "main": 11052,
+     "win": 128,
+     "lod1": 496,
+     "lod1_win": 128,
+     "lod2": 176,
+     "lod2_win": 128
+    },
+    "coplanar": {
+     "main": 0,
+     "lod1": 0,
+     "lod2": 0,
+     "win": 0
+    },
+    "textures": {
+     "BaseColor": "2048x2048 RGBA",
+     "ControlMask": "2048x2048 RGBA",
+     "MaskMap": "2048x2048 RGBA",
+     "Normal": "2048x2048 RGB",
+     "Emissive": "2048x2048 RGB",
+     "LOD2_BaseColor": "1024x1024 RGBA",
+     "LOD2_ControlMask": "1024x1024 RGBA",
+     "LOD2_MaskMap": "1024x1024 RGBA",
+     "LOD2_Normal": "1024x1024 RGB",
+     "LOD2_Emissive": "1024x1024 RGB"
+    },
+    "texel_px_per_m": {
+     "p10": 23.2,
+     "median": 127.7,
+     "p90": 127.7
+    },
+    "windows": 32,
+    "win_dropped": 0,
+    "win_blocked": {
+     "win": 0,
+     "lod1_win": 0,
+     "lod2_win": 0
+    },
+    "time_s": 0.4
+   },
+   "report": "output\\BlueRailDepot_L1_4x8\\_check\\report.json"
+  },
+  "photo": {
+   "checked": false,
+   "mismatch": null,
+   "lines": [],
+   "status": "NOT_APPLICABLE"
+  },
+  "tiles": {
+   "checked": false,
+   "status": "NOT_APPLICABLE",
+   "simplified": [],
+   "detail": [],
+   "detail_color": [],
+   "color_off": [],
+   "tiles_off": 0,
+   "tiles_total": 0
+  },
+  "lod": {
+   "checked": true,
+   "status": "PASS",
+   "line": "LODCHECK PASS main max 0.002% (az 45, el +5) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\BlueRailDepot_L1_4x8",
+   "notes": []
+  },
+  "agent": {
+   "status": "PASS",
+   "verts": {
+    "LOD0": 11052,
+    "LOD1": 496,
+    "LOD2": 176
+   },
+   "action_tags": [],
+   "exact_fix_instruction": "no fix needed"
+  },
+  "gate": {
+   "status": "PASS",
+   "reasons": [],
+   "incomplete": []
+  }
+ },
+ "mismatch_attempts": {},
+ "next_action": {
+  "command": null,
+  "reason": "all requested checks passed"
+ },
+ "project": "blue-factory",
+ "updated_at": "2026-11-16T14:29:01",
+ "visual_review_note": "총괄 교차검토: 주간·야간 iso2 확인. 고측창 냉백색 전체 점등, 사무동 블라인드 유지, 규격별 사무동·채광창 배치 분화 확인. 창 발광색이 아틀라스 칸 단일색이라 사무동도 냉백색",
+ "visual_review_artifacts": [
+  {
+   "file": "previews/BlueRailDepot_L1_4x8.png",
+   "sha256": "afa6437cf0dbaa97332724dc09b9d068ce1bae7cabacab2be74f05ccd31e1f71"
+  }
+ ],
+ "reviewed_preview_hash": "afa6437cf0dbaa97332724dc09b9d068ce1bae7cabacab2be74f05ccd31e1f71"
+}

@@ -1,0 +1,29 @@
+name: BlueFactoryMid
+lot:
+  width: 4
+  depth: 6
+dimensions:
+  width_m: 30.64   # main body 28.0 m + side equipment/gutter overhang (TASK.md target 28 m)
+  depth_m: 40.47   # main hall 33.6 m + 4.4 m office wing + canopy/overhangs (TASK.md target 38 m)
+  height_m: 12.50  # eave 9.30 m + ridge 2.15 m + roof_t 0.26 m + O600 ventilators (TASK.md target 12.6 m)
+floors: 1          # high-bay hoist factory + 2-story attached office wing (7.0 m)
+style: industrial_sandwich_panel
+zone: IndustrialManufacturing
+subservice: Industrial
+signature: false
+evidence:
+  photos: []       # none (photos/ empty; web roadview photos unavailable via text search)
+  plan: TASK.md preset target (28 x 38 x 12.6 m, lot 4x6); maps/sintanjin/preview_map_regions_annotated.png (~7.0 m/px macro reference for Daedeok/Pyeongchon mid-size factories)
+  regional_standards: Daedeok Industrial Complex (Moksang-dong / Munpyeong-dong) 3-5t hoist plants (eave 8-10 m); Korean 1000mm panels, 1:6.5 gable slope, O600mm ridge ventilators, 4000-5500K cool-white high-bay workshop lighting with frosted/wire clerestory glazing
+estimated:
+  - roof pitch 1:6.5 (8.7 deg, ridge_rise 2.15 m) and eave height 9.30 m # estimated
+  - office annex 13.2 x 4.4 x 7.0 m (align right, door_side right, left spandrel signboard, parapet 0.38 m, 3 rooftop AC units) # estimated
+  - shutter layout (2 front left of office, 1 rear, 1 right side 4.3x4.7 m + rear steel exit door) # estimated
+  - roof FRP skylight layout (staggered 4-bay checkerboard u=0.38..0.54), 4 rear-biased O600 ridge ventilators + 2 upper-slope exhaust box fans, left cyclone stack + utility cabinet # estimated
+  - clerestory workshop glass (cells 0..3 wire/frosted cool white, 100% lit) vs office blinds (cells 4..24, ~36% room lit hash, 16px guard) # estimated
+metrics:
+  tris_main: 3828
+  tris_lod1: 210
+  tris_lod2: 76
+  windows_total: 34
+  lod_check: "main max 0.019%, bad_views 0/64"

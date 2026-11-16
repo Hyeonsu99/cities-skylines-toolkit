@@ -1,0 +1,180 @@
+{
+ "version": 1,
+ "project": "blue-factory",
+ "stages": {
+  "mass": {
+   "at": "2026-11-16T09:05:18",
+   "mode": "quick",
+   "status": "PASS",
+   "label": "mass",
+   "gate": "output/BlueRailDepot_L1_4x8/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "31cba983e9bcce6f6fd186c7180eaa07e70b7539e53b3b7dac7d07e48aa6489b",
+   "preview": null,
+   "fbx": null
+  },
+  "final": {
+   "at": "2026-11-16T09:06:54",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "final",
+   "gate": "output/BlueRailDepot_L1_4x8/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "31cba983e9bcce6f6fd186c7180eaa07e70b7539e53b3b7dac7d07e48aa6489b",
+   "preview": {
+    "path": "previews/BlueRailDepot_L1_4x8.png",
+    "exists": true,
+    "sha256": "b53a351c581179f513a5b42475d9cc161288741c2bf7ffd2c08e825fda3995d4",
+    "key": null
+   },
+   "fbx": null
+  },
+  "v4-quick": {
+   "at": "2026-11-16T10:43:23",
+   "mode": "quick",
+   "status": "PASS",
+   "label": "v4-quick",
+   "gate": "output/BlueRailDepot_L1_4x8/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "31cba983e9bcce6f6fd186c7180eaa07e70b7539e53b3b7dac7d07e48aa6489b",
+   "preview": null,
+   "fbx": null
+  },
+  "v4-final": {
+   "at": "2026-11-16T10:50:06",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "v4-final",
+   "gate": "output/BlueRailDepot_L1_4x8/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "31cba983e9bcce6f6fd186c7180eaa07e70b7539e53b3b7dac7d07e48aa6489b",
+   "preview": {
+    "path": "previews/BlueRailDepot_L1_4x8.png",
+    "exists": true,
+    "sha256": "1cf816e16171789949e7b8dcff21ec9c1d0801dec6801a94dd46f7a7ebafa5f0",
+    "key": null
+   },
+   "fbx": null
+  },
+  "fix": {
+   "at": "2026-11-16T14:19:16",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "fix",
+   "gate": "output/BlueFactoryMid_L1_4x6/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "eb4620e254ed2e3eef83db7dbd9bc985c8fafe032989e03384a22a2ac4c3bf13",
+   "preview": {
+    "path": "previews/BlueFactoryMid_L1_4x6.png",
+    "exists": true,
+    "sha256": "10464b7e5243bb00679b901d340e1c1a02297cda5bb00ad8343ea0e32b01b8b3",
+    "key": null
+   },
+   "fbx": null
+  },
+  "v5-final": {
+   "at": "2026-11-16T14:26:22",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "v5-final",
+   "gate": "output/BlueRailDepot_L1_4x8/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "31cba983e9bcce6f6fd186c7180eaa07e70b7539e53b3b7dac7d07e48aa6489b",
+   "preview": {
+    "path": "previews/BlueRailDepot_L1_4x8.png",
+    "exists": true,
+    "sha256": "ea846b0ddb64cdbfc35351df0620d42988d6fae753a4f205e07cb0d2444fe416",
+    "key": null
+   },
+   "fbx": null
+  },
+  "cross-review": {
+   "at": "2026-11-16T14:28:16",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "cross-review",
+   "gate": "output/BlueRailDepot_L1_4x8/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "31cba983e9bcce6f6fd186c7180eaa07e70b7539e53b3b7dac7d07e48aa6489b",
+   "preview": {
+    "path": "previews/BlueRailDepot_L1_4x8.png",
+    "exists": true,
+    "sha256": "afa6437cf0dbaa97332724dc09b9d068ce1bae7cabacab2be74f05ccd31e1f71",
+    "key": null
+   },
+   "fbx": null
+  }
+ },
+ "updated_at": "2026-11-16T14:28:16",
+ "current_stage": "final:INCOMPLETE",
+ "generator": "blue_rail_depot_cs2.py",
+ "generator_hash": "31cba983e9bcce6f6fd186c7180eaa07e70b7539e53b3b7dac7d07e48aa6489b",
+ "visual_review": "NOT_CHECKED",
+ "reviewed_preview_hash": "ea846b0ddb64cdbfc35351df0620d42988d6fae753a4f205e07cb0d2444fe416",
+ "last_gate": {
+  "mode": "final",
+  "status": "INCOMPLETE",
+  "path": "output/BlueRailDepot_L1_4x8/_check/gate.json"
+ }
+}
