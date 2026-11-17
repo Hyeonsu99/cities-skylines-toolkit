@@ -1,0 +1,40 @@
+{
+  "map_name": "Sintanjin - Daedeok Ind - Gwanpyeong - Jeonmin & Daejeon Venture Coop (1.45x Zoomed)",
+  "bounds": {
+    "lat_north": 36.464482,
+    "lat_south": 36.375518,
+    "lon_west": 127.349379,
+    "lon_east": 127.459621,
+    "center_lat": 36.42,
+    "center_lon": 127.4045
+  },
+  "scale": {
+    "real_width_m": 9886.9,
+    "real_height_m": 9886.9,
+    "cs2_playable_m": 14336.0,
+    "cs2_worldmap_m": 57344.0,
+    "zoom_multiplier": 1.45
+  },
+  "elevation": {
+    "min_m": 16.76,
+    "p50_m": 74.65,
+    "max_m": 426.39,
+    "worldmap_max_m": 826.69,
+    "recommended_sea_level_m": 24.0
+  },
+  "files": {
+    "recommended_1024m_playable": "heightmap_cs2_4096_1024m.png",
+    "recommended_1024m_worldmap": "heightmap_cs2_worldmap_1024m.png",
+    "default_4096m_playable": "heightmap_cs2_4096_std4096m.png",
+    "default_4096m_worldmap": "heightmap_cs2_worldmap_4096m.png",
+    "ultra_fine_500m_playable": "heightmap_cs2_4096_500m.png",
+    "image_overlay_4096": "satellite_overlay_4096.png",
+    "resources_overlay_4096": "resources_overlay_4096.png",
+    "resources_combined_preview": "preview_resources_combined.png",
+    "cs2_resources_bin": "sintanjin_resources_256.bin",
+    "cs2_trees_bin": "sintanjin_trees.bin",
+    "forest_trees_preview": "preview_forest_trees.png",
+    "cs2_roads_bin": "sintanjin_roads.bin",
+    "roads_backbone_preview": "preview_roads_backbone.png"
+  }
+}

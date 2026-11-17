@@ -5,8 +5,16 @@ screenshots/
 *.bak
 CS2_NewTown_Layout.json
 *.blend1
+maps/**/_imagery_cache/
 
 # asset-viewer: installed packages, build output, local preview copies
 asset-viewer/node_modules/
 asset-viewer/dist/
 asset-viewer/public/preview/
+
+# Local folder appearance and generated map images.
+desktop.ini
+galaxy_folder.ico
+maps/sintanjin_jeonmin/*.png
+output/road_lane_guide_detail.png
+output/satellite_quality_comparison.png
