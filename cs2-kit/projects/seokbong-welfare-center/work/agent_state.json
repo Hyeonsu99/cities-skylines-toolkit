@@ -1,0 +1,185 @@
+{
+ "visual_review": "PASS",
+ "current_stage": "review:PASS",
+ "generator": "seokbong_welfare_center_cs2.py",
+ "generator_hash": "1fab0c8c3d046cd9afb24c8572fa87ffac1c0dc4ed41e33b996a6d07d9d454f1",
+ "current_preview_hash": "350cf6dbe84a1998034b0c6b6632666946bda36c4ab38b89bd963dc2d40a3fe0",
+ "last_gate": {
+  "status": "PASS",
+  "project": "seokbong-welfare-center",
+  "generator": "seokbong_welfare_center_cs2.py",
+  "mode": "final",
+  "checks": {
+   "build": "PASS",
+   "geometry": "PASS",
+   "preview": "PASS",
+   "photo": "PASS",
+   "tiles": "PASS",
+   "lod": "PASS",
+   "fbx": "PASS",
+   "visual_review": "PASS"
+  },
+  "errors": [],
+  "next_action": {
+   "command": null,
+   "reason": "no fix needed"
+  },
+  "artifacts": {
+   "preview": "previews\\SeokbongWelfareCenter_L1_7x9.png",
+   "report": "output\\SeokbongWelfareCenter_L1_7x9\\_check\\report.json"
+  },
+  "asset": "SeokbongWelfareCenter_L1_7x9",
+  "label": "xreview_ramp",
+  "time": "2026-11-17 16:22:38",
+  "build": {
+   "asset": "SeokbongWelfareCenter_L1_7x9",
+   "fbx": true,
+   "warnings": [
+    "[cs2kit][WARN] lot 7x9 > 6x6 -> register as signature building"
+   ]
+  },
+  "check": {
+   "errors": [],
+   "warnings": [
+    "lot 7x9 > 6x6 -> not zonable, register as signature building"
+   ],
+   "info": {
+    "size": [
+     54.0,
+     71.24,
+     21.15
+    ],
+    "pivot_offset": [
+     0.0,
+     0.0
+    ],
+    "zmin": 0.0,
+    "coords": "generator coordinates (before pivot move)",
+    "tris": {
+     "main": 25220,
+     "win": 1320,
+     "gls": 24,
+     "lod1": 9614,
+     "lod1_win": 1320,
+     "lod2": 254,
+     "lod2_win": 1320
+    },
+    "verts": {
+     "main": 50442,
+     "win": 2640,
+     "gls": 48,
+     "lod1": 19230,
+     "lod1_win": 2640,
+     "lod2": 508,
+     "lod2_win": 2640
+    },
+    "coplanar": {
+     "main": 0,
+     "lod1": 0,
+     "lod2": 0,
+     "gls": 0,
+     "win": 0
+    },
+    "textures": {
+     "BaseColor": "4096x4096 RGBA",
+     "ControlMask": "4096x4096 RGBA",
+     "MaskMap": "4096x4096 RGBA",
+     "Normal": "4096x4096 RGB",
+     "Emissive": "4096x4096 RGB",
+     "LOD2_BaseColor": "1024x1024 RGBA",
+     "LOD2_ControlMask": "1024x1024 RGBA",
+     "LOD2_MaskMap": "1024x1024 RGBA",
+     "LOD2_Normal": "1024x1024 RGB",
+     "LOD2_Emissive": "1024x1024 RGB"
+    },
+    "texel_px_per_m": {
+     "p10": 127.5,
+     "median": 255.5,
+     "p90": 255.8
+    },
+    "windows": 660,
+    "win_dropped": 0,
+    "win_blocked": {
+     "win": 0,
+     "lod1_win": 0,
+     "lod2_win": 0
+    },
+    "time_s": 0.8
+   },
+   "report": "output\\SeokbongWelfareCenter_L1_7x9\\_check\\report.json"
+  },
+  "photo": {
+   "checked": true,
+   "mismatch": 0,
+   "lines": [
+    "MATCH    satellite width/depth ratio: photo 0.73 / model 0.76 (+3%)",
+    "MATCH    satellite width: photo 51.17 m / model 54.00 m (+6%)",
+    "MATCH    satellite depth: photo 69.77 m / model 71.25 m (+2%)",
+    "INFO     satellite outline/edge agreement 64% (higher = roof layout lines up)"
+   ],
+   "status": "PASS"
+  },
+  "tiles": {
+   "checked": true,
+   "status": "PASS",
+   "simplified": [
+    "TILE satellite r2c3 x[40,54]m y[28,43]m recall 13% precision 10%  SIMPLIFIED",
+    "TILE satellite r4c1 x[14,27]m y[0,14]m recall 14% precision 32%  SIMPLIFIED",
+    "TILE satellite r3c3 x[40,54]m y[14,28]m recall 17% precision 9%  SIMPLIFIED"
+   ],
+   "detail": [
+    "DETAIL satellite recall 36% precision 47% worst r2c3 (13%) simplified_tiles 15/19"
+   ],
+   "detail_color": [
+    "DETAIL_COLOR satellite tiles_off 0/7 (dE>14; trusted tiles only)"
+   ],
+   "color_off": [],
+   "tiles_off": 0,
+   "tiles_total": 7
+  },
+  "lod": {
+   "checked": true,
+   "status": "PASS",
+   "line": "LODCHECK PASS main max 0.002% (az 68, el +5) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\SeokbongWelfareCenter_L1_7x9",
+   "notes": []
+  },
+  "agent": {
+   "status": "PASS",
+   "verts": {
+    "LOD0": 50442,
+    "LOD1": 19230,
+    "LOD2": 508
+   },
+   "action_tags": [],
+   "exact_fix_instruction": "no fix needed"
+  },
+  "gate": {
+   "status": "PASS",
+   "reasons": [],
+   "incomplete": []
+  }
+ },
+ "mismatch_attempts": {},
+ "next_action": {
+  "command": null,
+  "reason": "all requested checks passed"
+ },
+ "project": "seokbong-welfare-center",
+ "updated_at": "2026-11-17T16:22:51",
+ "visual_review_note": "경사로 이음부 교차검토(Claude): final 재실행 PASS(main 25,220/LOD1 9,614/LOD2 254). 같은 각도 전후 비교: 루버 1~3단이 경사로 윗면까지 이어짐, 커튼월 하단 경사선 클리핑으로 흰 띠 제거, 경사로 밑 삼각형 유리 -> 흰 벽, 동측 커튼월·루버가 Y=35.2 연결동 벽에 밀착. 범위 밖 변경 없음",
+ "visual_review_artifacts": [
+  {
+   "file": "previews/SeokbongWelfareCenter_L1_7x9.png",
+   "sha256": "350cf6dbe84a1998034b0c6b6632666946bda36c4ab38b89bd963dc2d40a3fe0"
+  },
+  {
+   "file": "previews/photo_check/satellite.png",
+   "sha256": "d4b1555f86931923818518a1e66e0c83c008071f6aaf0f13c2d6741da5d3ac62"
+  },
+  {
+   "file": "previews/tiles/satellite_map.png",
+   "sha256": "d53d7c38850b3722db523e89d346859258d9bd89901b86157d8986f8b3f65a27"
+  }
+ ],
+ "reviewed_preview_hash": "350cf6dbe84a1998034b0c6b6632666946bda36c4ab38b89bd963dc2d40a3fe0"
+}

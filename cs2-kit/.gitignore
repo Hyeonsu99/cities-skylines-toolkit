@@ -37,3 +37,7 @@ Thumbs.db
 
 # 로컬 검토 메모 (커밋하지 않음)
 REMAINING_improvements_*.md
+
+# 간판 캐시(재생성 가능)와 로드뷰 추가 캡처(저작권 사진 포함, 대용량)
+/projects/*/work/_sign_cache/
+/projects/*/work/roadview_extra/

@@ -43,7 +43,10 @@
 
 ## 3. 공통 파라메트릭 명세 요약
 
-- **아틀라스**: `2048×2048` (`pad=12`, LOD2 `1024×1024`), 20개 재질 슬롯 (`roof_blue`, `wall_panel`, `office_panel`, `shutter`, `window`, `plinth`, `skylight_frp`, `louver_vent`, `solar_pv`, `equipment`, `door`, `sign_plate`, `exit_door`, `hazard_stripe`, `band_blue`, `trim_silver`, `frame`, `safety_yellow`, `light_warm`, `signal_red`).
+- **아틀라스**: `4096×4096` (`pad=12`, 사용률 `63.5%`, LOD2 `1024×1024`), 20개 재질 슬롯 (`wall_panel` `1024px`×3변형 `256 px/m`, `roof_blue` `1024px`×2변형 `256 px/m`, `office_panel` `512px`×2변형 `128×256 px/m`, `shutter` `1024px` `256 px/m`, `plinth` `512px`×2변형 `128×256 px/m`, `sign_plate` `1024px` 4밴드 팩킹 `1024×246`, `window` `1024px`, `skylight_frp`/`solar_pv`/`louver_vent`/`door` `512px`, `equipment`/`exit_door` `256px`, `hazard_stripe` `128px`, 솔리드 트림 6종 `64px`).
+- **텍스처 디테일 및 간판 (texture_up)**:
+  - `wall_panel`(골강판 세로 빗물 자국 + `ctx.grain`/`ctx.stains`/`ctx.noise` + 3변형 + 평균 밝기 유지), `roof_blue`(지붕 골 방향 `u` 얼룩 + 2변형), `office_panel`(`ctx.joints`+`ctx.grain`+`ctx.stains`+줄눈 하부 오염 + 2변형), `plinth`(`ctx.joints`+`ctx.grain`+`ctx.stains`+하단 흙튀김 오염 + 2변형), `shutter`(`ctx.joints`+`ctx.grain`+`ctx.stains`+`ctx.noise`, 4m 분할선 아티팩트 제거).
+  - `sign_plate`: `malgunbd.ttf`/`arialbd.ttf` 기반 가상 상호 간판 4종(`Small`: 들빛산기 / `DEULBIT INDUSTRIAL`, `Mid`: 세별정밀 / `SEBYEOL PRECISION`, `Large`: 맑은터테크 / `MALGEUNTEO TECH`, `Depot` 밴드: 새솔철도검수 / `SAESOL RAIL DEPOT`), 실제 간판 가로세로비 1:1 정합, 글자 입체 `height` + 우하단 그림자(`+2~3 px`), 배경 발광 `0`, 캐시 `work/_sign_cache/sign_plate_1024x1024.npz`.
 - **ControlMask 채널 분담**:
   - `R=255`: `roof_blue`, `band_blue` (인스턴스별 지붕·상단띠 청색 계열 색상 변주)
   - `G=255`: `wall_panel` (공장동 수직 샌드위치패널 백색·연회색 변주)

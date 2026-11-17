@@ -75,6 +75,7 @@ class FactorySpec:
     gable_louvers: bool = True
     side_equipment: bool = True
     side_equipment_kind: str = "factory"  # "factory" | "depot"
+    sign_key: str = "mid"
 
 
 PRESETS = {
@@ -108,6 +109,7 @@ PRESETS = {
         roof_box_fans=0,
         side_equipment=True,
         side_equipment_kind="factory",
+        sign_key="small",
     ),
     "mid": FactorySpec(
         name_base="BlueFactoryMid",
@@ -139,6 +141,7 @@ PRESETS = {
         roof_box_fans=2,
         side_equipment=True,
         side_equipment_kind="factory",
+        sign_key="mid",
     ),
     "large": FactorySpec(
         name_base="BlueFactoryLarge",
@@ -170,6 +173,7 @@ PRESETS = {
         roof_box_fans=2,
         side_equipment=True,
         side_equipment_kind="factory",
+        sign_key="large",
     ),
     "depot": FactorySpec(
         name_base="BlueRailDepot",
@@ -205,13 +209,130 @@ PRESETS = {
         solar_arrays=True,  # Daejeon Rail Vehicle Maintenance Depot rooftop solar PV arrays
         side_equipment=True,
         side_equipment_kind="depot",
+        sign_key="depot",
     ),
 }
 
 
 # ---------------------------------------------------------------------------
-# Procedural Atlas Painters
+# Procedural Atlas Painters & Korean Signboard Renderer
 # ---------------------------------------------------------------------------
+FONT_KR = [
+    r"C:\Windows\Fonts\malgunbd.ttf",
+    r"C:\Windows\Fonts\malgun.ttf",
+    r"C:\Windows\Fonts\gulim.ttc",
+]
+FONT_EN = [
+    r"C:\Windows\Fonts\arialbd.ttf",
+    r"C:\Windows\Fonts\malgunbd.ttf",
+    r"C:\Windows\Fonts\arial.ttf",
+]
+_SIGN_CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "work", "_sign_cache")
+
+# Packed signboard bands inside 1024x1024 sign_plate cell: (py0, py1, world_w, world_h, kr_name, en_sub)
+SIGN_BANDS = {
+    "small": (4, 250, 3.136, 0.68, "들빛산기", "DEULBIT INDUSTRIAL"),
+    "mid":   (260, 506, 3.800, 0.68, "세별정밀", "SEBYEOL PRECISION"),
+    "large": (516, 762, 5.400, 0.88, "맑은터테크", "MALGEUNTEO TECH"),
+    "depot": (772, 1018, 5.000, 0.85, "새솔철도검수", "SAESOL RAIL DEPOT"),
+}
+SIGN_SUB = {
+    k: ("sign_plate", 0.004, 1.0 - (py1 - 2) / 1024.0, 0.996, 1.0 - (py0 + 2) / 1024.0)
+    for k, (py0, py1, _w, _h, _kr, _en) in SIGN_BANDS.items()
+}
+
+
+def _load_font(candidates, size):
+    from PIL import ImageFont
+    for p in candidates:
+        if os.path.exists(p):
+            try:
+                return ImageFont.truetype(p, size)
+            except OSError:
+                pass
+    return ImageFont.load_default()
+
+
+def _fit_font(drw, candidates, text, max_w, init_px):
+    sz = init_px
+    while sz > 14:
+        fnt = _load_font(candidates, sz)
+        bb = drw.textbbox((0, 0), text, font=fnt)
+        if (bb[2] - bb[0]) <= max_w:
+            return fnt
+        sz = max(14, int(sz * 0.90))
+    return _load_font(candidates, 14)
+
+
+def _render_packed_bands(ctx, cache_tag, band_specs, bg=(22, 50, 94)):
+    cache_path = os.path.join(_SIGN_CACHE_DIR, f"{cache_tag}_{ctx.w}x{ctx.h}.npz")
+    try:
+        from PIL import Image, ImageDraw
+    except ImportError:
+        if not os.path.exists(cache_path):
+            raise RuntimeError(f"PIL unavailable and sign cache missing: {cache_path}")
+        with np.load(cache_path) as d:
+            ctx.rgb[...] = d["rgb"].astype(np.float32)
+            ctx.emis[...] = d["emis"].astype(np.float32)
+            ctx.height[...] = d["height"].astype(np.float32)
+            if "gloss" in d:
+                ctx.gloss[...] = d["gloss"].astype(np.float32)
+        return
+
+    sheet = Image.new("RGB", (ctx.w, ctx.h), bg)
+    esheet = Image.new("L", (ctx.w, ctx.h), 0)
+    hsheet = Image.new("L", (ctx.w, ctx.h), 0)
+    gsheet = Image.new("L", (ctx.w, ctx.h), 96)
+    sy = ctx.h / 1024.0
+    for py0, py1, world_w, world_h, band_bg, draw_fn in band_specs:
+        ry0, ry1 = int(round(py0 * sy)), int(round(py1 * sy))
+        bh = max(32, ry1 - ry0)
+        aspect = world_w / max(world_h, 1e-4)
+        ch = 256
+        cw = max(256, min(2560, int(round(ch * aspect))))
+        im = Image.new("RGB", (cw, ch), band_bg)
+        eim = Image.new("L", (cw, ch), 0)
+        him = Image.new("L", (cw, ch), 0)
+        gim = Image.new("L", (cw, ch), 96)
+        draw_fn(
+            ImageDraw.Draw(im),
+            ImageDraw.Draw(eim),
+            ImageDraw.Draw(him),
+            ImageDraw.Draw(gim),
+            cw,
+            ch,
+        )
+        sheet.paste(im.resize((ctx.w, bh), Image.Resampling.LANCZOS), (0, ry0))
+        esheet.paste(eim.resize((ctx.w, bh), Image.Resampling.LANCZOS), (0, ry0))
+        hsheet.paste(him.resize((ctx.w, bh), Image.Resampling.LANCZOS), (0, ry0))
+        gsheet.paste(gim.resize((ctx.w, bh), Image.Resampling.LANCZOS), (0, ry0))
+
+    rgb_arr = np.asarray(sheet, dtype=np.uint8)
+    emis_arr = np.asarray(esheet, dtype=np.float32) / 255.0
+    height_arr = (np.asarray(hsheet, dtype=np.float32) / 255.0) * 0.72
+    gloss_arr = np.asarray(gsheet, dtype=np.float32) / 255.0
+    ctx.rgb[...] = rgb_arr.astype(np.float32)
+    ctx.emis[...] = emis_arr
+    ctx.height[...] = height_arr
+    ctx.gloss[...] = gloss_arr
+
+    os.makedirs(_SIGN_CACHE_DIR, exist_ok=True)
+    np.savez(
+        cache_path,
+        rgb=rgb_arr,
+        emis=emis_arr.astype(np.float16),
+        height=height_arr.astype(np.float16),
+        gloss=gloss_arr.astype(np.float16),
+    )
+
+
+def _preserve_mean_rgb(arr, target_mean):
+    """Keep clean white/blue surfaces from turning dingy gray after multiplicative weathering."""
+    cur_mean = np.mean(arr, axis=(0, 1), keepdims=True)
+    scale = np.where(cur_mean > 1.0, target_mean / cur_mean, 1.0)
+    return arr * scale
+
+
 def _periodic_weather(ctx, amount=0.018, cycles_u=4, cycles_v=4, seed=11):
     """High-frequency seamless periodic tonal modulation (uniform across LOD1/LOD2 mid-tile UVs)."""
     rng = np.random.default_rng(seed)
@@ -227,64 +348,156 @@ def _periodic_weather(ctx, amount=0.018, cycles_u=4, cycles_v=4, seed=11):
 
 
 def _paint_corrugated_blue_roof(ctx):
-    """Long-span trapezoidal color-steel roof sheets (1000mm effective width, 250mm ribs, seamless)."""
+    """Long-span trapezoidal color-steel roof sheets (1000mm effective width, 250mm ribs, slope-aligned stains)."""
     mx, my = ctx.meters()
+    base_mean = ctx.rgb[:1, :1, :].copy()
     rib = np.clip(np.cos(2.0 * math.pi * my / 0.25) * 1.45, -1.0, 1.0)
+    trough = np.clip(-rib, 0.0, 1.0)
+
+    # Fine coated-steel grain + isotropic weathering blotches (wrapped smoothly at tile edges)
+    ctx.grain(amp=1.8, scale_px=3, height=0.05, seed=121)
+    rgb_pre_stain = ctx.rgb.copy()
+    ctx.stains(amount=0.055, scale_px=80, streaks=0.0, seed=111)
+    v_wrap = np.sin(math.pi * ctx.v) ** 0.30
+    ctx.rgb = rgb_pre_stain + (ctx.rgb - rgb_pre_stain) * v_wrap[..., None]
+
+    # Per-variant slope-direction (u/mx) rib streaks + 1m sheet tonal variation
+    sheet_id = np.floor(my / 1.0).astype(np.int32) % 4
+    rib_streak = np.zeros((ctx.h, ctx.w), np.float32)
+    sheet_shift = np.zeros((ctx.h, ctx.w), np.float32)
+    for vi in range(ctx.variants):
+        m = ctx.vi == vi
+        rng = np.random.default_rng(119 + vi * 29)
+        tones = rng.normal(0.0, 1.8, size=4).astype(np.float32)
+        sheet_shift[m] = tones[sheet_id[m]]
+        n_slope = ctx.noise(scale_px=14, amp=1.0, octaves=2, seed=220 + vi)
+        # Project along axis=1 (u/mx = eave-to-ridge rib direction), modulated softly along u
+        u_env = 0.72 + 0.28 * np.sin(2.0 * math.pi * ctx.vu + vi * 1.7)
+        streak_u = np.repeat(n_slope.mean(axis=1, keepdims=True), ctx.w, axis=1) * u_env
+        rib_streak[m] = streak_u[m]
+
+    streak_k = np.clip(0.5 + 0.5 * rib_streak, 0.0, 1.0)
+    roof_stain = 0.065 * streak_k * (0.45 + 0.55 * trough)
+    ctx.rgb *= (1.0 - roof_stain)[..., None]
+    ctx.rgb += sheet_shift[..., None]
+    ctx.rgb = _preserve_mean_rgb(ctx.rgb, base_mean)
+
     ctx.height += 0.60 * rib
     ctx.rgb += (rib * 7.5)[..., None]
     # Continuous 1.0m longitudinal sheet overlap seam along my
     seam_y = np.abs((my % 1.0) - 0.5) > 0.486
     ctx.rgb[seam_y] *= 0.84
     ctx.height[seam_y] -= 0.46
-    # Subtle balanced tonal variation per 1.0m sheet (avoids coarse LOD2 strip banding)
-    strip_id = (np.floor(my / 1.0).astype(np.int32) * 3) % 4
-    ctx.rgb += ((strip_id - 1.5) * 0.55)[..., None]
     # Hex fastener bolts along purlins at 1.0m mx intervals on rib crests
     bolt = (np.abs((mx % 1.0) - 0.5) < 0.020) & (np.abs((my % 0.25) - 0.125) > 0.106)
     ctx.rgb[bolt] *= 1.12
     ctx.height[bolt] += 0.20
-    # Lower gloss in rib troughs for natural semi-matte Posco color-steel look
-    ctx.gloss[...] = 0.34 + 0.08 * np.clip(rib, 0.0, 1.0)
-    _periodic_weather(ctx, amount=0.016, cycles_u=4, cycles_v=4, seed=11)
+    # Lower gloss in weathered rib troughs for natural semi-matte Posco color-steel look
+    ctx.gloss[...] = (0.34 + 0.08 * np.clip(rib, 0.0, 1.0)) * (1.0 - 0.22 * roof_stain)
+    _periodic_weather(ctx, amount=0.014, cycles_u=4, cycles_v=4, seed=11)
 
 
 def _paint_sandwich_wall(ctx):
-    """Korean vertical EPS/urethane sandwich panel cladding (1000mm vertical joints + 250mm micro-ribs)."""
+    """Korean vertical sandwich panel cladding (1000mm joints, 250mm micro-ribs, vertical rain streaks, 3 variants)."""
     mx, _ = ctx.meters()
-    # Continuous vertical 1.0m panel joints along mx only (no artificial 4m horizontal seam cut)
+    base_mean = ctx.rgb[:1, :1, :].copy()
+
+    # Subtle coated-metal surface grain + gentle kit stains (edge-feathered in v to avoid 4m horizontal seam)
+    ctx.grain(amp=1.4, scale_px=3, height=0.05, seed=101)
+    rgb_pre_stain = ctx.rgb.copy()
+    ctx.stains(amount=0.045, scale_px=72, streaks=0.22, seed=103)
+    v_wrap = np.sin(math.pi * ctx.v) ** 0.35
+    ctx.rgb = rgb_pre_stain + (ctx.rgb - rgb_pre_stain) * v_wrap[..., None]
+
+    # Continuous vertical 1.0m panel joints + 0.25m bead troughs
     dist_joint = np.minimum(mx % 1.0, 1.0 - (mx % 1.0))
     joint = np.clip(1.0 - dist_joint / 0.016, 0.0, 1.0)
-    panel_id = (np.floor(mx / 1.0).astype(np.int32) * 5 + 1) % 7
-    ctx.rgb += ((panel_id - 3) * 1.15)[..., None]
+    bead = np.sin(2.0 * math.pi * mx / 0.25)
+    trough = np.clip(-bead, 0.0, 1.0)
+    panel_idx = np.floor(mx / 1.0).astype(np.int32) % 4
+
+    # Per-variant distinct panel tones + seamless vertical rain-streak noise along rib troughs & joints
+    rain_field = np.zeros((ctx.h, ctx.w), np.float32)
+    panel_shift = np.zeros((ctx.h, ctx.w), np.float32)
+    for vi in range(ctx.variants):
+        m = ctx.vi == vi
+        rng = np.random.default_rng(100 + vi * 37)
+        tones = rng.normal(0.0, 1.9, size=4).astype(np.float32)
+        tones -= tones.mean()
+        panel_shift[m] = tones[panel_idx[m]]
+        n_rain = ctx.noise(scale_px=16, amp=1.0, octaves=2, seed=200 + vi)
+        col_streak = np.repeat(n_rain.mean(axis=0, keepdims=True), ctx.h, axis=0)
+        # Periodic vertical envelope wraps seamlessly at v=0 and v=1 (no horizontal seam at z=4.85m)
+        v_env = 0.78 + 0.22 * np.cos(2.0 * math.pi * ctx.v + vi * 2.1)
+        rain_field[m] = (col_streak * v_env)[m]
+
+    rain_k = np.clip(0.5 + 0.5 * rain_field, 0.0, 1.0)
+    streak_dark = 0.048 * rain_k * (0.45 + 0.35 * trough + 0.20 * joint)
+    ctx.rgb *= (1.0 - streak_dark)[..., None]
+    ctx.rgb += panel_shift[..., None]
+    # Restore mean brightness of clean wall panels so white walls never turn gray
+    ctx.rgb = _preserve_mean_rgb(ctx.rgb, base_mean)
+
+    # Apply crisp 1.0m panel joints & 0.25m micro-ribs after mean brightness preservation
     ctx.rgb *= (1.0 - 0.24 * joint)[..., None]
     ctx.height -= 0.85 * joint
-    bead = np.sin(2.0 * math.pi * mx / 0.25)
     ctx.height += 0.14 * bead
     ctx.rgb += (bead * 2.2)[..., None]
-    _periodic_weather(ctx, amount=0.035, cycles_u=2, cycles_v=1, seed=9)
+    ctx.gloss *= (1.0 - 0.18 * streak_dark)
+    _periodic_weather(ctx, amount=0.014, cycles_u=2, cycles_v=1, seed=9)
 
 
 def _paint_office_panel(ctx):
-    """Horizontal aluminum composite / metal cladding (2.0m x 1.0m modular grid) for office wing."""
+    """Horizontal aluminum composite cladding (2.0m x 1.0m modular grid, under-joint rainwater runoff, 2 variants)."""
+    base_mean = ctx.rgb[:1, :1, :].copy()
     ctx.joints(cols=2, rows=2, width_m=0.018, depth=0.75, stagger=0.0, darken=0.26, tone=2.2, seed=13)
+    ctx.grain(amp=1.4, scale_px=2, height=0.05, seed=131)
+    ctx.stains(amount=0.045, scale_px=52, streaks=0.38, seed=133)
+
     _, my = ctx.meters()
+    # Subtle rainwater runoff right beneath horizontal 1.0m panel joints (v_panel=1 is top of each 1m panel)
+    fy = (my % 1.0)
+    runoff_band = np.clip((fy - 0.72) / 0.26, 0.0, 1.0) * (fy < 0.985)
+    var_noise = np.zeros((ctx.h, ctx.w), np.float32)
+    for vi in range(ctx.variants):
+        m = ctx.vi == vi
+        n_v = ctx.noise(scale_px=40, amp=1.0, octaves=2, seed=240 + vi)
+        var_noise[m] = n_v[m]
+    drip = 0.040 * runoff_band * np.clip(0.55 + 0.45 * var_noise, 0.0, 1.0)
+    ctx.rgb *= (1.0 - drip)[..., None]
+    # Keep office Alucobond bright crisp off-white (compensate only stain/drip loss, preserve joint darkening)
+    ctx.rgb = _preserve_mean_rgb(ctx.rgb, base_mean * 0.985)
+
     fine_line = np.abs(((my * 2.0) % 1.0) - 0.5) > 0.488
     ctx.rgb[fine_line] *= 0.94
-    _periodic_weather(ctx, amount=0.025, cycles_u=1, cycles_v=1, seed=15)
+    ctx.gloss *= (1.0 - 0.20 * drip)
+    _periodic_weather(ctx, amount=0.012, cycles_u=1, cycles_v=1, seed=15)
 
 
 def _paint_plinth(ctx):
-    ctx.grain(amp=5.0, scale_px=2, height=0.35, seed=17)
-    _periodic_weather(ctx, amount=0.05, cycles_u=2, cycles_v=1, seed=19)
+    """Concrete foundation plinth (2m control joints, aggregate grain, stains, lower splash grime)."""
+    ctx.joints(cols=2, rows=1, width_m=0.014, depth=0.45, stagger=0.0, darken=0.22, tone=2.5, seed=141)
+    ctx.grain(amp=6.0, scale_px=2, height=0.42, seed=143)
+    ctx.stains(amount=0.085, scale_px=44, streaks=0.50, seed=145)
+    # Plinth sits strictly at ground level (ny=1, v=0 is ground z=0), so lower splash grime stays at wall base
+    splash_noise = np.zeros((ctx.h, ctx.w), np.float32)
+    for vi in range(ctx.variants):
+        m = ctx.vi == vi
+        n_s = ctx.noise(scale_px=20, amp=1.0, octaves=3, seed=260 + vi)
+        splash_noise[m] = n_s[m]
+    splash_band = np.clip(1.0 - ctx.v / 0.20, 0.0, 1.0) ** 1.4
+    splash = 0.12 * splash_band * np.clip(0.55 + 0.45 * splash_noise, 0.15, 1.0)
+    ctx.rgb *= (1.0 - splash)[..., None]
+    ctx.gloss *= (1.0 - 0.35 * splash)
+    _periodic_weather(ctx, amount=0.03, cycles_u=2, cycles_v=1, seed=19)
 
 
 def _paint_shutter(ctx):
-    """Roll-up industrial steel shutter with dense horizontal slats and wind-lock side guides."""
-    mx, _ = ctx.meters()
+    """Roll-up industrial steel shutter with horizontal slats, brushed grain, and subtle dust streaks."""
     ctx.joints(cols=1, rows=32, width_m=0.012, depth=0.78, stagger=0.0, darken=0.28, tone=1.6, seed=21)
-    edge = (mx < 0.09) | (mx > ctx.tile[0] - 0.09)
-    ctx.rgb[edge] *= 0.72
-    ctx.gloss[edge] = 0.62
+    ctx.grain(amp=2.0, scale_px=3, height=0.08, seed=151)
+    ctx.stains(amount=0.055, scale_px=64, streaks=0.45, seed=153)
+    ctx.rgb += ctx.noise(scale_px=32, amp=1.8, octaves=2, seed=155)[..., None]
 
 
 def _paint_skylight(ctx):
@@ -295,6 +508,8 @@ def _paint_skylight(ctx):
     rib = np.clip(np.cos(2.0 * math.pi * my / 0.25) * 1.4, -1.0, 1.0)
     ctx.rgb[~frame] += (rib[~frame] * 8.0)[..., None]
     ctx.height[~frame] += 0.30 * rib[~frame]
+    ctx.stains(amount=0.04, scale_px=48, streaks=0.0, seed=163)
+    ctx.rgb += ctx.noise(scale_px=32, amp=2.8, octaves=2, seed=161)[..., None]
     ctx.emis[...] = 0.0
     ctx.gloss[...] = np.where(frame, 0.42, 0.74)
 
@@ -309,6 +524,7 @@ def _paint_louver_vent(ctx):
     ctx.rgb[border] = np.array([62, 68, 74], np.float32)
     ctx.rgb[slat_shadow & ~border] = np.array([34, 38, 44], np.float32)
     ctx.rgb[slat_face] = np.array([148, 154, 160], np.float32)
+    ctx.grain(amp=1.5, scale_px=2, height=0.05, seed=167)
     ctx.height[border] += 0.25
     ctx.height[slat_shadow & ~border] -= 0.55
     ctx.height[slat_face] += 0.15
@@ -327,6 +543,7 @@ def _paint_solar_pv(ctx):
     grid_line = (cell_u < 0.032) | (cell_u > 0.968) | (cell_v < 0.028) | (cell_v > 0.972)
     ctx.rgb[...] = np.array([22, 36, 66], np.float32)
     ctx.rgb += (2.5 * np.sin(2.0 * math.pi * (fu + fv)))[..., None]
+    ctx.rgb += ctx.noise(scale_px=32, amp=1.2, octaves=2, seed=165)[..., None]
     ctx.rgb[grid_line & ~frame] = np.array([56, 78, 114], np.float32)
     ctx.rgb[frame] = np.array([184, 190, 198], np.float32)
     ctx.height[frame] += 0.26
@@ -338,6 +555,8 @@ def _paint_solar_pv(ctx):
 def _paint_equipment(ctx):
     """HVAC / dust-collector metal cabinet with inspection door seams and louvered intake grilles."""
     ctx.joints(cols=2, rows=2, width_m=0.014, depth=0.65, darken=0.25, tone=2.5, seed=31)
+    ctx.grain(amp=2.2, scale_px=2, height=0.10, seed=171)
+    ctx.stains(amount=0.05, scale_px=32, streaks=0.35, seed=173)
     louver = (ctx.u > 0.14) & (ctx.u < 0.86) & (ctx.v > 0.22) & (ctx.v < 0.78) & (((ctx.v * 26.0) % 1.0) < 0.44)
     ctx.rgb[louver] *= 0.48
     ctx.height[louver] -= 0.48
@@ -409,6 +628,8 @@ def _paint_entrance_door(ctx):
 
     ctx.rgb[border | mullion | mid_rail] = np.array([44, 50, 56], np.float32)
     ctx.rgb[kick] = np.array([152, 158, 164], np.float32)
+    ctx.grain(amp=1.6, scale_px=2, height=0.05, seed=181)
+    ctx.stains(amount=0.035, scale_px=40, streaks=0.30, seed=183)
     ctx.rgb[glass] = np.array([80, 112, 126], np.float32) + (v[glass] * 26.0)[..., None]
     ctx.rgb[handle] = np.array([210, 214, 218], np.float32)
     ctx.height[glass] -= 0.35
@@ -425,6 +646,8 @@ def _paint_exit_door(ctx):
     panic_bar = (u > 0.14) & (u < 0.82) & (v > 0.42) & (v < 0.46)
     louver = (u > 0.16) & (u < 0.84) & (v > 0.10) & (v < 0.28) & (((v * 38.0) % 1.0) < 0.45)
     ctx.rgb[...] = np.array([116, 122, 128], np.float32)
+    ctx.grain(amp=1.8, scale_px=2, height=0.06, seed=185)
+    ctx.stains(amount=0.045, scale_px=36, streaks=0.35, seed=187)
     ctx.rgb[border] = np.array([52, 56, 62], np.float32)
     ctx.rgb[vision] = np.array([58, 76, 86], np.float32)
     ctx.rgb[panic_bar] = np.array([196, 202, 208], np.float32)
@@ -436,28 +659,91 @@ def _paint_exit_door(ctx):
     ctx.emis[...] = 0.0
 
 
+def _draw_sign_band(drw, edrw, hdrw, gdrw, cw, ch, kr_name, en_sub):
+    """Render one crisp Korean/English corporate signboard band with 3D drop shadow and height relief."""
+    for y in range(ch):
+        t = y / max(1, ch - 1)
+        r = int(20 + 6 * t)
+        g = int(46 + 10 * t)
+        b = int(88 + 14 * t)
+        drw.line([(0, y), (cw - 1, y)], fill=(r, g, b))
+    drw.rectangle([4, 4, cw - 5, ch - 5], outline=(168, 182, 198), width=3)
+    hdrw.rectangle([4, 4, cw - 5, ch - 5], outline=90, width=3)
+
+    # Geometric industrial emblem on left (square world-aspect coordinates via ch)
+    e_r = int(ch * 0.28)
+    ex_c = int(ch * 0.56)
+    ey_c = ch // 2
+    ring_w = max(4, int(ch * 0.068))
+    # Drop shadow (+3, +3) on RGB only
+    drw.ellipse([ex_c - e_r + 3, ey_c - e_r + 3, ex_c + e_r + 3, ey_c + e_r + 3],
+                outline=(8, 18, 36), width=ring_w)
+    drw.ellipse([ex_c - e_r, ey_c - e_r, ex_c + e_r, ey_c + e_r],
+                outline=(138, 206, 248), width=ring_w)
+    hdrw.ellipse([ex_c - e_r, ey_c - e_r, ex_c + e_r, ey_c + e_r], outline=185, width=ring_w)
+    edrw.ellipse([ex_c - e_r, ey_c - e_r, ex_c + e_r, ey_c + e_r], outline=160, width=ring_w)
+    gdrw.ellipse([ex_c - e_r, ey_c - e_r, ex_c + e_r, ey_c + e_r], outline=195, width=ring_w)
+
+    ir = int(e_r * 0.44)
+    poly_sh = [(ex_c - ir + 3, ey_c + 3), (ex_c + 3, ey_c - ir + 3), (ex_c + ir + 3, ey_c + 3), (ex_c + 3, ey_c + ir + 3)]
+    poly = [(ex_c - ir, ey_c), (ex_c, ey_c - ir), (ex_c + ir, ey_c), (ex_c, ey_c + ir)]
+    drw.polygon(poly_sh, fill=(8, 18, 36))
+    drw.polygon(poly, fill=(240, 246, 255))
+    hdrw.polygon(poly, fill=210)
+    edrw.polygon(poly, fill=185)
+    gdrw.polygon(poly, fill=200)
+
+    # Korean company title + English subtitle in remaining right area
+    tx0 = ex_c + e_r + int(ch * 0.20)
+    tx1 = cw - int(ch * 0.16)
+    tx_w = max(80, tx1 - tx0)
+    f_kr = _fit_font(drw, FONT_KR, kr_name, int(tx_w * 0.94), int(ch * 0.56))
+    f_en = _fit_font(drw, FONT_EN, en_sub, int(tx_w * 0.90), int(ch * 0.17))
+
+    bb_kr = drw.textbbox((0, 0), kr_name, font=f_kr)
+    bb_en = drw.textbbox((0, 0), en_sub, font=f_en)
+    kr_w, kr_h = bb_kr[2] - bb_kr[0], bb_kr[3] - bb_kr[1]
+    en_w, en_h = bb_en[2] - bb_en[0], bb_en[3] - bb_en[1]
+    gap = int(ch * 0.08)
+    top_y = (ch - (kr_h + gap + en_h)) * 0.5
+
+    kr_x = tx0 + (tx_w - kr_w) * 0.5 - bb_kr[0]
+    kr_y = top_y - bb_kr[1]
+    en_x = tx0 + (tx_w - en_w) * 0.5 - bb_en[0]
+    en_y = top_y + kr_h + gap - bb_en[1]
+
+    # Drop shadow down & right (1-3 px), RGB only
+    drw.text((kr_x + 3, kr_y + 3), kr_name, font=f_kr, fill=(8, 18, 36))
+    drw.text((en_x + 2, en_y + 2), en_sub, font=f_en, fill=(8, 18, 36))
+    # Main crisp text
+    drw.text((kr_x, kr_y), kr_name, font=f_kr, fill=(246, 249, 255))
+    drw.text((en_x, en_y), en_sub, font=f_en, fill=(198, 224, 248))
+    # 3D raised channel-letter height relief
+    hdrw.text((kr_x, kr_y), kr_name, font=f_kr, fill=242)
+    hdrw.text((en_x, en_y), en_sub, font=f_en, fill=175)
+    # Night emissive on letters only (background stays 0)
+    edrw.text((kr_x, kr_y), kr_name, font=f_kr, fill=218)
+    edrw.text((en_x, en_y), en_sub, font=f_en, fill=145)
+    # Glossy acrylic letter faces
+    gdrw.text((kr_x, kr_y), kr_name, font=f_kr, fill=204)
+    gdrw.text((en_x, en_y), en_sub, font=f_en, fill=190)
+
+
 def _paint_factory_sign(ctx):
-    """Illuminated Korean industrial signboard (zero background glow per LESSONS.md)."""
-    u, v = ctx.u, ctx.v
-    rim = (u < 0.025) | (u > 0.975) | (v < 0.06) | (v > 0.94)
-    ctx.rgb[...] = np.array([22, 52, 98], np.float32)
-    ctx.rgb[rim] = np.array([194, 200, 206], np.float32)
-    cx, cy = (u - 0.15) * 2.6, (v - 0.50) * 1.15
-    d = np.hypot(cx, cy)
-    badge = (d < 0.34) & (d > 0.21)
-    core = (d < 0.13)
-    title_blocks = ((v > 0.46) & (v < 0.72) & (
-        ((u > 0.29) & (u < 0.38)) | ((u > 0.40) & (u < 0.49)) |
-        ((u > 0.51) & (u < 0.60)) | ((u > 0.62) & (u < 0.71)) |
-        ((u > 0.73) & (u < 0.82)) | ((u > 0.84) & (u < 0.92))
-    ))
-    sub_bar = (v > 0.24) & (v < 0.32) & (u > 0.29) & (u < 0.74)
-    lit = badge | core | title_blocks | sub_bar
-    ctx.rgb[lit] = np.array([242, 246, 252], np.float32)
-    ctx.rgb[badge | core] = np.array([150, 215, 255], np.float32)
-    ctx.height[rim] += 0.22
-    ctx.height[lit] += 0.14
-    ctx.emis[...] = np.where(lit, 0.52, 0.0)
+    """Packed 1024x256 signboard bands with PIL Korean/English fonts, 3D relief & zero background glow."""
+    bands = []
+    for _key, (py0, py1, world_w, world_h, kr_name, en_sub) in SIGN_BANDS.items():
+        bands.append((
+            py0,
+            py1,
+            world_w,
+            world_h,
+            (22, 50, 94),
+            lambda drw, edrw, hdrw, gdrw, cw, ch, k=kr_name, e=en_sub: _draw_sign_band(
+                drw, edrw, hdrw, gdrw, cw, ch, k, e
+            ),
+        ))
+    _render_packed_bands(ctx, "sign_plate", bands, bg=(22, 50, 94))
 
 
 def _paint_hazard(ctx):
@@ -488,35 +774,35 @@ def _paint_signal_lamp(ctx):
     ctx.gloss[...] = np.where(lens, 0.88, 0.40)
 
 
-def make_atlas(spec: FactorySpec, size=2048):
+def make_atlas(spec: FactorySpec, size=4096):
     A = K.Atlas(size=size, pad=12)
     # ControlMask R=(roof + upper accent band), G=(factory sandwich wall cladding), B=(freight shutters)
     A.add("roof_blue", color=spec.roof_color, ctrl=(255, 0, 0), metal=0.28, gloss=0.38,
-          px=512, tile=(4.0, 4.0), painter=_paint_corrugated_blue_roof)
+          px=1024, tile=(4.0, 4.0), variants=2, painter=_paint_corrugated_blue_roof, normal_strength=2.2)
     A.add("wall_panel", color=spec.wall_color, ctrl=(0, 255, 0), metal=0.08, gloss=0.34,
-          px=512, tile=(4.0, 4.0), painter=_paint_sandwich_wall)
+          px=1024, tile=(4.0, 4.0), variants=3, painter=_paint_sandwich_wall, normal_strength=2.0)
     A.add("office_panel", color=(232, 234, 236), ctrl=(0, 0, 0), metal=0.20, gloss=0.44,
-          px=512, tile=(4.0, 2.0), painter=_paint_office_panel)
+          px=512, tile=(4.0, 2.0), variants=2, painter=_paint_office_panel, normal_strength=2.0)
     A.add("shutter", color=(158, 164, 170), ctrl=(0, 0, 255), metal=0.58, gloss=0.45,
-          px=512, tile=(4.0, 4.0), painter=_paint_shutter)
+          px=1024, tile=(4.0, 4.0), painter=_paint_shutter, normal_strength=2.2)
     A.add("window", color=(64, 102, 114), ctrl=(0, 0, 0), metal=0.0, gloss=0.88,
           emissive=(236, 244, 255), px=1024, painter=_paint_window_atlas)
+    A.add("sign_plate", color=(22, 50, 94), ctrl=(0, 0, 0), metal=0.22, gloss=0.42,
+          emissive=(225, 240, 255), px=1024, painter=_paint_factory_sign, normal_strength=2.5)
     A.add("plinth", color=(108, 112, 116), ctrl=(0, 0, 0), metal=0.0, gloss=0.20,
-          px=256, tile=(4.0, 2.0), painter=_paint_plinth)
+          px=512, tile=(4.0, 2.0), variants=2, painter=_paint_plinth, normal_strength=2.4)
     A.add("skylight_frp", color=(198, 224, 234), ctrl=(0, 0, 0), metal=0.0, gloss=0.74,
-          px=256, tile=(2.0, 4.0), painter=_paint_skylight)
+          px=512, tile=(2.0, 4.0), painter=_paint_skylight)
     A.add("louver_vent", color=(140, 146, 152), ctrl=(0, 0, 0), metal=0.50, gloss=0.44,
-          px=256, tile=(2.0, 2.0), painter=_paint_louver_vent)
+          px=512, tile=(2.0, 2.0), painter=_paint_louver_vent)
     A.add("solar_pv", color=(24, 38, 70), ctrl=(0, 0, 0), metal=0.25, gloss=0.84,
-          px=256, tile=(2.0, 2.0), painter=_paint_solar_pv)
+          px=512, tile=(2.0, 2.0), painter=_paint_solar_pv)
     A.add("equipment", color=(142, 148, 152), ctrl=(0, 0, 0), metal=0.48, gloss=0.42,
           px=256, tile=(2.0, 2.0), painter=_paint_equipment)
     A.add("door", color=(50, 56, 62), ctrl=(0, 0, 0), metal=0.45, gloss=0.68,
-          emissive=(255, 224, 170), px=256, painter=_paint_entrance_door)
-    A.add("sign_plate", color=(24, 54, 100), ctrl=(0, 0, 0), metal=0.25, gloss=0.55,
-          emissive=(215, 235, 255), px=256, painter=_paint_factory_sign)
+          emissive=(255, 224, 170), px=512, painter=_paint_entrance_door)
     A.add("exit_door", color=(116, 122, 128), ctrl=(0, 0, 0), metal=0.52, gloss=0.40,
-          px=128, painter=_paint_exit_door)
+          px=256, painter=_paint_exit_door)
     A.add("hazard_stripe", color=(232, 180, 28), ctrl=(0, 0, 0), metal=0.10, gloss=0.42,
           px=128, tile=(1.0, 0.5), painter=_paint_hazard)
     A.add("band_blue", color=spec.accent_color, ctrl=(255, 0, 0), metal=0.28, gloss=0.40, px=64)
@@ -543,8 +829,8 @@ def _win_unit_for(floor, idx, seed=13):
     return (cell * 18) % 25
 
 
-def _uv_wall_point(atlas, region, x, z, x_ref, z_ref, tile_origin_x, tw, th, margin_px=0.5):
-    u0, v0, u1, v1 = atlas._uvrect(region)
+def _uv_wall_point(atlas, region, x, z, x_ref, z_ref, tile_origin_x, tw, th, variant=0, margin_px=0.5):
+    u0, v0, u1, v1 = atlas._uvrect(region, variant=variant)
     e = margin_px / atlas.size
     ua, ub = u0 + e, u1 - e
     va, vb = v0 + e, v1 - e
@@ -588,7 +874,7 @@ def _add_gable_end_walls(mb, atlas, x_left, x_right, y0, y1, eave_z, ridge_rise,
         orig_x = x_left + tile_idx * tw
 
         def uvp(x, z):
-            return _uv_wall_point(atlas, region, x, z, x_left, eave_z, orig_x, tw, th)
+            return _uv_wall_point(atlas, region, x, z, x_left, eave_z, orig_x, tw, th, variant=tile_idx * 7)
 
         if za <= eave_z + 1e-4 and zb > eave_z + 1e-4:
             pf = [(xa, y0, eave_z), (xb, y0, eave_z), (xb, y0, zb)]
@@ -1025,9 +1311,10 @@ def _build_office(mb, wins, atlas, spec: FactorySpec, stage, ob):
                 sx_c = min(ox1 - sw * 0.5 - 0.6, max(door_x + 1.65 + sw * 0.5, 0.5 * (ox0 + ox1) + 0.8))
             sz0, sz1 = 2.93, 3.61
         K.axbox(mb, "y", oy0, -1, sx_c - sw * 0.5 - 0.06, sx_c + sw * 0.5 + 0.06, 0.0, 0.06, sz0 - 0.05, sz1 + 0.05, "frame")
+        cell, fu0, fv0, fu1, fv1 = SIGN_SUB[spec.sign_key]
         mb.quad([(sx_c - sw * 0.5, oy0 - 0.065, sz0), (sx_c + sw * 0.5, oy0 - 0.065, sz0),
                  (sx_c + sw * 0.5, oy0 - 0.065, sz1), (sx_c - sw * 0.5, oy0 - 0.065, sz1)],
-                atlas.uv_full("sign_plate"), "sign_plate")
+                atlas.uv_sub(cell, fu0, fv0, fu1, fv1), cell)
 
         # Continuous horizontal spandrel sill flashing below 2F windows (clear of frames)
         K.axbox(mb, "y", oy0, -1, ox0 + 0.70, ox1 - 0.70, 0.0, 0.05, 3.84, 3.92, "trim_silver")
@@ -1463,7 +1750,7 @@ def _build_stage(spec: FactorySpec, atlas, stage):
 def build_and_export(spec: FactorySpec, out_root=None):
     if out_root is None:
         out_root = K.out_dir_from_argv("output")
-    A = make_atlas(spec, size=2048)
+    A = make_atlas(spec, size=4096)
     main_mb, wins = _build_stage(spec, A, stage=0)
     lod1_mb, _ = _build_stage(spec, A, stage=1)
     lod2_mb, _ = _build_stage(spec, A, stage=2)

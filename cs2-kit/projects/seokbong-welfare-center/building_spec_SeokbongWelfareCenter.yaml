@@ -1,0 +1,81 @@
+name: SeokbongWelfareCenter
+asset: SeokbongWelfareCenter_L1_7x9
+complex_name: 석봉복합문화센터 (석봉동 행정복지센터 · 석봉도서관 · 평생학습관 · 국민체육센터)
+location:
+  address: 대전광역시 대덕구 대덕대로 1579 (석봉동 774)
+  lat: 36.45068
+  lon: 127.42325
+  azimuth_deg: -11.2
+  built_year: 2024
+lot:
+  width: 7   # 56 m (main width 53.2 m)
+  depth: 9   # 72 m (plaza+building depth 70.12 m)
+  front_yard: 1.0
+  signature_required: true  # lot 7x9 > 6x6 max zonable footprint; register as Civic / Signature Building
+dimensions:
+  width_m: 54.00    # North cantilever roof X in [-27.0, +27.0] (West 2.5 m, East 2.2 m overhang); West 2F balcony & East stair ~53.2 m # estimated
+  depth_m: 71.24    # angled South plaza apron Y=0.16..6.2 to North cantilever roof Y=71.4 (North balcony Y=70.2) # estimated
+  height_m: 21.15   # North level cantilever roof + penthouse stair core (roofline ~20.3 m)
+floors: 3           # B2~3F (1F 복지센터/로컬푸드, 2F 도서관, 3F 국민체육센터/평생학습관/나루마당)
+floor_heights_m:
+  f1_main: 4.31     # Z 0.14..4.45 m # estimated
+  f2_main: 4.65     # Z 4.45..9.10 m # estimated
+  f3_south_east: 5.70 # Z 9.10..14.80 m + unified white roof fascia 14.80..16.45 m # estimated
+  f3_north_gym: 9.45  # Z 9.10..18.55 m (3F brown panel + 4-groove upper white band) # estimated
+  naru_madang: 3.75   # Z 14.80..18.55 m NE open white piloti + flat cantilever slab (2.2~3.0 m overhang + dark soffit) to 20.32 m # estimated
+style: contemporary_civic_cultural_center
+evidence:
+  orthophotos:
+    - sat_vworld_z19.png (VWorld z19, 0.24017 m/px, -11.2 deg road alignment)
+    - sat_google_z19.png (Google Satellite z19, 0.24017 m/px)
+  street_view_photos:
+    - south_front_mid.png (2026-10 Daedeok-daero south elevation & diagonal ramp)
+    - south_se_close.png (2026-10 SE entrance canopy, monolith, signage, railing)
+    - south_se_entrance.png (2026-10 SE plaza & Local Food storefront)
+    - south_sw_ramp.png (2026-10 SW stair, white upper box, West gallery)
+    - south_sw_close.png (2026-10 SW ramp lower curtain-wall fins & stair stringers)
+    - east_front_mid.png (2026-10 East curtain-wall wing & NE 나루마당)
+    - east_ne_oblique.png (2026-10 NE stairwell tower & East grand staircase)
+    - east_ne_far.png (2026-10 full East facade rhythm)
+    - north_front_mid.png (2026-10 North parking facade, balconies, 1F vent louvers)
+    - north_ne_oblique.png (2026-10 NE stairwell slit glass & rooftop louver screen)
+    - north_nw_oblique.png (2026-10 NW gym mass & West Green Terrace corner)
+    - west_nw_corner.png (2026-10 West 1~2F facade & NW overhang)
+architectural_features:
+  - diagonal_cultural_walkway: South facade ramp descending West-to-East (Z_bot 8.30->4.00 m, Y_front 10.05->6.70 m) with 3-bar stainless steel pipe rail & 39 vertical white fins (~0.595 m pitch, 0.15 m wide, 0.38 m max depth, retained in LOD1) + sloped bright cyan-teal (teal_glass 70,142,142) curtain wall beneath # estimated
+  - continuous_south_curtainwall: Unified 2~3F bright sky-blue Low-E reflective curtain wall across X=-18.4..+24.4 clipped cleanly along diagonal ramp top max(5.05, _ramp_zt(x)) up to Z=14.72 m (wrapping SE corner to East X=24.4, Y=10.2..35.2 flush against East wing) with continuous 1.074 m pitch white horizontal louver fins extended to ramp top intersection (0.150 m thick / 0.50 m deep major at Z=6.12,8.27,10.42,12.57 m; 0.108 m thick / 0.40 m deep intermediate) under one 1.65 m thick white cantilevered roof fascia (Z=14.80..16.45 m) # estimated
+  - open_central_courtyard: 14.2 x 15.2 m (X -6.0..+8.2, Y 35.2..50.4) 4-sided glazed atrium + NW 1F planter bridge
+  - green_terrace_pergola: West 2F/3F deck (Z=9.26 m) with # -shaped white steel pergola, planter beds & tempered glass railing
+  - north_gym_volume: Beige granite stone 1~2F podium + two 1.8 m glass-railed balconies + 3F dark brown metal panel with 3 ribbon windows + 4-groove white metal upper band + horizontal white cantilever roof (X -27.0..+27.0, Y 49.6..71.4; 2.2~3.0 m overhang + shaded soffit) with parapet-framed solar PV arrays
+  - ne_naru_madang: 3F open white piloti terrace (Z 14.80..18.55 m) with square white columns, thick flat cantilevered white roof slab (Z 18.55..20.00 m, 2.2 m East & North overhang over NE stairwell tower + roof_soffit underside), East 1F colonnade (X=22.0 recess), & white NE stairwell tower
+  - exterior_open_stairs: SW 14-step open-underside ramp stair & East 3-flight solid-cheek-wall grand staircase (X=24.80..27.00, Y=51.80..66.10, Z=4.75->1.34 m over 1F white piloti Y=50.4..58.6) + NE 8-riser wide granite landscape stair & terrace (X=20.55..26.68, Y=69.20..71.40, Z=1.34->0.14 m) with 3-bar stainless pipe railings # estimated
+  - ne_tower_slit_windows: Continuous full-height 2-column curtain-wall slit windows on NE stairwell tower (North Y=69.2 X=21.0..21.95 Z=1.55..16.95 m 1x11 grid; East X=24.8 Y=66.1..67.4 Z=3.80..17.65 m 2x9 grid) # estimated
+  - civic_signage: "'석봉복합문화센터', '석봉동 행정복지센터' LED, '대덕로컬푸드직매장', '석봉' 표지석 (AGENTS.md 일반 무브랜드 원칙 대비 사용자 지역 랜드마크 요청 반영)"
+estimated:
+  - internal floor-to-floor elevations (1F 4.31 m, 2F 4.65 m, 3F south/east 5.70 m, 3F gym 5.7+3.75 m) # estimated
+  - courtyard (중정) interior curtain-wall bay counts (nx 5..8, nz 4..6) & NW 1F bridge roof depth/planter height # estimated
+  - rooftop HVAC unit exact enclosure dimensions & PV sub-array cell division counts # estimated
+  - SW/SE unified roof parapet thickness (1.65 m fascia) & West parapet 10 cantilevered beam spacing # estimated
+  - night interior occupancy (~32% across 5x5 window atlas) & under-canopy recessed entrance downlight lumen level # estimated
+  - north_roof_cantilever: North wing roof slab cantilever projection beyond upper walls (West 2.5 m, East 2.2 m, North 3.0 m past gym / 2.2 m past NE tower) & roof_soffit shade tone (156, 162, 168) # estimated
+  - south_fins: 39 vertical white louver_white fins across X=-18.4..+4.2 (0.595 m pitch, 0.15 m width, 0.38 m max depth clamped behind ramp_yf at SW end, included in LOD0 & LOD1) & bright sky-reflecting teal_glass (70, 142, 142) with ~33% night glow and frame_metal transoms # estimated
+  - south_curtainwall: Continuous 2~3F bright sky-blue reflective window atlas (128, 194, 244) & diagonal-clipped spandrel_dark (122, 186, 238) along _ramp_zt with slim metallic curtain_frame mullions/sloped sill (94, 108, 124; 0.048x0.092 m) and 1.074 m pitch white louver_white horizontal fins extended to _ramp_x_at_zt(zb+half_t) and Y=35.2 East wing wall (0.150 m x 0.50 m major / 0.108 m x 0.40 m minor, wrapping SE corner) # estimated
+  - east_stair: East 2F deck (Y=35.2..51.8, X=24.8..27.0, Z=4.05..4.75) + 3-flight/2-landing stair (6+10+7 steps, terrace_deck treads) enclosed by 0.32 m white_panel solid cheek wall (X=26.68..27.00, open 1F piloti beneath Y<=58.6, solid to ground Y>=58.6) + 8-riser NE wide landscape steps (X=20.55..26.68, Y=69.72..71.40, Z=1.34->0.14) & continuous NE tower slit glass # estimated
+metrics:
+  tris_main: 25220
+  tris_win: 1320
+  tris_gls: 24
+  tris_lod1: 9614
+  tris_lod1_win: 1320
+  tris_lod2: 254
+  tris_lod2_win: 1320
+  windows_total: 660
+  win_dropped: 0
+  win_blocked: 0
+  coplanar: 0
+  texel_px_per_m:
+    p10: 127.5
+    median: 255.5
+    p90: 255.8
+  fbx_exported: true
+  lod_check: "PASS (main 0.002% 0/64, lod1 0.000% 0/64, lod2 0.000% 0/64)"

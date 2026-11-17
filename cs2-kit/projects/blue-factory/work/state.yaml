@@ -164,14 +164,64 @@
     "key": null
    },
    "fbx": null
+  },
+  "texture_up": {
+   "at": "2026-11-17T15:37:55",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "texture_up",
+   "gate": "output/BlueRailDepot_L1_4x8/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "31cba983e9bcce6f6fd186c7180eaa07e70b7539e53b3b7dac7d07e48aa6489b",
+   "preview": {
+    "path": "previews/BlueRailDepot_L1_4x8.png",
+    "exists": true,
+    "sha256": "515824ac183208ab4398e30212d338990f68c065ec8646001524d63a2159ff7b",
+    "key": null
+   },
+   "fbx": null
+  },
+  "xreview_tex": {
+   "at": "2026-11-17T15:41:47",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "xreview_tex",
+   "gate": "output/BlueRailDepot_L1_4x8/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "31cba983e9bcce6f6fd186c7180eaa07e70b7539e53b3b7dac7d07e48aa6489b",
+   "preview": {
+    "path": "previews/BlueRailDepot_L1_4x8.png",
+    "exists": true,
+    "sha256": "11cd16162f46345cdbd168b7f974e29f0b40f8b30a1fab15e4bd61bd24f8c122",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-16T14:28:16",
+ "updated_at": "2026-11-17T15:41:47",
  "current_stage": "final:INCOMPLETE",
  "generator": "blue_rail_depot_cs2.py",
  "generator_hash": "31cba983e9bcce6f6fd186c7180eaa07e70b7539e53b3b7dac7d07e48aa6489b",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "ea846b0ddb64cdbfc35351df0620d42988d6fae753a4f205e07cb0d2444fe416",
+ "reviewed_preview_hash": "b467824d81676378cfd5f370d8222000d361986d2b568e6afe273f7e13adb053",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",

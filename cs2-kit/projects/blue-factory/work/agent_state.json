@@ -3,7 +3,7 @@
  "current_stage": "review:PASS",
  "generator": "blue_rail_depot_cs2.py",
  "generator_hash": "31cba983e9bcce6f6fd186c7180eaa07e70b7539e53b3b7dac7d07e48aa6489b",
- "current_preview_hash": "afa6437cf0dbaa97332724dc09b9d068ce1bae7cabacab2be74f05ccd31e1f71",
+ "current_preview_hash": "11cd16162f46345cdbd168b7f974e29f0b40f8b30a1fab15e4bd61bd24f8c122",
  "last_gate": {
   "status": "PASS",
   "project": "blue-factory",
@@ -29,8 +29,8 @@
    "report": "output\\BlueRailDepot_L1_4x8\\_check\\report.json"
   },
   "asset": "BlueRailDepot_L1_4x8",
-  "label": "cross-review",
-  "time": "2026-11-16 14:28:16",
+  "label": "xreview_tex",
+  "time": "2026-11-17 15:41:47",
   "build": {
    "asset": "BlueRailDepot_L1_4x8",
    "fbx": true,
@@ -78,11 +78,11 @@
      "win": 0
     },
     "textures": {
-     "BaseColor": "2048x2048 RGBA",
-     "ControlMask": "2048x2048 RGBA",
-     "MaskMap": "2048x2048 RGBA",
-     "Normal": "2048x2048 RGB",
-     "Emissive": "2048x2048 RGB",
+     "BaseColor": "4096x4096 RGBA",
+     "ControlMask": "4096x4096 RGBA",
+     "MaskMap": "4096x4096 RGBA",
+     "Normal": "4096x4096 RGB",
+     "Emissive": "4096x4096 RGB",
      "LOD2_BaseColor": "1024x1024 RGBA",
      "LOD2_ControlMask": "1024x1024 RGBA",
      "LOD2_MaskMap": "1024x1024 RGBA",
@@ -91,8 +91,8 @@
     },
     "texel_px_per_m": {
      "p10": 23.2,
-     "median": 127.7,
-     "p90": 127.7
+     "median": 255.7,
+     "p90": 255.8
     },
     "windows": 32,
     "win_dropped": 0,
@@ -101,7 +101,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 0.4
+    "time_s": 0.3
    },
    "report": "output\\BlueRailDepot_L1_4x8\\_check\\report.json"
   },
@@ -149,13 +149,13 @@
   "reason": "all requested checks passed"
  },
  "project": "blue-factory",
- "updated_at": "2026-11-16T14:29:01",
- "visual_review_note": "총괄 교차검토: 주간·야간 iso2 확인. 고측창 냉백색 전체 점등, 사무동 블라인드 유지, 규격별 사무동·채광창 배치 분화 확인. 창 발광색이 아틀라스 칸 단일색이라 사무동도 냉백색",
+ "updated_at": "2026-11-17T15:41:47",
+ "visual_review_note": "텍스처·간판 교차검토(Claude): final 재실행 PASS, 4096 아틀라스, 가상 상호 실글자 간판(그림자·양각) 근접 렌더 선명, 골강판·지붕 빗물자국/결 과하지 않음, 형태·삼각형 불변",
  "visual_review_artifacts": [
   {
    "file": "previews/BlueRailDepot_L1_4x8.png",
-   "sha256": "afa6437cf0dbaa97332724dc09b9d068ce1bae7cabacab2be74f05ccd31e1f71"
+   "sha256": "11cd16162f46345cdbd168b7f974e29f0b40f8b30a1fab15e4bd61bd24f8c122"
   }
  ],
- "reviewed_preview_hash": "afa6437cf0dbaa97332724dc09b9d068ce1bae7cabacab2be74f05ccd31e1f71"
+ "reviewed_preview_hash": "11cd16162f46345cdbd168b7f974e29f0b40f8b30a1fab15e4bd61bd24f8c122"
 }

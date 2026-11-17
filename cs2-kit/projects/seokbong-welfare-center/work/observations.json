@@ -1,0 +1,56 @@
+{
+ "58c164a6a7ff7d2ac36314f87b88a22df7e0a3e765e2dba84524ebd700162eac": {
+  "file": "photos\\sat_vworld_z19.png",
+  "side": "roof",
+  "note": "외곽 코너 FL(300,585) FR(510,549) BR(465,262) BL(255,298), 약 10도 회전. 북측동 태양광 거의 전폭, 중앙 서측 #퍼골라 2x2, 중정 어두운 공극, 남측동 서쪽 백색 평지붕+동쪽 태양광 2군, 서측 어두운 띠(램프/갤러리)",
+  "observed_at": "2026-11-17T13:27:01"
+ },
+ "1f80c5d90370748bf1612d096571b2225e540408eb27f5231d86a388a788f049": {
+  "file": "photos\\south_front_mid.png",
+  "side": "front",
+  "note": "South Daedeok-daero front: angled diagonal white cultural walkway ramp climbing from SE 1F canopy (~4.6m) up to SW 2F/3F deck (~9.0m), glass curtain wall with vertical white fins beneath, SW lower stair, 2F-3F blue curtain wall with horizontal louver fins behind.",
+  "observed_at": "2026-11-17T09:48:36"
+ },
+ "dcf8c06d3b204aae56750c1fdf99e2b197e060a96516d409671bf814d67bb216": {
+  "file": "photos\\south_se_close.png",
+  "side": "front",
+  "note": "램프 하부 1층 유리 앞 촘촘한 백색 수직 핀(약 0.6m 간격, 청록 유리), 상부 커튼월은 층마다 백색 수평 루버 핀이 뚜렷하고 유리는 밝은 하늘색 반사, 지붕 파시아 큰 원형 로고, 램프 상부 금속 난간",
+  "observed_at": "2026-11-17T13:38:55"
+ },
+ "032ee5505638895fad7e1999268793de1b41e6968b411fd47762f88764948553": {
+  "file": "photos\\east_front_mid.png",
+  "side": "right",
+  "note": "East side: 1F colonnade on SE, 2F-3F blue curtain wall with 10 glass rows and horizontal projecting fins, NE white wall + 3F rooftop open colonnaded terrace '나루마당' under high roof canopy.",
+  "observed_at": "2026-11-17T09:48:37"
+ },
+ "bc3dc508b1e0df16c2916b687aa6c1aa51376ee7080d5686d5be841189032a80": {
+  "file": "photos\\north_ne_oblique.png",
+  "side": "back",
+  "note": "NE 백색 계단탑에 전층 세로 슬릿창 2열, 북측동 지붕 슬래브가 2~3m 캔틸레버로 깊게 돌출(하부 그림자 soffit), 동측 외부계단은 백색 솔리드 측벽+하부 넓은 조경 계단 8단, 1층 계단 밑 백색 기둥 필로티",
+  "observed_at": "2026-11-17T13:38:55"
+ },
+ "cdd3ff7d5622ebc8ac65548384a15c55ef51a8d4f74b0638e3cdea3763afe592": {
+  "file": "photos\\north_front_mid.png",
+  "side": "back",
+  "note": "North parking view: 1F beige stone with 4 lower aluminum louvers + vertical windows, 2F & 3F cantilevered balconies with glass railings, 3F dark brown metal panel with 3 horizontal ribbon windows, 4-groove white upper band, NE stairwell + curtain wall.",
+  "observed_at": "2026-11-17T09:48:37"
+ },
+ "5e46edfc9d151b23b5ad4b8732f6c727bbd4b00bd6f619b1a590d67d57b906dc": {
+  "file": "photos\\west_nw_corner.png",
+  "side": "left",
+  "note": "West futsal-side view: North gym tall brown+white mass, middle 2F/3F Green Terrace glass railing (# pergola deck), SW elevated white box mass, 1F-2F continuous West window wall.",
+  "observed_at": "2026-11-17T09:48:37"
+ },
+ "37d90e2425f3231f81a0176bdec664371d2f117d1093b46b788ea641b2aaf342": {
+  "file": "photos\\south_se_entrance.png",
+  "side": "front",
+  "note": "경사로 서고동저, 램프 위 2~3층 연속 커튼월+두꺼운 백색 지붕 파시아와 간판, 1층 수직 백색 핀 유리+우측 후퇴 캐노피 출입구. 램프 깊이차로 평면 ref 불가",
+  "observed_at": "2026-11-17T13:27:01"
+ },
+ "1beff13875521dda5262acb0e75315323ac822ee4873aee1ecdc9ac842946acc": {
+  "file": "photos\\east_ne_oblique.png",
+  "side": "right",
+  "note": "동·북동 외벽 백색, 세로창, 옥상 백색 기둥+두꺼운 캔틸레버 슬래브의 열린 나루마당, 동측 백색 외부계단. 수목 가림·사선이라 평면 ref 불가",
+  "observed_at": "2026-11-17T13:27:01"
+ }
+}

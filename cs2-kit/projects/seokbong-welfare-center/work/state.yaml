@@ -1,0 +1,584 @@
+{
+ "version": 1,
+ "project": "seokbong-welfare-center",
+ "stages": {
+  "mass": {
+   "at": "2026-11-17T09:56:57",
+   "mode": "quick",
+   "status": "FAIL",
+   "label": "mass",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "FAIL",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "ad3cace75dd37601e12d91ce07013dc2ddfcf68a845b861a142c3795672679e6",
+   "preview": null,
+   "fbx": null
+  },
+  "v1_mass": {
+   "at": "2026-11-17T09:57:31",
+   "mode": "visual",
+   "status": "FAIL",
+   "label": "v1_mass",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "FAIL",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "abaeea3e45231df93e34442baa165361b5e7eb53f39044c2ef8b74c11ea19504",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "7cfa204c3a1e3de093a2addfa9455df25cd1b8bb708b75ff8a735effb20c95a2",
+    "key": null
+   },
+   "fbx": null
+  },
+  "v2_polish": {
+   "at": "2026-11-17T09:59:27",
+   "mode": "visual",
+   "status": "INCOMPLETE",
+   "label": "v2_polish",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "230f84ec02fcfed09b4a0f97651a35af344abb09c6e36abccc091fa164f5be42",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "d20e8b158a704356e5a106c21ae168976c5ac29a6f2e9528232120c56914d03b",
+    "key": null
+   },
+   "fbx": null
+  },
+  "v3_clean": {
+   "at": "2026-11-17T10:04:03",
+   "mode": "visual",
+   "status": "INCOMPLETE",
+   "label": "v3_clean",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "573232aa05ee02689dbdaeec989bc4567e59a3b02d77b8bf3f2927c2682ef9e9",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "08cdccf62cba3b781ad666639c59eb1cb0d10e21350b1b4da760a52c075612a9",
+    "key": null
+   },
+   "fbx": null
+  },
+  "final": {
+   "at": "2026-11-17T10:05:36",
+   "mode": "final",
+   "status": "FAIL",
+   "label": "final",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "FAIL",
+    "fbx": "PASS"
+   },
+   "generator_hash": "573232aa05ee02689dbdaeec989bc4567e59a3b02d77b8bf3f2927c2682ef9e9",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "db3a8b761fd60290a031216c13360303d0b332dea31127f106fdf0b6bc814bc7",
+    "key": null
+   },
+   "fbx": null
+  },
+  "final_lodfix": {
+   "at": "2026-11-17T10:06:44",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "final_lodfix",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "aa8ee7360d6966d789c35004dd90ee02cb1aced9b825fe0b6d8b44c7d3165d8c",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "8c30f04c0bf28229256916800984aeebf61f3ef595ea1bbd4dd7f6e3bc401adf",
+    "key": null
+   },
+   "fbx": null
+  },
+  "verify": {
+   "at": "2026-11-17T11:47:37",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "verify",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "aa8ee7360d6966d789c35004dd90ee02cb1aced9b825fe0b6d8b44c7d3165d8c",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "1d51e831cdf4fd4d295a8ea381ea9251eea56b8d9a5f2baa5de4961b6d36f5f3",
+    "key": null
+   },
+   "fbx": null
+  },
+  "fix_east_south": {
+   "at": "2026-11-17T13:19:46",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "fix_east_south",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "40ff01a06b899eaf5d310935178dba2299dd23006451a4ed6aeed168e796c077",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "420c6265710d94b0e024c8bcca42a6139fa85936ed427a254db50a93c139534c",
+    "key": null
+   },
+   "fbx": null
+  },
+  "xreview": {
+   "at": "2026-11-17T13:23:12",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "xreview",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "40ff01a06b899eaf5d310935178dba2299dd23006451a4ed6aeed168e796c077",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "1f75100b0b77a61f1790b44b9a9f0af915bc507891d201b139b76eb31c02e2e1",
+    "key": null
+   },
+   "fbx": null
+  },
+  "photo_refs": {
+   "at": "2026-11-17T13:26:36",
+   "mode": "visual",
+   "status": "INCOMPLETE",
+   "label": "photo_refs",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "NOT_CHECKED",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "40ff01a06b899eaf5d310935178dba2299dd23006451a4ed6aeed168e796c077",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "16031c197950211640240dd1874fec35e56c0cf22d5c49b3666771bf2086d09b",
+    "key": null
+   },
+   "fbx": null
+  },
+  "final_refs": {
+   "at": "2026-11-17T13:27:09",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "final_refs",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "40ff01a06b899eaf5d310935178dba2299dd23006451a4ed6aeed168e796c077",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "9cc39edec2b28eda6aa5d7a7374029ae89a59f2fc180f6d620b1855b0551decd",
+    "key": null
+   },
+   "fbx": null
+  },
+  "solar_color": {
+   "at": "2026-11-17T13:33:51",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "solar_color",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "f27adc5fe9be692d9d01507c33282ec55db90fe0bee29e2da0f75df392478fad",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "131e13ad1fadd8c142b22000d3d8b4fa55026020505eaad2fec6765c7807e401",
+    "key": null
+   },
+   "fbx": null
+  },
+  "roof_cantilever": {
+   "at": "2026-11-17T13:54:39",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "roof_cantilever",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "6276b429260c9e4122069ce9eaa97c05aa6297b5b93fcaf4d6d8d8e0c677a115",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "3d1b5691e4ce68044e7e91e9a61eea12fbebb9d865c0385df61fafc13f149bf2",
+    "key": null
+   },
+   "fbx": null
+  },
+  "south_fins": {
+   "at": "2026-11-17T14:12:41",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "south_fins",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "fa11b34c6dec62607f044a6f94ac8213b3f8d8b3b17fc280f03049cfd1fa7802",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "87cd639f87f442a1ca6f6f6836d86ca36145db7cf20614e9dee15ab834c4f197",
+    "key": null
+   },
+   "fbx": null
+  },
+  "south_curtainwall": {
+   "at": "2026-11-17T14:28:32",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "south_curtainwall",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "20b89fe752b8d5052433ef4313fd444b13bbe2ef98a31275d6c8fa628ad37d28",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "078ef2b1aadb9945bd66d125ef8d1836f8149c77a1213212b9135c897da1ba36",
+    "key": null
+   },
+   "fbx": null
+  },
+  "east_stair": {
+   "at": "2026-11-17T14:50:55",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "east_stair",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "50c93c04b7e4a8f80a310c5e39ceed6b910a02a3b19cf8d06eb493600e0c4a65",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "081b097112e7117f7cbc51de6d3b5ab0039f947b2ea6d7094ad8926d4dd10e06",
+    "key": null
+   },
+   "fbx": null
+  },
+  "xreview_q4": {
+   "at": "2026-11-17T14:54:16",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "xreview_q4",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "50c93c04b7e4a8f80a310c5e39ceed6b910a02a3b19cf8d06eb493600e0c4a65",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "6097d0f5273af4cde2766c5b344c7e0392c35d086c6daa38f5870fb86d52491f",
+    "key": null
+   },
+   "fbx": null
+  },
+  "south_fins_v2": {
+   "at": "2026-11-17T15:03:05",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "south_fins_v2",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "ce4547799ec7a66e0d219ef4172ed0cc25037a34330b385ef8bb96a4658e3bee",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "555025c1d022a83e417173d5c980948b2bbc187a7168879eb328233671c359e2",
+    "key": null
+   },
+   "fbx": null
+  },
+  "xreview_q2b": {
+   "at": "2026-11-17T15:05:27",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "xreview_q2b",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "ce4547799ec7a66e0d219ef4172ed0cc25037a34330b385ef8bb96a4658e3bee",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "28b0fd045558737f2d9d55a56c315a4b36ee7ade03096098fe9bb1d52e554883",
+    "key": null
+   },
+   "fbx": null
+  },
+  "texture_up": {
+   "at": "2026-11-17T15:38:53",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "texture_up",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "4ff9bc0c64fbe584f4f62beae7e2dc108055f56ad7671795cd0323c4d92064c7",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "1f5e41b4cf3be550c0641a03f2e307066d2d4c0d8612ce1bbe71ae25b02dbbea",
+    "key": null
+   },
+   "fbx": null
+  },
+  "xreview_tex": {
+   "at": "2026-11-17T15:42:05",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "xreview_tex",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "4ff9bc0c64fbe584f4f62beae7e2dc108055f56ad7671795cd0323c4d92064c7",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "d5fe83c662fef70c4d257788e60b0afa2aeb2f56e6ebfbf2491849e088162aa0",
+    "key": null
+   },
+   "fbx": null
+  },
+  "ramp_junction": {
+   "at": "2026-11-17T16:19:14",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "ramp_junction",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "1fab0c8c3d046cd9afb24c8572fa87ffac1c0dc4ed41e33b996a6d07d9d454f1",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "193a77856f2549230cfe269e23fbab259633e3081f5b6add56f9ba1e34dca769",
+    "key": null
+   },
+   "fbx": null
+  },
+  "xreview_ramp": {
+   "at": "2026-11-17T16:22:38",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "xreview_ramp",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "1fab0c8c3d046cd9afb24c8572fa87ffac1c0dc4ed41e33b996a6d07d9d454f1",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "350cf6dbe84a1998034b0c6b6632666946bda36c4ab38b89bd963dc2d40a3fe0",
+    "key": null
+   },
+   "fbx": null
+  }
+ },
+ "updated_at": "2026-11-17T16:22:38",
+ "current_stage": "final:INCOMPLETE",
+ "generator": "seokbong_welfare_center_cs2.py",
+ "generator_hash": "1fab0c8c3d046cd9afb24c8572fa87ffac1c0dc4ed41e33b996a6d07d9d454f1",
+ "visual_review": "NOT_CHECKED",
+ "reviewed_preview_hash": "193a77856f2549230cfe269e23fbab259633e3081f5b6add56f9ba1e34dca769",
+ "last_gate": {
+  "mode": "final",
+  "status": "INCOMPLETE",
+  "path": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json"
+ }
+}

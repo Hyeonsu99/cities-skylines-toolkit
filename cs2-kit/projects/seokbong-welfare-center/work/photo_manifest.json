@@ -1,0 +1,172 @@
+{
+ "photos": [
+  {
+   "file": "photos\\east_front_mid.png",
+   "sha256": "032ee5505638895fad7e1999268793de1b41e6968b411fd47762f88764948553",
+   "size": [
+    1600,
+    1100
+   ],
+   "mtime_ns": 1794876192167018400,
+   "bytes": 2404190,
+   "duplicate_of": null,
+   "observed": true
+  },
+  {
+   "file": "photos\\east_ne_far.png",
+   "sha256": "db73aba96e7d0cc094edd554df9f4bda7062b1e0a5c1e29d2fb8450ab99ae4d9",
+   "size": [
+    1600,
+    1100
+   ],
+   "mtime_ns": 1794876282319713600,
+   "bytes": 2207342,
+   "duplicate_of": null,
+   "observed": false
+  },
+  {
+   "file": "photos\\east_ne_oblique.png",
+   "sha256": "1beff13875521dda5262acb0e75315323ac822ee4873aee1ecdc9ac842946acc",
+   "size": [
+    1600,
+    1100
+   ],
+   "mtime_ns": 1794876201466811900,
+   "bytes": 2634944,
+   "duplicate_of": null,
+   "observed": false
+  },
+  {
+   "file": "photos\\north_front_mid.png",
+   "sha256": "cdd3ff7d5622ebc8ac65548384a15c55ef51a8d4f74b0638e3cdea3763afe592",
+   "size": [
+    1600,
+    1100
+   ],
+   "mtime_ns": 1794876219794734100,
+   "bytes": 1932617,
+   "duplicate_of": null,
+   "observed": true
+  },
+  {
+   "file": "photos\\north_ne_oblique.png",
+   "sha256": "bc3dc508b1e0df16c2916b687aa6c1aa51376ee7080d5686d5be841189032a80",
+   "size": [
+    1600,
+    1100
+   ],
+   "mtime_ns": 1794876210946437000,
+   "bytes": 2546429,
+   "duplicate_of": null,
+   "observed": true
+  },
+  {
+   "file": "photos\\north_nw_oblique.png",
+   "sha256": "c7b9fad79343eef10c87cd334ac530128f0b5cc0af8d28cf3ba52d730dda31f4",
+   "size": [
+    1600,
+    1100
+   ],
+   "mtime_ns": 1794876227966141500,
+   "bytes": 2174054,
+   "duplicate_of": null,
+   "observed": false
+  },
+  {
+   "file": "photos\\sat_google_z19.png",
+   "sha256": "d21ff3c2762341f162b122ecc1bfc7cdba55184ac095dcaaf75cf66113837dc8",
+   "size": [
+    768,
+    768
+   ],
+   "mtime_ns": 1794876115144952900,
+   "bytes": 1026870,
+   "duplicate_of": null,
+   "observed": false
+  },
+  {
+   "file": "photos\\sat_vworld_z19.png",
+   "sha256": "58c164a6a7ff7d2ac36314f87b88a22df7e0a3e765e2dba84524ebd700162eac",
+   "size": [
+    768,
+    768
+   ],
+   "mtime_ns": 1794876113552593900,
+   "bytes": 882535,
+   "duplicate_of": null,
+   "observed": true
+  },
+  {
+   "file": "photos\\south_front_mid.png",
+   "sha256": "1f80c5d90370748bf1612d096571b2225e540408eb27f5231d86a388a788f049",
+   "size": [
+    1600,
+    1100
+   ],
+   "mtime_ns": 1794876132015740800,
+   "bytes": 2166593,
+   "duplicate_of": null,
+   "observed": true
+  },
+  {
+   "file": "photos\\south_se_close.png",
+   "sha256": "dcf8c06d3b204aae56750c1fdf99e2b197e060a96516d409671bf814d67bb216",
+   "size": [
+    1600,
+    1100
+   ],
+   "mtime_ns": 1794876144072614500,
+   "bytes": 1647741,
+   "duplicate_of": null,
+   "observed": true
+  },
+  {
+   "file": "photos\\south_se_entrance.png",
+   "sha256": "37d90e2425f3231f81a0176bdec664371d2f117d1093b46b788ea641b2aaf342",
+   "size": [
+    1600,
+    1100
+   ],
+   "mtime_ns": 1794876142595523200,
+   "bytes": 2217370,
+   "duplicate_of": null,
+   "observed": false
+  },
+  {
+   "file": "photos\\south_sw_close.png",
+   "sha256": "d806549c1ae9c4b46900f6b10676a2ea1feb44f54700657058436e6dc7e787d8",
+   "size": [
+    1600,
+    1100
+   ],
+   "mtime_ns": 1794876273222268000,
+   "bytes": 2698987,
+   "duplicate_of": null,
+   "observed": false
+  },
+  {
+   "file": "photos\\south_sw_ramp.png",
+   "sha256": "7ca3687d09ef1f7fb9db027da1470c688e80d4376eac9d8d3d38944b5ad15ed6",
+   "size": [
+    1600,
+    1100
+   ],
+   "mtime_ns": 1794876123822590600,
+   "bytes": 2768644,
+   "duplicate_of": null,
+   "observed": false
+  },
+  {
+   "file": "photos\\west_nw_corner.png",
+   "sha256": "5e46edfc9d151b23b5ad4b8732f6c727bbd4b00bd6f619b1a590d67d57b906dc",
+   "size": [
+    1600,
+    1100
+   ],
+   "mtime_ns": 1794876239369046000,
+   "bytes": 1940859,
+   "duplicate_of": null,
+   "observed": true
+  }
+ ]
+}
