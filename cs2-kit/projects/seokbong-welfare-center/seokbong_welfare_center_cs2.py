@@ -52,9 +52,9 @@ FONT_EN = [
 ]
 _SIGN_CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "work", "_sign_cache")
 
-# 표지석(2.4 x 1.4 m = 1.714:1)은 576x288 칸 왼쪽 494x288 활성 영역만 사용해 비율 정확도 0.6% 이내 유지
+# 표지석(1.20 x 2.16 m = 0.556:1 세로 코르텐 철판)은 576x288 칸 왼쪽 160x288 활성 영역만 사용해 비율 정합 유지
 _SIGN_ACTIVE_W = {
-    "sign_monolith": 494,
+    "sign_monolith": 160,
     "storefront_glass": 719,
 }
 
@@ -336,47 +336,52 @@ def _paint_storefront_glass(ctx):
 
 
 def _paint_sign_monolith(ctx):
-    """남동 광장 전면 표지석 동판 (2.4x1.4 m, 다크 브론즈 바탕 + 석봉 / 석봉복합문화센터 입체 글자)."""
+    """남동 광장 코르텐 철판 중앙 기둥 (1.20x2.16 m 세로 비율, 흰 육각 로고 '석봉' + '석봉복합문화센터')."""
     active_w = _SIGN_ACTIVE_W["sign_monolith"]
 
     def paint_2x(rgb2, mask2, emis2, w2, h2):
         from PIL import ImageDraw
         drw = ImageDraw.Draw(rgb2)
         mdrw = ImageDraw.Draw(mask2)
-        pad = 14
-        drw.rectangle([pad, pad, w2 - pad - 1, h2 - pad - 1], outline=(194, 176, 156), width=6)
-        mdrw.rectangle([pad, pad, w2 - pad - 1, h2 - pad - 1], outline=140, width=6)
+        bg = (96, 52, 38)
 
-        # 중앙 상단 육각 문양 + '석 봉'
-        cx, cy_top = w2 * 0.5, h2 * 0.36
-        hr = h2 * 0.25
+        # 중앙 상단 채워진 흰색 육각 로고 + 내부 '석봉' 음각 컷아웃 (crop_dnbarch2_se · storefront_front_center)
+        cx, cy_top = w2 * 0.50, h2 * 0.30
+        hr = w2 * 0.21
         hex_pts = [(cx + hr * math.cos(math.radians(60 * k + 30)),
                     cy_top + hr * math.sin(math.radians(60 * k + 30))) for k in range(6)]
-        drw.polygon(hex_pts, outline=(228, 220, 208), width=4)
-        mdrw.polygon(hex_pts, outline=130, width=4)
+        drw.polygon(hex_pts, fill=(246, 244, 240))
+        mdrw.polygon(hex_pts, fill=190)
 
-        t1 = "석 봉"
-        f1 = _fit_font(drw, FONT_KR, t1, int(w2 * 0.56), int(h2 * 0.28))
+        t1 = "석봉"
+        f1 = _fit_font(drw, FONT_KR, t1, int(hr * 1.45), int(hr * 0.92))
         bx1, by1, tw1, th1 = _text_metrics(drw, t1, f1)
-        _draw_3d_text(rgb2, mask2, emis2, (w2 - tw1) * 0.5 - bx1, cy_top - th1 * 0.5 - by1,
-                      t1, f1, fill_rgb=(246, 244, 240), shadow_rgb=(36, 20, 16),
-                      emis_val=155, shadow_off=(4, 4), shadow_blur=1.3)
+        drw.text(((w2 - tw1) * 0.5 - bx1, cy_top - th1 * 0.5 - by1), t1, font=f1, fill=bg)
+        mdrw.text(((w2 - tw1) * 0.5 - bx1, cy_top - th1 * 0.5 - by1), t1, font=f1, fill=40)
 
-        # 구분선 + 하단 '석봉복합문화센터'
-        div_y = int(h2 * 0.65)
-        drw.line([(int(w2 * 0.16), div_y), (int(w2 * 0.84), div_y)], fill=(202, 188, 170), width=3)
-        mdrw.line([(int(w2 * 0.16), div_y), (int(w2 * 0.84), div_y)], fill=110, width=3)
-
+        # 중단 상호 '석봉복합문화센터' + 하단 구분선/영문 (crop_dnbarch2_se 실사 비율)
         t2 = "석봉복합문화센터"
-        f2 = _fit_font(drw, FONT_KR, t2, int(w2 * 0.80), int(h2 * 0.17))
+        f2 = _fit_font(drw, FONT_KR, t2, int(w2 * 0.78), int(h2 * 0.068))
         bx2, by2, tw2, th2 = _text_metrics(drw, t2, f2)
-        _draw_3d_text(rgb2, mask2, emis2, (w2 - tw2) * 0.5 - bx2, h2 * 0.78 - th2 * 0.5 - by2,
-                      t2, f2, fill_rgb=(242, 236, 228), shadow_rgb=(36, 20, 16),
-                      emis_val=170, shadow_off=(3, 3), shadow_blur=1.1)
+        ty2 = h2 * 0.485 - th2 * 0.5 - by2
+        _draw_3d_text(rgb2, mask2, emis2, (w2 - tw2) * 0.5 - bx2, ty2,
+                      t2, f2, fill_rgb=(246, 244, 240), shadow_rgb=(42, 20, 14),
+                      emis_val=160, shadow_off=(2, 2), shadow_blur=0.9)
 
-    _render_sign_cell(ctx, "sign_monolith", (84, 54, 42), paint_2x, active_w=active_w, relief=0.78)
-    ctx.grain(amp=1.8, scale_px=2, height=0.06, seed=83)
-    ctx.gloss[...] = 0.40
+        div_y = int(h2 * 0.535)
+        drw.line([(int(w2 * 0.14), div_y), (int(w2 * 0.86), div_y)], fill=(235, 228, 220), width=2)
+        t3 = "SEOKBONG COMPLEX CENTER"
+        f3 = _fit_font(drw, FONT_EN, t3, int(w2 * 0.72), int(h2 * 0.025))
+        bx3, by3, tw3, th3 = _text_metrics(drw, t3, f3)
+        drw.text(((w2 - tw3) * 0.5 - bx3, h2 * 0.56 - th3 * 0.5 - by3), t3, font=f3, fill=(232, 224, 214))
+
+    _render_sign_cell(ctx, "sign_monolith", (96, 52, 38), paint_2x, active_w=active_w, relief=0.72)
+    rust = ctx.noise(scale_px=20, amp=7.0, octaves=3, seed=82) + ctx.noise(scale_px=5, amp=4.0, octaves=2, seed=84)
+    plate = (ctx.height[:, :active_w] < 0.05)
+    ctx.rgb[:, :active_w, :][plate] += rust[:, :active_w][plate][..., None] * np.array([1.3, 0.7, 0.45], np.float32)
+    ctx.grain(amp=2.2, scale_px=2, height=0.07, seed=83)
+    ctx.rgb[...] = np.clip(ctx.rgb, 48.0, 250.0)
+    ctx.gloss[...] = 0.28
 
 
 # ---------------------------------------------------------------------------
@@ -561,20 +566,23 @@ def _paint_plaza_paving(ctx):
 
 
 def _paint_monolith_stone(ctx):
-    # 표지석 하부 및 배면 밝은 소금후추 거친 화강석 블록 (dnbarch_2.jpg · south_se_close.png 기준)
-    base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
-    d = ctx.joints(cols=3, rows=4, width_m=0.012, depth=0.85, stagger=0.5, darken=0.26, tone=6.5, seed=74)
-    ctx.grain(amp=14.0, scale_px=2, height=0.45, seed=75)
-    speck = ctx.noise(scale_px=2, amp=1.0, octaves=1, seed=78)
-    ctx.rgb[speck < -1.0] *= 0.68
-    ctx.rgb[speck > 1.1] = np.minimum(210.0, ctx.rgb[speck > 1.1] * 1.24)
-    ctx.rgb += ctx.noise(scale_px=14, amp=5.5, octaves=3, seed=76)[..., None]
-    ctx.stains(amount=0.055, scale_px=40, streaks=0.35, seed=77)
-    face = d < 0.15
-    if np.any(face):
-        cur_mean = ctx.rgb[face].mean(axis=0)
-        ctx.rgb[face] += (base_mean - cur_mean)
-    ctx.rgb[...] = np.clip(ctx.rgb, 48.0, 205.0)
+    # 표지석 양옆 게비온(돌망태) 쇄석 블록 + 아연도 철망 격자 (storefront_front_center · crop_dnbarch2_se 기준)
+    u, v = ctx.u, ctx.v
+    stone = ctx.noise(scale_px=6, amp=1.0, octaves=3, seed=74)
+    crack = ctx.noise(scale_px=3, amp=1.0, octaves=2, seed=75)
+    fine = ctx.noise(scale_px=2, amp=1.0, octaves=1, seed=78)
+    shade = 122.0 + stone * 26.0 + fine * 14.0
+    gap = np.abs(crack) < 0.22
+    shade[gap] *= 0.52
+    ctx.rgb[...] = np.clip(shade[..., None] * np.array([1.00, 0.99, 0.97], np.float32), 42.0, 198.0)
+    ctx.height[...] += stone * 0.45 - gap.astype(np.float32) * 0.55
+    # 철망 게이지 (수평 0.10 m, 수직 0.14 m)
+    mx, my = ctx.meters()
+    wx = np.minimum(mx % 0.14, 0.14 - (mx % 0.14)) < 0.011
+    wy = np.minimum(my % 0.10, 0.10 - (my % 0.10)) < 0.010
+    wire = wx | wy
+    ctx.rgb[wire] = np.array([186.0, 190.0, 195.0], np.float32)
+    ctx.height[wire] += 0.30
 
 
 def _paint_green_planter(ctx):
@@ -737,6 +745,56 @@ def _paint_lamp_strip(ctx):
     ctx.emis[...] = 0.88
 
 
+def _paint_nosing_yellow(ctx):
+    """계단 디딤판 앞코 노란 미끄럼방지 논슬립·점자 유도 띠."""
+    u, v = ctx.u, ctx.v
+    dots = ((np.sin(u * math.pi * 18.0) * np.sin(v * math.pi * 18.0)) > 0.55)
+    ctx.rgb[...] = np.array([224.0, 184.0, 52.0], np.float32)
+    ctx.rgb[dots] = np.array([242.0, 206.0, 74.0], np.float32)
+    ctx.height[dots] += 0.28
+    ctx.grain(amp=2.4, scale_px=2, height=0.08, seed=96)
+    ctx.rgb[...] = np.clip(ctx.rgb, 180.0, 250.0)
+
+
+def _paint_vestibule_mural(ctx):
+    """현관 동측 전실 사선 벽 채소·토마토 사진 시트지 ('로컬푸드 장터', storefront_west_far/oblique 기준)."""
+    try:
+        from PIL import Image, ImageDraw
+        w, h = ctx.w, ctx.h
+        im = Image.new("RGB", (w, h), (34, 48, 36))
+        drw = ImageDraw.Draw(im)
+        # 상부(0..0.72*h): 신선한 잎채소(좌·상) + 붉은 토마토/파프리카 클러스터(우·중)
+        hy = int(h * 0.72)
+        greens = [(48, 118, 44), (72, 148, 56), (92, 168, 66), (42, 96, 38)]
+        for gx, gy, gr, col in (
+            (0.18, 0.28, 0.22, greens[0]), (0.34, 0.22, 0.18, greens[1]),
+            (0.16, 0.52, 0.20, greens[2]), (0.38, 0.48, 0.19, greens[3]),
+            (0.54, 0.20, 0.17, greens[1]), (0.78, 0.18, 0.18, greens[0]),
+        ):
+            drw.ellipse([w*(gx-gr), h*(gy-gr), w*(gx+gr), h*(gy+gr)], fill=col)
+        # 붉은 방울토마토·파프리카 군락
+        for tx, ty, tr, col in (
+            (0.62, 0.36, 0.14, (198, 38, 32)), (0.76, 0.40, 0.15, (216, 52, 38)),
+            (0.52, 0.52, 0.13, (186, 32, 28)), (0.68, 0.56, 0.14, (226, 68, 42)),
+            (0.84, 0.52, 0.13, (212, 154, 42)), (0.44, 0.60, 0.11, (224, 178, 52)),
+        ):
+            drw.ellipse([w*(tx-tr), h*(ty-tr), w*(tx+tr), h*(ty+tr)], fill=col)
+            drw.ellipse([w*(tx-tr*0.4), h*(ty-tr*0.5), w*(tx-tr*0.1), h*(ty-tr*0.2)], fill=(246, 178, 162))
+        # 하부(0.72*h..h): 밝은 크림 바탕 + '로컬푸드 장터' 문구
+        drw.rectangle([0, hy, w, h], fill=(234, 230, 222))
+        drw.line([(0, hy), (w, hy)], fill=(176, 172, 164), width=2)
+        for ix in (0.33, 0.67):
+            drw.line([(int(w * ix), 0), (int(w * ix), h)], fill=(60, 64, 62), width=1)
+        fnt = _fit_font(drw, FONT_KR, "로컬푸드 장터", int(w * 0.72), max(11, h // 10))
+        bx, by, tw, th = _text_metrics(drw, "로컬푸드 장터", fnt)
+        drw.text((w * 0.50 - tw * 0.5 - bx, h * 0.85 - th * 0.5 - by), "로컬푸드 장터", font=fnt, fill=(48, 92, 54))
+        ctx.rgb[...] = np.asarray(im, dtype=np.float32)
+    except Exception:
+        ctx.rgb[...] = np.array([150.0, 90.0, 70.0], np.float32)
+    ctx.emis[...] = 0.0
+    ctx.gloss[...] = 0.25
+
+
 def make_atlas(size=4096):
     A = K.Atlas(size=size, pad=16)
     A.add("white_panel",   color=(232, 234, 232), ctrl=(0, 0, 0), metal=0.14, gloss=0.42,
@@ -802,6 +860,10 @@ def make_atlas(size=4096):
     # UV는 빌드마다 layout() 결과로 다시 계산되므로 일반 add 로 넣는다 (키트 내부 _laid 조작 금지).
     A.add("storefront_glass", color=(24, 43, 47), gloss=0.84, px=288, variants=3,
           painter=_paint_storefront_glass)
+    A.add("nosing_yellow",    color=(224, 184, 52), ctrl=(0, 0, 0), metal=0.0, gloss=0.28,
+          px=128, tile=(0.8, 0.8), painter=_paint_nosing_yellow, normal_strength=2.0)
+    A.add("vestibule_mural",  color=(150, 90, 70), ctrl=(0, 0, 0), metal=0.0, gloss=0.25,
+          px=128, painter=_paint_vestibule_mural)
     return A
 
 
@@ -1234,6 +1296,125 @@ def _sloped_pipe_railing(mb, x_c, pts_yz, h=0.92, stage=0):
                        zp, zp + h - 0.05, "railing_steel")
 
 
+def _cheek_x_segment(mb, x0, x1, y0, y1, zb0, zb1, zt0, zt1, region, skip_bottom=False, variant_base=0):
+    """X축을 따라 수직 단면이 사다리꼴인 닫힌 프리즘 (남서 계단 공중 밑면·경사 측벽용)."""
+    if x1 - x0 < 1e-5 or y1 - y0 < 1e-5:
+        return
+    reg_fn = (lambda face: region if isinstance(region, str) else region.get(face, region.get("default")))
+    n_sub = max(1, math.ceil((x1 - x0) / 2.5)) if mb.split_tiles else 1
+    for k in range(n_sub):
+        t0, t1 = k / n_sub, (k + 1) / n_sub
+        xa = x0 + (x1 - x0) * t0
+        xb = x0 + (x1 - x0) * t1
+        zba = zb0 + (zb1 - zb0) * t0
+        zbb = zb0 + (zb1 - zb0) * t1
+        zta = zt0 + (zt1 - zt0) * t0
+        ztb = zt0 + (zt1 - zt0) * t1
+        b00, b10 = (xa, y0, zba), (xb, y0, zbb)
+        b01, b11 = (xa, y1, zba), (xb, y1, zbb)
+        t00, t10 = (xa, y0, zta), (xb, y0, ztb)
+        t01, t11 = (xa, y1, zta), (xb, y1, ztb)
+
+        dx = xb - xa
+        z_ref = min(zba, zbb)
+        h_span = max(0.05, max(zta, ztb) - z_ref)
+        v_idx = variant_base + k
+
+        def _emit_fb(pts, r, x_start, rev_x=False, v_off=0):
+            A = mb.atlas
+            if mb.split_tiles and A is not None and A.is_tiled(r):
+                tw, th = A.cells[r]["tile"]
+                if h_span <= th + 1e-4 and dx <= tw + 1e-4:
+                    e = 0.5 / A.size
+                    u0, v0, u1, v1 = A._uvrect(r, variant=v_idx + v_off)
+                    du, dv = (u1 - u0 - 2 * e), (v1 - v0 - 2 * e)
+                    uvs = [
+                        (u0 + e + du * min(1.0, ((x_start - p[0]) if rev_x else (p[0] - x_start)) / tw),
+                         v0 + e + dv * min(1.0, max(0.0, (p[2] - z_ref) / th)))
+                        for p in pts
+                    ]
+                    mb.quad(pts, uvs, r)
+                    return
+                mb.quad(pts, A.uv_tile(r, min(4.0, dx), min(4.0, h_span), variant=v_idx + v_off), r)
+            else:
+                mb.quad(pts, A.uv(r) if A is not None else [(0, 0), (1, 0), (1, 1), (0, 1)], r)
+
+        if reg_fn("front"):
+            _emit_fb([b00, b10, t10, t00], reg_fn("front"), xa, False, 0)
+        if reg_fn("back"):
+            _emit_fb([b11, b01, t01, t11], reg_fn("back"), xb, True, 1)
+        if reg_fn("top"):
+            _rect_var(mb, [t00, t10, t11, t01], reg_fn("top"), variant=v_idx)
+        if not skip_bottom and reg_fn("bottom"):
+            _rect_var(mb, [b01, b11, b10, b00], reg_fn("bottom"), variant=v_idx)
+        if k == 0 and reg_fn("left"):
+            _rect_var(mb, [b01, b00, t00, t01], reg_fn("left"), variant=v_idx)
+        if k == n_sub - 1 and reg_fn("right"):
+            _rect_var(mb, [b10, b11, t11, t10], reg_fn("right"), variant=v_idx)
+
+
+def _sloped_x_pipe_railing(mb, y_c, pts_xz, h=0.92, stage=0):
+    """X축을 따라 수평·경사 구간이 이어진 3단 스테인리스 파이프 난간."""
+    if stage >= 2 or len(pts_xz) < 2:
+        return
+    bar_offsets = (h - 0.05,) if stage == 1 else (h - 0.05, h * 0.60, h * 0.28)
+    for idx in range(len(pts_xz) - 1):
+        x0, z0 = pts_xz[idx]
+        x1, z1 = pts_xz[idx + 1]
+        if x1 <= x0 + 1e-4:
+            continue
+        for off in bar_offsets:
+            _cheek_x_segment(mb, x0, x1, y_c - 0.030, y_c + 0.030,
+                             z0 + off, z1 + off, z0 + off + 0.045, z1 + off + 0.045,
+                             "railing_steel")
+        if stage == 0:
+            seg_len = math.hypot(x1 - x0, z1 - z0)
+            n_posts = max(2, int(round(seg_len / 1.15)) + 1)
+            for p in range(n_posts):
+                if idx > 0 and p == 0:
+                    continue
+                t = p / max(1, n_posts - 1)
+                xp = x0 + (x1 - x0) * t
+                zp = z0 + (z1 - z0) * t
+                mb.box(xp - 0.022, xp + 0.022, y_c - 0.022, y_c + 0.022,
+                       zp, zp + h - 0.05, "railing_steel")
+
+
+def _cylinder_oct(mb, cx, cy, r, z0, z1, region, skip_bottom=True):
+    """8각 원통 닫힌 매스 (원형 화분용)."""
+    pts_b, pts_t = [], []
+    for i in range(8):
+        ang = 2.0 * math.pi * i / 8.0
+        px, py = cx + r * math.cos(ang), cy + r * math.sin(ang)
+        pts_b.append((px, py, z0))
+        pts_t.append((px, py, z1))
+    for i in range(8):
+        j = (i + 1) % 8
+        mb.rect([pts_b[i], pts_b[j], pts_t[j], pts_t[i]], region)
+    for k0, k1, k2, k3 in ((0, 1, 2, 3), (0, 3, 4, 5), (0, 5, 6, 7)):
+        mb.rect([pts_t[k0], pts_t[k1], pts_t[k2], pts_t[k3]], region)
+        if not skip_bottom:
+            mb.rect([pts_b[k3], pts_b[k2], pts_b[k1], pts_b[k0]], region)
+
+
+def _terrace_planter_tree(mb, cx, cy, z_base, height_scale=1.0):
+    """서측 목재 테라스 원형 콘크리트 화분 + 다간 수목(대나무/관목)."""
+    _cylinder_oct(mb, cx, cy, 0.58, z_base, z_base + 0.68, "roof_concrete", skip_bottom=True)
+    _cylinder_oct(mb, cx, cy, 0.50, z_base + 0.65, z_base + 0.74, "green_planter", skip_bottom=True)
+    stems = (
+        (-0.14, -0.10, 2.35),
+        (0.15, -0.08, 2.85),
+        (0.02, 0.15, 3.25),
+    )
+    for dx, dy, h_raw in stems:
+        sh = h_raw * height_scale
+        sx, sy = cx + dx, cy + dy
+        mb.box(sx - 0.032, sx + 0.032, sy - 0.032, sy + 0.032, z_base + 0.72, z_base + 0.72 + sh, "terrace_deck")
+        cz = z_base + 0.72 + sh * 0.78
+        mb.box(sx - 0.28, sx + 0.28, sy - 0.28, sy + 0.28, cz - 0.28, cz + 0.32, "green_planter")
+        mb.box(sx - 0.20, sx + 0.20, sy - 0.20, sy + 0.20, cz + 0.32, cz + 0.64, "green_planter")
+
+
 def build_east_stair_and_terrace(mb, stage):
     """동측 2층 데크 · 솔리드 측벽 외부 계단(1층 필로티 통과) · 북동 하부 8단 조경 계단."""
     if stage >= 2:
@@ -1336,7 +1517,7 @@ def build_east_stair_and_terrace(mb, stage):
 # 건물 구역별 빌더
 # ---------------------------------------------------------------------------
 
-def build_plaza_and_site(mb, A, wins, stage):
+def build_plaza_and_site(mb, A, wins, gls, stage):
     """1. 대지 바닥 보도 광장 · 남서 외부 계단/접근로 · 전면 석봉복합문화센터 표지석."""
     # 직교 주 광장 포장 (Y in [6.2, 70.2], Z = 0.00..0.14)
     mb.box(-25.5, 25.5, 6.2, 70.2, 0.0, 0.14, "plaza_paving", skip=("bottom",))
@@ -1362,42 +1543,99 @@ def build_plaza_and_site(mb, A, wins, stage):
                     mb.atlas.uv_tile("plaza_paving", 6.2 - ya, pz) if mb.split_tiles else mb.atlas.uv("plaza_paving"), "plaza_paving")
 
     if stage >= 2:
+        mb.box(-24.6, -18.4, 7.45, 10.19, 0.14, 4.82, {"top": "terrace_deck", "default": "beige_stone"}, skip=("bottom",))
         return
 
-    # 남서 외부 계단 (crop_dnbarch2_sw · south_front_mid): 정면과 나란히 동(X=-9.4, 지면) → 서(X=-18.4)로 오르고,
-    # 남서 모서리 목재 데크(X -25.6..-18.4, Z 4.82)에 닿아 서측 2층 발코니(X -25.6..-24.6, Z 4.40..4.82)로 이어진다.
-    # 거리 쪽(-Y)은 계단 경사를 따라 올라가는 흰 솔리드 측벽, 건물 쪽은 1층 청록 유리 핀(Y≈9.82) 앞 0.07 m 까지.
+    # 남서 외부 계단 (user side photo · crop_dnbarch2_sw · south_front_mid):
+    # 하부는 비어 있는 캔틸레버 경사 슬래브 + 중간참(X=-14.8..-13.2, Z=2.48) + 뒤편 후퇴(Y=7.80) 소형 설비벽.
+    # 서측 남서 목재 데크(X=-25.6..-18.4, Y=6.45..10.19, Z=4.40..4.82) 하부는 후퇴(Y=7.45)된 1층 유리 코너실, 데크 위는 투명 유리난간.
     deck_z, sy0, sy1, cy0 = 4.82, 6.75, 9.75, 6.45
-    n_st = 30 if stage == 0 else 6
-    x_bot, x_top = -9.4, -18.4
-    rise, run = (deck_z - 0.14) / (n_st + 1), (x_bot - x_top) / n_st
-    step_mat = {"top": "stair_stone", "default": "white_panel"}
-    for k in range(1, n_st + 1):
-        xa, xb = x_bot - k * run, x_bot - (k - 1) * run
-        _box_var(mb, xa, xb, sy0, sy1, 0.14, 0.14 + k * rise, step_mat, variant=k, skip=("bottom", "front"))
-    # 상부 데크 (서측 발코니와 같은 높이, 뒤는 갤러리 벽 Y=10.2 와 1 cm 띄움)
-    _box_var(mb, -25.6, x_top, cy0, 10.19, 0.14, deck_z, {"top": "terrace_deck", "default": "white_panel"},
-             variant=0, skip=("bottom",))
-    # 데크 남측·서측 흰 파라펫 (계단 측벽과 같은 높이 1.05 m)
-    _box_var(mb, -25.6, x_top, cy0, cy0 + 0.30, deck_z, deck_z + 1.05, "white_panel", variant=1)
-    _box_var(mb, -25.6, -25.3, cy0 + 0.30, 10.19, deck_z, deck_z + 1.05, "white_panel", variant=2)
-    # 계단 거리 쪽 경사 측벽 (바닥 Z 0.14 평평, 윗면은 디딤 앞코 선 + 1.05 m)
-    zt_hi, zt_lo = deck_z + 1.05, 0.14 + rise + 1.05
-    L = x_bot - x_top
-    for pts, uv in (
-        ([(x_top, cy0, 0.14), (x_bot, cy0, 0.14), (x_bot, cy0, zt_lo), (x_top, cy0, zt_hi)], (L, zt_hi)),          # 앞(-Y)
-        ([(x_bot, sy0, 0.14), (x_top, sy0, 0.14), (x_top, sy0, zt_hi), (x_bot, sy0, zt_lo)], (L, zt_hi)),          # 뒤(+Y)
-        ([(x_top, cy0, zt_hi), (x_bot, cy0, zt_lo), (x_bot, sy0, zt_lo), (x_top, sy0, zt_hi)], (L, 0.30)),         # 윗면
-        ([(x_bot, cy0, 0.14), (x_bot, sy0, 0.14), (x_bot, sy0, zt_lo), (x_bot, cy0, zt_lo)], (0.30, zt_lo)),       # 동쪽 끝
-    ):
-        mb.quad(pts, mb.atlas.uv_tile("white_panel", min(4.0, uv[0]), min(4.0, uv[1])) if mb.split_tiles
-                else mb.atlas.uv("white_panel"), "white_panel")
+    x_bot, x_mid_e, x_mid_w, x_top = -9.40, -13.20, -14.80, -18.40
+    z_mid = 2.48
+    step_mat = {"top": "stair_stone", "right": "stair_stone", "default": "white_panel"}
+    deck_mat = {"top": "terrace_deck", "default": "white_panel"}
 
-    # 전면 남동 광장 표지석 ('석봉복합문화센터', south_se_entrance.png 기준 X=+17.5, Y=5.0)
-    mb.box(15.6, 19.8, 4.8, 5.4, 0.14, 0.44, "monolith_stone", skip=("bottom",))
-    mb.box(16.2, 19.2, 4.92, 5.32, 0.44, 2.25, "monolith_stone", skip=("bottom",))
+    # 계단 하단 목재 진입 데크 패드 (crop_dnbarch2_sw 우하단)
+    _box_var(mb, -9.40, -7.50, 6.75, 10.10, 0.14, 0.18, deck_mat, variant=5, skip=("bottom",))
+
+    def _sw_soffit_z(x):
+        if x >= x_mid_e:
+            return max(0.14, 0.14 + (x_bot - x) / (x_bot - x_mid_e) * 1.90 - 0.14)
+        if x >= x_mid_w:
+            return 2.04
+        return 2.04 + (x_mid_w - x) / (x_mid_w - x_top) * 2.36
+
     if stage == 0:
-        _sign_quad(mb, A, [(16.5, 4.90, 0.65), (18.9, 4.90, 0.65), (18.9, 4.90, 2.05), (16.5, 4.90, 2.05)], "sign_monolith")
+        for xa_seg, xb_seg, za_seg, zb_seg, n_st in (
+            (x_mid_e, x_bot, z_mid, 0.14, 13),
+            (x_top, x_mid_w, deck_z, z_mid, 13),
+        ):
+            dx = (xb_seg - xa_seg) / n_st
+            dz = (za_seg - zb_seg) / n_st
+            for k in range(n_st):
+                xb = xb_seg - k * dx
+                xa = xb_seg - (k + 1) * dx
+                st_top = zb_seg + (k + 1) * dz
+                sb_a, sb_b = _sw_soffit_z(xa), _sw_soffit_z(xb)
+                _cheek_x_segment(
+                    mb, xa, xb, sy0, sy1, sb_a, sb_b, st_top, st_top,
+                    step_mat, skip_bottom=(sb_a <= 0.141 and sb_b <= 0.141), variant_base=k,
+                )
+                mb.box(xb - 0.065, xb, sy0 + 0.02, sy1 - 0.02, st_top, st_top + 0.015, "nosing_yellow", skip=("bottom",))
+        # 중간참 (X=-14.80..-13.20, Z=2.04..2.48 공중 떠 있음) + 노란 앞코·유도선
+        _box_var(mb, x_mid_w, x_mid_e, sy0, sy1, 2.04, z_mid, {"top": "stair_stone", "default": "white_panel"}, variant=3)
+        mb.box(x_mid_e - 0.075, x_mid_e, sy0 + 0.02, sy1 - 0.02, z_mid, z_mid + 0.015, "nosing_yellow", skip=("bottom",))
+        mb.box(x_top - 0.075, x_top, sy0 + 0.02, sy1 - 0.02, deck_z, deck_z + 0.015, "nosing_yellow", skip=("bottom",))
+        for ty0, ty1 in ((7.25, 7.55), (8.90, 9.20)):
+            mb.box(x_mid_w + 0.02, x_mid_e - 0.09, ty0, ty1, z_mid, z_mid + 0.014, "nosing_yellow", skip=("bottom",))
+            mb.box(-9.38, -7.58, ty0, ty1, 0.18, 0.194, "nosing_yellow", skip=("bottom",))
+    else:
+        _cheek_x_segment(mb, x_mid_e, x_bot, sy0, sy1, 2.04, 0.14, z_mid, 0.14, step_mat, skip_bottom=True, variant_base=0)
+        _box_var(mb, x_mid_w, x_mid_e, sy0, sy1, 2.04, z_mid, {"top": "stair_stone", "default": "white_panel"}, variant=3)
+        _cheek_x_segment(mb, x_top, x_mid_w, sy0, sy1, 4.40, 2.04, deck_z, z_mid, step_mat, variant_base=1)
+
+    # 계단 거리쪽(-Y) 공중 부양 3구간 백색 측벽 빔 (하단 X=-9.40 만 접지, 아래 비어 있음)
+    for idx, (xa, xb, zb_a, zb_b, zt_a, zt_b, on_g) in enumerate((
+        (x_mid_e, x_bot, 1.98, 0.14, z_mid + 1.05, 0.32 + 1.05, False),
+        (x_mid_w, x_mid_e, 1.98, 1.98, z_mid + 1.05, z_mid + 1.05, False),
+        (x_top, x_mid_w, 4.40, 1.98, deck_z + 1.05, z_mid + 1.05, False),
+    )):
+        _cheek_x_segment(mb, xa, xb, cy0, sy0, zb_a, zb_b, zt_a, zt_b, "white_panel", skip_bottom=on_g, variant_base=idx)
+
+    # 계단 뒤편 후퇴(Y=7.80..9.73) 하부 설비벽 & 소형 루버 (user side photo 기준, 앞 1.35 m 및 X>-12.4 완전 개방)
+    _cheek_x_segment(mb, x_top + 0.02, x_mid_w - 0.02, 7.80, 9.73, 0.14, 0.14, 4.36, 2.02, "beige_stone", skip_bottom=True, variant_base=1)
+    _box_var(mb, x_mid_w + 0.02, x_mid_e - 0.02, 7.80, 9.73, 0.14, 2.02, "beige_stone", variant=2, skip=("bottom",))
+    _cheek_x_segment(mb, x_mid_e + 0.02, -12.40, 7.80, 9.73, 0.14, 0.14, 2.02, 1.46, "beige_stone", skip_bottom=True, variant_base=3)
+    if stage == 0:
+        mb.box(-15.65, -15.05, 7.77, 7.80, 2.65, 3.05, "louver_grille")
+
+    # 계단 내측·중앙 스테인리스 핸드레일 (crop_dnbarch2_sw 기준)
+    sw_rail_pts = ((x_top, deck_z), (x_mid_w, z_mid), (x_mid_e, z_mid), (x_bot, 0.14))
+    _sloped_x_pipe_railing(mb, 9.65, sw_rail_pts, h=0.92, stage=stage)
+    if stage == 0:
+        _sloped_x_pipe_railing(mb, 7.75, sw_rail_pts, h=0.88, stage=0)
+        _sloped_x_pipe_railing(mb, 8.75, sw_rail_pts, h=0.88, stage=0)
+
+    # 남서 모서리 상부 캔틸레버 목재 데크 (X=-25.6..-18.4, Y=6.45..10.19, Z=4.40..4.82) + 유리난간
+    _box_var(mb, -25.6, x_top, cy0, 10.19, 4.40, deck_z, deck_mat, variant=0)
+    _glass_railing_run(mb, gls, "y", cy0, -1, -25.55, x_top - 0.05, deck_z, h=1.06, stage=stage)
+    _glass_railing_run(mb, gls, "x", -25.6, -1, cy0 + 0.08, 10.15, deck_z, h=1.06, stage=stage)
+
+    # 데크 하부 후퇴된 1층 유리 코너실 (user side photo · crop_dnbarch2_sw 기준)
+    _box_var(mb, -24.6, x_top, 7.45, 10.19, 0.14, 4.40, "beige_stone", variant=1, skip=("bottom",))
+    if stage <= 1:
+        _curtain_wall_grid(mb, wins, "y", 7.45, -1, -23.60, -19.20, 0.50, 3.90, nx=3, nz=2,
+                           floor0=0, unit0=340, stage=stage, frame_region="curtain_frame", louver_step=0)
+        _curtain_wall_grid(mb, wins, "x", -24.6, -1, 8.40, 10.15, 0.50, 3.90, nx=1, nz=2,
+                           floor0=0, unit0=345, stage=stage, frame_region="curtain_frame", louver_step=0)
+
+    # 전면 남동 광장 표지석 ('석봉복합문화센터', storefront_front_center · crop_dnbarch2_se 기준: 중앙 코르텐 철판 + 좌우 게비온 돌망태 벽)
+    mb.box(15.80, 17.08, 4.90, 5.30, 0.14, 2.22, "monolith_stone", skip=("bottom",))
+    mb.box(17.08, 18.32, 4.84, 5.36, 0.14, 2.32, "brown_panel", skip=("bottom",))
+    mb.box(18.32, 19.60, 4.90, 5.30, 0.14, 2.22, "monolith_stone", skip=("bottom",))
+    if stage == 0:
+        _sign_quad(mb, A, [(17.10, 4.825, 0.14), (18.30, 4.825, 0.14), (18.30, 4.825, 2.30), (17.10, 4.825, 2.30)], "sign_monolith")
+        _sign_quad(mb, A, [(18.30, 5.375, 0.14), (17.10, 5.375, 0.14), (17.10, 5.375, 2.30), (18.30, 5.375, 2.30)], "sign_monolith")
 
 
 def build_north_wing(mb, A, wins, gls, stage):
@@ -1580,9 +1818,21 @@ def build_middle_courtyard_and_east(mb, wins, gls, stage):
         for idx, y0 in enumerate((36.4, 38.6, 41.2, 43.2)):
             _add_window_bay(mb, wins, "x", 24.8, 1, y0, y0 + 1.0, 5.35, 8.15, 1, 175 + idx, stage)
             _add_window_bay(mb, wins, "x", 24.8, 1, y0, y0 + 1.0, 9.85, 13.05, 2, 180 + idx, stage)
-        # 옥상 공조 설비 (X in [11..20], Y in [38..48])
-        mb.box(12.0, 17.0, 38.0, 42.5, 14.95, 16.35, "equipment", skip=("bottom",))
-        mb.box(18.5, 22.0, 43.0, 47.5, 14.95, 16.25, "equipment", skip=("bottom",))
+        # 동측 연결동 옥상 공조 설비 · 배관 랙 (sat_vworld_z19 실측 r2c3/r1c3 배치 정합)
+        for idx_u in range(4):
+            yu = 38.60 + idx_u * 1.05
+            mb.box(11.45, 12.65, yu, yu + 0.80, 14.95, 16.05, "equipment", skip=("bottom",))
+        mb.box(16.90, 18.80, 36.40, 40.90, 14.95, 16.25, "equipment", skip=("bottom",))
+        mb.box(16.80, 22.60, 40.95, 41.55, 14.95, 15.65, "roof_concrete", skip=("bottom",))
+        mb.box(19.60, 21.80, 39.20, 40.60, 14.95, 15.95, "equipment", skip=("bottom",))
+        mb.box(20.60, 22.00, 36.40, 38.40, 14.95, 15.75, "equipment", skip=("bottom",))
+        mb.box(23.70, 24.25, 35.50, 37.80, 14.95, 15.85, "equipment", skip=("bottom",))
+        mb.box(19.70, 20.60, 44.00, 50.00, 14.95, 15.85, "roof_concrete", skip=("bottom",))
+        mb.box(17.50, 19.65, 45.60, 46.20, 14.95, 15.85, "roof_concrete", skip=("bottom",))
+        mb.box(17.50, 18.20, 43.80, 45.55, 14.95, 15.85, "roof_concrete", skip=("bottom",))
+        mb.box(20.65, 22.40, 45.60, 46.20, 14.95, 15.85, "roof_concrete", skip=("bottom",))
+        mb.box(22.10, 22.70, 46.80, 49.40, 14.95, 15.85, "equipment", skip=("bottom",))
+        mb.box(22.75, 24.00, 48.80, 49.40, 14.95, 15.85, "equipment", skip=("bottom",))
 
 
 def build_south_wings(mb, A, wins, gls, stage):
@@ -1595,7 +1845,7 @@ def build_south_wings(mb, A, wins, gls, stage):
         mb.box(-19.3, 3.0, 10.75, 35.2, 14.80, 16.45, "white_panel")
         mb.box(3.0, 24.2, 10.75, 35.2, 14.80, 15.20, "roof_membrane")
         mb.box(24.2, 25.2, 10.75, 35.2, 14.80, 16.45, "white_panel")
-        mb.box(-24.6, -18.8, 10.2, 35.2, 0.14, 9.20, {"top": "terrace_deck", "default": "beige_stone"}, skip=("bottom",))
+        mb.box(-24.6, -18.8, 10.2, 35.2, 0.14, 4.82, {"top": "terrace_deck", "default": "beige_stone"}, skip=("bottom",))
         return
 
     # A. 남서 3층 백색 상자 매스 (X in [-18.8, +3.0], Y in [10.2, 35.2], Z in [0.14, 14.80]) + 상부 통합 지붕
@@ -1610,17 +1860,99 @@ def build_south_wings(mb, A, wins, gls, stage):
             ry = 11.2 + k * 2.45
             _box_var(mb, -18.2, -16.2, ry, ry + 0.55, 15.20, 16.30, "white_panel", variant=k)
 
-    # 서측 1~2층 연결 갤러리 (X in [-24.6, -18.8], Y in [10.2, 35.2], Z in [0.14, 9.10])
-    _box_var(mb, -24.6, -18.8, 10.2, 35.2, 0.14, 9.10, "beige_stone", variant=0, skip=("bottom", "right"))
-    _box_var(mb, -25.6, -24.6, 10.2, 35.2, 4.40, 4.82, "white_panel", variant=1, skip=("right",))
-    mb.box(-25.0, -18.8, 10.2, 35.2, 9.10, 9.26, "terrace_deck", skip=("right",))
-    _glass_railing_run(mb, gls, "x", -25.6, -1, 10.3, 35.1, 4.82, h=1.06, stage=stage)
-    _glass_railing_run(mb, gls, "x", -25.0, -1, 10.3, 35.1, 9.26, h=1.08, stage=stage)
+    # 서측 1층 갤러리 포디엄(X in [-24.6, -18.8], Y in [10.2, 35.2], Z in [0.14, 4.82]) + 상부 2층 오픈 목재 테라스 & 2->3층 연결 계단
+    _box_var(mb, -24.6, -18.8, 10.2, 35.2, 0.14, 4.40, "beige_stone", variant=0, skip=("bottom",))
+    _box_var(mb, -25.6, -18.8, 10.2, 35.2, 4.40, 4.82, {"top": "terrace_deck", "default": "white_panel"}, variant=1)
+    _glass_railing_run(mb, gls, "x", -25.6, -1, 10.25, 35.15, 4.82, h=1.06, stage=stage)
+    # 3층 서측 그린테라스 남측 단부 안전 유리난간 (서측 계단 상단 X=-21.20 동쪽 및 -25.0..-24.6)
+    _glass_railing_run(mb, gls, "y", 35.2, -1, -21.20, -18.85, 9.26, h=1.08, stage=stage)
+    _glass_railing_run(mb, gls, "y", 35.2, -1, -24.98, -24.62, 9.26, h=1.08, stage=stage)
+
+    # 서측 2층 -> 3층 그린테라스 연결 외부 계단 (Y=23.80..35.20, Z=4.82 -> 9.26; X=-24.60..-21.20, crop_dnbarch3_sw · 위성 빨간 표시)
+    w_step_mat = {"top": "stair_stone", "front": "stair_stone", "default": "white_panel"}
+    w_deck_mat = {"top": "stair_stone", "default": "white_panel"}
+    wy_b, wy_m0, wy_m1, wy_t0, wy_t1 = 23.80, 28.35, 30.25, 34.80, 35.20
+    wz_b, wz_m, wz_t = 4.82, 7.04, 9.26
+
+    def _west_stair_soffit(y):
+        if y <= wy_m0:
+            return max(wz_b, wz_b + (y - wy_b) / (wy_m0 - wy_b) * (6.64 - wz_b) - 0.16)
+        if y <= wy_m1:
+            return 6.64
+        return 6.64 + (y - wy_m1) / (wy_t0 - wy_m1) * (8.86 - 6.64)
+
+    if stage == 0:
+        for ya_f, yb_f, za_f, zb_f, n_wst in (
+            (wy_b, wy_m0, wz_b, wz_m, 13),
+            (wy_m1, wy_t0, wz_m, wz_t, 13),
+        ):
+            dy_f = (yb_f - ya_f) / n_wst
+            dz_f = (zb_f - za_f) / n_wst
+            for k in range(n_wst):
+                ya = ya_f + k * dy_f
+                yb = ya_f + (k + 1) * dy_f
+                zt = za_f + (k + 1) * dz_f
+                zb0, zb1 = _west_stair_soffit(ya), _west_stair_soffit(yb)
+                _cheek_wall_segment(
+                    mb, -24.30, -21.20, ya, yb, zb0, zb1, zt, zt,
+                    w_step_mat, skip_bottom=(zb0 <= wz_b + 0.002 and zb1 <= wz_b + 0.002), variant_base=k,
+                )
+                mb.box(-24.28, -21.22, ya, ya + 0.065, zt, zt + 0.015, "nosing_yellow", skip=("bottom",))
+        _box_var(mb, -24.30, -21.20, wy_m0, wy_m1, 6.64, wz_m, w_deck_mat, variant=2)
+        _box_var(mb, -24.30, -21.20, wy_t0, wy_t1, 8.86, wz_t, w_deck_mat, variant=3)
+        mb.box(-24.28, -21.22, wy_m0, wy_m0 + 0.075, wz_m, wz_m + 0.015, "nosing_yellow", skip=("bottom",))
+        mb.box(-24.28, -21.22, wy_t0, wy_t0 + 0.075, wz_t, wz_t + 0.015, "nosing_yellow", skip=("bottom",))
+    else:
+        _cheek_wall_segment(mb, -24.30, -21.20, wy_b, wy_m0, wz_b, 6.64, wz_b, wz_m, w_deck_mat, skip_bottom=True, variant_base=0)
+        _box_var(mb, -24.30, -21.20, wy_m0, wy_m1, 6.64, wz_m, w_deck_mat, variant=2)
+        _cheek_wall_segment(mb, -24.30, -21.20, wy_m1, wy_t1, 6.64, 8.86, wz_m, wz_t, w_deck_mat, variant_base=1)
+
+    # 서측 계단 외측(X=-24.60..-24.30) 백색 경사 측벽 및 하부 베이지 석재 마감(Y=26.20..35.20, 전면 노즈 2.4 m 하부 개방)
+    for idx, (y0, y1, zb0, zb1, zt0, zt1, on_g) in enumerate((
+        (wy_b, wy_m0, wz_b, 6.58, wz_b + 1.05, wz_m + 1.05, True),
+        (wy_m0, wy_m1, 6.58, 6.58, wz_m + 1.05, wz_m + 1.05, False),
+        (wy_m1, wy_t0, 6.58, 8.80, wz_m + 1.05, wz_t + 1.05, False),
+        (wy_t0, wy_t1, 8.80, 8.80, wz_t + 1.05, wz_t + 1.05, False),
+    )):
+        _cheek_wall_segment(mb, -24.60, -24.30, y0, y1, zb0, zb1, zt0, zt1, "white_panel", skip_bottom=on_g, variant_base=idx)
+    _cheek_wall_segment(mb, -24.48, -21.35, 26.20, wy_m0 - 0.02, wz_b, wz_b, _west_stair_soffit(26.20) - 0.02, 6.62, "beige_stone", skip_bottom=True, variant_base=0)
+    _box_var(mb, -24.48, -21.35, wy_m0 + 0.02, wy_m1 - 0.02, wz_b, 6.62, "beige_stone", variant=1, skip=("bottom",))
+    _cheek_wall_segment(mb, -24.48, -21.35, wy_m1 + 0.02, wy_t0 - 0.02, wz_b, wz_b, 6.62, 8.84, "beige_stone", skip_bottom=True, variant_base=2)
+    _box_var(mb, -24.48, -21.35, wy_t0 + 0.02, wy_t1 - 0.02, wz_b, 8.84, "beige_stone", variant=3, skip=("bottom",))
+    if stage == 0:
+        for wy_s0, wy_s1, wz_s1 in ((28.80, 29.60, 6.45), (32.30, 33.20, 7.65)):
+            mb.box(-24.51, -24.485, wy_s0, wy_s1, 5.15, wz_s1, "frame_metal")
+            mb.quad(K.face_pts("x", -24.515, -1, wy_s0 + 0.05, wy_s1 - 0.05, 5.20, wz_s1 - 0.05), A.uv("spandrel_dark"), "spandrel_dark")
+
+    # 서측 계단 내·외·중앙 스테인리스 난간
+    w_rail_pts = ((wy_b, wz_b), (wy_m0, wz_m), (wy_m1, wz_m), (wy_t1, wz_t))
+    _sloped_pipe_railing(mb, -21.28, w_rail_pts, h=0.96, stage=stage)
+    if stage == 0:
+        _sloped_pipe_railing(mb, -22.78, w_rail_pts, h=0.92, stage=0)
+        _sloped_pipe_railing(mb, -24.45, ((wy_b, wz_b + 1.05), (wy_m0, wz_m + 1.05), (wy_m1, wz_m + 1.05), (wy_t1, wz_t + 1.05)), h=0.26, stage=0)
+        # 서측 2층 목재 테라스(Z=4.82) 원형 콘크리트 화분 4기·대나무 식재 및 벤치 2기 (crop_dnbarch2_sw · crop_dnbarch3_sw 기준)
+        for px, py, hs in ((-24.00, 12.80, 0.90), (-21.30, 16.20, 1.05), (-23.70, 19.00, 0.95), (-22.20, 22.00, 1.10)):
+            _terrace_planter_tree(mb, px, py, wz_b, height_scale=hs)
+        _box_var(mb, -23.70, -22.60, 14.30, 14.95, wz_b, wz_b + 0.44, "white_panel", variant=0, skip=("bottom",))
+        _box_var(mb, -23.10, -21.95, 20.30, 20.95, wz_b, wz_b + 0.44, "white_panel", variant=1, skip=("bottom",))
+
+    # 서측 2층 목재 테라스 동측 벽(X=-18.8) 커튼월 및 멀리언 정렬 수직 백색 루버 핀 (crop_dnbarch3_sw · crop_dnbarch2_sw 기준)
+    _curtain_wall_grid(mb, wins, "x", -18.8, -1, 10.8, 34.4, 4.86, 9.35, nx=15, nz=2,
+                       floor0=1, unit0=350, stage=stage, frame_region="curtain_frame", louver_step=0)
+    if stage <= 1:
+        nx_w = 15
+        for fi in range(nx_w + 1):
+            yf = 10.8 + (34.4 - 10.8) * fi / nx_w
+            ya = 10.8 if fi == 0 else yf - 0.032
+            yb = 34.4 if fi == nx_w else (10.864 if fi == 0 else yf + 0.032)
+            if fi == nx_w:
+                ya = 34.336
+            mb.box(-19.12, -18.915, ya, yb, 4.86, 9.35, "louver_white")
+
     if stage == 0:
         for i in range(9):
             wy0 = 11.5 + i * 2.50
             _add_window_bay(mb, wins, "x", -24.6, -1, wy0, wy0 + 1.05, 1.40, 3.85, 0, 200 + i, stage)
-            _add_window_bay(mb, wins, "x", -24.6, -1, wy0, wy0 + 1.05, 5.45, 8.15, 1, 210 + i, stage)
         # 남서 매스 3층 수평 창 열 (south_sw_ramp.png 기준)
         _curtain_wall_grid(mb, wins, "x", -18.8, -1, 11.2, 22.8, 10.10, 14.60, nx=7, nz=3, floor0=2, unit0=225, stage=stage, louver_step=0)
         # 남서 모서리 상부 사인 (두꺼운 백색 파시아 서측면 -19.32, 외향 -X CCW 정방향)
@@ -1628,7 +1960,14 @@ def build_south_wings(mb, A, wins, gls, stage):
 
     # B. 남동 2~3층 커튼월 동 (X in [+3.0, +24.4], Y in [10.2, 35.2])
     # 1층부(Z=0.14..4.45): 동측 회랑 기둥 앞(X=24.0)으로부터 2.0m 후퇴(X_east=22.0) + 남면(Y=10.2) 정렬
-    _box_var(mb, 3.0, 22.0, 10.2, 35.2, 0.14, 4.45, "white_panel", variant=1, skip=("bottom", "left"))
+    # stage==0 에서만 행정복지센터 전실(X=6.10..12.48, Y=10.2..12.50, Z=0.14..3.08) 개방 알코브 분리
+    if stage == 0:
+        _box_var(mb, 3.0, 6.10, 10.2, 35.2, 0.14, 4.45, "white_panel", variant=1, skip=("bottom", "left"))
+        _box_var(mb, 6.10, 12.48, 12.50, 35.2, 0.14, 4.45, "white_panel", variant=2, skip=("bottom",))
+        _box_var(mb, 6.10, 12.48, 10.2, 12.50, 3.08, 4.45, {"bottom": "roof_soffit", "default": "white_panel"}, variant=3)
+        _box_var(mb, 12.48, 22.0, 10.2, 35.2, 0.14, 4.45, "white_panel", variant=4, skip=("bottom",))
+    else:
+        _box_var(mb, 3.0, 22.0, 10.2, 35.2, 0.14, 4.45, "white_panel", variant=1, skip=("bottom", "left"))
     # 2~3층 본체 (Z=4.45..14.80) + 통합 남측/동측 두꺼운 백색 오버행 지붕 파시아 (Z=14.80..16.45, height 1.65 m)
     _box_var(mb, 3.0, 24.4, 10.2, 35.2, 4.45, 14.80, "white_panel", variant=2, skip=("left",))
     _box_var(mb, -19.3, 25.2, 9.65, 10.75, 14.80, 16.45, "white_panel", variant=0)
@@ -1693,7 +2032,7 @@ def build_south_wings(mb, A, wins, gls, stage):
     mb.box(3.8, 13.5, 29.0, 34.0, 15.10, 15.32, "solar_pv")
 
 
-def build_south_ramp_and_entrance(mb, A, wins, stage):
+def build_south_ramp_and_entrance(mb, A, wins, gls, stage):
     """5. 남측 사선 문화산책로 경사로 · 하부 수직 핀 유리 아트리움 · 1층 행정복지센터/로컬푸드 주출입구."""
     x_l, x_r = RAMP_X0, RAMP_X1
     ramp_yf, ramp_zb, dz_ramp = _ramp_yf, _ramp_zb, RAMP_DZ
@@ -1732,6 +2071,29 @@ def build_south_ramp_and_entrance(mb, A, wins, stage):
             yp = ramp_yf(xp) + 0.06
             zp = ramp_zb(xp) + dz_ramp
             mb.box(xp - 0.025, xp + 0.025, yp, yp + 0.06, zp, zp + 1.04, "railing_steel")
+        # 2b) 경사로 끝 2층 수평 테라스(로컬푸드 위 X=14.8..26.25) 쐐기형 녹지 화단 + 국기게양대 3기 (zoom_dnb2_corner_top · crop_dnbarch2_se 기준)
+        _closed_quad_prism(
+            mb,
+            (14.80, ramp_yf(14.80) + 0.16, 4.85),
+            (24.75, ramp_yf(24.75) + 0.16, 4.85),
+            (24.75, 8.20, 4.85),
+            (14.80, 7.82, 4.85),
+            0.25, "green_planter", skip_bottom=True,
+        )
+        _closed_quad_prism(
+            mb,
+            (24.82, 7.05, 4.75),
+            (26.25, 7.05, 4.75),
+            (26.25, 8.20, 4.75),
+            (24.82, 8.20, 4.75),
+            0.33, "green_planter", skip_bottom=True,
+        )
+        for idx_f, (fx, fh) in enumerate(((20.00, 11.80), (21.80, 13.40), (23.60, 11.80))):
+            mb.box(fx - 0.08, fx + 0.08, 8.47, 8.63, 4.85, 5.05, "frame_metal", skip=("bottom",))
+            mb.box(fx - 0.024, fx + 0.024, 8.526, 8.574, 5.05, fh, "railing_steel")
+            mb.box(fx + 0.025, fx + 0.98, 8.54, 8.56, fh - 0.72, fh - 0.08, "white_panel")
+            if idx_f == 1:
+                mb.box(fx + 0.36, fx + 0.64, 8.532, 8.568, fh - 0.52, fh - 0.28, "spandrel_dark")
 
     # 3) 1층 행정복지센터 및 대덕로컬푸드직매장
     _box_var(mb, 3.55, 4.25, 7.80, 8.50, 0.14, ramp_zb(3.90), "white_panel", variant=0, skip=("bottom",))
@@ -1745,17 +2107,67 @@ def build_south_ramp_and_entrance(mb, A, wins, stage):
         "white_panel",
         skip_bottom=True,
     )
+    if stage == 0:
+        # F. 현관 동측 사선 전실 벽 채소 사진 시트지 ('로컬푸드 장터', storefront_west_far · west_oblique 기준) + 상부 다크 패널
+        pa_x, pa_y = 14.148, 10.159
+        pb_x, pb_y = 14.388, 7.899
+        zm_t = ramp_zb(14.58)
+        _sign_quad(
+            mb, A,
+            [(pa_x, pa_y, 0.14), (pb_x, pb_y, 0.14), (pb_x, pb_y, 2.85), (pa_x, pa_y, 2.85)],
+            "vestibule_mural",
+        )
+        mb.quad(
+            [(pa_x, pa_y, 2.85), (pb_x, pb_y, 2.85), (pb_x, pb_y, zm_t), (pa_x, pa_y, zm_t)],
+            A.uv("frame_metal"), "frame_metal",
+        )
 
     # 1층 행정복지센터 주출입구 (south_se_close · roadview storefront_front_center/west_oblique 기준)
-    # 짙은 회색 알루미늄 통유리 + 중앙 양개 자동문 + 입체 LED 전광판 띠 + 띠 위 경사 소핏까지 고창
+    # 외곽 고정창(4.40..6.10, 12.48..14.16) + 중앙 전실 투명 유리 & 2.3 m 후퇴 내측 2차 자동문 (E)
     ex0, ex1, dx0, dx1 = 4.40, 14.16, 7.80, 10.80
+    vx0, vx1 = 6.10, 12.48
     z_led0, z_led1 = 3.08, 3.98
-    K.paint(mb, "y", 10.20, -1, ex0, ex1, 0.14, z_led0, "frame_metal", layer=1)
-    K.paint(mb, "y", 10.20, -1, dx0 + 0.06, dx1 - 0.06, 0.17, 2.62, "door_entrance", layer=2)
-    _curtain_wall_grid(mb, wins, "y", 10.2, -1, ex0, dx0, 0.14, z_led0, nx=2, nz=2, ends=(True, False),
-                       floor0=0, unit0=320, stage=stage, louver_step=0, mullion=(0.07, 0.12), transom=(0.06, 0.10))
-    _curtain_wall_grid(mb, wins, "y", 10.2, -1, dx1, ex1, 0.14, z_led0, nx=2, nz=2, ends=(False, True),
-                       floor0=0, unit0=324, stage=stage, louver_step=0, mullion=(0.07, 0.12), transom=(0.06, 0.10))
+    for fx0, fx1, f_ends, f_uid in (
+        (ex0, vx0, (True, False), 320),
+        (vx1, ex1, (False, True), 324),
+    ):
+        K.paint(mb, "y", 10.20, -1, fx0, fx1, 0.14, z_led0, "frame_metal", layer=1)
+        _curtain_wall_grid(mb, wins, "y", 10.2, -1, fx0, fx1, 0.14, z_led0, nx=1, nz=2, ends=f_ends,
+                           floor0=0, unit0=f_uid, stage=stage, louver_step=0, mullion=(0.07, 0.12), transom=(0.06, 0.10))
+    if stage >= 1:
+        K.paint(mb, "y", 10.20, -1, vx0, vx1, 0.14, z_led0, "frame_metal", layer=1)
+        K.paint(mb, "y", 10.20, -1, dx0 + 0.06, dx1 - 0.06, 0.17, 2.62, "door_entrance", layer=2)
+    else:
+        # 전실 전면 금속 프레임 + 반투명(gls) 유리 + 내부 2.3 m 깊이 전실·2차 자동문 암시
+        mb.box(vx0, vx0 + 0.07, 10.08, 10.19, 0.14, z_led0, "frame_metal", skip=("bottom",))
+        mb.box(vx1 - 0.07, vx1, 10.08, 10.19, 0.14, z_led0, "frame_metal", skip=("bottom",))
+        for xa, xb in ((vx0 + 0.07, dx0), (dx1, vx1 - 0.07)):
+            mb.box(xa, xb, 10.08, 10.19, 0.14, 0.22, "frame_metal", skip=("bottom",))
+            mb.box(xa, xb, 10.08, 10.19, 1.54, 1.62, "frame_metal")
+            mb.box(xa, xb, 10.08, 10.19, 2.98, z_led0, "frame_metal")
+            for za, zb in ((0.22, 1.54), (1.62, 2.98)):
+                gls.rect(K.face_pts("y", 10.13, -1, xa, xb, za, zb), "glass_rail")
+                gls.rect(K.face_pts("y", 10.15, 1, xa, xb, za, zb), "glass_rail")
+        mb.box(dx0 + 0.06, dx1 - 0.06, 10.08, 10.19, 2.98, z_led0, "frame_metal")
+        gls.rect(K.face_pts("y", 10.13, -1, dx0 + 0.06, dx1 - 0.06, 2.78, 2.98), "glass_rail")
+        gls.rect(K.face_pts("y", 10.15, 1, dx0 + 0.06, dx1 - 0.06, 2.78, 2.98), "glass_rail")
+        # 2.3 m 후퇴 전실 내부: 밝은 화강석 바닥 + 검은 매트 2개소 + 백색 내벽 + 입식 배너 2기 + 내측 2차 자동문 (Y=12.44)
+        mb.box(vx0 + 0.02, vx1 - 0.02, 10.20, 12.48, 0.14, 0.17, "plaza_paving", skip=("bottom",))
+        for mx0, mx1 in ((7.10, 8.15), (10.45, 11.50)):
+            mb.box(mx0, mx1, 10.75, 12.10, 0.17, 0.185, "frame_metal", skip=("bottom",))
+        mb.box(vx0 + 0.005, vx0 + 0.04, 10.22, 12.48, 0.17, 3.06, "white_panel")
+        mb.box(vx1 - 0.04, vx1 - 0.005, 10.22, 12.48, 0.17, 3.06, "white_panel")
+        mb.quad(K.face_pts("y", 12.48, -1, vx0 + 0.05, vx1 - 0.05, 0.17, 3.06), A.uv("white_panel"), "white_panel")
+        for bx0, bx1 in ((6.65, 7.20), (11.40, 11.95)):
+            mb.box(bx0, bx1, 11.30, 11.38, 0.17, 1.72, "white_panel", skip=("bottom",))
+            mb.box(bx0 - 0.03, bx0, 11.30, 11.38, 0.17, 1.75, "frame_metal", skip=("bottom",))
+            mb.box(bx1, bx1 + 0.03, 11.30, 11.38, 0.17, 1.75, "frame_metal", skip=("bottom",))
+        mb.box(dx0, dx1, 11.20, 11.42, 3.04, 3.075, "lamp_strip")
+        mb.box(dx0, dx0 + 0.07, 12.38, 12.47, 0.17, 2.78, "frame_metal", skip=("bottom",))
+        mb.box(dx1 - 0.07, dx1, 12.38, 12.47, 0.17, 2.78, "frame_metal", skip=("bottom",))
+        mb.box(dx0 + 0.07, dx1 - 0.07, 12.38, 12.47, 2.62, 2.78, "frame_metal")
+        mb.quad(K.face_pts("y", 12.43, -1, dx0 + 0.07, dx1 - 0.07, 0.17, 2.62), A.uv("door_entrance"), "door_entrance")
+
     # 자동문 문틀(양 잼 · 상부 인방 · 문 위 欄間 유리 프레임)
     mb.box(dx0 + 0.005, dx0 + 0.06, 10.06, 10.19, 0.14, z_led0, "frame_metal", skip=("bottom",))
     mb.box(dx1 - 0.06, dx1 - 0.005, 10.06, 10.19, 0.14, z_led0, "frame_metal", skip=("bottom",))
@@ -1763,13 +2175,15 @@ def build_south_ramp_and_entrance(mb, A, wins, stage):
     # 입체 LED 전광판 하우징 (전면 Y=10.02, 깊이 0.18 m)
     mb.box(ex0, ex1, 10.02, 10.19, z_led0, z_led1, "frame_metal")
     if stage == 0:
-        # 양개 슬라이딩 문짝 프레임 · 중앙 맞댐 문선 · 손잡이 · 바닥 가이드 레일 · 인방 감지기
+        # 양개 슬라이딩 문짝 프레임 · 중앙 맞댐 문선 · 투명(gls) 문짝 유리 · 손잡이 · 바닥 가이드 레일 · 인방 감지기
         dm = 0.5 * (dx0 + dx1)
         for xa, xb in ((dx0 + 0.06, dm - 0.01), (dm + 0.01, dx1 - 0.06)):
             mb.box(xa, xa + 0.05, 10.12, 10.17, 0.17, 2.60, "frame_metal")
             mb.box(xb - 0.05, xb, 10.12, 10.17, 0.17, 2.60, "frame_metal")
             mb.box(xa + 0.05, xb - 0.05, 10.12, 10.17, 0.17, 0.27, "frame_metal")
             mb.box(xa + 0.05, xb - 0.05, 10.12, 10.17, 2.52, 2.60, "frame_metal")
+            gls.rect(K.face_pts("y", 10.135, -1, xa + 0.05, xb - 0.05, 0.27, 2.52), "glass_rail")
+            gls.rect(K.face_pts("y", 10.155, 1, xa + 0.05, xb - 0.05, 0.27, 2.52), "glass_rail")
         for hx in (dm - 0.16, dm + 0.12):
             mb.box(hx, hx + 0.04, 10.07, 10.12, 0.95, 1.55, "railing_steel")
         mb.box(dx0, dx1, 9.92, 10.18, 0.14, 0.16, "railing_steel", skip=("bottom",))
@@ -1890,11 +2304,11 @@ def build_stage(A, stage):
     wins = K.WindowSet()
     gls = K.MeshBuilder(A)
 
-    build_plaza_and_site(mb, A, wins, stage)
+    build_plaza_and_site(mb, A, wins, gls, stage)
     build_north_wing(mb, A, wins, gls, stage)
     build_middle_courtyard_and_east(mb, wins, gls, stage)
     build_south_wings(mb, A, wins, gls, stage)
-    build_south_ramp_and_entrance(mb, A, wins, stage)
+    build_south_ramp_and_entrance(mb, A, wins, gls, stage)
 
     return dict(mb=mb, gls=gls, wins=wins)
 
