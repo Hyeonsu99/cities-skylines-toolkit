@@ -1703,22 +1703,51 @@ def build_south_ramp_and_entrance(mb, A, wins, stage):
 
     # 3) 1층 행정복지센터 및 대덕로컬푸드직매장
     _box_var(mb, 3.55, 4.25, 7.80, 8.50, 0.14, ramp_zb(3.90), "white_panel", variant=0, skip=("bottom",))
-    _box_var(mb, 14.16, 14.64, 7.05, 10.16, 0.14, ramp_zb(14.64), "white_panel", variant=1, skip=("bottom",))
+    _closed_quad_prism(
+        mb,
+        (14.40, 7.90, 0.14),
+        (14.58, 7.90, 0.14),
+        (14.58, 10.16, 0.14),
+        (14.16, 10.16, 0.14),
+        ramp_zb(14.58) - 0.14,
+        "white_panel",
+        skip_bottom=True,
+    )
 
     # 1층 행정복지센터 주출입구 문 프레임/자동문 (Y=10.2 벽 앞 정렬, 벽 두께 Y=10.20..10.28)
     K.paint(mb, "y", 10.20, -1, 4.4, 14.2, 0.14, 4.30, "frame_metal", layer=1)
     K.paint(mb, "y", 10.20, -1, 7.8, 10.8, 0.14, 3.05, "door_entrance", layer=2)
     _add_window_bay(mb, wins, "y", 10.16, -1, 4.7, 7.5, 0.35, 3.05, 0, 320, stage)
     _add_window_bay(mb, wins, "y", 10.16, -1, 11.1, 13.9, 0.35, 3.05, 0, 321, stage)
-    # 간판 아래 10칸 통창과 동측 회랑으로 돌아가는 솔리드 모서리.
-    gx0, gx1, gy = 14.64, 23.68, 7.72
-    _box_var(mb, gx1, 24.80, 7.58, 10.16, 0.14, ramp_zb(gx1), "white_panel", variant=2, skip=("bottom",))
-    _sign_quad(mb, A, K.face_pts("y", gy, -1, gx0, gx1, 0.14, 4.00), "storefront_glass")
+    # 간판 아래 13칸 통창(12칸 로고 + 1칸 무지 유리, Y=7.95 X축 평행) 및 SE 계단형 솔리드 코너.
+    gx0, gx_text, gx1, gy = 14.58, 23.58, 24.22, 7.95
+    _box_var(mb, gx1, 24.80, gy, 10.16, 0.14, ramp_zb(gx1), "white_panel", variant=2, skip=("bottom",))
+    _box_var(mb, 24.80, 25.01, gy, 10.16, 0.14, 4.05, "white_panel", variant=2, skip=("bottom",))
+    _box_var(mb, 25.01, 25.50, 7.25, 8.85, 0.14, 4.05, "white_panel", variant=4, skip=("bottom",))
+    _box_var(mb, 25.50, 25.95, 7.25, 8.85, 0.00, 4.05, "white_panel", variant=4, skip=("bottom",))
+    _sign_quad(mb, A, K.face_pts("y", gy, -1, gx0, gx_text, 0.14, 4.00), "storefront_glass")
+    A.layout()
+    cx, cy, cw, ch = A.cells["storefront_glass"]["rect"]
+    S, aw = float(A.size), _SIGN_ACTIVE_W["storefront_glass"]
+    bu0 = (cx + aw + 4.0) / S if cw > aw + 8 else (cx + aw - 5.0) / S
+    bu1 = (cx + cw - 4.0) / S if cw > aw + 8 else (cx + aw - 2.0) / S
+    bv0, bv1 = 1.0 - (cy + ch - 1.5) / S, 1.0 - (cy + 1.5) / S
+    mb.quad(K.face_pts("y", gy, -1, gx_text, gx1, 0.14, 4.00),
+            [(bu0, bv0), (bu1, bv0), (bu1, bv1), (bu0, bv1)], "storefront_glass")
     mb.rect(K.face_pts("y", 10.16, 1, gx0, gx1, 0.14, 4.00), "spandrel_dark")
-    for i in range(1, 10):
-        x = gx0 + (gx1 - gx0) * i / 10
-        mb.box(x - 0.043, x + 0.043, gy - 0.09, gy - 0.01, 0.26, 3.90, "louver_white", skip=("bottom", "top"))
-    mb.box(gx0, gx1, gy - 0.066, gy - 0.01, 0.15, 0.26, "louver_white")
+    mb.box(gx0, gx0 + 0.055, gy - 0.09, gy - 0.01, 0.27, 3.90, "louver_white", skip=("bottom", "top"))
+    for i in range(1, 13):
+        x = gx0 + 0.75 * i
+        mb.box(x - 0.043, x + 0.043, gy - 0.09, gy - 0.01, 0.27, 3.90, "louver_white", skip=("bottom", "top"))
+    mb.box(gx1 - 0.055, gx1, gy - 0.09, gy - 0.01, 0.27, 3.90, "louver_white", skip=("bottom", "top"))
+    if stage == 0:
+        spans = [(gx0 + 0.055, gx0 + 0.75 - 0.043)]
+        for i in range(1, 12):
+            spans.append((gx0 + 0.75 * i + 0.043, gx0 + 0.75 * (i + 1) - 0.043))
+        spans.append((gx_text + 0.043, gx1 - 0.055))
+        for xa, xb in spans:
+            mb.box(xa, xb, gy - 0.038, gy - 0.01, 3.31, 3.35, "frame_metal")
+    mb.box(gx0, gx1, gy - 0.066, gy - 0.01, 0.15, 0.27, "louver_white")
     mb.box(gx0, gx1, gy - 0.066, gy - 0.01, 3.90, 4.00, "louver_white")
 
     if stage == 0:
