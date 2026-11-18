@@ -150,3 +150,25 @@
 
 - `hwprops_common.py`: `prism`·`extrude` 미터 UV 타일링 구현, `concrete`(448px)·`concrete_fluted`(384px)·`absorb_panel`(512px)·`absorb_warm`(384px)·`galv`(256px)·`galv_wbeam`(512px)·`sign_back`(256px) 실사진 색상/노멀/광택 반영, 도로표지 반사지 프리즘 질감·노멀·테두리 리벳 추가.
 - 6개 소품 모두 `main <= 3×` (및 `<= 2500 / <= 600`), `LOD1 < 0.5× main`, `LOD2 <= 기존 삼각형 수`, 모듈 X 방향 연속 타일링 유지, `check.py` / `lod_check` / `fbx` 전 항목 통과.
+
+## 8. 2차 실사진 보정 (v2: 투명방음벽 · 가드레일 1단/2단 · 중앙분리대)
+
+1. **NoiseWallClear (`noise_wall_clear_cs2.py`)**:
+   - **격자 분할 측정**: `noisewall_clear_01_front.png` 픽셀 실측 결과 지주 사이 1칸 폭 약 137~144 px, 유리 단 높이 약 68~73 px (약 **2:1** 가로 긴 직사각형 칸, 4단 적층). 2.0 m 모듈 중앙에 세로 멀리언(폭 0.044 m, 두께 0.050 m)과 4단 가로 프레임(z = 1.80, 2.375, 2.95, 3.525, 4.10 m)을 배치해 **1.0 × 0.575 m (1.74:1) 2열×4단 8칸 격자** 로 재분할.
+   - **조류 충돌 방지 스티커**: 3D Y자 막대 대신 PIL 512 px 고해상도 **맹금류(매) 비행 실루엣 알파 텍스처**(`bird_sticker` BaseColor Alpha 컷아웃, 0.44 m / 0.40 m, 날개 칼깃·부채꼴 꼬리)로 교체하고 닫힌 2 mm 박스로 `lod_check` 구멍 0.000% 유지.
+   - **유리 재질(Gls)**: 기존 6면 닫힌 유리 박스(렌더 시 이중 블렌딩으로 과도한 불투명 하늘색)를 **단일 얇은 판(gls 16 tris)** 으로 바꾸고 `"glass"` 색상을 중립 회색 반사 톤 `(194, 198, 202)` + `alpha=76` 으로 조정.
+
+2. **GuardrailWBeam (1단 유지) vs GuardrailWBeamDouble (2단 변형 추가)**:
+   - **주 형식 판단 근거**: 경부고속도로 본선 노측·IC 램프·금강교 진입부·톨게이트 진입차로 실사진(`guardrail_01_rear_blockout.png`, `guardrail_02_terminal_front.png`, `noisewall_clear_01_front.png`, `sign_side_04_rear_ramp.png`, `sintanjin-tollgate/photos/west_close_look_ne.png`)의 **연속 구간 주 형식은 모두 1단 W빔** 이므로 기본 `GuardrailWBeam` 은 1단으로 유지.
+   - **2단형 변형 추가(`GuardrailWBeamDouble`)**: 문형표지(`SignGantry`) 강관 지주·교각 앞 강성 구조물 보호 단부(~16 m 구간, `guardrail_03_run_sunlit.png`, `sign_gantry_02_truss_side.png`)에서 확인된 2단 적층 W빔(레일 중심 z=0.43·0.83 m, 지주 높이 1.06 m, 2단 U블록아웃·8볼트 이음·시선유도표지)을 별도 에셋 `guardrail_wbeam_double_cs2.py` 로 추가하고 `asset-viewer/index.html` 메뉴에 등록.
+
+3. **MedianBarrierConcrete (`median_barrier_cs2.py`)**:
+   - **줄눈 간격**: `median_02_corridor_clean.png`·`median_04_sunlit_profile.png` 에서 4.5 m 이상 연속 구간 내 중간 거푸집 줄눈·타이홀 없이 4~6 m 단위 끝단 수직 신축이음만 확인 → 기존 1 m/2 m 중간 줄눈과 폼타이 점을 제거하고 **4 m 모듈 끝단(`x = ±2.0 m`) 신축이음 홈** 만 남김.
+   - **색감·오염**: 어둡고 얼룩졌던 1차 콘크리트 대신 실물 밝은 회색 슬립폼 콘크리트 `(202, 198, 191)` (`normal_strength=0.85`)로 밝히고, 오염은 노면 접지 최하단 `0~0.16 m` 에만 약하게(`~9.5%`) 제한.
+
+| 에셋 | 1차 (main / LOD1 / LOD2) | 2차 (main / LOD1 / LOD2) | 2차 비교 시트 (`work/`) |
+|---|---|---|---|
+| NoiseWallClear | 288 (+Gls 36) / 62 (+Gls 12) / 40 | 292 (+Gls 16) / 62 (+Gls 2) / 40 | `compare_photo_v2_NoiseWallClear.png` |
+| GuardrailWBeam | 296 / 84 / 48 | 296 / 84 / 48 (유지) | `compare_photo_v2_GuardrailWBeam.png` |
+| GuardrailWBeamDouble (신규) | — | 440 / 136 / 44 | `compare_photo_v2_GuardrailWBeamDouble.png` |
+| MedianBarrierConcrete | 114 / 22 / 10 | 114 / 22 / 10 | `compare_photo_v2_MedianBarrierConcrete.png` |

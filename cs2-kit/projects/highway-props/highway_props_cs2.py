@@ -7,7 +7,8 @@ import subprocess
 import sys
 
 GENERATORS = ["noise_wall_clear_cs2.py", "noise_wall_metal_cs2.py", "sign_gantry_cs2.py",
-              "sign_side_cs2.py", "guardrail_wbeam_cs2.py", "median_barrier_cs2.py"]
+              "sign_side_cs2.py", "guardrail_wbeam_cs2.py", "guardrail_wbeam_double_cs2.py",
+              "median_barrier_cs2.py"]
 KIT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 if __name__ == "__main__":
