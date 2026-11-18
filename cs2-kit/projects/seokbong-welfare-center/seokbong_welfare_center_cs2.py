@@ -222,13 +222,20 @@ def _paint_sign_welfare_led(ctx):
         drw.rectangle([bw, bw, w2 - bw - 1, h2 - bw - 1], outline=(48, 54, 62), width=bw)
         mdrw.rectangle([bw, bw, w2 - bw - 1, h2 - bw - 1], outline=120, width=bw)
         text = "석봉동 행정복지센터"
-        fnt = _fit_font(drw, FONT_KR, text, int(w2 * 0.86), int(h2 * 0.62))
+        fnt = _fit_font(drw, FONT_KR, text, int(w2 * 0.86), int(h2 * 0.66))
         bx, by, tw, th = _text_metrics(drw, text, fnt)
         tx = (w2 - tw) * 0.5 - bx
         ty = (h2 - th) * 0.5 - by
-        _draw_3d_text(rgb2, mask2, emis2, tx, ty, text, fnt,
-                      fill_rgb=(124, 228, 250), shadow_rgb=(6, 8, 12),
-                      emis_val=244, shadow_off=(4, 4), shadow_blur=1.2)
+        # 실물 전광판은 글자마다 색이 다른 풀컬러 LED (south_se_close: 초록·파랑·보라·분홍·빨강·노랑)
+        led = ((96, 236, 120), (96, 236, 120), (96, 236, 120), None, (88, 150, 255), (176, 110, 255),
+               (255, 92, 168), (255, 86, 86), (255, 214, 70), (110, 226, 250))
+        x = tx
+        for ch_, col in zip(text, led):
+            if col is not None:
+                _draw_3d_text(rgb2, mask2, emis2, x, ty, ch_, fnt,
+                              fill_rgb=col, shadow_rgb=(6, 8, 12),
+                              emis_val=244, shadow_off=(4, 4), shadow_blur=1.2)
+            x += drw.textlength(ch_, font=fnt)
 
     _render_sign_cell(ctx, "sign_welfare_led", (18, 22, 28), paint_2x, relief=0.58)
     ctx.gloss[...] = 0.48
@@ -243,17 +250,19 @@ def _paint_sign_localfood(ctx):
         t_left = "대덕"
         t_right = "로컬푸드직매장"
         full = t_left + t_right
-        fnt = _fit_font(drw, FONT_KR, full, int(w2 * 0.73), int(h2 * 0.79))
+        # 로드뷰(storefront_se_oblique)에서 글자는 띠 높이의 약 85%, 로고~배지가 띠 폭의 약 80% 를 차지
+        fnt = _fit_font(drw, FONT_KR, full, int(w2 * 0.66), int(h2 * 1.05))
         bx, by, tw, th = _text_metrics(drw, full, fnt)
         _, _, tw_l, _ = _text_metrics(drw, t_left, fnt)
-        badge_r = int(th * 0.42)
+        badge_r = int(h2 * 0.40)
         tx = (w2 - tw) * 0.5 - bx
         ty = (h2 - th) * 0.5 - by
-        cx, cy = w2 * 0.12, h2 * 0.70
+        # 왼쪽 무지개 아치 로고 (청·하늘·초록·주황 4겹 반원)
+        cx, cy = tx + bx - badge_r * 1.35, h2 * 0.80
         for k, color in enumerate(((45, 87, 138), (58, 133, 166), (92, 153, 82), (221, 145, 64))):
-            r = badge_r * (1.13 - 0.23 * k)
+            r = badge_r * (1.25 - 0.25 * k)
             bounds = (cx - r, cy - r, cx + r, cy + r)
-            stroke = max(2, round(badge_r * 0.16))
+            stroke = max(2, round(badge_r * 0.22))
             drw.arc(bounds, 180, 360, fill=color, width=stroke)
             ImageDraw.Draw(mask2).arc(bounds, 180, 360, fill=255, width=stroke)
         _draw_3d_text(rgb2, mask2, emis2, tx, ty, t_left, fnt,
@@ -262,13 +271,15 @@ def _paint_sign_localfood(ctx):
         _draw_3d_text(rgb2, mask2, emis2, tx + tw_l + int(w2 * 0.004), ty, t_right, fnt,
                       fill_rgb=(198, 102, 34), shadow_rgb=(160, 166, 170),
                       emis_val=175, shadow_off=(4, 4), shadow_blur=1.5)
-        cx, cy = w2 * 0.90, h2 * 0.5
-        bounds = (cx - badge_r, cy - badge_r, cx + badge_r, cy + badge_r)
-        drw.ellipse(bounds, fill=(202, 107, 40))
-        ImageDraw.Draw(mask2).ellipse(bounds, fill=255)
-        drw.arc((cx - badge_r * 0.62, cy - badge_r * 0.38,
-                 cx + badge_r * 0.62, cy + badge_r * 0.45),
-                195, 345, fill=(243, 212, 145), width=max(2, badge_r // 9))
+        # 오른쪽 잎 모양 배지 (위 주황 반원 + 아래 초록 잎, 흰 테두리) — 실물 직매장 심볼
+        cx, cy = tx + bx + tw + badge_r * 1.45, h2 * 0.5
+        r = badge_r * 1.05
+        mdr = ImageDraw.Draw(mask2)
+        drw.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(246, 246, 242))
+        drw.pieslice((cx - r * 0.86, cy - r * 0.86, cx + r * 0.86, cy + r * 0.86), 180, 360, fill=(222, 112, 38))
+        drw.chord((cx - r * 0.86, cy - r * 0.62, cx + r * 0.86, cy + r * 0.86), 0, 180, fill=(70, 150, 72))
+        drw.line((cx - r * 0.6, cy + r * 0.10, cx + r * 0.55, cy + r * 0.32), fill=(246, 246, 242), width=max(2, int(r * 0.10)))
+        mdr.ellipse((cx - r, cy - r, cx + r, cy + r), fill=255)
 
     _render_sign_cell(ctx, "sign_localfood_arch", (232, 234, 232), paint_2x, relief=0.82)
     ctx.grain(amp=1.2, scale_px=2, height=0.05, seed=82)
@@ -286,26 +297,30 @@ def _paint_storefront_glass(ctx):
             drw.line((0, y, w, y), fill=(24 + reflection, 43 + reflection, 47 + reflection))
         drw.line((0, h * 0.63, w, h * 0.63), fill=(46, 63, 64), width=max(1, h // 110))
         letters = Image.new("L", (w, h))
-        for label, x, span, color in (
-            ("DAEDEOK", 0.29, 0.51, (87, 183, 120)),
-            ("FOOD", 0.79, 0.36, (231, 209, 96)),
-        ):
-            font = _fit_font(drw, FONT_EN, label, round(w * span), round(h * 0.33))
-            bx, by, tw, th = _text_metrics(drw, label, font)
-            origin = (w * x - tw * 0.5 - bx, h * 0.35 - th * 0.5 - by)
-            stroke = max(1, h // 145)
-            drw.text(origin, label, font=font, fill=color, stroke_width=stroke,
-                     stroke_fill=(229, 205, 105))
-            ImageDraw.Draw(letters).text(origin, label, font=font, fill=255, stroke_width=stroke)
-        # 실물의 세로 LOCAL 은 DAEDEOK·FOOD 대문자 높이와 비슷한 길이 (사용자 남동 정면 사진)
-        font = _fit_font(drw, FONT_EN, "LOCAL", round(h * 0.34), round(h * 0.16))
-        bx, by, tw, th = _text_metrics(drw, "LOCAL", font)
-        local = Image.new("L", (tw, th))
-        ImageDraw.Draw(local).text((-bx, -by), "LOCAL", font=font, fill=255)
-        local = local.transpose(Image.Transpose.ROTATE_90)
-        origin = (round(w * 0.574 - th * 0.5), round(h * 0.35 - tw * 0.5))
-        rgb2.paste((231, 209, 96), origin, local)
-        letters.paste(local, origin)
+
+        def put(label, x0, x1, y0, y1, fill, outline, rotate=False):
+            # 실물 시트지는 장체(세로로 긴) 굵은 글자: 큰 크기로 그린 뒤 지정 칸에 맞춰 늘려 붙인다
+            big = _fit_font(drw, FONT_EN, label, 10 ** 6, 400)
+            bx, by, tw, th = _text_metrics(drw, label, big)
+            s = 10
+            sk = Image.new("L", (tw + 2 * s, th + 2 * s))
+            fl = Image.new("L", sk.size)
+            ImageDraw.Draw(sk).text((s - bx, s - by), label, font=big, fill=255, stroke_width=s)
+            ImageDraw.Draw(fl).text((s - bx, s - by), label, font=big, fill=255)
+            if rotate:
+                sk, fl = sk.transpose(Image.Transpose.ROTATE_90), fl.transpose(Image.Transpose.ROTATE_90)
+            size = (round(x1 - x0), round(y1 - y0))
+            sk, fl = sk.resize(size, Image.Resampling.LANCZOS), fl.resize(size, Image.Resampling.LANCZOS)
+            org = (round(x0), round(y0))
+            rgb2.paste(outline, org, sk)
+            rgb2.paste(fill, org, fl)
+            letters.paste(255, org, sk)
+
+        # roadview storefront_se_oblique/front_center: 글자는 통창 상단 약 12%~55% 높이, DAEDEOK 이 왼쪽 절반
+        y0, y1 = h * 0.12, h * 0.56
+        put("DAEDEOK", w * 0.02, w * 0.535, y0, y1, (78, 176, 104), (226, 196, 84))
+        put("LOCAL", w * 0.548, w * 0.598, y0, y1, (226, 206, 92), (40, 96, 66), rotate=True)
+        put("FOOD", w * 0.61, w * 0.985, y0, y1, (234, 206, 70), (214, 128, 40))
         mask2.paste(letters)
 
     _render_sign_cell(ctx, "storefront_glass", (24, 43, 47), paint_2x,
@@ -1714,11 +1729,43 @@ def build_south_ramp_and_entrance(mb, A, wins, stage):
         skip_bottom=True,
     )
 
-    # 1층 행정복지센터 주출입구 문 프레임/자동문 (Y=10.2 벽 앞 정렬, 벽 두께 Y=10.20..10.28)
-    K.paint(mb, "y", 10.20, -1, 4.4, 14.2, 0.14, 4.30, "frame_metal", layer=1)
-    K.paint(mb, "y", 10.20, -1, 7.8, 10.8, 0.14, 3.05, "door_entrance", layer=2)
-    _add_window_bay(mb, wins, "y", 10.16, -1, 4.7, 7.5, 0.35, 3.05, 0, 320, stage)
-    _add_window_bay(mb, wins, "y", 10.16, -1, 11.1, 13.9, 0.35, 3.05, 0, 321, stage)
+    # 1층 행정복지센터 주출입구 (south_se_close · roadview storefront_front_center/west_oblique 기준)
+    # 짙은 회색 알루미늄 통유리 + 중앙 양개 자동문 + 입체 LED 전광판 띠 + 띠 위 경사 소핏까지 고창
+    ex0, ex1, dx0, dx1 = 4.40, 14.16, 7.80, 10.80
+    z_led0, z_led1 = 3.08, 3.98
+    K.paint(mb, "y", 10.20, -1, ex0, ex1, 0.14, z_led0, "frame_metal", layer=1)
+    K.paint(mb, "y", 10.20, -1, dx0 + 0.06, dx1 - 0.06, 0.17, 2.62, "door_entrance", layer=2)
+    _curtain_wall_grid(mb, wins, "y", 10.2, -1, ex0, dx0, 0.14, z_led0, nx=2, nz=2, ends=(True, False),
+                       floor0=0, unit0=320, stage=stage, louver_step=0, mullion=(0.07, 0.12), transom=(0.06, 0.10))
+    _curtain_wall_grid(mb, wins, "y", 10.2, -1, dx1, ex1, 0.14, z_led0, nx=2, nz=2, ends=(False, True),
+                       floor0=0, unit0=324, stage=stage, louver_step=0, mullion=(0.07, 0.12), transom=(0.06, 0.10))
+    # 자동문 문틀(양 잼 · 상부 인방 · 문 위 欄間 유리 프레임)
+    mb.box(dx0 + 0.005, dx0 + 0.06, 10.06, 10.19, 0.14, z_led0, "frame_metal", skip=("bottom",))
+    mb.box(dx1 - 0.06, dx1 - 0.005, 10.06, 10.19, 0.14, z_led0, "frame_metal", skip=("bottom",))
+    mb.box(dx0 + 0.06, dx1 - 0.06, 10.06, 10.19, 2.62, 2.78, "frame_metal")
+    # 입체 LED 전광판 하우징 (전면 Y=10.02, 깊이 0.18 m)
+    mb.box(ex0, ex1, 10.02, 10.19, z_led0, z_led1, "frame_metal")
+    if stage == 0:
+        # 양개 슬라이딩 문짝 프레임 · 중앙 맞댐 문선 · 손잡이 · 바닥 가이드 레일 · 인방 감지기
+        dm = 0.5 * (dx0 + dx1)
+        for xa, xb in ((dx0 + 0.06, dm - 0.01), (dm + 0.01, dx1 - 0.06)):
+            mb.box(xa, xa + 0.05, 10.12, 10.17, 0.17, 2.60, "frame_metal")
+            mb.box(xb - 0.05, xb, 10.12, 10.17, 0.17, 2.60, "frame_metal")
+            mb.box(xa + 0.05, xb - 0.05, 10.12, 10.17, 0.17, 0.27, "frame_metal")
+            mb.box(xa + 0.05, xb - 0.05, 10.12, 10.17, 2.52, 2.60, "frame_metal")
+        for hx in (dm - 0.16, dm + 0.12):
+            mb.box(hx, hx + 0.04, 10.07, 10.12, 0.95, 1.55, "railing_steel")
+        mb.box(dx0, dx1, 9.92, 10.18, 0.14, 0.16, "railing_steel", skip=("bottom",))
+        mb.box(dm - 0.22, dm + 0.22, 9.96, 10.06, 2.64, 2.76, "frame_metal")
+        # 고창: LED 띠 위 ~ 경사로 소핏(ramp_zb) 사이 청록 유리 + 1.22 m 간격 멀리언
+        zt = lambda x: ramp_zb(x) - 0.04
+        mb.quad([(ex0, 10.185, z_led1), (ex1, 10.185, z_led1), (ex1, 10.185, zt(ex1)), (ex0, 10.185, zt(ex0))],
+                A.uv("teal_glass"), "teal_glass")
+        n_cl = 8
+        for i in range(n_cl + 1):
+            mx = ex0 + (ex1 - ex0) * i / n_cl
+            if zt(mx) - z_led1 > 0.08:
+                mb.box(mx - 0.035, mx + 0.035, 10.10, 10.185, z_led1, zt(mx), "frame_metal", skip=("bottom",))
     # 간판 아래 13칸 통창(12칸 로고 + 1칸 무지 유리, Y=7.95 X축 평행) 및 SE 계단형 솔리드 코너.
     gx0, gx_text, gx1, gy = 14.58, 23.58, 24.22, 7.95
     _box_var(mb, gx1, 24.80, gy, 10.16, 0.14, ramp_zb(gx1), "white_panel", variant=2, skip=("bottom",))
@@ -1751,13 +1798,14 @@ def build_south_ramp_and_entrance(mb, A, wins, stage):
     mb.box(gx0, gx1, gy - 0.066, gy - 0.01, 3.90, 4.00, "louver_white")
 
     if stage == 0:
-        _sign_quad(mb, A, [(5.0, 10.10, 3.14), (13.8, 10.10, 3.14), (13.8, 10.10, 3.96), (5.0, 10.10, 3.96)], "sign_welfare_led")
+        _sign_quad(mb, A, [(4.52, 10.01, 3.14), (14.04, 10.01, 3.14), (14.04, 10.01, 3.92), (4.52, 10.01, 3.92)], "sign_welfare_led")
+        # 파시아(Z 4.00..4.85) 높이를 거의 다 쓰는 간판 (roadview storefront_se_oblique: 글자가 띠를 채움)
         _sign_quad(
             mb, A,
-            [(14.60, ramp_yf(14.60) - 0.02, 4.08),
-             (24.58, ramp_yf(24.58) - 0.02, 4.08),
-             (24.58, ramp_yf(24.58) - 0.02, 4.78),
-             (14.60, ramp_yf(14.60) - 0.02, 4.78)],
+            [(14.60, ramp_yf(14.60) - 0.02, 4.04),
+             (24.58, ramp_yf(24.58) - 0.02, 4.04),
+             (24.58, ramp_yf(24.58) - 0.02, 4.82),
+             (14.60, ramp_yf(14.60) - 0.02, 4.82)],
             "sign_localfood",
         )
         # 1층 캐노피·주출입구 전실 하부 매입 조명등 4개소 (경사로 저면 아래 비간섭 밀착)
