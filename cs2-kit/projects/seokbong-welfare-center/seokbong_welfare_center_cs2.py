@@ -55,7 +55,7 @@ _SIGN_CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "work
 # 표지석(2.4 x 1.4 m = 1.714:1)은 576x288 칸 왼쪽 494x288 활성 영역만 사용해 비율 정확도 0.6% 이내 유지
 _SIGN_ACTIVE_W = {
     "sign_monolith": 494,
-    "storefront_glass": 672,
+    "storefront_glass": 719,
 }
 
 
@@ -300,11 +300,13 @@ def _paint_storefront_glass(ctx):
         # 실물 시트지: 둥근 굵은 고딕(Arial Rounded MT Bold 계열) + 오른쪽 아래로 밀린 주황 입체 그림자
         font_round = [r"C:\Windows\Fonts\ARLRDBD.TTF"] + FONT_EN
 
-        def put(label, x0, x1, y0, y1, fill, shadow, shadow_k=0.085):
+        def put(label, x0, x1, y0, y1, fill, shadow, shadow_k=0.085, rotate=False):
             big = _fit_font(drw, font_round, label, 10 ** 6, 400)
             bx, by, tw, th = _text_metrics(drw, label, big)
             fl = Image.new("L", (tw, th))
             ImageDraw.Draw(fl).text((-bx, -by), label, font=big, fill=255)
+            if rotate:   # 시계 방향 90°: 위에서 아래로 읽힘
+                fl = fl.transpose(Image.Transpose.ROTATE_270)
             size = (round(x1 - x0), round(y1 - y0))
             fl = fl.resize(size, Image.Resampling.LANCZOS)
             off = round((y1 - y0) * shadow_k)
@@ -318,17 +320,13 @@ def _paint_storefront_glass(ctx):
 
         # 로드뷰 storefront_se_oblique·se_corner_alley·사용자 남동 사진 실측:
         #   글자 높이 약 1.0 m(통창 3.86 m 의 26%), 상단은 통창 위 가로대(Z 3.31) 바로 아래 → v 0.19~0.44
-        #   DAEDEOK 은 1~6.5번째 칸(청록 초록 + 주황 그림자), LOCAL 은 한 칸에 바로 선 글자 5개를 세로로 쌓음,
-        #   FOOD 는 8~12번째 칸(연두 노랑 + 주황 그림자, O 는 거의 원형)
+        #   그래픽은 통창 13칸 전체(9.64 m)에 걸친다: FOOD 의 D 가 동쪽 마지막 칸까지 들어감 (se_corner_alley)
+        #   DAEDEOK 은 왼쪽 절반(청록 초록 + 주황 그림자), LOCAL 은 시계 방향으로 눕혀 위→아래로 읽는 한 줄
+        #   (가운데 C 가 아래로 열림), FOOD 는 연두 노랑 + 주황 그림자로 동쪽 끝 칸까지
         y0, y1 = h * 0.19, h * 0.44
-        put("DAEDEOK", w * 0.015, w * 0.50, y0, y1, (38, 166, 124), (232, 148, 44))
-        put("FOOD", w * 0.595, w * 0.965, y0, y1, (198, 214, 62), (230, 140, 42))
-        # LOCAL 칸은 큰 글자 폭의 약 0.6배, 위아래로 큰 글자 높이를 다 쓴다 (se_corner_alley)
-        lx0, lx1 = w * 0.514, w * 0.578
-        step = (y1 - y0) / 5
-        for i, ch_ in enumerate("LOCAL"):
-            put(ch_, lx0, lx1, y0 + i * step + step * 0.04, y0 + (i + 1) * step - step * 0.04,
-                (206, 214, 86), (30, 70, 50), shadow_k=0.10)
+        put("DAEDEOK", w * 0.012, w * 0.50, y0, y1, (38, 166, 124), (232, 148, 44))
+        put("LOCAL", w * 0.515, w * 0.563, y0, y1, (206, 214, 86), (30, 70, 50), shadow_k=0.03, rotate=True)
+        put("FOOD", w * 0.585, w * 0.975, y0, y1, (198, 214, 62), (230, 140, 42))
         mask2.paste(letters)
 
     _render_sign_cell(ctx, "storefront_glass", (24, 43, 47), paint_2x,
@@ -1780,15 +1778,8 @@ def build_south_ramp_and_entrance(mb, A, wins, stage):
     _box_var(mb, 24.80, 25.01, gy, 10.16, 0.14, 4.05, "white_panel", variant=2, skip=("bottom",))
     _box_var(mb, 25.01, 25.50, 7.25, 8.85, 0.14, 4.05, "white_panel", variant=4, skip=("bottom",))
     _box_var(mb, 25.50, 25.95, 7.25, 8.85, 0.00, 4.05, "white_panel", variant=4, skip=("bottom",))
-    _sign_quad(mb, A, K.face_pts("y", gy, -1, gx0, gx_text, 0.14, 4.00), "storefront_glass")
-    A.layout()
-    cx, cy, cw, ch = A.cells["storefront_glass"]["rect"]
-    S, aw = float(A.size), _SIGN_ACTIVE_W["storefront_glass"]
-    bu0 = (cx + aw + 4.0) / S if cw > aw + 8 else (cx + aw - 5.0) / S
-    bu1 = (cx + cw - 4.0) / S if cw > aw + 8 else (cx + aw - 2.0) / S
-    bv0, bv1 = 1.0 - (cy + ch - 1.5) / S, 1.0 - (cy + 1.5) / S
-    mb.quad(K.face_pts("y", gy, -1, gx_text, gx1, 0.14, 4.00),
-            [(bu0, bv0), (bu1, bv0), (bu1, bv1), (bu0, bv1)], "storefront_glass")
+    # 유리 그래픽은 13칸 전체(gx0..gx1)에 한 장으로 붙인다 (active_w = 288 px × 9.64/3.86)
+    _sign_quad(mb, A, K.face_pts("y", gy, -1, gx0, gx1, 0.14, 4.00), "storefront_glass")
     mb.rect(K.face_pts("y", 10.16, 1, gx0, gx1, 0.14, 4.00), "spandrel_dark")
     mb.box(gx0, gx0 + 0.055, gy - 0.09, gy - 0.01, 0.27, 3.90, "louver_white", skip=("bottom", "top"))
     for i in range(1, 13):
