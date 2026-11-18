@@ -190,6 +190,7 @@
 - 커밋 메시지는 한국어로 씁니다.
 - `cs2-kit`은 서브모듈이 아니라 git subtree(squash)로 들어 있습니다. 원본 업데이트는 `git subtree pull --prefix cs2-kit https://github.com/nazunamoe/cs2-kit.git claude --squash`로 받습니다(원본 브랜치는 `claude`). `.chrome-vr`는 커밋하지 않습니다.
 - 간판 캐시(`projects/*/work/_sign_cache/`)와 로드뷰 추가 캡처(`projects/*/work/roadview_extra/`)는 커밋하지 않습니다.
+- CS2 에셋 가져오기(Asset Importer)에서는 반드시 `cs2-kit/projects/<프로젝트>/output/<에셋이름>` 폴더를 고릅니다. 프로젝트 맨 위 폴더를 고르면 `work/`·`photos/`·`previews/`까지 읽어 가짜 프리팹(`photos Mesh`, `tiles Mesh` 등)이 생기고, `previews/progress/<에셋이름>` 때문에 같은 이름 프리팹이 둘 생겨 오류가 납니다(2026-11-18 석봉센터에서 발생). 잘못 가져왔으면 게임을 끄고 `%USERPROFILE%\AppData\LocalLow\Colossal Order\Cities Skylines II\ImportedData\<캐시ID>\`에서 해당 항목을 지운 뒤 다시 가져옵니다.
 
 ## 작성·수정 이력
 
@@ -212,3 +213,4 @@
 | 2026-11-18 | Claude Opus 5.5 (Claude Code) | 진행 기록 | 진행 상태 | 고속도로 소품 6종 실사진(네이버 거리뷰 23매, `photos/SOURCES.md`) 기반 퀄리티 업(Antigravity 구현, 총괄 교차 검토). 남은 차이: 투명 방음벽 조류 스티커 형태·유리 불투명감·투명판 세분 격자, 일부 구간 2단 W빔, 분리대 줄눈 간격·색. |
 | 2026-11-18 | Claude Opus 5.5 (Claude Code) | 진행 기록 | 진행 상태 | 고속도로 소품 2차 보정(Antigravity 구현, 총괄 교차 검토): 투명 방음벽 매 실루엣·2×4 격자·투명 유리, 중앙분리대 4 m 끝 줄눈·밝은 회색, 문형표지 지주 보호용 2단 W빔(`GuardrailWBeamDouble`) 신설. 7종 final PASS, 인게임 미확인. |
 | 2026-11-18 | Claude Opus 5.5 (Claude Code) | 진행 기록 | 진행 상태, 석봉동 절(2026-11-18 작업 추가) | 석봉센터 경사로-동측 데크 연결(2안), 로컬푸드 통창·간판·유리 그래픽, 행정복지센터 현관, 전면 보도 톱니 제거, 남서·서측 계단과 2층 테라스, 서측 색 통일·난간 연결, 옥상 설비 재배치 기록(Codex·Antigravity 구현분 총괄 검토 포함). 고속도로 이정표 글자 정렬 수정. 남은 확인: 북측동 3층 띠 색·표지석 구성·인게임. 사용자(Hyeonsu99) 요청. |
+| 2026-11-18 | Claude Opus 5.5 (Claude Code) | 규칙 추가 | 작업 규칙 | CS2 가져오기는 `output/<에셋이름>` 폴더만 고른다는 규칙 추가. 석봉센터를 프로젝트 맨 위 폴더로 가져와 가짜 프리팹·이름 중복 오류가 난 사례(게임 `AssetPipeline.log` 확인). 사용자(Hyeonsu99) 요청. |
