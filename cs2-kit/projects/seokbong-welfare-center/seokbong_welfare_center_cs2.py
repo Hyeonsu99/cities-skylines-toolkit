@@ -1344,43 +1344,54 @@ def build_plaza_and_site(mb, A, wins, stage):
         # 동측 외부 계단 및 북동 조경 계단 하부 보도 포장 (Z=0.00..0.14)
         mb.box(25.5, 27.0, 10.2, 70.2, 0.0, 0.14, "plaza_paving", skip=("bottom",))
         mb.box(20.0, 27.0, 70.2, 71.4, 0.0, 0.14, "plaza_paving", skip=("bottom",))
-    # 전면 남측 대덕대로변 사선 쐐기 보행광장 (Y: 서 0.0 -> 동 6.2, 직교 계단식 스트립 분할로 타일 오버슈트 방지)
+    # 전면 남측 대덕대로변 사선 쐐기 보행광장 (앞선 Y: 서 0.0 -> 동 6.2)
+    # 직교 스트립의 톱니 앞면이 계단처럼 보이던 것을, 앞선이 사선을 그대로 따르는 사다리꼴 슬래브로 바꾼다
     n_plaza = 20 if stage < 2 else 4
+    pz = 0.14
     for i in range(n_plaza):
         t0, t1 = i / n_plaza, (i + 1) / n_plaza
-        px0, px1 = -25.5 + 51.0 * t0, -25.5 + 51.0 * t1
-        py0 = 6.2 * (t0 + t1) * 0.5
-        if py0 < 6.18:
-            mb.box(px0, px1, py0, 6.2, 0.0, 0.14, "plaza_paving", skip=("bottom", "back"))
+        xa, xb = -25.5 + 51.0 * t0, -25.5 + 51.0 * t1
+        ya, yb = 6.2 * t0, 6.2 * t1
+        w = xb - xa
+        uv_top = mb.atlas.uv_tile("plaza_paving", w, 6.2 - ya, variant=i) if mb.split_tiles else mb.atlas.uv("plaza_paving")
+        uv_f = mb.atlas.uv_tile("plaza_paving", math.hypot(w, yb - ya), pz, variant=i) if mb.split_tiles else mb.atlas.uv("plaza_paving")
+        mb.quad([(xa, ya, pz), (xb, yb, pz), (xb, 6.2, pz), (xa, 6.2, pz)], uv_top, "plaza_paving")
+        mb.quad([(xa, ya, 0.0), (xb, yb, 0.0), (xb, yb, pz), (xa, ya, pz)], uv_f, "plaza_paving")
+        if i == 0:
+            mb.quad([(xa, 6.2, 0.0), (xa, ya, 0.0), (xa, ya, pz), (xa, 6.2, pz)],
+                    mb.atlas.uv_tile("plaza_paving", 6.2 - ya, pz) if mb.split_tiles else mb.atlas.uv("plaza_paving"), "plaza_paving")
 
     if stage >= 2:
         return
 
-    # 남서측 개방형 계단 및 접근 테라스 (하부 오픈형 경사 계단 + 측벽 스트링거, south_front_mid.png 좌측)
-    if stage == 0:
-        steps = 14
-        y_start, y_end = 2.0, 10.2
-        z_start, z_end = 0.14, 4.45
-        for i in range(steps):
-            t0, t1 = i / steps, (i + 1) / steps
-            sy0 = y_start + (y_end - y_start) * t0
-            sy1 = y_start + (y_end - y_start) * t1
-            sz0 = max(0.14, z_start + (z_end - z_start) * t0 - 0.35)
-            sz1 = z_start + (z_end - z_start) * t1
-            _box_var(mb, -24.4, -21.0, sy0, sy1, sz0, sz1, "white_panel", variant=i, skip=(("bottom",) if sz0 <= 0.15 else ()))
-        # 계단 경사 측벽 스트링거 + 2층 연결 랜딩 기둥
-        _closed_quad_prism(mb, (-24.65, y_start, 0.14), (-24.40, y_start, 0.14), (-24.40, y_end, 4.10), (-24.65, y_end, 4.10), 1.05, "white_panel", tiled=False)
-        _closed_quad_prism(mb, (-21.00, y_start, 0.14), (-20.75, y_start, 0.14), (-20.75, y_end, 4.10), (-21.00, y_end, 4.10), 1.05, "white_panel", tiled=False)
-        _box_var(mb, -24.6, -24.1, 9.5, 10.1, 0.14, 4.10, "white_panel", variant=0, skip=("bottom",))
-        _box_var(mb, -21.2, -20.7, 9.5, 10.1, 0.14, 4.10, "white_panel", variant=1, skip=("bottom",))
-    else:
-        for i in range(4):
-            t0, t1 = i / 4.0, (i + 1) / 4.0
-            sy0 = 2.0 + 8.2 * t0
-            sy1 = 2.0 + 8.2 * t1
-            sz0 = max(0.14, 0.14 + 4.31 * t0 - 0.50)
-            sz1 = 0.14 + 4.31 * t1
-            _box_var(mb, -24.6, -20.8, sy0, sy1, sz0, sz1, "white_panel", variant=i, skip=(("bottom",) if sz0 <= 0.15 else ()))
+    # 남서 외부 계단 (crop_dnbarch2_sw · south_front_mid): 정면과 나란히 동(X=-9.4, 지면) → 서(X=-18.4)로 오르고,
+    # 남서 모서리 목재 데크(X -25.6..-18.4, Z 4.82)에 닿아 서측 2층 발코니(X -25.6..-24.6, Z 4.40..4.82)로 이어진다.
+    # 거리 쪽(-Y)은 계단 경사를 따라 올라가는 흰 솔리드 측벽, 건물 쪽은 1층 청록 유리 핀(Y≈9.82) 앞 0.07 m 까지.
+    deck_z, sy0, sy1, cy0 = 4.82, 6.75, 9.75, 6.45
+    n_st = 30 if stage == 0 else 6
+    x_bot, x_top = -9.4, -18.4
+    rise, run = (deck_z - 0.14) / (n_st + 1), (x_bot - x_top) / n_st
+    step_mat = {"top": "stair_stone", "default": "white_panel"}
+    for k in range(1, n_st + 1):
+        xa, xb = x_bot - k * run, x_bot - (k - 1) * run
+        _box_var(mb, xa, xb, sy0, sy1, 0.14, 0.14 + k * rise, step_mat, variant=k, skip=("bottom", "front"))
+    # 상부 데크 (서측 발코니와 같은 높이, 뒤는 갤러리 벽 Y=10.2 와 1 cm 띄움)
+    _box_var(mb, -25.6, x_top, cy0, 10.19, 0.14, deck_z, {"top": "terrace_deck", "default": "white_panel"},
+             variant=0, skip=("bottom",))
+    # 데크 남측·서측 흰 파라펫 (계단 측벽과 같은 높이 1.05 m)
+    _box_var(mb, -25.6, x_top, cy0, cy0 + 0.30, deck_z, deck_z + 1.05, "white_panel", variant=1)
+    _box_var(mb, -25.6, -25.3, cy0 + 0.30, 10.19, deck_z, deck_z + 1.05, "white_panel", variant=2)
+    # 계단 거리 쪽 경사 측벽 (바닥 Z 0.14 평평, 윗면은 디딤 앞코 선 + 1.05 m)
+    zt_hi, zt_lo = deck_z + 1.05, 0.14 + rise + 1.05
+    L = x_bot - x_top
+    for pts, uv in (
+        ([(x_top, cy0, 0.14), (x_bot, cy0, 0.14), (x_bot, cy0, zt_lo), (x_top, cy0, zt_hi)], (L, zt_hi)),          # 앞(-Y)
+        ([(x_bot, sy0, 0.14), (x_top, sy0, 0.14), (x_top, sy0, zt_hi), (x_bot, sy0, zt_lo)], (L, zt_hi)),          # 뒤(+Y)
+        ([(x_top, cy0, zt_hi), (x_bot, cy0, zt_lo), (x_bot, sy0, zt_lo), (x_top, sy0, zt_hi)], (L, 0.30)),         # 윗면
+        ([(x_bot, cy0, 0.14), (x_bot, sy0, 0.14), (x_bot, sy0, zt_lo), (x_bot, cy0, zt_lo)], (0.30, zt_lo)),       # 동쪽 끝
+    ):
+        mb.quad(pts, mb.atlas.uv_tile("white_panel", min(4.0, uv[0]), min(4.0, uv[1])) if mb.split_tiles
+                else mb.atlas.uv("white_panel"), "white_panel")
 
     # 전면 남동 광장 표지석 ('석봉복합문화센터', south_se_entrance.png 기준 X=+17.5, Y=5.0)
     mb.box(15.6, 19.8, 4.8, 5.4, 0.14, 0.44, "monolith_stone", skip=("bottom",))
