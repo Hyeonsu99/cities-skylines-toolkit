@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "seokbong_welfare_center_cs2.py",
- "generator_hash": "e39becc067ba6303b5d0c868e86c10555cd4e40ae78db60de111d3930051fa03",
- "current_preview_hash": "b9b6de8a1f31fee3d132dbca89812c087da9b007925cbf525db44735fc183ed6",
+ "generator_hash": "50e08fc2a1a6ec2d29d182907a55921d7979900fdb99e2de4d8ae776bac7f724",
+ "current_preview_hash": "cc55a29904283f5ae391b404d8eaa30de9135cdc4184df17a4d4c5894c969627",
  "last_gate": {
   "status": "PASS",
   "project": "seokbong-welfare-center",
@@ -29,12 +29,13 @@
    "report": "output\\SeokbongWelfareCenter_L1_7x9\\_check\\report.json"
   },
   "asset": "SeokbongWelfareCenter_L1_7x9",
-  "label": "final",
-  "time": "2026-11-18 17:43:41",
+  "label": "no-gls",
+  "time": "2026-11-18 21:50:31",
   "build": {
    "asset": "SeokbongWelfareCenter_L1_7x9",
    "fbx": true,
    "warnings": [
+    "[cs2kit][WARN] lot 7x9 > 6x6 -> register as signature building",
     "[cs2kit][WARN] lot 7x9 > 6x6 -> register as signature building"
    ]
   },
@@ -56,7 +57,7 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 33141,
+     "main": 33201,
      "win": 1364,
      "gls": 88,
      "lod1": 10793,
@@ -65,7 +66,7 @@
      "lod2_win": 1364
     },
     "verts": {
-     "main": 66285,
+     "main": 66405,
      "win": 2728,
      "gls": 176,
      "lod1": 21589,
@@ -93,7 +94,7 @@
      "LOD2_Emissive": "1024x1024 RGB"
     },
     "texel_px_per_m": {
-     "p10": 127.5,
+     "p10": 116.6,
      "median": 223.8,
      "p90": 255.5
     },
@@ -104,7 +105,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 0.9
+    "time_s": 0.8
    },
    "report": "output\\SeokbongWelfareCenter_L1_7x9\\_check\\report.json"
   },
@@ -146,7 +147,7 @@
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 66285,
+    "LOD0": 66405,
     "LOD1": 21589,
     "LOD2": 516
    },
@@ -165,21 +166,21 @@
   "reason": "all requested checks passed"
  },
  "project": "seokbong-welfare-center",
- "updated_at": "2026-11-18T17:43:49",
- "visual_review_note": "Antigravity 서측 색 통일·난간 연결 총괄 검토: 서측 1F·중정 서측·북측동 서측면 white_panel, SW~서측 2F~NW 유리난간·2->3F 계단 파이프 난간·3F 테라스 유리난간 연속. final 7검사 재실행 PASS. 북측동 3F brown 은 사진상 짙은 회색으로 보여 사용자 확인 필요",
+ "updated_at": "2026-11-18T21:52:24",
+ "visual_review_note": "no-gls: _Gls 0 tris, glass rail panels now opaque in main, entrance door/vestibule glass removed (dark vestibule visible); roof/satellite unchanged",
  "visual_review_artifacts": [
   {
    "file": "previews/SeokbongWelfareCenter_L1_7x9.png",
-   "sha256": "b9b6de8a1f31fee3d132dbca89812c087da9b007925cbf525db44735fc183ed6"
+   "sha256": "cc55a29904283f5ae391b404d8eaa30de9135cdc4184df17a4d4c5894c969627"
   },
   {
    "file": "previews/photo_check/satellite.png",
-   "sha256": "b3e477a150f42ba19de7a545ef022cd46f82f2adeca7b1b52b87955e52e51f71"
+   "sha256": "62e799329e389245233028d9aa50c280ede267dbd44d1bd81a3cb08666fa5c01"
   },
   {
    "file": "previews/tiles/satellite_map.png",
-   "sha256": "8b9e4732f0340fb7fcb3f98c8e53e6c687bc0dbff9ffd347f1ef9200371b0774"
+   "sha256": "56458a09225783eb8b4487eb29fb57d86a37d4a29391dafd0edaf3b5ef2391bd"
   }
  ],
- "reviewed_preview_hash": "b9b6de8a1f31fee3d132dbca89812c087da9b007925cbf525db44735fc183ed6"
+ "reviewed_preview_hash": "cc55a29904283f5ae391b404d8eaa30de9135cdc4184df17a4d4c5894c969627"
 }

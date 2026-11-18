@@ -2237,19 +2237,14 @@ def build_south_ramp_and_entrance(mb, A, wins, gls, stage):
         K.paint(mb, "y", 10.20, -1, vx0, vx1, 0.14, z_led0, "frame_metal", layer=1)
         K.paint(mb, "y", 10.20, -1, dx0 + 0.06, dx1 - 0.06, 0.17, 2.62, "door_entrance", layer=2)
     else:
-        # 전실 전면 금속 프레임 + 반투명(gls) 유리 + 내부 2.3 m 깊이 전실·2차 자동문 암시
+        # 전실 전면 금속 프레임 (유리 없음: _Gls 미사용) + 내부 2.3 m 깊이 전실·2차 자동문 암시
         mb.box(vx0, vx0 + 0.07, 10.08, 10.19, 0.14, z_led0, "frame_metal", skip=("bottom",))
         mb.box(vx1 - 0.07, vx1, 10.08, 10.19, 0.14, z_led0, "frame_metal", skip=("bottom",))
         for xa, xb in ((vx0 + 0.07, dx0), (dx1, vx1 - 0.07)):
             mb.box(xa, xb, 10.08, 10.19, 0.14, 0.22, "frame_metal", skip=("bottom",))
             mb.box(xa, xb, 10.08, 10.19, 1.54, 1.62, "frame_metal")
             mb.box(xa, xb, 10.08, 10.19, 2.98, z_led0, "frame_metal")
-            for za, zb in ((0.22, 1.54), (1.62, 2.98)):
-                gls.rect(K.face_pts("y", 10.13, -1, xa, xb, za, zb), "glass_rail")
-                gls.rect(K.face_pts("y", 10.15, 1, xa, xb, za, zb), "glass_rail")
         mb.box(dx0 + 0.06, dx1 - 0.06, 10.08, 10.19, 2.98, z_led0, "frame_metal")
-        gls.rect(K.face_pts("y", 10.13, -1, dx0 + 0.06, dx1 - 0.06, 2.78, 2.98), "glass_rail")
-        gls.rect(K.face_pts("y", 10.15, 1, dx0 + 0.06, dx1 - 0.06, 2.78, 2.98), "glass_rail")
         # 2.3 m 후퇴 전실 내부: 밝은 화강석 바닥 + 검은 매트 2개소 + 백색 내벽 + 입식 배너 2기 + 내측 2차 자동문 (Y=12.44)
         mb.box(vx0 + 0.02, vx1 - 0.02, 10.20, 12.48, 0.14, 0.17, "plaza_paving", skip=("bottom",))
         for mx0, mx1 in ((7.10, 8.15), (10.45, 11.50)):
@@ -2274,15 +2269,13 @@ def build_south_ramp_and_entrance(mb, A, wins, gls, stage):
     # 입체 LED 전광판 하우징 (전면 Y=10.02, 깊이 0.18 m)
     mb.box(ex0, ex1, 10.02, 10.19, z_led0, z_led1, "frame_metal")
     if stage == 0:
-        # 양개 슬라이딩 문짝 프레임 · 중앙 맞댐 문선 · 투명(gls) 문짝 유리 · 손잡이 · 바닥 가이드 레일 · 인방 감지기
+        # 양개 슬라이딩 문짝 프레임 · 중앙 맞댐 문선 · 손잡이(문짝 유리 없음) · 바닥 가이드 레일 · 인방 감지기
         dm = 0.5 * (dx0 + dx1)
         for xa, xb in ((dx0 + 0.06, dm - 0.01), (dm + 0.01, dx1 - 0.06)):
             mb.box(xa, xa + 0.05, 10.12, 10.17, 0.17, 2.60, "frame_metal")
             mb.box(xb - 0.05, xb, 10.12, 10.17, 0.17, 2.60, "frame_metal")
             mb.box(xa + 0.05, xb - 0.05, 10.12, 10.17, 0.17, 0.27, "frame_metal")
             mb.box(xa + 0.05, xb - 0.05, 10.12, 10.17, 2.52, 2.60, "frame_metal")
-            gls.rect(K.face_pts("y", 10.135, -1, xa + 0.05, xb - 0.05, 0.27, 2.52), "glass_rail")
-            gls.rect(K.face_pts("y", 10.155, 1, xa + 0.05, xb - 0.05, 0.27, 2.52), "glass_rail")
         for hx in (dm - 0.16, dm + 0.12):
             mb.box(hx, hx + 0.04, 10.07, 10.12, 0.95, 1.55, "railing_steel")
         mb.box(dx0, dx1, 9.92, 10.18, 0.14, 0.16, "railing_steel", skip=("bottom",))
@@ -2401,7 +2394,9 @@ def build_south_ramp_and_entrance(mb, A, wins, gls, stage):
 def build_stage(A, stage):
     mb = K.MeshBuilder(A, split_tiles=(stage < 2))
     wins = K.WindowSet()
-    gls = K.MeshBuilder(A)
+    # No _Gls mesh (LESSONS: glass in front of _Win flickers at night in game, exllu-103 2026-11-11).
+    # Glass railing panels go into main as opaque "glass_rail" faces; door/vestibule glass is dropped.
+    gls = mb
 
     build_plaza_and_site(mb, A, wins, gls, stage)
     build_north_wing(mb, A, wins, gls, stage)
@@ -2432,7 +2427,7 @@ def main():
         level=1,
         meshes=dict(
             main=s0["mb"], lod1=s1["mb"], lod2=s2["mb"],
-            gls=s0["gls"], lod1_gls=None, windows=s0["wins"],
+            windows=s0["wins"],
         ),
         atlas=A,
         out_root=out_dir,
