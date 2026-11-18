@@ -263,7 +263,8 @@ async function loadPreviewStem(stem, label) {
   for (const suffix of ['.fbx', '_Win.fbx', '_Gls.fbx', '_BaseColor.png', '_Normal.png', '_MaskMap.png', '_Emissive.png']) {
    const name = stem + suffix;
    const response = await fetch('/preview/' + name);
-   if (!response.ok) {
+   // Vite dev 서버는 없는 파일에 index.html(200)을 돌려주므로 HTML 응답도 '없음'으로 본다.
+   if (!response.ok || response.headers.get('content-type')?.includes('text/html')) {
     if (required.includes(suffix)) throw Error(name);
     continue;
    }
@@ -271,7 +272,7 @@ async function loadPreviewStem(stem, label) {
   }
   $('file').files = transfer.files;
   await $('file').onchange();
-  $('status').value = label + ' 로드 완료';
+  $('status').value = label + ': ' + $('status').value;  // importFiles의 성공/오류 메시지를 덮어쓰지 않는다
  } catch (error) {
   $('status').value = label + ' 로드 실패: ' + error.message;
  }
