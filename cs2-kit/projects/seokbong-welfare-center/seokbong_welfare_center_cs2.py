@@ -297,7 +297,8 @@ def _paint_storefront_glass(ctx):
             drw.text(origin, label, font=font, fill=color, stroke_width=stroke,
                      stroke_fill=(229, 205, 105))
             ImageDraw.Draw(letters).text(origin, label, font=font, fill=255, stroke_width=stroke)
-        font = _fit_font(drw, FONT_EN, "LOCAL", round(h * 0.25), round(h * 0.11))
+        # 실물의 세로 LOCAL 은 DAEDEOK·FOOD 대문자 높이와 비슷한 길이 (사용자 남동 정면 사진)
+        font = _fit_font(drw, FONT_EN, "LOCAL", round(h * 0.34), round(h * 0.16))
         bx, by, tw, th = _text_metrics(drw, "LOCAL", font)
         local = Image.new("L", (tw, th))
         ImageDraw.Draw(local).text((-bx, -by), "LOCAL", font=font, fill=255)
@@ -718,7 +719,8 @@ def _paint_lamp_strip(ctx):
 def make_atlas(size=4096):
     A = K.Atlas(size=size, pad=16)
     A.add("white_panel",   color=(232, 234, 232), ctrl=(0, 0, 0), metal=0.14, gloss=0.42,
-          px=1024, tile=(4.0, 4.0), variants=3, painter=_paint_white_panel, normal_strength=2.2)
+          # 896 px(224 px/m): 1024 이면 storefront_glass 추가 시 4096 아틀라스 선반 배치가 넘친다
+          px=896, tile=(4.0, 4.0), variants=3, painter=_paint_white_panel, normal_strength=2.2)
     A.add("white_grooved", color=(229, 231, 229), ctrl=(0, 0, 0), metal=0.15, gloss=0.42,
           px=768, tile=(4.0, 4.0), variants=2, painter=_paint_white_grooved, normal_strength=2.6)
     A.add("beige_stone",   color=(218, 204, 188), ctrl=(0, 0, 0), metal=0.0, gloss=0.26,
@@ -776,15 +778,9 @@ def make_atlas(size=4096):
           emissive=(215, 165, 110), px=144, variants=12, painter=_paint_sign_localfood, normal_strength=2.5)
     A.add("sign_monolith",    color=(84, 54, 42), ctrl=(0, 0, 0), metal=0.34, gloss=0.40,
           emissive=(255, 242, 216), px=288, variants=2, painter=_paint_sign_monolith, normal_strength=2.4)
-    # 마지막 줄의 빈 공간에 넣어 기존 외장 아틀라스 UV를 이동시키지 않는다.
-    A.layout()
-    x, y, w, _ = A.cells["lamp_strip"]["rect"]
-    x += w + 2 * A.pad
-    assert x + 864 + A.pad <= size and y + 288 + A.pad <= size
+    # UV는 빌드마다 layout() 결과로 다시 계산되므로 일반 add 로 넣는다 (키트 내부 _laid 조작 금지).
     A.add("storefront_glass", color=(24, 43, 47), gloss=0.84, px=288, variants=3,
           painter=_paint_storefront_glass)
-    A.cells["storefront_glass"]["rect"] = (x, y, 864, 288)
-    A._laid = True
     return A
 
 
