@@ -694,14 +694,39 @@
     "key": null
    },
    "fbx": null
+  },
+  "solar_subobj_sign": {
+   "at": "2026-11-18T22:29:44",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "solar_subobj_sign",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "2e4ad78fa3974b2d80be15da7e38cc1e27dae3438246ead6e560629e96d04a31",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "45ba4cbf86de3e6a580b243483359fea22ecf06848547b83df5437884c70244c",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-18T21:50:31",
+ "updated_at": "2026-11-18T22:29:44",
  "current_stage": "final:INCOMPLETE",
  "generator": "seokbong_welfare_center_cs2.py",
- "generator_hash": "50e08fc2a1a6ec2d29d182907a55921d7979900fdb99e2de4d8ae776bac7f724",
+ "generator_hash": "2e4ad78fa3974b2d80be15da7e38cc1e27dae3438246ead6e560629e96d04a31",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "2edd594897af935b1641a2a166c8888122dce993572d30715ca7613a9a05ad02",
+ "reviewed_preview_hash": "cc55a29904283f5ae391b404d8eaa30de9135cdc4184df17a4d4c5894c969627",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",

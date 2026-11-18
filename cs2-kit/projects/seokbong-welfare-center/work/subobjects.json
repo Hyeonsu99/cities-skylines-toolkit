@@ -1,0 +1,280 @@
+{
+  "asset": "SeokbongWelfareCenter_L1_7x9",
+  "coord": "asset (pivot 적용 후, m, +Y=back, z=0 지면)",
+  "pivot_shift": [
+    0.0,
+    -35.7
+  ],
+  "items": [
+    {
+      "kind": "planter",
+      "suggest": "3층 서측 그린테라스 좌측 장방형 화단 틀·흙면 (3.20x13.20x0.39m, 미확인)",
+      "x": -22.6,
+      "y": 7.1,
+      "z": 9.26,
+      "size_m": [
+        3.2,
+        13.2,
+        0.39
+      ],
+      "rot_deg": 0.0,
+      "scale": 1.0,
+      "source": "build_middle_courtyard_and_east:L1880"
+    },
+    {
+      "kind": "shrub",
+      "suggest": "관목 낮은 것 / 조경 관목 군락 (그린테라스 좌측 화단 상부, 미확인)",
+      "x": -22.6,
+      "y": 7.1,
+      "z": 9.65,
+      "size_m": [
+        3.0,
+        12.8,
+        0.6
+      ],
+      "rot_deg": 0.0,
+      "scale": 1.0,
+      "source": "build_middle_courtyard_and_east:L1880"
+    },
+    {
+      "kind": "planter",
+      "suggest": "3층 서측 그린테라스 우측(중정 측) 장방형 화단 틀·흙면 (2.50x7.80x0.39m, 미확인)",
+      "x": -7.75,
+      "y": 4.4,
+      "z": 9.26,
+      "size_m": [
+        2.5,
+        7.8,
+        0.39
+      ],
+      "rot_deg": 0.0,
+      "scale": 1.0,
+      "source": "build_middle_courtyard_and_east:L1881"
+    },
+    {
+      "kind": "shrub",
+      "suggest": "관목 낮은 것 / 조경 관목 군락 (그린테라스 우측 화단 상부, 미확인)",
+      "x": -7.75,
+      "y": 4.4,
+      "z": 9.65,
+      "size_m": [
+        2.3,
+        7.4,
+        0.6
+      ],
+      "rot_deg": 0.0,
+      "scale": 1.0,
+      "source": "build_middle_courtyard_and_east:L1881"
+    },
+    {
+      "kind": "planter",
+      "suggest": "중앙 중정 북서 1층 연결 브리지 상부 녹지 화단 틀·흙면 (4.50x4.60x0.35m, 미확인)",
+      "x": -3.25,
+      "y": 11.8,
+      "z": 4.7,
+      "size_m": [
+        4.5,
+        4.6,
+        0.35
+      ],
+      "rot_deg": 0.0,
+      "scale": 1.0,
+      "source": "build_middle_courtyard_and_east:L1886"
+    },
+    {
+      "kind": "shrub",
+      "suggest": "관목 낮은 것 / 지피식물 (중정 연결 브리지 상부 화단, 미확인)",
+      "x": -3.25,
+      "y": 11.8,
+      "z": 5.05,
+      "size_m": [
+        4.2,
+        4.3,
+        0.55
+      ],
+      "rot_deg": 0.0,
+      "scale": 1.0,
+      "source": "build_middle_courtyard_and_east:L1886"
+    },
+    {
+      "kind": "planter",
+      "suggest": "서측 2층 목재 테라스 원형 콘크리트 화분 #1 (직경 1.16x1.16x0.74m, 미확인)",
+      "x": -24.0,
+      "y": -22.9,
+      "z": 4.82,
+      "size_m": [
+        1.16,
+        1.16,
+        0.74
+      ],
+      "rot_deg": 0.0,
+      "scale": 1.0,
+      "source": "_terrace_planter_tree / build_south_wings:L2035"
+    },
+    {
+      "kind": "tree",
+      "suggest": "다간 수목 소형 / 대나무·관목 (서측 2층 테라스 화분 #1 식재, 미확인)",
+      "x": -24.0,
+      "y": -22.9,
+      "z": 5.54,
+      "size_m": [
+        0.86,
+        0.86,
+        3.56
+      ],
+      "rot_deg": 0.0,
+      "scale": 0.9,
+      "source": "_terrace_planter_tree / build_south_wings:L2035"
+    },
+    {
+      "kind": "planter",
+      "suggest": "서측 2층 목재 테라스 원형 콘크리트 화분 #2 (직경 1.16x1.16x0.74m, 미확인)",
+      "x": -21.3,
+      "y": -19.5,
+      "z": 4.82,
+      "size_m": [
+        1.16,
+        1.16,
+        0.74
+      ],
+      "rot_deg": 0.0,
+      "scale": 1.0,
+      "source": "_terrace_planter_tree / build_south_wings:L2035"
+    },
+    {
+      "kind": "tree",
+      "suggest": "다간 수목 소형 / 대나무·관목 (서측 2층 테라스 화분 #2 식재, 미확인)",
+      "x": -21.3,
+      "y": -19.5,
+      "z": 5.54,
+      "size_m": [
+        0.86,
+        0.86,
+        4.05
+      ],
+      "rot_deg": 0.0,
+      "scale": 1.05,
+      "source": "_terrace_planter_tree / build_south_wings:L2035"
+    },
+    {
+      "kind": "planter",
+      "suggest": "서측 2층 목재 테라스 원형 콘크리트 화분 #3 (직경 1.16x1.16x0.74m, 미확인)",
+      "x": -23.7,
+      "y": -16.7,
+      "z": 4.82,
+      "size_m": [
+        1.16,
+        1.16,
+        0.74
+      ],
+      "rot_deg": 0.0,
+      "scale": 1.0,
+      "source": "_terrace_planter_tree / build_south_wings:L2035"
+    },
+    {
+      "kind": "tree",
+      "suggest": "다간 수목 소형 / 대나무·관목 (서측 2층 테라스 화분 #3 식재, 미확인)",
+      "x": -23.7,
+      "y": -16.7,
+      "z": 5.54,
+      "size_m": [
+        0.86,
+        0.86,
+        3.73
+      ],
+      "rot_deg": 0.0,
+      "scale": 0.95,
+      "source": "_terrace_planter_tree / build_south_wings:L2035"
+    },
+    {
+      "kind": "planter",
+      "suggest": "서측 2층 목재 테라스 원형 콘크리트 화분 #4 (직경 1.16x1.16x0.74m, 미확인)",
+      "x": -22.2,
+      "y": -13.7,
+      "z": 4.82,
+      "size_m": [
+        1.16,
+        1.16,
+        0.74
+      ],
+      "rot_deg": 0.0,
+      "scale": 1.0,
+      "source": "_terrace_planter_tree / build_south_wings:L2035"
+    },
+    {
+      "kind": "tree",
+      "suggest": "다간 수목 소형 / 대나무·관목 (서측 2층 테라스 화분 #4 식재, 미확인)",
+      "x": -22.2,
+      "y": -13.7,
+      "z": 5.54,
+      "size_m": [
+        0.86,
+        0.86,
+        4.22
+      ],
+      "rot_deg": 0.0,
+      "scale": 1.1,
+      "source": "_terrace_planter_tree / build_south_wings:L2035"
+    },
+    {
+      "kind": "planter",
+      "suggest": "남측 경사로 끝 2층 수평 테라스(로컬푸드 상부) 사선 쐐기형 화단 틀·흙면 (9.95x1.34x0.25m, 미확인)",
+      "x": 19.775,
+      "y": -28.074,
+      "z": 4.85,
+      "size_m": [
+        9.95,
+        1.34,
+        0.25
+      ],
+      "rot_deg": -4.4,
+      "scale": 1.0,
+      "source": "build_south_ramp_and_entrance:L2176"
+    },
+    {
+      "kind": "shrub",
+      "suggest": "관목 낮은 것 / 테라스 가장자리 생울타리 (9.80x0.90x0.45m, 미확인)",
+      "x": 19.775,
+      "y": -28.074,
+      "z": 5.1,
+      "size_m": [
+        9.8,
+        0.9,
+        0.45
+      ],
+      "rot_deg": -4.4,
+      "scale": 1.0,
+      "source": "build_south_ramp_and_entrance:L2176"
+    },
+    {
+      "kind": "planter",
+      "suggest": "남동 모서리 2층 데크 장방형 화단 틀·흙면 (1.43x1.15x0.33m, 미확인)",
+      "x": 25.535,
+      "y": -28.075,
+      "z": 4.75,
+      "size_m": [
+        1.43,
+        1.15,
+        0.33
+      ],
+      "rot_deg": 0.0,
+      "scale": 1.0,
+      "source": "build_south_ramp_and_entrance:L2184"
+    },
+    {
+      "kind": "shrub",
+      "suggest": "관목 낮은 것 (남동 모서리 2층 데크 화단 상부, 미확인)",
+      "x": 25.535,
+      "y": -28.075,
+      "z": 5.08,
+      "size_m": [
+        1.25,
+        0.95,
+        0.45
+      ],
+      "rot_deg": 0.0,
+      "scale": 1.0,
+      "source": "build_south_ramp_and_entrance:L2184"
+    }
+  ]
+}

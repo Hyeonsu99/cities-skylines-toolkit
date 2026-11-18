@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "exllu_102_cs2.py",
- "generator_hash": "e2e9b0f50f1c3721d44a1f11bf623107e432321e5c54d440681fc59ad64c1319",
- "current_preview_hash": "3f447ee0880f91604bbc15bd0eaf168c567ada881d01af94ce1ccd42381bf1c6",
+ "generator_hash": "a20cab46696654b8fd035f465112330d8a7837e52b327c18e3bc9e79cf79e2e4",
+ "current_preview_hash": "ee7c9784ac5722968422766b9f58d1c354d5732c53271d2e0f1cd3adb9df7886",
  "last_gate": {
   "status": "PASS",
   "project": "exllu-102",
@@ -29,8 +29,8 @@
    "report": "output\\HighriseTower102_L1_5x4\\_check\\report.json"
   },
   "asset": "HighriseTower102_L1_5x4",
-  "label": "color",
-  "time": "2026-11-18 10:31:47",
+  "label": "subobjects",
+  "time": "2026-11-18 22:40:15",
   "build": {
    "asset": "HighriseTower102_L1_5x4",
    "fbx": true,
@@ -54,17 +54,17 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 77426,
+     "main": 77328,
      "win": 2970,
-     "lod1": 11982,
+     "lod1": 11978,
      "lod1_win": 2970,
      "lod2": 266,
      "lod2_win": 2970
     },
     "verts": {
-     "main": 154852,
+     "main": 154656,
      "win": 5940,
-     "lod1": 23964,
+     "lod1": 23956,
      "lod1_win": 5940,
      "lod2": 532,
      "lod2_win": 5940
@@ -99,7 +99,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 5.2
+    "time_s": 2.8
    },
    "report": "output\\HighriseTower102_L1_5x4\\_check\\report.json"
   },
@@ -166,8 +166,8 @@
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 154852,
-    "LOD1": 23964,
+    "LOD0": 154656,
+    "LOD1": 23956,
     "LOD2": 532
    },
    "action_tags": [],
@@ -185,16 +185,16 @@
   "reason": "all requested checks passed"
  },
  "project": "exllu-102",
- "updated_at": "2026-11-18T10:33:03",
- "visual_review_note": "Compared current preview against photo evidence. Rerun changed only the banner; photo and tile sheet hashes match inspected artifacts.",
+ "updated_at": "2026-11-18T22:43:44",
+ "visual_review_note": "planters and shrubs separated into work/subobjects.json",
  "visual_review_artifacts": [
   {
    "file": "previews/HighriseTower102_L1_5x4.png",
-   "sha256": "3f447ee0880f91604bbc15bd0eaf168c567ada881d01af94ce1ccd42381bf1c6"
+   "sha256": "ee7c9784ac5722968422766b9f58d1c354d5732c53271d2e0f1cd3adb9df7886"
   },
   {
    "file": "previews/photo_check/facade_front.png",
-   "sha256": "1a8ebd56e14fd468a9828200741382874ddd1b15269294e8a191c7d789c43ff7"
+   "sha256": "01b0282ef36dfb1c0295b0c2c1b4f62bb7dc4eda751bc0d0c6f18174ab07b535"
   },
   {
    "file": "previews/photo_check/facade_left.png",
@@ -206,7 +206,7 @@
   },
   {
    "file": "previews/tiles/front_map.png",
-   "sha256": "90360fd174e7eaa98db2e9a732c9de668dc8b3a4ae35ede44abbc6d56569bfa3"
+   "sha256": "236c1180d8f8a1c3fcc8aed50d4e5de9761696792b8a580cb5db76450f6d4450"
   },
   {
    "file": "previews/tiles/left_map.png",
@@ -217,5 +217,5 @@
    "sha256": "49a4da865cdc94fde77b55f42d769a6fcfef0b853fb9e8fba384fc4d2df824d8"
   }
  ],
- "reviewed_preview_hash": "3f447ee0880f91604bbc15bd0eaf168c567ada881d01af94ce1ccd42381bf1c6"
+ "reviewed_preview_hash": "ee7c9784ac5722968422766b9f58d1c354d5732c53271d2e0f1cd3adb9df7886"
 }

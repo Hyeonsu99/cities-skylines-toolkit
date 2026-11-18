@@ -1202,12 +1202,8 @@ def entrance(mb, stage):
         prism(mb, (rx1 - 0.15, ry0 + 0.06, dz), (rx0 + 0.05, ry0 + 0.06, zl + dz), 0.042 if dz == 0.90 else 0.026,
               "railing")
 
-    # Left raised stone planter + shrubs + 5-bar guardrail; right front planter + shrubs
-    mb.box(-14.65, PORTICO_X0 - 0.06, -1.85, OUTER_Y0, 0, 0.92, "stone_trim", skip=("bottom", "back"))
-    mb.box(-1.55, 2.35, -3.10, -1.60, 0, 0.72, "stone_trim", skip=("bottom",))
+    # Left raised stone planter & right front planter + shrubs moved to work/subobjects.json
     if stage == 0:
-        _shrubs(mb, -14.45, PORTICO_X0 - 0.30, -1.65, OUTER_Y0 - 0.20, 0.92, 0.58)
-        _shrubs(mb, -1.35, 2.15, -2.90, -1.80, 0.72, 0.65)
         # 5-bar handrails + thicker stanchion posts (distinct half-widths prevent coplanar overlap)
         ya = EY + 0.20
         rail_z = lambda y: ST_R + (y - ya) / (yl - ya) * (zl - ST_R)
@@ -1220,14 +1216,6 @@ def entrance(mb, stage):
                 y_end = yl - 0.035
                 prism(mb, (rx, ya, dz + rail_z(ya)), (rx, y_end, dz + rail_z(y_end)), r, "railing")
                 prism(mb, (rx, yl + 0.035, dz + zl), (rx, -0.09, dz + zl), r, "railing")
-        # Left planter 5-bar safety railing + corner stanchions
-        lp_x0, lp_x1, lp_y0 = -14.55, PORTICO_X0 - 0.18, -1.78
-        for px, py in ((lp_x0, OUTER_Y0 - 0.08), (lp_x0, lp_y0), ((lp_x0 + lp_x1) / 2, lp_y0), (lp_x1, lp_y0)):
-            prism(mb, (px, py, 0.92), (px, py, 1.87), 0.068, "railing")
-        for dz in (0.90, 0.72, 0.54, 0.36, 0.18):
-            r = 0.044 if dz == 0.90 else 0.026
-            prism(mb, (lp_x0, OUTER_Y0 - 0.08, 0.92 + dz), (lp_x0, lp_y0 + 0.035, 0.92 + dz), r, "railing")
-            prism(mb, (lp_x0 + 0.035, lp_y0, 0.92 + dz), (lp_x1, lp_y0, 0.92 + dz), r, "railing")
         # Pier inner wall sconces
         mb.box(PORTICO_X0 + LP, PORTICO_X0 + LP + 0.06, -2.90, -2.72, 2.35, 2.75,
                dict(right="ent_light", default="stone_trim"), skip=("left",))

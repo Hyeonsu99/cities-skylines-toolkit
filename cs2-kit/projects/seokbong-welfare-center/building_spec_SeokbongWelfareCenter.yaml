@@ -60,16 +60,18 @@ estimated:
   - north_roof_cantilever: North wing roof slab cantilever projection beyond upper walls (West 2.5 m, East 2.2 m, North 3.0 m past gym / 2.2 m past NE tower) & roof_soffit shade tone (198, 202, 206) # estimated
   - south_fins: 39 vertical white louver_white fins across X=-18.4..+4.2 (0.595 m pitch, 0.15 m width, 0.38 m max depth clamped behind ramp_yf at SW end, included in LOD0 & LOD1) & dark emerald-teal Low-E teal_glass (46, 94, 98) with ~33% night glow and charcoal frame_metal transoms # estimated
   - south_curtainwall: Continuous 2~3F Low-E slate-blue reflective window atlas (74, 118, 150) & dark slate-teal spandrel_dark (36, 56, 72) along _ramp_zt with dark anodized curtain_frame mullions/sloped sill (48, 54, 62; 0.048x0.092 m) and 1.074 m pitch white louver_white horizontal fins extended to _ramp_x_at_zt(zb+half_t) and Y=35.2 East wing wall (0.150 m x 0.50 m major / 0.108 m x 0.40 m minor, wrapping SE corner) # estimated
+  - rooftop_solar_racks: Row-by-row 3D sloped solar PV arrays on North roof (6+4+2 rows, Z=20.00 m) and SE roof (5+2 rows, Z=15.10 m) tilted 16.0 deg toward true South (azimuth -11.2 deg), lifted 0.14 m above roof slab with 0.26 m row gaps, aluminum perimeter frames, and steel support legs/rafters # estimated
+  - subobjects_vegetation: All planters, soil beds, and trees/shrubs separated from mesh into work/subobjects.json (9 planters + 9 trees/shrubs)
   - east_stair: East 2F deck (Y=35.2..51.8, X=24.8..27.0, Z=4.05..4.75) + 3-flight/2-landing stair (6+10+7 steps, terrace_deck treads) enclosed by 0.32 m white_panel solid cheek wall (X=26.68..27.00, open 1F piloti beneath Y<=58.6, solid to ground Y>=58.6) + 8-riser NE wide landscape steps (X=20.55..26.68, Y=69.72..71.40, Z=1.34->0.14) & continuous NE tower slit glass # estimated
 metrics:
-  tris_main: 25220
-  tris_win: 1320
-  tris_gls: 24
-  tris_lod1: 9614
-  tris_lod1_win: 1320
-  tris_lod2: 254
-  tris_lod2_win: 1320
-  windows_total: 660
+  tris_main: 46503
+  tris_win: 1364
+  tris_gls: 0
+  tris_lod1: 10279
+  tris_lod1_win: 1364
+  tris_lod2: 258
+  tris_lod2_win: 1364
+  windows_total: 682
   win_dropped: 0
   win_blocked: 0
   coplanar: 0

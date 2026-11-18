@@ -999,11 +999,7 @@ def entrance(stage):
         # Right cheek curb inside portico right opening: low step along stairs + landing height in back
         mb.box(PIER_X0, PIER_X0 + 0.25, EY + 1.8, yl, 0, 0.68, "stone_trim", skip=("bottom", "front", "back"))
         mb.box(PIER_X0, PIER_X0 + 0.25, yl, 0.0, 0, zl, "stone_trim", skip=("bottom", "front", "back"))
-        # Built-in granite planter & green shrubs inside the portico right portal (view_nw_base + side photo)
-        mb.box(PIER_X0 + 0.25, PORTICO_X1 + 0.08, EY + 1.8, 0.0, 0, 0.42,
-               dict(top="soil", default="stone_trim"), skip=("bottom", "front", "back", "left"))
-        for ya_s, yb_s, z_s in ((EY + 1.92, EY + 2.54, 0.78), (EY + 2.58, EY + 3.24, 0.92), (EY + 3.28, -0.08, 0.84)):
-            mb.box(PIER_X0 + 0.34, PORTICO_X1 - 0.02, ya_s, yb_s, 0.42, z_s, "foliage", skip=("bottom",))
+        # Right portal granite planter & shrubs moved to work/subobjects.json
         for i in range(ST_N):
             y0 = EY + i * ST_T
             mb.box(PORTICO_X0 + LP, PIER_X0, y0, y0 + ST_T, 0, ST_R * (i + 1), "canopy",
@@ -1051,10 +1047,7 @@ def entrance(stage):
         mb.rect([(rx_t1, yi0, z_mid), (rx_r1, yi0, zl), (rx_r1, yi1, zl), (rx_t1, yi1, z_mid)], "canopy")
         # Upper terrace in front of 1F landing window (x=6.8..10.6 -> connects behind left pillar onto portico landing)
         mb.box(rx_r1, PORTICO_X0, y_lf, yi1, 0.0, zl, dict(top="canopy", default="stone_trim"), skip=("bottom", "back", "right"))
-        # Small foreground shrub planter beside plaza ramp entry (106 photo)
-        mb.box(rx_r1 + 0.3, PORTICO_X0 - 0.15, y_lf - 0.65, y_lf, 0.0, 0.42,
-               dict(top="soil", default="stone_trim"), skip=("bottom", "back"))
-        mb.box(rx_r1 + 0.42, PORTICO_X0 - 0.27, y_lf - 0.55, y_lf - 0.08, 0.42, 0.80, "foliage", skip=("bottom",))
+        # Foreground shrub planter beside plaza ramp entry moved to work/subobjects.json
         # Continuous 5-bar guardrails + posts for the entire ㄷ자 path
         yo_r, xl_r, yc_r, yt_r, x_lport = yo0 + 0.06, rx_t0 + 0.06, (yc0 + yc1) / 2, y_lf + 0.06, PORTICO_X0 + LP + 0.10
         for dz in (0.90, 0.72, 0.54, 0.36, 0.18):

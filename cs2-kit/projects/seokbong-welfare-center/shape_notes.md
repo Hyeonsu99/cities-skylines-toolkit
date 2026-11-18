@@ -97,4 +97,10 @@
 
 - 검증 결과: `work/fix_west_compare.png` · `work/fix_west_railing_zoom.png`, 기준 스냅샷(`173313`) 대비 `--box=-26.5,-5.8,-29.6,34.8,0.0,10.8` 에서 UV 포함 및 위치 기준 모두 `outside=0`, `main = 33,141` tris (`<= 95k`), `LOD1 = 10,793` (`32.6% < 50%`), `LOD2 = 258` (`<= 500`), `gls = 88`, `win = 1,364`, `coplanar = 0`, `win_blocked = 0`, `build..fbx PASS`.
 
+## 9. 옥상 태양광 입체화 · 식재/화단 분리 · 간판 발광 축소 (2026-11-18)
+- 식재는 subobjects.json 으로 분리 (`work/subobjects.json`, 화분·화단 틀 9개 + 수목·관목 9개 총 18항목, 대지 중심 좌표계 기준).
+- 옥상 태양광 패널(`_build_solar_array`): 북측 지붕(6+4+2줄) 및 남동 지붕(5+2줄)을 줄 단위 입체 경사 거치대(실제 남향 `azimuth -11.2°`, 경사각 `16.0° # estimated`, 바닥 이격 `0.14 m # estimated`, 줄 간격 `0.26 m # estimated`, 알루미늄 테두리·지지대 + 짙은 청색 단결정 셀·은색 격자 텍스처)로 개선. 위성 정합 `63% -> 66%`, 타일 recall `39% -> 42%`, `DETAIL_COLOR 0/7` 유지.
+- 간판 글자 발광 축소: `sign_center_roof`(유효 발광 RGB `76,82,88 -> 25,27,29`), `sign_welfare_led`(`129,225,244 -> 43,75,81`), `sign_localfood`(`148,113,75 -> 49,37,25`) 모두 배경 발광 0을 유지하고 글자 획 발광만 기존 대비 약 1/3(33%)로 축소.
+
+
 

@@ -14,10 +14,10 @@
   -9.965
  ],
  "tris": {
-  "main": 77426,
+  "main": 77328,
   "win": 2970,
   "gls": 0,
-  "lod1": 11982,
+  "lod1": 11978,
   "lod1_win": 2970,
   "lod1_gls": 0,
   "lod2": 266,
@@ -582,7 +582,6 @@
    "ent_light",
    "ent_lintel",
    "flood_light",
-   "foliage",
    "frame",
    "glass",
    "grating",
@@ -605,7 +604,6 @@
    "roof",
    "se_glass",
    "soffit",
-   "soil",
    "stone",
    "stone_trim",
    "under_light",
@@ -643,7 +641,6 @@
    "roof",
    "se_glass",
    "soffit",
-   "soil",
    "stone",
    "stone_trim",
    "vestibule"

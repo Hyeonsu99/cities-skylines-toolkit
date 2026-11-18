@@ -997,8 +997,7 @@ def entrance(mb, stage):
     mb.box(6.15, 6.50, EY + 1.15, yl, 0, zl, "stone_trim", skip=("bottom", "front", "back"))
     mb.box(11.60, 11.88, EY + 1.80, yl, 0, 0.72, "stone_trim", skip=("bottom", "front", "back"))
     mb.box(11.60, 11.88, yl, 0.0, 0, zl, "stone_trim", skip=("bottom", "back"))
-    mb.box(11.88, 13.50, EY + 1.80, 0.0, 0, 0.44, dict(top="soil", default="stone_trim"),
-           skip=("bottom", "front", "left", "back"))
+    # Right portal granite planter & shrubs moved to work/subobjects.json
 
     # Vestibule glazing + dark granite behind-pier panel + protruding revolving door & right swing door bay
     mb.box(5.30, 6.50, -0.06, 0.0, zl, EZ0, dict(front="stone_trim", default="stone_trim"),
@@ -1015,9 +1014,7 @@ def entrance(mb, stage):
     if stage > 0:
         return
 
-    # Shrubs inside right portal planter + stainless stair & landing railings
-    for ya_s, yb_s, z_s in ((EY + 1.92, EY + 2.50, 0.86), (EY + 2.56, EY + 3.18, 1.04), (EY + 3.24, -0.08, 0.92)):
-        mb.box(11.98, 13.38, ya_s, yb_s, 0.44, z_s, "foliage", skip=("bottom",))
+    # Stainless stair & landing railings (right portal shrubs moved to work/subobjects.json)
 
     ya = EY + 0.20
     rail_z = lambda y: ST_R + (y - ya) / (yl - ya) * (zl - ST_R)
@@ -1119,12 +1116,7 @@ def entrance_extras(mb):
     mb.box(11.54, 11.60, EY + 0.30, EY + 0.60, 2.40, 2.75, "ent_light", skip=("right",))
     mb.box(13.60, 13.68, EY + 0.80, EY + 1.00, 3.05, 3.35, dict(default="stone_trim", bottom="ent_light"),
            skip=("left",))
-    # Low granite planter & disjoint evergreens beside plaza ramp entry & terrace wall
-    mb.box(2.75, 5.15, -3.75, -2.05, 0.0, 0.52, dict(top="soil", default="stone_trim"), skip=("bottom",))
-    for x0, x1, y0, y1, z1 in ((2.90, 3.60, -3.55, -2.40, 0.96),
-                               (3.66, 4.42, -3.60, -2.20, 1.24),
-                               (4.48, 5.04, -3.45, -2.30, 1.06)):
-        mb.box(x0, x1, y0, y1, 0.52, z1, "foliage", skip=("bottom",))
+    # Foreground granite planter & evergreens beside plaza ramp entry moved to work/subobjects.json
 
 
 # Closed 20-vertex CCW polygon at ground level (left pilotis wing steps back to Y=PIL_D=1.90)

@@ -205,7 +205,7 @@ def _paint_sign_center_roof(ctx):
         ty = (h2 - th) * 0.5 - by
         _draw_3d_text(rgb2, mask2, emis2, tx, ty, text, fnt,
                       fill_rgb=(40, 46, 54), shadow_rgb=(156, 162, 168),
-                      emis_val=165, shadow_off=(5, 5), shadow_blur=1.8)
+                      emis_val=95, shadow_off=(5, 5), shadow_blur=1.8)
 
     _render_sign_cell(ctx, "sign_center_roof", (232, 234, 232), paint_2x, relief=0.92)
     ctx.grain(amp=1.2, scale_px=2, height=0.05, seed=81)
@@ -234,7 +234,7 @@ def _paint_sign_welfare_led(ctx):
             if col is not None:
                 _draw_3d_text(rgb2, mask2, emis2, x, ty, ch_, fnt,
                               fill_rgb=col, shadow_rgb=(6, 8, 12),
-                              emis_val=244, shadow_off=(4, 4), shadow_blur=1.2)
+                              emis_val=140, shadow_off=(4, 4), shadow_blur=1.2)
             x += drw.textlength(ch_, font=fnt)
 
     _render_sign_cell(ctx, "sign_welfare_led", (18, 22, 28), paint_2x, relief=0.58)
@@ -267,10 +267,10 @@ def _paint_sign_localfood(ctx):
             ImageDraw.Draw(mask2).arc(bounds, 180, 360, fill=255, width=stroke)
         _draw_3d_text(rgb2, mask2, emis2, tx, ty, t_left, fnt,
                       fill_rgb=(24, 54, 72), shadow_rgb=(160, 166, 170),
-                      emis_val=155, shadow_off=(4, 4), shadow_blur=1.5)
+                      emis_val=90, shadow_off=(4, 4), shadow_blur=1.5)
         _draw_3d_text(rgb2, mask2, emis2, tx + tw_l + int(w2 * 0.004), ty, t_right, fnt,
                       fill_rgb=(198, 102, 34), shadow_rgb=(160, 166, 170),
-                      emis_val=175, shadow_off=(4, 4), shadow_blur=1.5)
+                      emis_val=100, shadow_off=(4, 4), shadow_blur=1.5)
         # 오른쪽 잎 모양 배지 (위 주황 반원 + 아래 초록 잎, 흰 테두리) — 실물 직매장 심볼
         cx, cy = tx + bx + tw + badge_r * 1.45, h2 * 0.5
         r = badge_r * 1.05
@@ -603,18 +603,20 @@ def _paint_solar_pv(ctx):
     mx, my = ctx.meters()
     fu = mx % 1.0
     fv = (my % 2.0) / 2.0
-    frame = (fu < 0.032) | (fu > 0.968) | (fv < 0.022) | (fv > 0.978)
-    cu = ((fu - 0.032) / 0.936 * 6.0) % 1.0
-    cv = ((fv - 0.022) / 0.956 * 10.0) % 1.0
-    grid_line = (cu < 0.032) | (cu > 0.968) | (cv < 0.028) | (cv > 0.972)
-    # 위성(sat_vworld_z19) 타일 평균 #384f56 유지 + 셀 미세 반사 변주
-    ctx.rgb[...] = np.array([44, 64, 74], np.float32)
+    frame = (fu < 0.022) | (fu > 0.978) | (fv < 0.016) | (fv > 0.984)
+    cu = ((fu - 0.022) / 0.956 * 6.0) % 1.0
+    cv = ((fv - 0.016) / 0.968 * 10.0) % 1.0
+    grid_line = (cu < 0.022) | (cu > 0.978) | (cv < 0.018) | (cv > 0.982)
+    busbar = (np.abs(cu - 0.33) < 0.007) | (np.abs(cu - 0.67) < 0.007)
+    # 짙은 청색 단결정 셀 + 가는 은색 격자 + 알루미늄 테두리 (위성 타일 평균 #384f56 정합 유지)
+    ctx.rgb[...] = np.array([44, 64, 76], np.float32)
     ctx.rgb += (2.5 * np.sin(2.0 * math.pi * (fu + fv)))[..., None]
-    ctx.rgb[grid_line & ~frame] = np.array([72, 94, 104], np.float32)
-    ctx.rgb[frame] = np.array([186, 192, 200], np.float32)
-    ctx.height[frame] += 0.25
+    ctx.rgb[busbar & ~grid_line & ~frame] = np.array([64, 86, 100], np.float32)
+    ctx.rgb[grid_line & ~frame] = np.array([116, 134, 148], np.float32)
+    ctx.rgb[frame] = np.array([188, 194, 202], np.float32)
+    ctx.height[frame] += 0.28
     ctx.height[grid_line & ~frame] -= 0.06
-    ctx.gloss[...] = np.where(frame, 0.58, 0.86)
+    ctx.gloss[...] = np.where(frame, 0.62, 0.88)
     ctx.emis[...] = 0.0
 
 
@@ -848,13 +850,13 @@ def make_atlas(size=4096):
           emissive=(255, 244, 212), px=128, painter=_paint_lamp_strip)
     A.add("window",        color=(74, 118, 150), ctrl=(0, 0, 0), metal=0.14, gloss=0.93,
           emissive=(255, 224, 166), px=768, painter=_paint_window_atlas)
-    # 간판 4종 개별 고해상도 칸 (실사 가로세로 비율 정렬)
+    # 간판 4종 개별 고해상도 칸 (실사 가로세로 비율 정렬; 글자 획 발광만 남기고 밝기를 기존 대비 약 1/3로 축소)
     A.add("sign_center_roof", color=(232, 234, 232), ctrl=(0, 0, 0), metal=0.14, gloss=0.42,
-          emissive=(118, 126, 136), px=256, variants=11, painter=_paint_sign_center_roof, normal_strength=2.6)
+          emissive=(68, 73, 78), px=256, variants=11, painter=_paint_sign_center_roof, normal_strength=2.6)
     A.add("sign_welfare_led", color=(18, 22, 28), ctrl=(0, 0, 0), metal=0.18, gloss=0.48,
-          emissive=(135, 235, 255), px=160, variants=11, painter=_paint_sign_welfare_led, normal_strength=2.4)
+          emissive=(78, 136, 148), px=160, variants=11, painter=_paint_sign_welfare_led, normal_strength=2.4)
     A.add("sign_localfood",   color=(232, 234, 232), ctrl=(0, 0, 0), metal=0.14, gloss=0.42,
-          emissive=(215, 165, 110), px=144, variants=12, painter=_paint_sign_localfood, normal_strength=2.5)
+          emissive=(124, 95, 64), px=144, variants=12, painter=_paint_sign_localfood, normal_strength=2.5)
     A.add("sign_monolith",    color=(84, 54, 42), ctrl=(0, 0, 0), metal=0.34, gloss=0.40,
           emissive=(255, 242, 216), px=288, variants=2, painter=_paint_sign_monolith, normal_strength=2.4)
     # UV는 빌드마다 layout() 결과로 다시 계산되므로 일반 add 로 넣는다 (키트 내부 _laid 조작 금지).
@@ -1451,39 +1453,97 @@ def _cheek_top_pipe_railing(mb, x_c, pts_yzb_zt, post_step=1.20, stage=0):
                     mb.box(x_c - 0.025, x_c + 0.025, py0, py1, zb, zt - 0.055, "railing_steel")
 
 
-def _cylinder_oct(mb, cx, cy, r, z0, z1, region, skip_bottom=True):
-    """8각 원통 닫힌 매스 (원형 화분용)."""
-    pts_b, pts_t = [], []
-    for i in range(8):
-        ang = 2.0 * math.pi * i / 8.0
-        px, py = cx + r * math.cos(ang), cy + r * math.sin(ang)
-        pts_b.append((px, py, z0))
-        pts_t.append((px, py, z1))
-    for i in range(8):
-        j = (i + 1) % 8
-        mb.rect([pts_b[i], pts_b[j], pts_t[j], pts_t[i]], region)
-    for k0, k1, k2, k3 in ((0, 1, 2, 3), (0, 3, 4, 5), (0, 5, 6, 7)):
-        mb.rect([pts_t[k0], pts_t[k1], pts_t[k2], pts_t[k3]], region)
-        if not skip_bottom:
-            mb.rect([pts_b[k3], pts_b[k2], pts_b[k1], pts_b[k0]], region)
+SOLAR_AZIMUTH_DEG = -11.2       # notes azimuth_deg (-11.2 deg: 건물 -Y 정면 대비 실제 남쪽 방위각)
+SOLAR_TILT_DEG = 16.0           # estimated (15~25 deg 옥상 경사형 태양광 거치대 각도)
+SOLAR_CLEAR_Z = 0.14            # estimated (바닥에서 띄운 전면 하단 이격 높이, 그림자 틈 확보)
+SOLAR_PANEL_T = 0.052           # estimated (알루미늄 프레임 모듈 두께 ~5cm)
+SOLAR_ROW_GAP = 0.20            # estimated (줄 사이 보행·음영 간격)
 
 
-def _terrace_planter_tree(mb, cx, cy, z_base, height_scale=1.0):
-    """서측 목재 테라스 원형 콘크리트 화분 + 다간 수목(대나무/관목)."""
-    _cylinder_oct(mb, cx, cy, 0.58, z_base, z_base + 0.68, "roof_concrete", skip_bottom=True)
-    _cylinder_oct(mb, cx, cy, 0.50, z_base + 0.65, z_base + 0.74, "green_planter", skip_bottom=True)
-    stems = (
-        (-0.14, -0.10, 2.35),
-        (0.15, -0.08, 2.85),
-        (0.02, 0.15, 3.25),
-    )
-    for dx, dy, h_raw in stems:
-        sh = h_raw * height_scale
-        sx, sy = cx + dx, cy + dy
-        mb.box(sx - 0.032, sx + 0.032, sy - 0.032, sy + 0.032, z_base + 0.72, z_base + 0.72 + sh, "terrace_deck")
-        cz = z_base + 0.72 + sh * 0.78
-        mb.box(sx - 0.28, sx + 0.28, sy - 0.28, sy + 0.28, cz - 0.28, cz + 0.32, "green_planter")
-        mb.box(sx - 0.20, sx + 0.20, sy - 0.20, sy + 0.20, cz + 0.32, cz + 0.64, "green_planter")
+def _build_solar_array(mb, sx0, sx1, sy0, sy1, z_roof, n_rows, stage):
+    """줄(row) 단위 남향(azimuth -11.2도, 기울기 16도) 입체 경사 태양광 어레이 + 알루미늄 테두리·하부 거치대."""
+    if stage >= 2:
+        return
+    az_rad = math.radians(SOLAR_AZIMUTH_DEG)
+    tilt_rad = math.radians(SOLAR_TILT_DEG)
+    # 실제 남쪽(azimuth -11.2도)을 향하도록 법선 기울기 성분 분해 (-Y 주경사 + 실제 남향 방위 보정)
+    slope_y = math.tan(tilt_rad) * math.cos(az_rad)
+    slope_x = -math.tan(tilt_rad) * math.sin(az_rad)
+
+    total_d = sy1 - sy0
+    row_gap = SOLAR_ROW_GAP if n_rows > 1 else 0.0
+    row_d = (total_d - (n_rows - 1) * row_gap) / max(1, n_rows)
+    A = mb.atlas
+
+    for r_idx in range(n_rows):
+        ry0 = sy0 + r_idx * (row_d + row_gap)
+        ry1 = ry0 + row_d
+        if stage == 1:
+            # LOD1: 줄 단위 단순화된 기울어진 판 상자 (기울기·배치 실루엣 유지)
+            zf = z_roof + SOLAR_CLEAR_Z
+            zb = zf + row_d * slope_y
+            dz = SOLAR_PANEL_T
+            b0, b1, b2, b3 = (sx0, ry0, zf), (sx1, ry0, zf), (sx1, ry1, zb), (sx0, ry1, zb)
+            t0, t1, t2, t3 = (sx0, ry0, zf + dz), (sx1, ry0, zf + dz), (sx1, ry1, zb + dz), (sx0, ry1, zb + dz)
+            mb.rect([t0, t1, t2, t3], "solar_pv")
+            mb.rect([b3, b2, b1, b0], "frame_metal")
+            mb.rect([b0, b1, t1, t0], "railing_steel")
+            mb.rect([b1, b2, t2, t1], "railing_steel")
+            mb.rect([b2, b3, t3, t2], "railing_steel")
+            mb.rect([b3, b0, t0, t3], "railing_steel")
+            continue
+
+        # stage == 0: 2m(2모듈) 거치대 테이블 단위로 실제 남향(-11.2도) 경사면 + 알루미늄 테두리 + 하부 지지대 구성
+        span_x = sx1 - sx0
+        n_tables = max(1, int(round(span_x / 2.0)))
+        step_x = span_x / n_tables
+        t_gap = 0.016
+        for t_idx in range(n_tables):
+            xa = sx0 + t_idx * step_x + (0.0 if t_idx == 0 else t_gap * 0.5)
+            xb = sx0 + (t_idx + 1) * step_x - (0.0 if t_idx == n_tables - 1 else t_gap * 0.5)
+            xc = 0.5 * (xa + xb)
+
+            def _z_bot(x, y):
+                return z_roof + SOLAR_CLEAR_Z + (y - ry0) * slope_y + max(-0.07, min(0.07, (x - xc) * slope_x))
+
+            z00, z10 = _z_bot(xa, ry0), _z_bot(xb, ry0)
+            z11, z01 = _z_bot(xb, ry1), _z_bot(xa, ry1)
+            dz = SOLAR_PANEL_T
+            b0, b1, b2, b3 = (xa, ry0, z00), (xb, ry0, z10), (xb, ry1, z11), (xa, ry1, z01)
+            t0, t1, t2, t3 = (xa, ry0, z00 + dz), (xb, ry0, z10 + dz), (xb, ry1, z11 + dz), (xa, ry1, z01 + dz)
+
+            uv_top = A.uv_tile("solar_pv", min(2.0, xb - xa), min(2.0, ry1 - ry0))
+            uv_bot = A.uv("frame_metal")
+            uv_rim = A.uv("railing_steel")
+            mb.quad([t0, t1, t2, t3], uv_top, "solar_pv")
+            mb.quad([b3, b2, b1, b0], uv_bot, "frame_metal")
+            mb.quad([b0, b1, t1, t0], uv_rim, "railing_steel")
+            mb.quad([b1, b2, t2, t1], uv_rim, "railing_steel")
+            mb.quad([b2, b3, t3, t2], uv_rim, "railing_steel")
+            mb.quad([b3, b0, t0, t3], uv_rim, "railing_steel")
+
+            # 하부 알루미늄·강재 경사 거치대 (바닥 베이스 레일 + 전/후 수직 지주 + 경사 서까래 보)
+            y_leg_f, y_leg_b = ry0 + 0.18, ry1 - 0.22
+            for xl in (xa + 0.26, xb - 0.26):
+                mb.box(xl - 0.024, xl + 0.024, ry0 + 0.12, ry1 - 0.14,
+                       z_roof, z_roof + 0.042, "frame_metal", skip=("bottom",))
+                zf_top = _z_bot(xl, y_leg_f) - 0.004
+                zb_top = _z_bot(xl, y_leg_b) - 0.004
+                if zf_top > z_roof + 0.05:
+                    mb.box(xl - 0.020, xl + 0.020, y_leg_f - 0.022, y_leg_f + 0.022,
+                           z_roof + 0.042, zf_top, "railing_steel", skip=("bottom", "top"))
+                if zb_top > z_roof + 0.05:
+                    mb.box(xl - 0.020, xl + 0.020, y_leg_b - 0.022, y_leg_b + 0.022,
+                           z_roof + 0.042, zb_top, "railing_steel", skip=("bottom", "top"))
+                # 경사 거치대 서까래 보 (패널 하부 4cm 높이)
+                _closed_quad_prism(
+                    mb,
+                    (xl - 0.018, y_leg_f - 0.04, zf_top - 0.038),
+                    (xl + 0.018, y_leg_f - 0.04, zf_top - 0.038),
+                    (xl + 0.018, y_leg_b + 0.04, zb_top - 0.038),
+                    (xl - 0.018, y_leg_b + 0.04, zb_top - 0.038),
+                    0.034, "frame_metal", tiled=False,
+                )
 
 
 def build_east_stair_and_terrace(mb, stage):
@@ -1828,10 +1888,14 @@ def build_north_wing(mb, A, wins, gls, stage):
     _box_var(mb, rx0, rx1 - parapet_t, ry1 - parapet_t, ry1, 20.00, 20.32, "white_panel", variant=1)
     _box_var(mb, rx0, rx1 - parapet_t, ry0, ry0 + 0.7, 20.00, 20.32, "white_panel", variant=2)
     _box_var(mb, rx0, rx0 + parapet_t, ry0 + 0.7, ry1 - parapet_t, 20.00, 20.32, "white_panel", variant=0)
-    # 중앙 옥탑 계단실 박스 + 저프로파일 태양광 어레이 (sat_vworld_z19.png 위성 배치 유지, 동측 X_max=23.6 내측 정렬)
+    # 중앙 옥탑 계단실 박스 + 입체 경사 거치대 태양광 어레이 (sat_vworld_z19.png 위성 줄 수·범위 정합 유지)
     _box_var(mb, 7.5, 13.5, 50.6, 56.0, 20.00, 21.15, "white_panel", variant=1)
-    for sx0, sx1, sy0, sy1 in ((-21.0, 7.0, 51.6, 68.8), (7.2, 23.6, 56.6, 68.8), (14.0, 23.6, 51.6, 56.4)):
-        mb.box(sx0, sx1, sy0, sy1, 20.00, 20.16, "solar_pv")
+    for sx0, sx1, sy0, sy1, n_rows in (
+        (-21.0, 7.0, 51.6, 68.8, 6),
+        (7.2, 23.6, 56.6, 68.8, 4),
+        (14.0, 23.6, 51.6, 56.4, 2),
+    ):
+        _build_solar_array(mb, sx0, sx1, sy0, sy1, 20.00, n_rows, stage)
 
 
 def build_middle_courtyard_and_east(mb, wins, gls, stage):
@@ -1873,15 +1937,11 @@ def build_middle_courtyard_and_east(mb, wins, gls, stage):
     for xb in xbars:
         # X방향 보와 Y방향 보가 교차점에서 COPLANAR 되지 않게 Z를 12.20..12.82로 미세 분리
         mb.box(xb - 0.45, xb + 0.45, py0, py1, 12.18, 12.82, "louver_white")
-    if stage == 0:
-        # 그린테라스 녹지 화단
-        mb.box(-24.2, -21.0, 36.2, 49.4, 9.26, 9.65, "green_planter")
-        mb.box(-9.0, -6.5, 36.2, 44.0, 9.26, 9.65, "green_planter")
+    # 그린테라스 녹지 화단 2개소 및 중정 브리지 상부 화단은 work/subobjects.json 으로 분리
 
     # B. 중앙 중정 (X in [-6.0, +8.2], Y in [35.2, 50.4]): 바닥 Z=0.14..0.50 + 북서 1층 연결 브리지 + 사방 유리 아트리움
     mb.box(-6.0, 8.2, 35.2, 50.4, 0.14, 0.50, "terrace_deck", skip=("bottom",))
-    mb.box(-6.0, -0.5, 44.6, 50.4, 0.50, 4.70, "white_panel", skip=("bottom",))
-    mb.box(-5.5, -1.0, 45.2, 49.8, 4.70, 5.05, "green_planter")
+    mb.box(-6.0, -0.5, 44.6, 50.4, 0.50, 4.70, {"top": "terrace_deck", "default": "white_panel"}, skip=("bottom",))
     if stage == 0:
         # 중정을 둘러싼 내부 커튼월 창 (북/남/동/서 4면 아트리움 개방감)
         _curtain_wall_grid(mb, wins, "y", 50.4, -1, -0.2, 8.0, 0.60, 14.0, nx=5, nz=6, floor0=0, unit0=130, stage=stage, louver_step=0)
@@ -2029,9 +2089,7 @@ def build_south_wings(mb, A, wins, gls, stage):
     ), stage=stage)
     if stage == 0:
         _sloped_pipe_railing(mb, -22.78, ((wy_b, wz_b), (wy_m0, wz_m), (wy_m1, wz_m), (wy_t0, wz_t)), h=0.92, stage=0)
-        # 서측 2층 목재 테라스(Z=4.82) 원형 콘크리트 화분 4기·대나무 식재 및 벤치 2기 (crop_dnbarch2_sw · crop_dnbarch3_sw 기준)
-        for px, py, hs in ((-24.00, 12.80, 0.90), (-21.30, 16.20, 1.05), (-23.70, 19.00, 0.95), (-22.20, 22.00, 1.10)):
-            _terrace_planter_tree(mb, px, py, wz_b, height_scale=hs)
+        # 서측 2층 목재 테라스(Z=4.82) 원형 화분·수목 4기는 work/subobjects.json 으로 분리, 벤치 2기는 유지
         _box_var(mb, -23.70, -22.60, 14.30, 14.95, wz_b, wz_b + 0.44, "white_panel", variant=0, skip=("bottom",))
         _box_var(mb, -23.10, -21.95, 20.30, 20.95, wz_b, wz_b + 0.44, "white_panel", variant=1, skip=("bottom",))
 
@@ -2126,9 +2184,9 @@ def build_south_wings(mb, A, wins, gls, stage):
     if stage == 0:
         _sign_quad(mb, A, [(6.8, 9.63, 14.98), (22.2, 9.63, 14.98), (22.2, 9.63, 16.32), (6.8, 9.63, 16.32)], "sign_center_roof")
 
-    # 남동 평지붕 태양광 어레이 2개소 (sat_vworld_z19.png 실측)
-    mb.box(3.8, 20.4, 14.0, 27.6, 15.10, 15.32, "solar_pv")
-    mb.box(3.8, 13.5, 29.0, 34.0, 15.10, 15.32, "solar_pv")
+    # 남동 평지붕 입체 경사 태양광 어레이 2개소 (sat_vworld_z19.png 실측 줄 수·범위 정합)
+    _build_solar_array(mb, 3.8, 20.4, 14.0, 27.6, 15.10, 5, stage)
+    _build_solar_array(mb, 3.8, 13.5, 29.0, 34.0, 15.10, 2, stage)
 
 
 def build_south_ramp_and_entrance(mb, A, wins, gls, stage):
@@ -2170,23 +2228,7 @@ def build_south_ramp_and_entrance(mb, A, wins, gls, stage):
             yp = ramp_yf(xp) + 0.06
             zp = ramp_zb(xp) + dz_ramp
             mb.box(xp - 0.025, xp + 0.025, yp, yp + 0.06, zp, zp + 1.04, "railing_steel")
-        # 2b) 경사로 끝 2층 수평 테라스(로컬푸드 위 X=14.8..26.25) 쐐기형 녹지 화단 + 국기게양대 3기 (zoom_dnb2_corner_top · crop_dnbarch2_se 기준)
-        _closed_quad_prism(
-            mb,
-            (14.80, ramp_yf(14.80) + 0.16, 4.85),
-            (24.75, ramp_yf(24.75) + 0.16, 4.85),
-            (24.75, 8.20, 4.85),
-            (14.80, 7.82, 4.85),
-            0.25, "green_planter", skip_bottom=True,
-        )
-        _closed_quad_prism(
-            mb,
-            (24.82, 7.05, 4.75),
-            (26.25, 7.05, 4.75),
-            (26.25, 8.20, 4.75),
-            (24.82, 8.20, 4.75),
-            0.33, "green_planter", skip_bottom=True,
-        )
+        # 2b) 경사로 끝 2층 수평 테라스 국기게양대 3기 (녹지 화단 2개소는 work/subobjects.json 으로 분리)
         for idx_f, (fx, fh) in enumerate(((20.00, 11.80), (21.80, 13.40), (23.60, 11.80))):
             mb.box(fx - 0.08, fx + 0.08, 8.47, 8.63, 4.85, 5.05, "frame_metal", skip=("bottom",))
             mb.box(fx - 0.024, fx + 0.024, 8.526, 8.574, 5.05, fh, "railing_steel")
