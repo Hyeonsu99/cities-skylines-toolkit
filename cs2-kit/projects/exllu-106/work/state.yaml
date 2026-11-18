@@ -145,14 +145,39 @@
     "key": null
    },
    "fbx": null
+  },
+  "color": {
+   "at": "2026-11-18T10:31:48",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "color",
+   "gate": "output/HighriseTower106_L1_5x6/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "734e59bc5cfce2eea29eca32f612ca87e45c9984cda0f73c4eccef11ee21bd23",
+   "preview": {
+    "path": "previews/HighriseTower106_L1_5x6.png",
+    "exists": true,
+    "sha256": "afceb374c04fdfe2deab585305fcdee59e345e79fe2970d7ad72aaea187ffcbd",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-13T17:23:24",
+ "updated_at": "2026-11-18T10:31:48",
  "current_stage": "final:INCOMPLETE",
  "generator": "exllu_106_cs2.py",
- "generator_hash": "f1be98cd22ec6f75a799d1a5c3a3ac2033834b52aeab4a1be8525a914db7bfd1",
+ "generator_hash": "734e59bc5cfce2eea29eca32f612ca87e45c9984cda0f73c4eccef11ee21bd23",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "4d790245475285534230d9092b1250b64391602902b137a92f82f5529ca459d8",
+ "reviewed_preview_hash": "bfe14a457ab15c31f8e1b30a7034f1f04ca1e751aa09ef8bd2ec417aa7890ac6",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",

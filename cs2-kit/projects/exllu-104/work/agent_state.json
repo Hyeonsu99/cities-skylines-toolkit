@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "exllu_104_cs2.py",
- "generator_hash": "6855ff741f1b2a10babd1abc7209e2b39b9e680851cc8d801b1b251ce6da0512",
- "current_preview_hash": "b6c5396391f89286fbfd62a16f85b6c031a77b4416e190bd451f7e9eab84e051",
+ "generator_hash": "4070bca28202e40e2acdf0e76bab728887faeb43ada10f9759c93723f6ada31f",
+ "current_preview_hash": "6c9bd56275bbc5ef11d43f706998a10d240b9a0d08ecc2b8d09c76209f333b9a",
  "last_gate": {
   "status": "PASS",
   "project": "exllu-104",
@@ -29,8 +29,8 @@
    "report": "output\\HighriseTower104_L1_5x4\\_check\\report.json"
   },
   "asset": "HighriseTower104_L1_5x4",
-  "label": "",
-  "time": "2026-11-13 17:18:27",
+  "label": "crosscheck",
+  "time": "2026-11-18 10:36:22",
   "build": {
    "asset": "HighriseTower104_L1_5x4",
    "fbx": true,
@@ -97,7 +97,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 10.0
+    "time_s": 2.9
    },
    "report": "output\\HighriseTower104_L1_5x4\\_check\\report.json"
   },
@@ -107,7 +107,7 @@
    "lines": [
     "MATCH    front floor pitch: photo 2.90 m / model 2.95 m (+2%)",
     "INFO     front window bay pitch: photo 1.70 m / model 3.40 m (+100%)  (bays differ - check window columns)",
-    "INFO     front edge agreement 90%"
+    "INFO     front edge agreement 89%"
    ],
    "status": "PASS"
   },
@@ -116,7 +116,7 @@
    "status": "PASS",
    "simplified": [],
    "detail": [
-    "DETAIL front recall 75% precision 91% worst r0c0 (75%) simplified_tiles 0/1"
+    "DETAIL front recall 76% precision 91% worst r0c0 (76%) simplified_tiles 0/1"
    ],
    "detail_color": [
     "DETAIL_COLOR front tiles_off 0/1 (dE>14; trusted tiles only)"
@@ -153,21 +153,21 @@
   "reason": "all requested checks passed"
  },
  "project": "exllu-104",
- "updated_at": "2026-11-13T17:22:24",
- "visual_review_note": "Reviewed Type B entrance EXLLU TOWER lower travertine lintel + swapped-fixed upper clerestory + gold 104 pier numerals; close-up verified.",
+ "updated_at": "2026-11-18T10:36:37",
+ "visual_review_note": "총괄 교차 검토: 포디움 청회색·유리 하늘색이 정면 사진과 일치, 창 구획 INFO는 기존 항목",
  "visual_review_artifacts": [
   {
    "file": "previews/HighriseTower104_L1_5x4.png",
-   "sha256": "b6c5396391f89286fbfd62a16f85b6c031a77b4416e190bd451f7e9eab84e051"
+   "sha256": "6c9bd56275bbc5ef11d43f706998a10d240b9a0d08ecc2b8d09c76209f333b9a"
   },
   {
    "file": "previews/photo_check/facade_front.png",
-   "sha256": "acd641ac77741dd23f06cca1198dcf6fc1381c1f544c0e424d393fcf89910ec0"
+   "sha256": "759bab2f9af7a2226bc64941ddfa01c5cac2722c0a340184264211146dd3264e"
   },
   {
    "file": "previews/tiles/front_map.png",
-   "sha256": "5ad485d873cc1a1763ebc583a02cdf8d6a5b9eb6edfe8c5d4d157b9312bca2b3"
+   "sha256": "38a9edd833badf11938818a0474fd24cc91b3665f6f5dbf2ddc320fb343c8c8c"
   }
  ],
- "reviewed_preview_hash": "b6c5396391f89286fbfd62a16f85b6c031a77b4416e190bd451f7e9eab84e051"
+ "reviewed_preview_hash": "6c9bd56275bbc5ef11d43f706998a10d240b9a0d08ecc2b8d09c76209f333b9a"
 }

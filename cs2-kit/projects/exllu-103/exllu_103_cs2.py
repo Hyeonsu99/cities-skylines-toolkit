@@ -72,11 +72,11 @@ def granite(ctx, cols, rows, darken, speck, polish=0.0):
     """Granite cladding: bevelled slab joints, slab-to-slab tone shift, crystal speckle at three scales,
     faint rain streaks and a gloss map (polished slabs, matt joints). Sized for 512-1024 px tiles."""
     k = ctx.w / 256.0
-    d = ctx.joints(cols=cols, rows=rows, width_m=0.010, depth=1.4, stagger=0.0, darken=darken, tone=5.0)
+    d = ctx.joints(cols=cols, rows=rows, width_m=0.010, depth=1.4, stagger=0.0, darken=darken, tone=6.5)
     ctx.grain(amp=speck * 0.9, scale_px=max(2, int(1.5 * k)), height=0.5, seed=3)         # crystals
     ctx.rgb += ctx.noise(max(4, int(7 * k)), speck * 0.7, 3, seed=5)[..., None]             # mottling
     ctx.rgb += ctx.noise(max(16, int(40 * k)), speck * 0.5, 2, seed=9)[..., None]           # cloudy patches
-    ctx.stains(amount=0.05, scale_px=max(32, int(64 * k)), streaks=0.6, seed=2)
+    ctx.stains(amount=0.065, scale_px=max(32, int(64 * k)), streaks=0.6, seed=2)
     ctx.gloss[...] = np.clip(ctx.gloss + polish + 0.06 * ctx.noise(max(8, int(20 * k)), 1.0, 2, seed=11), 0.05, 0.95)
     ctx.gloss[d > 0.2] = 0.15
 
@@ -158,7 +158,7 @@ def soffit(ctx):
 
 
 def window_glass(ctx):
-    """Window cell: green-tinted glass (photos), sky reflection, diagonal glint, curtains, ~30 % lit at night.
+    """Window cell: blue-grey glass (photos), sky reflection, diagonal glint, curtains, ~30 % lit at night.
     Slots follow WindowSet.build's layout (5x5 grid, n x n slots per cell)."""
     g = K.REF_GRID
     units = max([w["unit"] for w in WS.items] + [0]) + 1
@@ -173,11 +173,11 @@ def window_glass(ctx):
     fu, fv = su % 1.0, sv % 1.0
     h = (sid * 2654435761) % 1000 / 1000.0          # stable per-slot random
     h2, h3 = (h * 7) % 1.0, (h * 13) % 1.0
-    ctx.rgb[...] = np.array([64, 106, 108], np.float32) + ((h - 0.5) * 18)[..., None]
-    ctx.rgb += (fv * 46 - 6)[..., None]                               # sky reflection, brighter towards the top
+    ctx.rgb[...] = np.array([71, 115, 136], np.float32) + ((h - 0.5) * 24)[..., None]
+    ctx.rgb += (fv * 34 - 5)[..., None]                               # sky reflection, brighter towards the top
     m = (fu * 0.7 + fv) % 1.0
-    ctx.rgb += (((m > 0.30) & (m < 0.37)) * 20.0)[..., None]          # glint streak
-    ctx.rgb += (((m > 0.62) & (m < 0.64)) * 12.0)[..., None]
+    ctx.rgb += (((m > 0.30) & (m < 0.37)) * 12.0)[..., None]          # glint streak
+    ctx.rgb += (((m > 0.62) & (m < 0.64)) * 6.0)[..., None]
     edge = np.minimum(np.minimum(fu, 1 - fu), np.minimum(fv, 1 - fv))
     ctx.rgb *= (0.72 + 0.28 * np.clip(edge / 0.035, 0, 1))[..., None]  # reveal shadow at the frame
     curt = h2 < 0.45                                                  # side curtains with folds
@@ -238,7 +238,7 @@ def obs_glass(ctx):
     ctx.rgb[fr] = np.array([208, 212, 210], np.float32)
     glow = 0.42 * (1.0 - 0.55 * np.clip(mz / OBS_GH, 0.0, 1.0)) + 0.14
     ctx.emis[...] = np.where(fr, 0.0, glow)
-    ctx.gloss[...] = np.where(fr, 0.5, 0.92)
+    ctx.gloss[...] = np.where(fr, 0.5, 0.86)
 
 
 def se_curtain(ctx):
@@ -253,7 +253,7 @@ def se_curtain(ctx):
     fr = mull | trans | ((mz > 1.72) & (mz < 1.76))
     ctx.rgb[fr] = np.array([210, 214, 216], np.float32)
     ctx.emis[...] = np.where(fr | spandrel, 0.0, 0.18)
-    ctx.gloss[...] = np.where(fr, 0.48, np.where(spandrel, 0.55, 0.93))
+    ctx.gloss[...] = np.where(fr, 0.48, np.where(spandrel, 0.55, 0.86))
 
 
 def skylight(ctx):
@@ -424,16 +424,16 @@ TEX = {  # tile = one 2.4 m x one storey, so joints line up with floors
 
 A = K.Atlas(size=4096, pad=16)
 for name, color, metal, gloss, px in (
-        ("stone", (102, 96, 94), 0.0, 0.35, 128),        # warm dark granite (user-02/03/05, lightened per gate)
-        ("stone_trim", (98, 92, 90), 0.0, 0.35, 64),     # granite trim / podium ledges
-        ("pale", (238, 235, 226), 0.0, 0.32, 128),       # sunlit warm cream limestone (fixes gate COLOR_OFF)
+        ("stone", (101, 101, 111), 0.0, 0.29, 128),     # cool charcoal granite (user-02/03)
+        ("stone_trim", (91, 92, 101), 0.0, 0.31, 64),     # granite trim / podium ledges
+        ("pale", (233, 232, 226), 0.0, 0.28, 128),       # sunlit warm cream limestone (fixes gate COLOR_OFF)
         ("crown_white", (236, 237, 234), 0.15, 0.42, 64), # helipad rim / core / bridge frame
         ("core_glow", (236, 232, 222), 0.1, 0.4, 32),    # illuminated helipad central core
         ("deck_under", (90, 94, 100), 0.35, 0.4, 64),    # slim underside deck plate
-        ("crown_glass", (128, 182, 174), 0.5, 0.9, 128), # light green reflective observatory glass (roof.jpg)
+        ("crown_glass", (111, 157, 147), 0.32, 0.86, 128), # light green reflective observatory glass (roof.jpg)
         ("obs_roof", (64, 84, 100), 0.6, 0.92, 128),     # dark blue-grey skylight glass
-        ("railing", (212, 215, 218), 0.65, 0.55, 64),    # galvanized / brushed steel open rails
-        ("se_glass", (142, 182, 188), 0.45, 0.92, 128),  # SE top 4-floor curtain wall (user-12-se / site.jpg)
+        ("railing", (195, 199, 202), 0.65, 0.50, 64),    # galvanized / brushed steel open rails
+        ("se_glass", (124, 160, 174), 0.30, 0.86, 128),  # SE top 4-floor curtain wall (user-12-se / site.jpg)
         ("frame", (236, 237, 235), 0.3, 0.5, 64),        # white window frames
         ("louver", (232, 233, 230), 0.2, 0.4, 64),       # AC louver panels
         ("louver_back", (68, 70, 74), 0.0, 0.3, 64),
@@ -441,15 +441,15 @@ for name, color, metal, gloss, px in (
         ("deck", (156, 158, 156), 0.0, 0.3, 64),
         ("heli_green", (74, 142, 104), 0.0, 0.25, 64),
         ("heli_white", (234, 236, 228), 0.0, 0.25, 64),
-        ("pier_pink", (184, 146, 136), 0.0, 0.4, 128),
-        ("pier_course", (190, 162, 152), 0.0, 0.35, 256),
-        ("pier_num", (184, 146, 136), 0.0, 0.45, 512),
-        ("pier_side_num", (102, 96, 94), 0.0, 0.45, 256),
-        ("ent_lintel", (232, 228, 218), 0.0, 0.32, 512),
+        ("pier_pink", (176, 150, 148), 0.0, 0.34, 128),
+        ("pier_course", (183, 160, 157), 0.0, 0.32, 256),
+        ("pier_num", (176, 150, 148), 0.0, 0.34, 512),
+        ("pier_side_num", (101, 101, 111), 0.0, 0.36, 256),
+        ("ent_lintel", (208, 201, 193), 0.0, 0.28, 512),
         ("canopy", (166, 168, 166), 0.2, 0.45, 128),
         ("glass", (150, 185, 180), 0.0, 0.35, 64),
         ("grey_stone", (158, 156, 152), 0.0, 0.3, 128),
-        ("pale_trim", (236, 233, 225), 0.0, 0.32, 64),
+        ("pale_trim", (222, 222, 218), 0.0, 0.28, 64),
         ("grey_trim", (156, 154, 148), 0.0, 0.3, 64),
         ("heli_net", (156, 160, 164), 0.6, 0.45, 64),    # open alpha-cut perimeter mesh
         ("grating", (142, 146, 148), 0.6, 0.35, 64),     # access platform / stair treads

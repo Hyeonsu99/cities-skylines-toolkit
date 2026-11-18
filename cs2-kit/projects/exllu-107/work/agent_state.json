@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "exllu_107_cs2.py",
- "generator_hash": "02f312286d543b5fe235226a1c434b35b1025ef86f21131dc372833b4d46b274",
- "current_preview_hash": "57bb0e704775dc8703fd93c6c4d551ff322add947818feebcf581fd0de30c8e7",
+ "generator_hash": "2efec56e8eafe4ee5ec2b50c9c054574985fc61791556d054267dd76170b915b",
+ "current_preview_hash": "30afdf6d777d357aa1f4451e25f560fe3094b81a92c0f4d2b10092ee8bcc305c",
  "last_gate": {
   "status": "PASS",
   "project": "exllu-107",
@@ -29,8 +29,8 @@
    "report": "output\\HighriseTower107_L1_5x6\\_check\\report.json"
   },
   "asset": "HighriseTower107_L1_5x6",
-  "label": "",
-  "time": "2026-11-13 17:23:36",
+  "label": "color",
+  "time": "2026-11-18 10:32:07",
   "build": {
    "asset": "HighriseTower107_L1_5x6",
    "fbx": true,
@@ -97,7 +97,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 19.6
+    "time_s": 5.5
    },
    "report": "output\\HighriseTower107_L1_5x6\\_check\\report.json"
   },
@@ -107,7 +107,7 @@
    "lines": [
     "INFO     front floor pitch: photo 2.50 m / model 2.05 m (-18%)  -> photo shows ~1 floor bands over the wall height, model ~2 (model needs FEWER floors or taller floors) (low-confidence photo evidence - do not auto-change floors)",
     "INFO     front window bay pitch: photo 1.95 m / model 1.55 m (-21%)  (bays differ - check window columns)",
-    "INFO     front edge agreement 65%"
+    "INFO     front edge agreement 63%"
    ],
    "status": "PASS"
   },
@@ -116,7 +116,7 @@
    "status": "PASS",
    "simplified": [],
    "detail": [
-    "DETAIL front recall 62% precision 63% worst r0c0 (62%) simplified_tiles 0/1"
+    "DETAIL front recall 59% precision 63% worst r0c0 (59%) simplified_tiles 0/1"
    ],
    "detail_color": [
     "DETAIL_COLOR front tiles_off 0/1 (dE>14; trusted tiles only)"
@@ -153,21 +153,21 @@
   "reason": "all requested checks passed"
  },
  "project": "exllu-107",
- "updated_at": "2026-11-13T17:23:55",
- "visual_review_note": "reviewed current artifacts",
+ "updated_at": "2026-11-18T10:33:04",
+ "visual_review_note": "Compared current preview against photo evidence. Rerun changed only the banner; photo and tile sheet hashes match inspected artifacts.",
  "visual_review_artifacts": [
   {
    "file": "previews/HighriseTower107_L1_5x6.png",
-   "sha256": "57bb0e704775dc8703fd93c6c4d551ff322add947818feebcf581fd0de30c8e7"
+   "sha256": "30afdf6d777d357aa1f4451e25f560fe3094b81a92c0f4d2b10092ee8bcc305c"
   },
   {
    "file": "previews/photo_check/facade_front.png",
-   "sha256": "8e75df7cd45e794427355dba56ffdec44115fc888760c5f754c81c698b75aa87"
+   "sha256": "84cfda63422b1988427c910df16bef8d41c838fd36b2ca5449a1d2b3907ccceb"
   },
   {
    "file": "previews/tiles/front_map.png",
-   "sha256": "11e2a284161f515fa0eca1f5724255e7315926dad66faf48914011aad6100f05"
+   "sha256": "2c09113f803cba4060267e5b0b4416a4035928aa4e56752d6de32ac272c72e1b"
   }
  ],
- "reviewed_preview_hash": "57bb0e704775dc8703fd93c6c4d551ff322add947818feebcf581fd0de30c8e7"
+ "reviewed_preview_hash": "30afdf6d777d357aa1f4451e25f560fe3094b81a92c0f4d2b10092ee8bcc305c"
 }

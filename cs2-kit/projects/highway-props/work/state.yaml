@@ -1,0 +1,55 @@
+{
+ "version": 1,
+ "project": "highway-props",
+ "stages": {
+  "mass": {
+   "at": "2026-11-18T10:26:47",
+   "mode": "quick",
+   "status": "FAIL",
+   "label": null,
+   "gate": "output/_check/gate.json",
+   "checks": {
+    "build": "FAIL"
+   },
+   "generator_hash": "7d70ec8d14091deb6f5b0018b001b4fd534e737678dd93e36b1b85ff18289583",
+   "preview": null,
+   "fbx": null
+  },
+  "final": {
+   "at": "2026-11-18T10:36:20",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "final",
+   "gate": "output/MedianBarrierConcrete_L1_1x1/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "5de1372ced4fcbce9d2f1526de5255ef973841dc4a92f26aea11168ba5e1643c",
+   "preview": {
+    "path": "previews/MedianBarrierConcrete_L1_1x1.png",
+    "exists": true,
+    "sha256": "3dd00f796ccaf7f77ce7b2d8f3455ac04e1f6470d6d3d2b34f4ac8601cdaa5a5",
+    "key": null
+   },
+   "fbx": null
+  }
+ },
+ "updated_at": "2026-11-18T10:36:20",
+ "current_stage": "final:INCOMPLETE",
+ "generator": "median_barrier_cs2.py",
+ "generator_hash": "5de1372ced4fcbce9d2f1526de5255ef973841dc4a92f26aea11168ba5e1643c",
+ "visual_review": "NOT_CHECKED",
+ "reviewed_preview_hash": "efdd3002ed653db3fb711c82407e823421e22aeb8fb8ecdfad4a4f974edff605",
+ "last_gate": {
+  "mode": "final",
+  "status": "INCOMPLETE",
+  "path": "output/MedianBarrierConcrete_L1_1x1/_check/gate.json"
+ }
+}

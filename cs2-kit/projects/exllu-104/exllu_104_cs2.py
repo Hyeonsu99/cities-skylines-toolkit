@@ -46,11 +46,11 @@ SILL, HEAD = 0.82, 2.62                       # window sill and head heights (1.
 
 def granite(ctx, cols, rows, darken, speck, polish=0.0):
     k = ctx.w / 256.0
-    d = ctx.joints(cols=cols, rows=rows, width_m=0.010, depth=1.4, stagger=0.0, darken=darken, tone=5.0)
+    d = ctx.joints(cols=cols, rows=rows, width_m=0.010, depth=1.4, stagger=0.0, darken=darken, tone=6.5)
     ctx.grain(amp=speck * 0.9, scale_px=max(2, int(1.5 * k)), height=0.5, seed=3)
     ctx.rgb += ctx.noise(max(4, int(7 * k)), speck * 0.7, 3, seed=5)[..., None]
     ctx.rgb += ctx.noise(max(16, int(40 * k)), speck * 0.5, 2, seed=9)[..., None]
-    ctx.stains(amount=0.05, scale_px=max(32, int(64 * k)), streaks=0.6, seed=2)
+    ctx.stains(amount=0.065, scale_px=max(32, int(64 * k)), streaks=0.6, seed=2)
     ctx.gloss[...] = np.clip(ctx.gloss + polish + 0.06 * ctx.noise(max(8, int(20 * k)), 1.0, 2, seed=11), 0.05, 0.95)
     ctx.gloss[d > 0.2] = 0.15
 
@@ -138,7 +138,7 @@ def window_glass(ctx):
     fu, fv = su % 1.0, sv % 1.0
     h = (sid * 2654435761) % 1000 / 1000.0
     h2, h3 = (h * 7) % 1.0, (h * 13) % 1.0
-    ctx.rgb[...] = np.array([96, 146, 168], np.float32) + ((h - 0.5) * 16)[..., None]
+    ctx.rgb[...] = np.array([82, 126, 151], np.float32) + ((h - 0.5) * 24)[..., None]
     ctx.rgb += (fv * 42 - 4)[..., None]
     m = (fu * 0.7 + fv) % 1.0
     ctx.rgb += (((m > 0.30) & (m < 0.37)) * 20.0)[..., None]
@@ -192,7 +192,7 @@ def hopper_vent(ctx):
     ctx.height[glass] = 0.3
     ctx.gloss[sash_outer] = 0.12
     ctx.gloss[sash_inner] = 0.45
-    ctx.gloss[glass] = 0.78
+    ctx.gloss[glass] = 0.70
 
 
 def soil(ctx):
@@ -207,7 +207,7 @@ def brushed_stainless(ctx):
     ctx.rgb += (3.5 * ctx.noise(max(16, int(48 * k)), 1.0, 2, seed=32))[..., None] * 0.6
     d = np.minimum(ctx.v, 1.0 - ctx.v)
     ctx.rgb[d < 0.05] *= 0.80
-    ctx.gloss[...] = np.clip(0.80 + 0.08 * ctx.noise(max(4, int(12 * k)), 1.0, 2, seed=33), 0.65, 0.92)
+    ctx.gloss[...] = np.clip(0.72 + 0.07 * ctx.noise(max(4, int(12 * k)), 1.0, 2, seed=33), 0.65, 0.92)
 
 
 def fan_grille(ctx):
@@ -398,26 +398,26 @@ TEX = {
 
 A = K.Atlas(size=4096, pad=16)
 for name, color, metal, gloss, px in (
-        ("stone", (54, 60, 72), 0.0, 0.35, 128),           # photo 155809: blue-charcoal granite (#374762 zone)
-        ("stone_trim", (50, 56, 66), 0.0, 0.35, 64),
-        ("pale", (226, 228, 226), 0.0, 0.3, 128),
-        ("maroon", (96, 48, 54), 0.0, 0.3, 128),
+        ("stone", (68, 74, 86), 0.0, 0.29, 128),           # photo 155809: blue-charcoal granite
+        ("stone_trim", (56, 62, 73), 0.0, 0.31, 64),
+        ("pale", (229, 229, 225), 0.0, 0.27, 128),
+        ("maroon", (90, 57, 64), 0.0, 0.27, 128),
         ("travertine", (198, 188, 174), 0.0, 0.35, 128),
-        ("ent_lintel", (198, 188, 174), 0.0, 0.35, 512),
+        ("ent_lintel", (193, 185, 175), 0.0, 0.29, 512),
         ("crown_white", (232, 233, 230), 0.1, 0.4, 64),
         ("railing", (200, 203, 205), 0.6, 0.5, 64),
         ("frame", (218, 222, 225), 0.3, 0.5, 64),
         ("louver", (230, 231, 229), 0.2, 0.4, 64),
         ("roof", (120, 122, 122), 0.0, 0.3, 64),
-        ("pier_pink", (190, 150, 140), 0.0, 0.4, 128),
-        ("pier_course", (196, 166, 156), 0.0, 0.35, 256),
-        ("pier_num", (190, 150, 140), 0.0, 0.45, 512),
+        ("pier_pink", (179, 149, 146), 0.0, 0.34, 128),
+        ("pier_course", (185, 159, 154), 0.0, 0.32, 256),
+        ("pier_num", (179, 149, 146), 0.0, 0.34, 512),
         ("canopy", (160, 163, 162), 0.2, 0.45, 128),
         ("grey_stone", (168, 168, 164), 0.0, 0.3, 128),
         ("clerestory", (44, 58, 66), 0.5, 0.9, 128),
         ("vestibule", (46, 62, 66), 0.3, 0.9, 1024),
         ("rev_glass", (38, 66, 72), 0.45, 0.9, 128),
-        ("stainless", (212, 216, 220), 0.78, 0.82, 128),
+        ("stainless", (198, 202, 205), 0.76, 0.72, 128),
         ("fan_grille", (78, 82, 88), 0.45, 0.55, 128),
         ("soffit", (206, 208, 204), 0.0, 0.3, 256),
         ("soil", (72, 54, 40), 0.0, 0.15, 64),

@@ -568,14 +568,89 @@
     "key": null
    },
    "fbx": null
+  },
+  "color_v1": {
+   "at": "2026-11-18T10:38:51",
+   "mode": "visual",
+   "status": "INCOMPLETE",
+   "label": "color_v1",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "NOT_CHECKED",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "77963ccbb69838a8216d7869f25c0cdb871dd7f67b649e58ec80a01cdd75c222",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "04042d1e1f87a8c16a70926202ed8561cab3afec29043bc4a2ea0949ed2becba",
+    "key": null
+   },
+   "fbx": null
+  },
+  "color": {
+   "at": "2026-11-18T10:41:48",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "color",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "cc637ae54ab68cc2d7feececa68ffa49daad69ff0694ac24df124b3475979eda",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "ef0d96bb46f136152960f00df84992e1ae9ddda55b8177ac62efcc408db47713",
+    "key": null
+   },
+   "fbx": null
+  },
+  "crosscheck": {
+   "at": "2026-11-18T10:46:30",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "crosscheck",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "cc637ae54ab68cc2d7feececa68ffa49daad69ff0694ac24df124b3475979eda",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "418e6ba2590bb191a0eb622e62351002f9dd3006ee6876558a48956bcd6fc2fe",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-17T16:22:38",
+ "updated_at": "2026-11-18T10:46:30",
  "current_stage": "final:INCOMPLETE",
  "generator": "seokbong_welfare_center_cs2.py",
- "generator_hash": "1fab0c8c3d046cd9afb24c8572fa87ffac1c0dc4ed41e33b996a6d07d9d454f1",
+ "generator_hash": "cc637ae54ab68cc2d7feececa68ffa49daad69ff0694ac24df124b3475979eda",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "193a77856f2549230cfe269e23fbab259633e3081f5b6add56f9ba1e34dca769",
+ "reviewed_preview_hash": "ef0d96bb46f136152960f00df84992e1ae9ddda55b8177ac62efcc408db47713",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",

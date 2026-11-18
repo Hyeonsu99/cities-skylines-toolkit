@@ -49,11 +49,11 @@ SILL, HEAD = 0.75, 2.45                       # standard window sill and head he
 
 def granite(ctx, cols, rows, darken, speck, polish=0.0):
     k = ctx.w / 256.0
-    d = ctx.joints(cols=cols, rows=rows, width_m=0.010, depth=1.4, stagger=0.0, darken=darken, tone=5.0)
+    d = ctx.joints(cols=cols, rows=rows, width_m=0.010, depth=1.4, stagger=0.0, darken=darken, tone=6.5)
     ctx.grain(amp=speck * 0.9, scale_px=max(2, int(1.5 * k)), height=0.5, seed=3)
     ctx.rgb += ctx.noise(max(4, int(7 * k)), speck * 0.7, 3, seed=5)[..., None]
     ctx.rgb += ctx.noise(max(16, int(40 * k)), speck * 0.5, 2, seed=9)[..., None]
-    ctx.stains(amount=0.05, scale_px=max(32, int(64 * k)), streaks=0.6, seed=2)
+    ctx.stains(amount=0.065, scale_px=max(32, int(64 * k)), streaks=0.6, seed=2)
     ctx.gloss[...] = np.clip(ctx.gloss + polish + 0.06 * ctx.noise(max(8, int(20 * k)), 1.0, 2, seed=11), 0.05, 0.95)
     ctx.gloss[d > 0.2] = 0.15
 
@@ -141,11 +141,11 @@ def window_glass(ctx):
     fu, fv = su % 1.0, sv % 1.0
     h = (sid * 2654435761) % 1000 / 1000.0
     h2, h3 = (h * 7) % 1.0, (h * 13) % 1.0
-    ctx.rgb[...] = np.array([64, 106, 108], np.float32) + ((h - 0.5) * 18)[..., None]
-    ctx.rgb += (fv * 46 - 6)[..., None]
+    ctx.rgb[...] = np.array([72, 118, 139], np.float32) + ((h - 0.5) * 24)[..., None]
+    ctx.rgb += (fv * 34 - 5)[..., None]
     m = (fu * 0.7 + fv) % 1.0
-    ctx.rgb += (((m > 0.30) & (m < 0.37)) * 20.0)[..., None]
-    ctx.rgb += (((m > 0.62) & (m < 0.64)) * 12.0)[..., None]
+    ctx.rgb += (((m > 0.30) & (m < 0.37)) * 12.0)[..., None]
+    ctx.rgb += (((m > 0.62) & (m < 0.64)) * 6.0)[..., None]
     edge = np.minimum(np.minimum(fu, 1 - fu), np.minimum(fv, 1 - fv))
     ctx.rgb *= (0.72 + 0.28 * np.clip(edge / 0.035, 0, 1))[..., None]
     curt = h2 < 0.45
@@ -189,11 +189,11 @@ def flat_emis(v):
 def crown_glass(ctx):
     """Green glazed crown (site.jpg) with white mullions every 1.5 m and transoms every 2 m."""
     mx, mz = ctx.meters()
-    ctx.rgb[...] = np.array([76, 146, 140], np.float32)
-    ctx.rgb += (ctx.v * 32.0)[..., None]
+    ctx.rgb[...] = np.array([96, 139, 130], np.float32)
+    ctx.rgb += (ctx.v * 26.0)[..., None]
     fr = ((mx % 1.5) < 0.055) | (mz < 0.05) | (mz > ctx.tile[1] - 0.05) | ((mz % 2.94) < 0.065)
     ctx.rgb[fr] = np.array([224, 229, 227], np.float32)
-    ctx.gloss[...] = np.where(fr, 0.42, 0.92)
+    ctx.gloss[...] = np.where(fr, 0.42, 0.85)
     ctx.emis[...] = np.where(fr, 0.0, 0.05)
 
 
@@ -323,7 +323,7 @@ def paint_stainless(ctx):
     ctx.rgb += ctx.noise(4, 5.0, 1, seed=31)[..., None]
     streak = (np.sin(ctx.v * 180.0) * 3.0 + np.sin(ctx.v * 410.0) * 2.0)[..., None]
     ctx.rgb += streak
-    ctx.gloss[...] = 0.86
+    ctx.gloss[...] = 0.74
 
 
 def paint_rev_glass(ctx):
@@ -336,7 +336,7 @@ def paint_rev_glass(ctx):
 
 def paint_crown_sign(ctx, w_m=11.40, h_m=3.78):
     px, py = ctx.u * w_m, ctx.v * h_m
-    ctx.rgb[...] = np.array([76, 146, 140], np.float32) + (ctx.v * 32.0)[..., None]
+    ctx.rgb[...] = np.array([96, 139, 130], np.float32) + (ctx.v * 26.0)[..., None]
     fr = ((px % 1.5) < 0.055) | (py < 0.05) | (py > h_m - 0.05) | ((py % 2.0) < 0.055)
     ctx.rgb[fr] = np.array([224, 229, 227], np.float32)
     segs = _exllu_segs(w_m * 0.50, h_m * 0.34, 0.62, 0.92)
@@ -347,7 +347,7 @@ def paint_crown_sign(ctx, w_m=11.40, h_m=3.78):
     ctx.rgb[...] = ctx.rgb * (1.0 - 0.45 * shad[..., None])
     ctx.rgb[...] = ctx.rgb * (1.0 - fg[..., None]) + np.array([222, 186, 82], np.float32) * fg[..., None]
     ctx.height += fg * 2.0
-    ctx.gloss[...] = np.where(fg > 0.3, 0.90, np.where(fr, 0.42, 0.92))
+    ctx.gloss[...] = np.where(fg > 0.3, 0.90, np.where(fr, 0.42, 0.85))
     ctx.emis[...] = np.where(fg > 0.3, 0.38, np.where(fr, 0.0, 0.08))
 
 
@@ -386,29 +386,29 @@ TEX = {
 
 A = K.Atlas(size=4096, pad=16)
 for name, color, metal, gloss, px in (
-        ("stone", (92, 92, 104), 0.0, 0.35, 128),          # view_n_base: lavender-grey granite podium
-        ("stone_trim", (64, 66, 76), 0.0, 0.35, 64),
-        ("crown_glass", (100, 165, 155), 0.4, 0.9, 128),
-        ("crown_sign", (100, 165, 155), 0.35, 0.9, 512),
+        ("stone", (99, 102, 111), 0.0, 0.29, 128),        # 105 entrance: blue-grey granite podium
+        ("stone_trim", (81, 85, 94), 0.0, 0.31, 64),
+        ("crown_glass", (96, 139, 130), 0.30, 0.85, 128),
+        ("crown_sign", (96, 139, 130), 0.30, 0.85, 512),
         ("deck_under", (62, 66, 70), 0.2, 0.35, 64),
-        ("pale", (224, 222, 214), 0.0, 0.3, 128),
-        ("cool_pale", (206, 212, 218), 0.0, 0.3, 256),
-        ("mid_grey", (152, 154, 154), 0.0, 0.28, 256),
+        ("pale", (225, 225, 220), 0.0, 0.27, 128),
+        ("cool_pale", (207, 211, 215), 0.0, 0.27, 256),
+        ("mid_grey", (174, 177, 178), 0.0, 0.26, 256),
         ("dark_paint", (88, 90, 96), 0.0, 0.26, 256),
         ("crown_white", (232, 233, 230), 0.1, 0.4, 64),
         ("railing", (200, 203, 205), 0.6, 0.5, 64),
-        ("stainless", (198, 202, 206), 0.9, 0.85, 128),
+        ("stainless", (187, 192, 194), 0.78, 0.74, 128),
         ("rev_glass", (38, 58, 62), 0.15, 0.92, 128),
         ("frame", (236, 237, 235), 0.3, 0.5, 64),
         ("louver", (230, 231, 229), 0.2, 0.4, 64),
         ("roof", (120, 122, 122), 0.0, 0.3, 64),
         ("heli_green", (74, 140, 104), 0.0, 0.25, 64),
         ("heli_white", (232, 234, 226), 0.0, 0.25, 64),
-        ("pier_pink", (184, 150, 142), 0.0, 0.4, 512),
-        ("pier_course", (190, 168, 158), 0.0, 0.35, 256),
-        ("pier_num", (184, 150, 142), 0.0, 0.45, 512),
-        ("pier_side_num", (92, 92, 104), 0.0, 0.45, 256),
-        ("ent_lintel", (198, 182, 160), 0.0, 0.32, 512),
+        ("pier_pink", (190, 170, 160), 0.0, 0.34, 512),
+        ("pier_course", (195, 177, 168), 0.0, 0.32, 256),
+        ("pier_num", (190, 170, 160), 0.0, 0.34, 512),
+        ("pier_side_num", (99, 102, 111), 0.0, 0.36, 256),
+        ("ent_lintel", (200, 193, 179), 0.0, 0.28, 512),
         ("canopy", (160, 163, 162), 0.2, 0.45, 128),
         ("grey_stone", (168, 168, 164), 0.0, 0.3, 512),
         ("heli_net", (72, 76, 80), 0.6, 0.4, 64),

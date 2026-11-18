@@ -258,10 +258,15 @@ async function loadPreviewStem(stem, label) {
  const transfer = new DataTransfer();
  $('status').value = label + ' 불러오는 중...';
  try {
-  for (const suffix of ['.fbx', '_Win.fbx', '_BaseColor.png', '_Normal.png', '_MaskMap.png', '_Emissive.png']) {
+  // 소품은 창·유리·발광 파일이 없을 수 있어서 메시와 BaseColor만 필수로 둔다.
+  const required = ['.fbx', '_BaseColor.png'];
+  for (const suffix of ['.fbx', '_Win.fbx', '_Gls.fbx', '_BaseColor.png', '_Normal.png', '_MaskMap.png', '_Emissive.png']) {
    const name = stem + suffix;
    const response = await fetch('/preview/' + name);
-   if (!response.ok) throw Error(name);
+   if (!response.ok) {
+    if (required.includes(suffix)) throw Error(name);
+    continue;
+   }
    transfer.items.add(new File([await response.blob()], name));
   }
   $('file').files = transfer.files;

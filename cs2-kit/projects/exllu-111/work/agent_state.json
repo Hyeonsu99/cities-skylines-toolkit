@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "exllu_111_cs2.py",
- "generator_hash": "51f4fe8a0a456df67d6dd05fc9b0040056db59ce0f6f86dafc6e14e31c1f5fb9",
- "current_preview_hash": "044cc4c9cce152524501924fb87db9b74bc35d565f538997f53bc8e4c72c2a15",
+ "generator_hash": "31b4b9e6d018e4d89b633a176d18b20e95fe2ff1043c96bfdd060f53795be384",
+ "current_preview_hash": "5c394eadf70fe85afbba2c5f0a0af6a1e0587e5a9168f0e15a0a897591892021",
  "last_gate": {
   "status": "PASS",
   "project": "exllu-111",
@@ -29,8 +29,8 @@
    "report": "output\\HighriseTower111_L1_5x4\\_check\\report.json"
   },
   "asset": "HighriseTower111_L1_5x4",
-  "label": "",
-  "time": "2026-11-13 17:25:07",
+  "label": "color",
+  "time": "2026-11-18 10:32:26",
   "build": {
    "asset": "HighriseTower111_L1_5x4",
    "fbx": true,
@@ -99,7 +99,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 16.7
+    "time_s": 6.1
    },
    "report": "output\\HighriseTower111_L1_5x4\\_check\\report.json"
   },
@@ -123,38 +123,38 @@
    "checked": true,
    "status": "PASS",
    "simplified": [
-    "TILE front r4c0 x[0,9]m z[106,115]m recall 5% precision 8%  SIMPLIFIED",
-    "TILE front r3c0 x[0,9]m z[115,124]m recall 5% precision 7%  SIMPLIFIED",
-    "TILE front r2c0 x[0,9]m z[124,133]m recall 5% precision 6%  SIMPLIFIED",
-    "TILE left r8c0 x[0,12]m z[71,80]m recall 28% precision 29%  SIMPLIFIED",
-    "TILE left r9c0 x[0,12]m z[62,71]m recall 33% precision 33%  SIMPLIFIED",
-    "TILE left r7c1 x[12,24]m z[80,89]m recall 37% precision 38%  SIMPLIFIED",
-    "TILE right r16c1 x[12,24]m z[0,9]m recall 12% precision 7%  SIMPLIFIED",
+    "TILE front r2c0 x[0,9]m z[124,133]m recall 4% precision 5%  SIMPLIFIED",
+    "TILE front r3c0 x[0,9]m z[115,124]m recall 4% precision 6%  SIMPLIFIED",
+    "TILE front r4c0 x[0,9]m z[106,115]m recall 4% precision 7%  SIMPLIFIED",
+    "TILE left r8c0 x[0,12]m z[71,80]m recall 28% precision 30%  SIMPLIFIED",
+    "TILE left r9c0 x[0,12]m z[62,71]m recall 34% precision 34%  SIMPLIFIED",
+    "TILE left r11c0 x[0,12]m z[44,53]m recall 37% precision 30%  SIMPLIFIED",
+    "TILE right r16c1 x[12,24]m z[0,9]m recall 13% precision 7%  SIMPLIFIED",
     "TILE right r7c1 x[12,24]m z[80,89]m recall 28% precision 35%  SIMPLIFIED",
     "TILE right r7c0 x[0,12]m z[80,89]m recall 28% precision 37%  SIMPLIFIED"
    ],
    "detail": [
-    "DETAIL front recall 42% precision 43% worst r4c0 (5%) simplified_tiles 30/51",
+    "DETAIL front recall 42% precision 43% worst r2c0 (4%) simplified_tiles 30/51",
     "DETAIL left recall 48% precision 42% worst r8c0 (28%) simplified_tiles 21/34",
-    "DETAIL right recall 41% precision 42% worst r16c1 (12%) simplified_tiles 30/34"
+    "DETAIL right recall 41% precision 42% worst r16c1 (13%) simplified_tiles 30/34"
    ],
    "detail_color": [
     "DETAIL_COLOR front tiles_off 12/51 (dE>14; trusted tiles only)",
-    "DETAIL_COLOR left tiles_off 5/34 (dE>14; trusted tiles only)",
-    "DETAIL_COLOR right tiles_off 5/29 (dE>14; trusted tiles only)"
+    "DETAIL_COLOR left tiles_off 3/34 (dE>14; trusted tiles only)",
+    "DETAIL_COLOR right tiles_off 8/29 (dE>14; trusted tiles only)"
    ],
    "color_off": [
-    "COLOR front r16c0 x[0,9]m photo #1f1f20 model #908f8c dE 48  COLOR_OFF confidence=trusted",
-    "COLOR front r13c1 x[9,17]m photo #778086 model #c7c5be dE 28  COLOR_OFF confidence=trusted",
-    "COLOR front r16c1 x[9,17]m photo #23232a model #595e5e dE 26  COLOR_OFF confidence=trusted",
-    "COLOR left r16c1 x[12,24]m photo #222425 model #4c4d4c dE 19  COLOR_OFF confidence=trusted",
-    "COLOR left r16c0 x[0,12]m photo #272929 model #4c4c4b dE 16  COLOR_OFF confidence=trusted",
-    "COLOR left r0c1 x[12,24]m photo #5e6f71 model #7c9797 dE 15  COLOR_OFF confidence=trusted",
-    "COLOR right r13c1 x[12,24]m photo #404343 model #84837e dE 27  COLOR_OFF confidence=trusted",
-    "COLOR right r10c1 x[12,24]m photo #484f51 model #84837e dE 22  COLOR_OFF confidence=trusted",
-    "COLOR right r16c0 x[0,12]m photo #1b1618 model #3a3a39 dE 17  COLOR_OFF confidence=trusted"
+    "COLOR front r16c0 x[0,9]m photo #1e1e20 model #908f8c dE 48  COLOR_OFF confidence=trusted",
+    "COLOR front r16c1 x[9,17]m photo #22232a model #586270 dE 28  COLOR_OFF confidence=trusted",
+    "COLOR front r13c1 x[9,17]m photo #737e86 model #c1c1bd dE 27  COLOR_OFF confidence=trusted",
+    "COLOR left r16c1 x[12,24]m photo #22252a model #4b5158 dE 20  COLOR_OFF confidence=trusted",
+    "COLOR left r16c0 x[0,12]m photo #272a30 model #4b5057 dE 17  COLOR_OFF confidence=trusted",
+    "COLOR left r8c0 x[0,12]m photo #506371 model #74878a dE 16  COLOR_OFF confidence=trusted",
+    "COLOR right r13c1 x[12,24]m photo #404242 model #81817d dE 26  COLOR_OFF confidence=trusted",
+    "COLOR right r10c1 x[12,24]m photo #484e50 model #81817e dE 21  COLOR_OFF confidence=trusted",
+    "COLOR right r16c0 x[0,12]m photo #1b1618 model #393c42 dE 18  COLOR_OFF confidence=trusted"
    ],
-   "tiles_off": 22,
+   "tiles_off": 23,
    "tiles_total": 114
   },
   "lod": {
@@ -185,37 +185,37 @@
   "reason": "all requested checks passed"
  },
  "project": "exllu-111",
- "updated_at": "2026-11-13T17:26:05",
- "visual_review_note": "reviewed current artifacts",
+ "updated_at": "2026-11-18T10:33:04",
+ "visual_review_note": "Compared current preview against photo evidence. Rerun changed only the banner; photo and tile sheet hashes match inspected artifacts.",
  "visual_review_artifacts": [
   {
    "file": "previews/HighriseTower111_L1_5x4.png",
-   "sha256": "044cc4c9cce152524501924fb87db9b74bc35d565f538997f53bc8e4c72c2a15"
+   "sha256": "5c394eadf70fe85afbba2c5f0a0af6a1e0587e5a9168f0e15a0a897591892021"
   },
   {
    "file": "previews/photo_check/facade_front.png",
-   "sha256": "dfd996cfe12785b5910bdc968d6aa101dc55a0cce449687bee9e9cd2fd272bd1"
+   "sha256": "1a8ebd56e14fd468a9828200741382874ddd1b15269294e8a191c7d789c43ff7"
   },
   {
    "file": "previews/photo_check/facade_left.png",
-   "sha256": "3d6d9c3e29ae99de7cb0359a4a346338534f6c577963fb00d50c1dbad1af7979"
+   "sha256": "cb66593a01121ecd184b3314775c35d7c47867e46146864b4eab56959aaa4ed7"
   },
   {
    "file": "previews/photo_check/facade_right.png",
-   "sha256": "bac82e67b916de10525338de23501335d5a0d2bf4d1ca37f1392685bfdf5836f"
+   "sha256": "6a11fbf07639816181a837b6437f42710227af5633f388de0983080b4f59f65c"
   },
   {
    "file": "previews/tiles/front_map.png",
-   "sha256": "744d0c9a444936d672402844d316894531ab8557779cc849bd9ed654c0ebd9c3"
+   "sha256": "90360fd174e7eaa98db2e9a732c9de668dc8b3a4ae35ede44abbc6d56569bfa3"
   },
   {
    "file": "previews/tiles/left_map.png",
-   "sha256": "0ece0f08ea3fc00b053d6112db2ed2c73e80e5a72c0252fb0389daa36484087a"
+   "sha256": "2fb3f21533d06ef47a1de0fb5489052c36c92e7c8a880017fb0ba7ca564f7ca2"
   },
   {
    "file": "previews/tiles/right_map.png",
-   "sha256": "dc56f0ef40c7eaa54096b4e3cf15046307bc4c9e58d8e9ab38df139efe0af254"
+   "sha256": "49a4da865cdc94fde77b55f42d769a6fcfef0b853fb9e8fba384fc4d2df824d8"
   }
  ],
- "reviewed_preview_hash": "044cc4c9cce152524501924fb87db9b74bc35d565f538997f53bc8e4c72c2a15"
+ "reviewed_preview_hash": "5c394eadf70fe85afbba2c5f0a0af6a1e0587e5a9168f0e15a0a897591892021"
 }

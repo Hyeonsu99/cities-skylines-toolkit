@@ -34,7 +34,7 @@
    "mtime_ns": 1794876201466811900,
    "bytes": 2634944,
    "duplicate_of": null,
-   "observed": false
+   "observed": true
   },
   {
    "file": "photos\\north_front_mid.png",
@@ -130,7 +130,7 @@
    "mtime_ns": 1794876142595523200,
    "bytes": 2217370,
    "duplicate_of": null,
-   "observed": false
+   "observed": true
   },
   {
    "file": "photos\\south_sw_close.png",

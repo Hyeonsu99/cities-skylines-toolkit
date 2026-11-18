@@ -39,3 +39,26 @@
 - 개별 간판 아틀라스(`4096x4096`, 사용률 `73.5%`, `p10=127.5, median=255.5, p90=255.8 px/m`): `sign_center_roof` (`2816x256`), `sign_welfare_led` (`1760x160`), `sign_localfood` (`1728x144`), `sign_monolith` (`576x288`, 활성 `494x288`)을 실사 비율에 맞춰 분리하고 2x 슈퍼샘플링·글자 양각 `height` 노멀 베벨·우하단 그림자·글자 전용 야간 발광(`emis` 배경 0) 적용 및 남서 파시아 간판(`X=-19.32`) 외향 `-X` 정방향 정렬.
 - `_paint_window_atlas`: 5x5 창문 아틀라스(`px=768`)를 밝은 스카이블루 반사유리(`128, 194, 244`, `gloss=0.92`, 주간/구름 변주)로 보정하고 셀 경계 비네팅 제거·~32% 야간 점등(`emissive 255, 228, 172`, `16 px` 밉맵 가드) 및 `4096x4096` 고해상도 텍스처 적용.
 - `main` (`25,220` tris <= 95k), `LOD1` (`9,614` tris = 38.1% < 50%), `LOD2` (`254` tris <= 500, 모든 입체를 바닥 제외 완전 폐합 박스로 구성해 64뷰 홀 `0/64`), `Blender 5.2 FBX` 내보내기 및 `WIN_BLOCKED=0` 모두 통과.
+
+## 5. 색감·질감 실물 보정 (`color`)
+- **배경 및 기준**: 실물 사진(`photos/south_se_close.png`, `north_front_mid.png`, `north_ne_oblique.png`, `east_front_mid.png`, `sat_vworld_z19.png` 및 `work/roadview_extra/dnbarch_2~4.jpg`)과 CS2 HDRP(ACES 톤매핑·하늘 반사) 환경에서 기존 모델이 파스텔 하늘색 유리·과노출 흰 벽·흑색에 가까운 북측 브라운 패널·회록색 데크로 보이던 차이를 재질별로 보정함(남측 경사로–동측 2층 데크 연결 형상은 미변경).
+- **유리·커튼월·창틀 (`window`, `spandrel_dark`, `teal_glass`, `door_entrance`, `curtain_frame`, `frame_metal`)**:
+  - `window`: `(124, 190, 242)` 파스텔 하늘색 + 셀별 체커보드 편차 + 주간 점등셀 `-22` 어둡게 하기를 제거하고, 실제 로이(Low-E) 유리 베이스 `(74, 118, 150)`(`metal=0.14, gloss=0.93`) + 상부 하늘 반사 그라데이션·미세 틀 음영으로 깊이감 확보. 야간 점등 가드 `r=12 px` 가 `22 px` 창 슬롯 55개를 절반 절단하던 현상을 `r=1 px` 로 수정해 전 창 0건 절단 달성.
+  - `spandrel_dark`: `(122, 186, 238)`(창유리와 동일색) → 짙은 슬레이트-틸 배면유리 `(36, 56, 72)` 로 분리해 층간 슬래브 띠 대비 복원.
+  - `teal_glass`: 남측 1층 수직 핀 뒤 유리를 과채도 민트 `(70, 140, 140)` → 짙은 에메랄드-틸 `(46, 94, 98)` 로 톤다운해 백색 핀과의 실물 명암 대비 확보.
+  - `curtain_frame` / `frame_metal`: 밝은 청회 `(94, 108, 124)` / `(58, 64, 70)` → 다크 차콜 아노다이징 `(48, 54, 62)` / `(40, 44, 50)` + 미세 브러시드 질감 부여.
+  - `door_entrance`: 주간에도 42% 발광으로 뿌옇게 뜨던 현상을 짙은 차콜 프레임 `(36, 40, 46)` + 어두운 전실 유리 `(42, 62, 74)`(`emis=0.24`) 로 보정.
+- **백색 외장·루버·지붕·소핏 (`white_panel`, `white_grooved`, `louver_white`, `roof_soffit`, `roof_membrane`, `roof_concrete`)**:
+  - `white_panel` / `white_grooved` / `louver_white`: CS2 햇빛 하이라이트 클리핑을 막기 위해 `247` → PBR 보정 오프화이트 `(232, 234, 232)` / `(229, 231, 229)` / `(234, 235, 233)` 로 낮추고 `1x1m` 패널 줄눈 대비·미세 변주·미세 알루미늄 결을 강화(`white_grooved` 는 `0.64` 배 음영 그루브 적용).
+  - `roof_soffit`: 과도하게 어둡던 `(156, 162, 168)` → 밝은 쿨화이트 패널 `(198, 202, 206)` 으로 올려 실제 그림자가 자연스럽게 음영을 만들도록 개선.
+  - `roof_membrane` & 신규 `roof_concrete`: 남서·남동 주지붕은 밝은 쿨화이트 시트 `(220, 224, 224)` 유지, 동측 연결동 옥상(`8.2..24.8, 35.2..50.4`)은 위성 실사에 맞춰 웜 스톤-콘크리트 `(206, 202, 188)` 로 분리(`DETAIL_COLOR` `0/7` 이탈 유지).
+- **북·서측 석재·브라운 패널·데크·계단·광장 (`brown_panel`, `beige_stone`, `terrace_deck`, `stair_stone`, `plaza_paving`, `louver_grille`, `green_planter`)**:
+  - `brown_panel`: 검정에 가까웠던 `(68, 56, 52)` `4x5` → 따뜻한 다크 에스프레소-브론즈 `(94, 78, 72)`(`metal=0.28, gloss=0.44`) 및 실측 가로형 `2x5`(`2.0x0.8 m`) 메탈 패널로 개선.
+  - `beige_stone`: 어둡고 칙칙했던 `(206, 198, 186)` → 밝고 따뜻한 아이보리-크림 화강석 `(218, 204, 188)`(`px=768`, `256 px/m`) + 미세 운모 반점 추가, LOD2 서측 기단 벽체에도 `beige_stone` 적용.
+  - `terrace_deck` & 신규 `stair_stone`: 그린테라스·중정 바닥은 차가운 회록색 `(112, 114, 110)` → 짙은 스모크드 월넛 합성목재 `(84, 68, 60)`(`0.16 m` 판재 줄눈·나뭇결)으로 보정하고, 동측 외부 계단·데크 디딤판은 실물 화강석 질감 `stair_stone` `(124, 118, 112)` 으로 분리.
+  - `plaza_paving` / `louver_grille` / `green_planter`: 광장은 밝은 은회색 화강석 `(216, 216, 214)` + 연한 샌드크림 띠 `(206, 192, 172)` 로 선명화, 환기 루버는 12단 사틴 은백 알루미늄 `(194, 199, 205)` 으로 모아레 완화, 화단은 부엽토·올리브/세이지 관목 군락 2단 노이즈 적용.
+- **간판·표지석 (`sign_localfood`, `sign_center_roof`, `sign_monolith`, `monolith_stone`)**:
+  - `sign_localfood`: 실물과 달랐던 밝은 녹색 글자를 `대덕` 짙은 청남 `(24, 54, 72)` + `로컬푸드직매장` 따뜻한 주황 `(198, 102, 34)` 으로 보정.
+  - `sign_center_roof` / `sign_localfood` 배경: `(232, 234, 232)` 및 수직 패널 이음선(`15`/`9` 분할)을 추가해 외벽 `white_panel` 과 경계 없이 밀착, 대덕 심볼을 백색 중앙 여백 호 형태로 정교화.
+  - `monolith_stone` / `sign_monolith`: 어두웠던 화강석 `(78, 82, 86)` → 소금후추 거친 밝은 화강석 `(118, 120, 122)`(`amp=14`), 동판 `(84, 54, 42)`·백색 입체 글자로 대비 강화.
+- **비교 이미지 (`work/`)**: `work/before_color_*.png` vs `work/after_color_*.png`, 통합 전후 시트 `work/compare_color_4view.png`, `work/compare_color_south_north.png`, `work/compare_color_east_top.png`.

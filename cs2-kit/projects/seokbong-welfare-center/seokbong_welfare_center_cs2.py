@@ -157,29 +157,40 @@ def _render_sign_cell(ctx, cache_tag, bg_rgb, draw_2x_fn, active_w=None, relief=
     )
 
 
-def _draw_daedeok_badge(rgb_im, mask_im, cx, cy, r, shadow_rgb=(172, 178, 184)):
-    """대덕구 심볼 배지 (좌측 청록/청색/녹색 호 심볼 + 약한 그림자 + 양각)."""
+def _draw_daedeok_badge(rgb_im, mask_im, cx, cy, r, shadow_rgb=(162, 168, 174)):
+    """대덕구 심볼 배지 (백색 중앙 여백 + 녹색/청록/청색 호 심볼 + 약한 그림자 + 양각)."""
     from PIL import Image, ImageDraw, ImageFilter
 
     x0, y0, x1, y1 = int(cx - r), int(cy - r), int(cx + r), int(cy + r)
     if shadow_rgb is not None:
         sh = Image.new("L", rgb_im.size, 0)
-        ImageDraw.Draw(sh).ellipse([x0 + 5, y0 + 5, x1 + 5, y1 + 5], fill=185)
+        ImageDraw.Draw(sh).ellipse([x0 + 4, y0 + 4, x1 + 4, y1 + 4], fill=175)
         sh = sh.filter(ImageFilter.GaussianBlur(1.5))
         rgb_im.paste(Image.new("RGB", rgb_im.size, shadow_rgb), (0, 0), sh)
 
     drw = ImageDraw.Draw(rgb_im)
-    drw.ellipse([x0, y0, x1, y1], fill=(28, 122, 168))
-    pad = max(4, int(r * 0.14))
-    drw.pieslice([x0 + pad, y0 + pad, x1 - pad, y1 - pad], 180, 355, fill=(84, 172, 72))
-    drw.pieslice([x0 + pad, y0 + pad, x1 - pad, y1 - pad], 20, 165, fill=(38, 148, 176))
+    drw.pieslice([x0, y0, x1, y1], 195, 345, fill=(76, 164, 74))
+    drw.pieslice([x0, y0, x1, y1], 345, 95, fill=(32, 146, 172))
+    drw.pieslice([x0, y0, x1, y1], 95, 195, fill=(28, 96, 152))
+    ir = max(4, int(r * 0.42))
+    drw.ellipse([int(cx - ir), int(cy - ir), int(cx + ir), int(cy + ir)], fill=(232, 234, 232))
     ImageDraw.Draw(mask_im).ellipse([x0, y0, x1, y1], fill=255)
 
 
+def _draw_sign_panel_seams(rgb2, w2, h2, n_panels, seam_rgb=(210, 212, 210)):
+    """간판 배경이 외벽 white_panel 줄눈과 자연스럽게 이어지도록 수직 패널 이음선 추가."""
+    from PIL import ImageDraw
+    drw = ImageDraw.Draw(rgb2)
+    for i in range(1, n_panels):
+        sx = int(round(w2 * i / float(n_panels)))
+        drw.line([(sx, 0), (sx, h2)], fill=seam_rgb, width=2)
+
+
 def _paint_sign_center_roof(ctx):
-    """남측·서측 지붕 파시아 간판 (15.4x1.34 m, 흰 바탕 + 대덕 심볼 + 짙은 회색 입체 글자)."""
+    """남측·서측 지붕 파시아 간판 (15.4x1.34 m, white_panel 정합 바탕 + 대덕 심볼 + 짙은 차콜 입체 글자)."""
     def paint_2x(rgb2, mask2, emis2, w2, h2):
         from PIL import ImageDraw
+        _draw_sign_panel_seams(rgb2, w2, h2, n_panels=15, seam_rgb=(208, 211, 209))
         drw = ImageDraw.Draw(rgb2)
         text = "석봉복합문화센터"
         fnt = _fit_font(drw, FONT_KR, text, int(w2 * 0.72), int(h2 * 0.66))
@@ -188,15 +199,15 @@ def _paint_sign_center_roof(ctx):
         gap = int(badge_r * 0.75)
         total_w = badge_r * 2 + gap + tw
         start_x = (w2 - total_w) * 0.5
-        _draw_daedeok_badge(rgb2, mask2, start_x + badge_r, h2 * 0.5, badge_r, shadow_rgb=(172, 177, 184))
+        _draw_daedeok_badge(rgb2, mask2, start_x + badge_r, h2 * 0.5, badge_r, shadow_rgb=(160, 165, 172))
         tx = start_x + badge_r * 2 + gap - bx
         ty = (h2 - th) * 0.5 - by
         _draw_3d_text(rgb2, mask2, emis2, tx, ty, text, fnt,
-                      fill_rgb=(38, 44, 52), shadow_rgb=(168, 174, 180),
-                      emis_val=175, shadow_off=(5, 5), shadow_blur=1.8)
+                      fill_rgb=(40, 46, 54), shadow_rgb=(156, 162, 168),
+                      emis_val=165, shadow_off=(5, 5), shadow_blur=1.8)
 
-    _render_sign_cell(ctx, "sign_center_roof", (248, 249, 248), paint_2x, relief=0.92)
-    ctx.grain(amp=0.8, scale_px=2, height=0.03, seed=81)
+    _render_sign_cell(ctx, "sign_center_roof", (232, 234, 232), paint_2x, relief=0.92)
+    ctx.grain(amp=1.2, scale_px=2, height=0.05, seed=81)
     ctx.gloss[...] = 0.42
 
 
@@ -207,7 +218,7 @@ def _paint_sign_welfare_led(ctx):
         drw = ImageDraw.Draw(rgb2)
         mdrw = ImageDraw.Draw(mask2)
         bw = max(6, int(h2 * 0.035))
-        drw.rectangle([bw, bw, w2 - bw - 1, h2 - bw - 1], outline=(58, 66, 76), width=bw)
+        drw.rectangle([bw, bw, w2 - bw - 1, h2 - bw - 1], outline=(48, 54, 62), width=bw)
         mdrw.rectangle([bw, bw, w2 - bw - 1, h2 - bw - 1], outline=120, width=bw)
         text = "석봉동 행정복지센터"
         fnt = _fit_font(drw, FONT_KR, text, int(w2 * 0.86), int(h2 * 0.62))
@@ -215,7 +226,7 @@ def _paint_sign_welfare_led(ctx):
         tx = (w2 - tw) * 0.5 - bx
         ty = (h2 - th) * 0.5 - by
         _draw_3d_text(rgb2, mask2, emis2, tx, ty, text, fnt,
-                      fill_rgb=(128, 232, 255), shadow_rgb=(6, 8, 12),
+                      fill_rgb=(124, 228, 250), shadow_rgb=(6, 8, 12),
                       emis_val=244, shadow_off=(4, 4), shadow_blur=1.2)
 
     _render_sign_cell(ctx, "sign_welfare_led", (18, 22, 28), paint_2x, relief=0.58)
@@ -223,26 +234,33 @@ def _paint_sign_welfare_led(ctx):
 
 
 def _paint_sign_localfood(ctx):
-    """사선 램프 우측 파시아 간판 (8.67x0.70 m, 흰 바탕 + 짙은 녹색 입체 글자)."""
+    """사선 램프 우측 파시아 간판 (8.67x0.70 m, white_panel 바탕 + '대덕' 짙은 청남 + '로컬푸드직매장' 주황)."""
     def paint_2x(rgb2, mask2, emis2, w2, h2):
         from PIL import ImageDraw
+        _draw_sign_panel_seams(rgb2, w2, h2, n_panels=9, seam_rgb=(208, 211, 209))
         drw = ImageDraw.Draw(rgb2)
-        text = "대덕로컬푸드직매장"
-        fnt = _fit_font(drw, FONT_KR, text, int(w2 * 0.78), int(h2 * 0.64))
-        bx, by, tw, th = _text_metrics(drw, text, fnt)
+        t_left = "대덕"
+        t_right = "로컬푸드직매장"
+        full = t_left + t_right
+        fnt = _fit_font(drw, FONT_KR, full, int(w2 * 0.78), int(h2 * 0.64))
+        bx, by, tw, th = _text_metrics(drw, full, fnt)
+        _, _, tw_l, _ = _text_metrics(drw, t_left, fnt)
         badge_r = int(th * 0.42)
         gap = int(badge_r * 0.70)
         total_w = badge_r * 2 + gap + tw
         start_x = (w2 - total_w) * 0.5
-        _draw_daedeok_badge(rgb2, mask2, start_x + badge_r, h2 * 0.5, badge_r, shadow_rgb=(176, 182, 176))
+        _draw_daedeok_badge(rgb2, mask2, start_x + badge_r, h2 * 0.5, badge_r, shadow_rgb=(162, 168, 172))
         tx = start_x + badge_r * 2 + gap - bx
         ty = (h2 - th) * 0.5 - by
-        _draw_3d_text(rgb2, mask2, emis2, tx, ty, text, fnt,
-                      fill_rgb=(46, 118, 48), shadow_rgb=(172, 180, 172),
-                      emis_val=165, shadow_off=(4, 4), shadow_blur=1.5)
+        _draw_3d_text(rgb2, mask2, emis2, tx, ty, t_left, fnt,
+                      fill_rgb=(24, 54, 72), shadow_rgb=(160, 166, 170),
+                      emis_val=155, shadow_off=(4, 4), shadow_blur=1.5)
+        _draw_3d_text(rgb2, mask2, emis2, tx + tw_l + int(w2 * 0.004), ty, t_right, fnt,
+                      fill_rgb=(198, 102, 34), shadow_rgb=(160, 166, 170),
+                      emis_val=175, shadow_off=(4, 4), shadow_blur=1.5)
 
-    _render_sign_cell(ctx, "sign_localfood", (248, 249, 248), paint_2x, relief=0.82)
-    ctx.grain(amp=0.8, scale_px=2, height=0.03, seed=82)
+    _render_sign_cell(ctx, "sign_localfood", (232, 234, 232), paint_2x, relief=0.82)
+    ctx.grain(amp=1.2, scale_px=2, height=0.05, seed=82)
     ctx.gloss[...] = 0.42
 
 
@@ -255,7 +273,7 @@ def _paint_sign_monolith(ctx):
         drw = ImageDraw.Draw(rgb2)
         mdrw = ImageDraw.Draw(mask2)
         pad = 14
-        drw.rectangle([pad, pad, w2 - pad - 1, h2 - pad - 1], outline=(186, 168, 146), width=6)
+        drw.rectangle([pad, pad, w2 - pad - 1, h2 - pad - 1], outline=(194, 176, 156), width=6)
         mdrw.rectangle([pad, pad, w2 - pad - 1, h2 - pad - 1], outline=140, width=6)
 
         # 중앙 상단 육각 문양 + '석 봉'
@@ -263,31 +281,31 @@ def _paint_sign_monolith(ctx):
         hr = h2 * 0.25
         hex_pts = [(cx + hr * math.cos(math.radians(60 * k + 30)),
                     cy_top + hr * math.sin(math.radians(60 * k + 30))) for k in range(6)]
-        drw.polygon(hex_pts, outline=(216, 206, 192), width=4)
+        drw.polygon(hex_pts, outline=(228, 220, 208), width=4)
         mdrw.polygon(hex_pts, outline=130, width=4)
 
         t1 = "석 봉"
         f1 = _fit_font(drw, FONT_KR, t1, int(w2 * 0.56), int(h2 * 0.28))
         bx1, by1, tw1, th1 = _text_metrics(drw, t1, f1)
         _draw_3d_text(rgb2, mask2, emis2, (w2 - tw1) * 0.5 - bx1, cy_top - th1 * 0.5 - by1,
-                      t1, f1, fill_rgb=(245, 243, 238), shadow_rgb=(36, 20, 16),
-                      emis_val=150, shadow_off=(4, 4), shadow_blur=1.3)
+                      t1, f1, fill_rgb=(246, 244, 240), shadow_rgb=(36, 20, 16),
+                      emis_val=155, shadow_off=(4, 4), shadow_blur=1.3)
 
         # 구분선 + 하단 '석봉복합문화센터'
         div_y = int(h2 * 0.65)
-        drw.line([(int(w2 * 0.16), div_y), (int(w2 * 0.84), div_y)], fill=(192, 176, 156), width=3)
+        drw.line([(int(w2 * 0.16), div_y), (int(w2 * 0.84), div_y)], fill=(202, 188, 170), width=3)
         mdrw.line([(int(w2 * 0.16), div_y), (int(w2 * 0.84), div_y)], fill=110, width=3)
 
         t2 = "석봉복합문화센터"
         f2 = _fit_font(drw, FONT_KR, t2, int(w2 * 0.80), int(h2 * 0.17))
         bx2, by2, tw2, th2 = _text_metrics(drw, t2, f2)
         _draw_3d_text(rgb2, mask2, emis2, (w2 - tw2) * 0.5 - bx2, h2 * 0.78 - th2 * 0.5 - by2,
-                      t2, f2, fill_rgb=(236, 230, 220), shadow_rgb=(36, 20, 16),
-                      emis_val=165, shadow_off=(3, 3), shadow_blur=1.1)
+                      t2, f2, fill_rgb=(242, 236, 228), shadow_rgb=(36, 20, 16),
+                      emis_val=170, shadow_off=(3, 3), shadow_blur=1.1)
 
-    _render_sign_cell(ctx, "sign_monolith", (74, 46, 38), paint_2x, active_w=active_w, relief=0.78)
-    ctx.grain(amp=1.5, scale_px=2, height=0.05, seed=83)
-    ctx.gloss[...] = 0.36
+    _render_sign_cell(ctx, "sign_monolith", (84, 54, 42), paint_2x, active_w=active_w, relief=0.78)
+    ctx.grain(amp=1.8, scale_px=2, height=0.06, seed=83)
+    ctx.gloss[...] = 0.40
 
 
 # ---------------------------------------------------------------------------
@@ -311,137 +329,195 @@ def _variant_weather(ctx, amount=0.025, cu=3, cv=3, seed=7):
 
 
 def _paint_white_panel(ctx):
-    # 백색 대형 외장 패널 (north_ne_oblique.png 기준: 1x1m 패널 줄눈 + 미세 결/얼룩, 평균 밝기 유지)
+    # 백색 대형 알루미늄 복합판넬 (north_ne_oblique.png · dnbarch_3.jpg 기준: 과노출 클리핑 방지 + 1x1m 패널 줄눈/변주)
     base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
-    d = ctx.joints(cols=4, rows=4, width_m=0.012, depth=0.65, stagger=0.0, darken=0.10, tone=1.6, seed=11)
-    ctx.grain(amp=1.2, scale_px=2, height=0.06, seed=12)
-    ctx.rgb += ctx.noise(scale_px=56, amp=1.3, octaves=3, seed=13)[..., None]
-    ctx.stains(amount=0.045, scale_px=64, streaks=0.50, seed=14)
-    _variant_weather(ctx, amount=0.012, cu=2, cv=2, seed=15)
-    # 흰 벽이 회색으로 내려가지 않도록 줄눈 외 영역의 평균 밝기 보정
+    d = ctx.joints(cols=4, rows=4, width_m=0.012, depth=0.72, stagger=0.0, darken=0.14, tone=2.4, seed=11)
+    ctx.grain(amp=1.4, scale_px=2, height=0.07, seed=12)
+    ctx.rgb += ctx.noise(scale_px=48, amp=1.4, octaves=3, seed=13)[..., None]
+    ctx.stains(amount=0.040, scale_px=64, streaks=0.45, seed=14)
+    _variant_weather(ctx, amount=0.018, cu=2, cv=2, seed=15)
     face = d < 0.15
     if np.any(face):
         cur_mean = ctx.rgb[face].mean(axis=0)
         ctx.rgb[face] += (base_mean - cur_mean)
-    ctx.rgb[...] = np.clip(ctx.rgb, 195.0, 254.0)
+    ctx.rgb[...] = np.clip(ctx.rgb, 180.0, 244.0)
 
 
 def _paint_white_grooved(ctx):
     # 북측 체육관 상단 4단 수평 그루브 백색 메탈 파시아 (north_front_mid.png 기준)
     base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
     _, my = ctx.meters()
-    d = ctx.joints(cols=2, rows=5, width_m=0.014, depth=0.62, stagger=0.0, darken=0.10, tone=1.4, seed=16)
-    groove = np.abs((my % 0.80) - 0.40) > 0.376
-    ctx.rgb[groove] *= 0.80
-    ctx.height[groove] -= 0.72
-    ctx.grain(amp=1.3, scale_px=2, height=0.07, seed=17)
-    ctx.rgb += ctx.noise(scale_px=48, amp=1.3, octaves=3, seed=18)[..., None]
-    ctx.stains(amount=0.045, scale_px=56, streaks=0.50, seed=19)
-    _variant_weather(ctx, amount=0.012, cu=2, cv=1, seed=20)
+    d = ctx.joints(cols=2, rows=5, width_m=0.014, depth=0.68, stagger=0.0, darken=0.14, tone=2.2, seed=16)
+    groove = np.abs((my % 0.80) - 0.40) > 0.378
+    ctx.rgb[groove] *= 0.64
+    ctx.height[groove] -= 0.85
+    ctx.grain(amp=1.4, scale_px=2, height=0.07, seed=17)
+    ctx.rgb += ctx.noise(scale_px=48, amp=1.4, octaves=3, seed=18)[..., None]
+    ctx.stains(amount=0.040, scale_px=56, streaks=0.45, seed=19)
+    _variant_weather(ctx, amount=0.016, cu=2, cv=1, seed=20)
     face = (d < 0.15) & ~groove
     if np.any(face):
         cur_mean = ctx.rgb[face].mean(axis=0)
         ctx.rgb[face] += (base_mean - cur_mean)
-    ctx.rgb[...] = np.clip(ctx.rgb, 170.0, 254.0)
+    ctx.rgb[...] = np.clip(ctx.rgb, 138.0, 242.0)
 
 
 def _paint_beige_stone(ctx):
-    # 1~2층 웜베이지 화강석 석재 패널 (north_front_mid.png 기준: 1.5x0.6m 엇갈림 판석 + 화강석 질감/빗물자국)
+    # 1~2층 웜베이지 화강석 석재 패널 (north_front_mid.png · dnbarch_3.jpg 기준: 밝고 따뜻한 아이보리/크림 화강석)
     base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
-    d = ctx.joints(cols=2, rows=5, width_m=0.012, depth=0.75, stagger=0.5, darken=0.22, tone=3.8, seed=21)
-    ctx.grain(amp=4.8, scale_px=2, height=0.26, seed=22)
-    ctx.rgb += ctx.noise(scale_px=32, amp=2.4, octaves=3, seed=23)[..., None]
-    ctx.stains(amount=0.075, scale_px=56, streaks=0.55, seed=24)
-    _variant_weather(ctx, amount=0.025, cu=2, cv=2, seed=25)
+    d = ctx.joints(cols=2, rows=5, width_m=0.012, depth=0.72, stagger=0.5, darken=0.19, tone=3.0, seed=21)
+    ctx.grain(amp=3.2, scale_px=2, height=0.20, seed=22)
+    fleck = ctx.noise(scale_px=3, amp=1.0, octaves=1, seed=26) < -1.20
+    ctx.rgb[fleck] *= 0.93
+    ctx.rgb += ctx.noise(scale_px=32, amp=1.8, octaves=3, seed=23)[..., None]
+    ctx.stains(amount=0.045, scale_px=56, streaks=0.40, seed=24)
+    _variant_weather(ctx, amount=0.018, cu=2, cv=2, seed=25)
     face = d < 0.15
     if np.any(face):
         cur_mean = ctx.rgb[face].mean(axis=0)
-        ctx.rgb[face] += (base_mean - cur_mean) * 0.85
+        ctx.rgb[face] += (base_mean - cur_mean)
+    ctx.rgb[...] = np.clip(ctx.rgb, 148.0, 236.0)
 
 
 def _paint_brown_panel(ctx):
-    # 북측 3층 짙은 브라운 메탈 패널 (north_front_mid.png 기준)
+    # 북측 3층·중정 상부 다크 브론즈-에스프레소 수평 메탈 패널 (north_front_mid.png · dnbarch_4.jpg 기준)
     base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
-    d = ctx.joints(cols=4, rows=5, width_m=0.012, depth=0.65, stagger=0.0, darken=0.24, tone=2.8, seed=31)
+    d = ctx.joints(cols=2, rows=5, width_m=0.012, depth=0.70, stagger=0.0, darken=0.24, tone=3.2, seed=31)
     ctx.grain(amp=1.8, scale_px=2, height=0.08, seed=32)
     ctx.rgb += ctx.noise(scale_px=40, amp=1.8, octaves=3, seed=33)[..., None]
-    ctx.stains(amount=0.065, scale_px=48, streaks=0.45, seed=34)
-    _variant_weather(ctx, amount=0.020, cu=2, cv=2, seed=35)
+    ctx.stains(amount=0.055, scale_px=48, streaks=0.40, seed=34)
+    _variant_weather(ctx, amount=0.022, cu=2, cv=2, seed=35)
     face = d < 0.15
     if np.any(face):
         cur_mean = ctx.rgb[face].mean(axis=0)
-        ctx.rgb[face] += (base_mean - cur_mean) * 0.80
+        ctx.rgb[face] += (base_mean - cur_mean)
+    ctx.rgb[...] = np.clip(ctx.rgb, 48.0, 128.0)
 
 
 def _paint_roof_membrane(ctx):
+    # 남서·남동 주지붕 밝은 쿨화이트 방수 시트 (sat_vworld_z19.png · dnbarch_3.jpg 기준)
     base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
-    d = ctx.joints(cols=2, rows=2, width_m=0.015, depth=0.30, darken=0.09, tone=2.4, seed=41)
-    ctx.grain(amp=3.8, scale_px=2, height=0.16, seed=42)
-    ctx.rgb += ctx.noise(scale_px=36, amp=2.8, octaves=3, seed=43)[..., None]
-    ctx.stains(amount=0.075, scale_px=56, streaks=0.10, seed=44)
-    _variant_weather(ctx, amount=0.025, cu=2, cv=2, seed=45)
+    d = ctx.joints(cols=4, rows=2, width_m=0.015, depth=0.28, darken=0.08, tone=1.8, seed=41)
+    ctx.grain(amp=2.6, scale_px=2, height=0.12, seed=42)
+    ctx.rgb += ctx.noise(scale_px=44, amp=2.2, octaves=3, seed=43)[..., None]
+    ctx.stains(amount=0.038, scale_px=64, streaks=0.10, seed=44)
+    _variant_weather(ctx, amount=0.018, cu=2, cv=2, seed=45)
     face = d < 0.15
     if np.any(face):
         cur_mean = ctx.rgb[face].mean(axis=0)
-        ctx.rgb[face] += (base_mean - cur_mean) * 0.85
+        ctx.rgb[face] += (base_mean - cur_mean)
+    ctx.rgb[...] = np.clip(ctx.rgb, 185.0, 238.0)
+
+
+def _paint_roof_concrete(ctx):
+    # 동측 연결동 옥상 웜 스톤-콘크리트 지붕 바닥 (sat_vworld_z19.png 기준)
+    base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
+    d = ctx.joints(cols=3, rows=3, width_m=0.014, depth=0.35, darken=0.10, tone=2.2, seed=46)
+    ctx.grain(amp=3.4, scale_px=2, height=0.15, seed=47)
+    ctx.rgb += ctx.noise(scale_px=38, amp=2.4, octaves=3, seed=48)[..., None]
+    ctx.stains(amount=0.048, scale_px=56, streaks=0.10, seed=49)
+    face = d < 0.15
+    if np.any(face):
+        cur_mean = ctx.rgb[face].mean(axis=0)
+        ctx.rgb[face] += (base_mean - cur_mean)
+    ctx.rgb[...] = np.clip(ctx.rgb, 165.0, 228.0)
 
 
 def _paint_roof_soffit(ctx):
-    # 지붕 캔틸레버 하부 soffit 음영 패널 (어두운 그림자 면 + 메탈 패널 줄눈 + 미세 결)
+    # 지붕 캔틸레버 하부 soffit 백색-라이트그레이 패널 (north_ne_oblique.png 기준: 그림자는 조명/AO가 처리)
     base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
-    d = ctx.joints(cols=4, rows=4, width_m=0.014, depth=0.60, stagger=0.0, darken=0.14, tone=1.6, seed=19)
-    ctx.grain(amp=1.6, scale_px=2, height=0.07, seed=20)
-    ctx.rgb += ctx.noise(scale_px=48, amp=1.8, octaves=2, seed=28)[..., None]
-    ctx.stains(amount=0.050, scale_px=64, streaks=0.15, seed=29)
+    d = ctx.joints(cols=4, rows=4, width_m=0.014, depth=0.62, stagger=0.0, darken=0.15, tone=1.8, seed=19)
+    ctx.grain(amp=1.4, scale_px=2, height=0.07, seed=20)
+    ctx.rgb += ctx.noise(scale_px=48, amp=1.6, octaves=2, seed=28)[..., None]
+    ctx.stains(amount=0.035, scale_px=64, streaks=0.10, seed=29)
     _variant_weather(ctx, amount=0.015, cu=2, cv=2, seed=30)
     face = d < 0.15
     if np.any(face):
         cur_mean = ctx.rgb[face].mean(axis=0)
-        ctx.rgb[face] += (base_mean - cur_mean) * 0.80
+        ctx.rgb[face] += (base_mean - cur_mean)
+    ctx.rgb[...] = np.clip(ctx.rgb, 150.0, 222.0)
 
 
 def _paint_terrace_deck(ctx):
-    # 그린테라스 및 옥외 데크 바닥 (조립식 석재/목재 데크 패턴 + 결/얼룩)
-    mx, _ = ctx.meters()
-    ctx.joints(cols=4, rows=4, width_m=0.016, depth=0.50, stagger=0.5, darken=0.22, tone=3.5, seed=51)
-    plank = np.abs((mx % 0.25) - 0.125) > 0.115
-    ctx.rgb[plank] *= 0.84
-    ctx.height[plank] -= 0.25
-    ctx.grain(amp=3.0, scale_px=2, height=0.14, seed=52)
-    ctx.rgb += ctx.noise(scale_px=36, amp=2.4, octaves=3, seed=53)[..., None]
-    ctx.stains(amount=0.070, scale_px=56, streaks=0.20, seed=54)
-    _variant_weather(ctx, amount=0.025, cu=2, cv=2, seed=55)
-
-
-def _paint_plaza_paving(ctx):
-    # 북동측 광장 줄무늬 보도블록 (north_ne_oblique.png 기준: 라이트그레이 + 웜베이지 띠)
-    _, my = ctx.meters()
-    band = ((my % 2.0) < 0.55)
-    ctx.rgb[band] = ctx.rgb[band] * 0.45 + np.array([196, 178, 154], np.float32) * 0.55
-    ctx.joints(cols=8, rows=8, width_m=0.010, depth=0.45, stagger=0.5, darken=0.16, tone=3.4, seed=61)
-    ctx.grain(amp=4.2, scale_px=2, height=0.18, seed=62)
-    ctx.rgb += ctx.noise(scale_px=36, amp=2.8, octaves=3, seed=63)[..., None]
-    ctx.stains(amount=0.065, scale_px=64, streaks=0.0, seed=64)
-
-
-def _paint_monolith_stone(ctx):
-    # 표지석 하부 및 배면 짙은 화강석 거친 블록 (south_se_entrance.png 기준)
+    # 그린테라스 및 중정 합성목재 데크 (dnbarch_4.jpg · dnbarch_3.jpg · 위성 기준: 짙은 스모크드 월넛 판재 + 나뭇결)
     base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
-    d = ctx.joints(cols=3, rows=4, width_m=0.012, depth=0.80, stagger=0.5, darken=0.24, tone=4.5, seed=74)
-    ctx.grain(amp=6.0, scale_px=2, height=0.35, seed=75)
-    ctx.rgb += ctx.noise(scale_px=20, amp=3.0, octaves=3, seed=76)[..., None]
-    ctx.stains(amount=0.070, scale_px=40, streaks=0.40, seed=77)
+    mx, my = ctx.meters()
+    pw = 0.16
+    pid = np.floor(mx / pw).astype(np.int64)
+    plank_seam = np.abs((mx % pw) - pw * 0.5) > (pw * 0.5 - 0.008)
+    end_seam = np.abs(((my + (pid % 2) * 1.0) % 2.0) - 1.0) > 0.992
+    tone = (((pid * 37 + 11) % 13) - 6) * 1.2
+    ctx.rgb += tone[..., None]
+    # 목재 길이(Y) 방향 미세 결
+    ctx.rgb += (ctx.noise(scale_px=4, amp=1.6, octaves=2, seed=52) * 0.7)[..., None]
+    ctx.rgb += ctx.noise(scale_px=36, amp=2.0, octaves=3, seed=53)[..., None]
+    seam = plank_seam | end_seam
+    ctx.rgb[seam] *= 0.68
+    ctx.height[seam] -= 0.35
+    ctx.stains(amount=0.050, scale_px=56, streaks=0.15, seed=54)
+    _variant_weather(ctx, amount=0.022, cu=2, cv=2, seed=55)
+    face = ~seam
+    if np.any(face):
+        cur_mean = ctx.rgb[face].mean(axis=0)
+        ctx.rgb[face] += (base_mean - cur_mean) * 0.85
+    ctx.rgb[...] = np.clip(ctx.rgb, 36.0, 120.0)
+
+
+def _paint_stair_stone(ctx):
+    # 동측 외부 계단 · 데크 화강석 디딤판 (north_ne_oblique.png 기준: 웜 다크그레이 화강석 판석)
+    base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
+    d = ctx.joints(cols=4, rows=8, width_m=0.012, depth=0.58, stagger=0.5, darken=0.20, tone=3.0, seed=57)
+    ctx.grain(amp=4.4, scale_px=2, height=0.20, seed=58)
+    ctx.rgb += ctx.noise(scale_px=32, amp=2.2, octaves=3, seed=59)[..., None]
+    ctx.stains(amount=0.055, scale_px=52, streaks=0.20, seed=60)
     face = d < 0.15
     if np.any(face):
         cur_mean = ctx.rgb[face].mean(axis=0)
-        ctx.rgb[face] += (base_mean - cur_mean) * 0.80
+        ctx.rgb[face] += (base_mean - cur_mean)
+    ctx.rgb[...] = np.clip(ctx.rgb, 78.0, 158.0)
+
+
+def _paint_plaza_paving(ctx):
+    # 지상 및 북동 광장 줄무늬 보도블록 (north_ne_oblique.png 기준: 밝은 은회색 화강석 + 연한 샌드크림 띠)
+    _, my = ctx.meters()
+    band = ((my % 2.0) < 0.55)
+    ctx.rgb[band] = np.array([206.0, 192.0, 172.0], np.float32)
+    ctx.joints(cols=8, rows=12, width_m=0.009, depth=0.45, stagger=0.5, darken=0.14, tone=2.8, seed=61)
+    ctx.grain(amp=3.8, scale_px=2, height=0.16, seed=62)
+    ctx.rgb += ctx.noise(scale_px=36, amp=2.0, octaves=3, seed=63)[..., None]
+    ctx.stains(amount=0.032, scale_px=64, streaks=0.0, seed=64)
+    ctx.rgb[...] = np.clip(ctx.rgb, 148.0, 234.0)
+
+
+def _paint_monolith_stone(ctx):
+    # 표지석 하부 및 배면 밝은 소금후추 거친 화강석 블록 (dnbarch_2.jpg · south_se_close.png 기준)
+    base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
+    d = ctx.joints(cols=3, rows=4, width_m=0.012, depth=0.85, stagger=0.5, darken=0.26, tone=6.5, seed=74)
+    ctx.grain(amp=14.0, scale_px=2, height=0.45, seed=75)
+    speck = ctx.noise(scale_px=2, amp=1.0, octaves=1, seed=78)
+    ctx.rgb[speck < -1.0] *= 0.68
+    ctx.rgb[speck > 1.1] = np.minimum(210.0, ctx.rgb[speck > 1.1] * 1.24)
+    ctx.rgb += ctx.noise(scale_px=14, amp=5.5, octaves=3, seed=76)[..., None]
+    ctx.stains(amount=0.055, scale_px=40, streaks=0.35, seed=77)
+    face = d < 0.15
+    if np.any(face):
+        cur_mean = ctx.rgb[face].mean(axis=0)
+        ctx.rgb[face] += (base_mean - cur_mean)
+    ctx.rgb[...] = np.clip(ctx.rgb, 48.0, 205.0)
 
 
 def _paint_green_planter(ctx):
-    ctx.grain(amp=8.5, scale_px=2, height=0.45, seed=65)
-    ctx.rgb += ctx.noise(scale_px=18, amp=5.0, octaves=3, seed=67)[..., None]
-    ctx.stains(amount=0.080, scale_px=32, streaks=0.0, seed=68)
-    _variant_weather(ctx, amount=0.06, cu=4, cv=4, seed=66)
+    # 조경 화단 식재 (dnbarch_3/4 기준: 짙은 부엽토 + 올리브/세이지 관목 군락 변주)
+    clump = ctx.noise(scale_px=12, amp=1.0, octaves=3, seed=67)
+    leaf = ctx.noise(scale_px=3, amp=1.0, octaves=2, seed=65)
+    ctx.rgb[...] += clump[..., None] * np.array([10.0, 13.0, 7.0], np.float32)
+    ctx.rgb[...] += leaf[..., None] * np.array([8.0, 11.0, 6.0], np.float32)
+    soil = clump < -1.25
+    ctx.rgb[soil] = np.array([50.0, 56.0, 42.0], np.float32)
+    ctx.height[...] += 0.45 * leaf + 0.30 * clump
+    ctx.stains(amount=0.060, scale_px=32, streaks=0.0, seed=68)
+    _variant_weather(ctx, amount=0.05, cu=4, cv=4, seed=66)
+    ctx.rgb[...] = np.clip(ctx.rgb, 30.0, 142.0)
 
 
 def _paint_solar_pv(ctx):
@@ -452,11 +528,11 @@ def _paint_solar_pv(ctx):
     cu = ((fu - 0.032) / 0.936 * 6.0) % 1.0
     cv = ((fv - 0.022) / 0.956 * 10.0) % 1.0
     grid_line = (cu < 0.032) | (cu > 0.968) | (cv < 0.028) | (cv > 0.972)
-    # 위성(sat_vworld_z19) 타일 평균 #384f56 기준: 짙은 남색이 아니라 청록빛 회색 셀
+    # 위성(sat_vworld_z19) 타일 평균 #384f56 유지 + 셀 미세 반사 변주
     ctx.rgb[...] = np.array([44, 64, 74], np.float32)
     ctx.rgb += (2.5 * np.sin(2.0 * math.pi * (fu + fv)))[..., None]
     ctx.rgb[grid_line & ~frame] = np.array([72, 94, 104], np.float32)
-    ctx.rgb[frame] = np.array([188, 194, 202], np.float32)
+    ctx.rgb[frame] = np.array([186, 192, 200], np.float32)
     ctx.height[frame] += 0.25
     ctx.height[grid_line & ~frame] -= 0.06
     ctx.gloss[...] = np.where(frame, 0.58, 0.86)
@@ -464,30 +540,32 @@ def _paint_solar_pv(ctx):
 
 
 def _paint_louver_grille(ctx):
+    # 북측 1층·나루마당 알루미늄 환기 루버 (north_front_mid.png 기준: 밝은 사틴 은백 알루미늄 슬랫)
     u, v = ctx.u, ctx.v
-    border = (u < 0.05) | (u > 0.95) | (v < 0.06) | (v > 0.94)
-    ph = (v * 16.0) % 1.0
-    shadow = ph < 0.44
-    face = (ph >= 0.44) & ~border
-    ctx.rgb[border] = np.array([128, 134, 140], np.float32)
-    ctx.rgb[shadow & ~border] = np.array([42, 46, 52], np.float32)
-    ctx.rgb[face] = np.array([176, 182, 188], np.float32)
-    ctx.height[shadow & ~border] -= 0.55
+    border = (u < 0.045) | (u > 0.955) | (v < 0.055) | (v > 0.945)
+    ph = (v * 12.0) % 1.0
+    shadow = ph < 0.28
+    face = (ph >= 0.28) & ~border
+    ctx.rgb[border] = np.array([166, 172, 178], np.float32)
+    ctx.rgb[shadow & ~border] = np.array([82, 88, 96], np.float32)
+    ctx.rgb[face] = np.array([194, 199, 205], np.float32)
+    ctx.height[shadow & ~border] -= 0.50
     ctx.height[face] += 0.15
 
 
 def _paint_spandrel(ctx):
+    # 커튼월 층간 슬래브 스팬드럴 (dnbarch_2.jpg · east_front_mid.png 기준: 짙은 슬레이트-틸 후면 배면유리)
     u, v = ctx.u, ctx.v
-    sky_grad = (1.0 - v) * 18.0 - 6.0
-    refl = 4.0 * np.sin(2.0 * math.pi * (u * 1.5 + v * 0.5))
-    ctx.rgb[...] = np.array([122.0, 186.0, 238.0], np.float32) + (sky_grad + refl)[..., None]
-    ctx.joints(cols=2, rows=2, width_m=0.014, depth=0.25, darken=0.06, tone=1.6, seed=71)
-    ctx.gloss[...] = 0.90
+    sky_grad = (v - 0.5) * 14.0
+    refl = 3.0 * np.sin(2.0 * math.pi * (u * 1.5 + v * 0.5))
+    ctx.rgb[...] = np.clip(np.array([36.0, 56.0, 72.0], np.float32) + (sky_grad + refl)[..., None], 22.0, 92.0)
+    ctx.joints(cols=2, rows=2, width_m=0.014, depth=0.25, darken=0.10, tone=1.4, seed=71)
+    ctx.gloss[...] = 0.88
     ctx.emis[...] = 0.0
 
 
 def _paint_teal_glass(ctx):
-    """남측 램프 하부 1층 밝은 청록 Low-E 커튼월 유리 (약 70,140,140 하늘 반사 + 야간 부분 점등)."""
+    """남측 램프 하부 1층 다크 에메랄드-틸 Low-E 커튼월 유리 (south_se_close.png 기준: 짙은 청록 반사 + 야간 부분 점등)."""
     u, v = ctx.u, ctx.v
     cols, rows = 6, 2
     cx = np.floor(u * cols).astype(np.int64)
@@ -495,12 +573,12 @@ def _paint_teal_glass(ctx):
     fv = (v * rows) % 1.0
     h = ((cx * 37 + cy * 53) % 100) / 100.0
 
-    # 밝은 청록 계열 + 하늘/구름 반사 그라데이션 (핀과 명확한 대비, 상부 스카이블루보다 청록 기조 유지)
-    sky_grad = ((1.0 - fv) * 14.0 - 4.0) + 7.0 * np.sin(2.0 * math.pi * (u * 1.5 + v * 0.5))
-    tint = (h - 0.5) * 10.0
-    base_rgb = np.array([70.0, 142.0, 142.0], np.float32) + (tint + sky_grad)[..., None]
+    # 상부(fv~1) 하늘 반사 + 하부(fv~0) 짙은 청록 실내 깊이감, 주간/야간 BaseColor 일관 유지
+    sky_grad = (fv - 0.40) * 18.0 + 4.0 * np.sin(2.0 * math.pi * (u * 1.5 + v * 0.5))
+    tint = (h - 0.5) * 6.0
+    base_rgb = np.array([46.0, 94.0, 98.0], np.float32) + (tint + sky_grad)[..., None]
 
-    # 야간 일부 베이(~33%) 은은한 실내 점등 + 외곽 16px 밉맵 번짐 방지 가드
+    # 야간 일부 베이(~33%) 은은한 실내 점등 + 외곽 밉맵 번짐 방지 가드
     cid = cy * cols + cx
     lit = np.isin(cid, (0, 3, 7, 10))
     r = max(2, round(ctx.w * 0.016))
@@ -508,68 +586,79 @@ def _paint_teal_glass(ctx):
     for ax in (0, 1):
         m = np.logical_and.reduce([np.roll(m, k, ax) for k in range(-r, r + 1)])
     lit = m[r:-r, r:-r]
-    glow = 0.34 + 0.14 * (1.0 - fv)
-    # render 주간 합성(+0.35*emis) 시 점등 셀만 누렇게 뜨지 않도록 BaseColor 미세 보정
-    base_rgb[lit] -= np.array([22.0, 20.0, 15.0], np.float32)
-    ctx.rgb[...] = np.clip(base_rgb, 42.0, 210.0)
+    glow = 0.26 + 0.10 * (1.0 - fv)
+    ctx.rgb[...] = np.clip(base_rgb, 30.0, 134.0)
     ctx.emis[...] = np.where(lit, glow, 0.0)
-    ctx.gloss[...] = 0.90
+    ctx.gloss[...] = 0.92
 
 
 def _paint_window_atlas(ctx):
-    """5x5 REF_GRID 창문 아틀라스 (밝은 하늘색 반사유리 + 약 32% 야간 점등, 16px 경계 가드)."""
+    """5x5 REF_GRID 창문 아틀라스 (깊은 로이(Low-E) 청록-슬레이트 반사유리 + 약 32% 야간 점등, 1px 슬롯 비침범 가드)."""
     g = K.REF_GRID
     u, v = ctx.u, ctx.v
+    fu = (u * g) % 1.0
     fv = (v * g) % 1.0
     cx = np.floor(u * g).astype(np.int64)
     cy = np.floor(v * g).astype(np.int64)
     cid = cy * g + cx
     h = ((cx * 37 + cy * 71) % 100) / 100.0
 
-    # 주간 하늘이 비치는 밝은 스카이블루 반사유리 (미묘한 하늘·구름 반사 변주, 주간 점등셀 과도한 명암차 보정)
-    sky_wave = 7.0 * np.sin(2.0 * math.pi * (u * 2.0 + v * 1.5)) + (1.0 - fv) * 12.0 - 5.0
-    tint = (h - 0.5) * 14.0
+    # 상부(fv~1) 은은한 하늘 반사 광택 -> 하부(fv~0) 깊은 슬레이트-청록 로이유리 깊이감 + 미세 창틀 음영
+    sky_grad = (fv - 0.35) * 24.0 + 4.0 * np.sin(2.0 * math.pi * (u * 1.5 + v * 1.0))
+    tint = (h - 0.5) * 5.0
     base_rgb = (
-        np.array([128.0, 194.0, 244.0], np.float32)
-        + (tint * 0.9 + sky_wave)[..., None] * np.array([1.0, 0.85, 0.45], np.float32)
+        np.array([74.0, 118.0, 150.0], np.float32)
+        + (tint + sky_grad)[..., None] * np.array([0.85, 0.95, 1.0], np.float32)
     )
+    edge = (np.minimum(fu, 1.0 - fu) < 0.03) | (np.minimum(fv, 1.0 - fv) < 0.03)
+    base_rgb[edge] *= 0.90
+    ctx.rgb[...] = np.clip(base_rgb, 44.0, 182.0)
 
-    # 연속 점등 블록 (cells 0..7 ~32% 점등) + 외곽 16px 밉맵 번짐 방지 가드
+    # 연속 점등 블록 (cells 0..7 ~32% 점등), r=1px로 22px 창 슬롯 절반 절단 방지 + 패딩 내 밉맵 가드
     lit = cid < 8
-    # render 주간 합성(+0.35*emis) 시 점등 셀만 과하게 하얗게 뜨지 않도록 BaseColor 미세 보정
-    base_rgb[lit] -= np.array([22.0, 20.0, 14.0], np.float32)
-    ctx.rgb[...] = np.clip(base_rgb, 88.0, 250.0)
-
-    r = max(2, round(ctx.w * 0.016))
+    r = 1
     m = np.pad(lit, r, constant_values=False)
     for ax in (0, 1):
         m = np.logical_and.reduce([np.roll(m, k, ax) for k in range(-r, r + 1)])
     lit = m[r:-r, r:-r]
 
-    glow = (0.45 + 0.18 * ((h * 17.0) % 1.0)) * (0.84 + 0.16 * (1.0 - fv * 0.5))
+    glow = (0.28 + 0.12 * ((h * 17.0) % 1.0)) * (0.86 + 0.14 * (1.0 - fv * 0.4))
     ctx.emis[...] = np.where(lit, glow, 0.0)
-    ctx.gloss[...] = 0.92
+    ctx.gloss[...] = 0.93
 
 
 def _paint_entrance_door(ctx):
     u, v = ctx.u, ctx.v
     frame = (u < 0.05) | (u > 0.95) | (v > 0.95) | (np.abs(u - 0.50) < 0.025) | (np.abs(v - 0.78) < 0.022)
     glass = ~frame & (v > 0.06)
-    ctx.rgb[frame] = np.array([48, 54, 60], np.float32)
-    ctx.rgb[glass] = np.array([76, 114, 134], np.float32) + (v[glass] * 24.0)[..., None]
-    ctx.gloss[...] = np.where(glass, 0.88, 0.55)
-    ctx.emis[...] = np.where(glass, 0.42, 0.0)
+    ctx.rgb[frame] = np.array([36, 40, 46], np.float32)
+    ctx.rgb[glass] = np.array([42, 62, 74], np.float32) + (v[glass] * 16.0)[..., None]
+    ctx.gloss[...] = np.where(glass, 0.90, 0.52)
+    ctx.emis[...] = np.where(glass, 0.24, 0.0)
 
 
 def _paint_equipment(ctx):
     border = (ctx.u < 0.04) | (ctx.u > 0.96) | (ctx.v < 0.04) | (ctx.v > 0.96) | (np.abs(ctx.u - 0.50) < 0.015)
-    ctx.rgb[border] *= 0.72
+    ctx.rgb[border] *= 0.76
     ctx.height[border] -= 0.35
-    louv = (ctx.u > 0.14) & (ctx.u < 0.86) & (ctx.v > 0.22) & (ctx.v < 0.78) & (((ctx.v * 24.0) % 1.0) < 0.42)
-    ctx.rgb[louv] *= 0.46
+    louv = (ctx.u > 0.14) & (ctx.u < 0.86) & (ctx.v > 0.22) & (ctx.v < 0.78) & (((ctx.v * 24.0) % 1.0) < 0.36)
+    ctx.rgb[louv] *= 0.52
     ctx.height[louv] -= 0.45
-    ctx.grain(amp=1.8, scale_px=2, height=0.07, seed=72)
-    ctx.stains(amount=0.055, scale_px=36, streaks=0.35, seed=73)
+    ctx.grain(amp=1.6, scale_px=2, height=0.07, seed=72)
+    ctx.stains(amount=0.032, scale_px=36, streaks=0.25, seed=73)
+
+
+def _paint_louver_white(ctx):
+    # 백색 도장 알루미늄 루버 핀 · #퍼골라 (미세 표면 결 부여해 플라스틱 평탄함 완화)
+    ctx.grain(amp=1.2, scale_px=2, height=0.04, seed=91)
+    ctx.rgb += ctx.noise(scale_px=24, amp=1.0, octaves=2, seed=92)[..., None]
+    ctx.rgb[...] = np.clip(ctx.rgb, 214.0, 242.0)
+
+
+def _paint_anodized_metal(ctx):
+    # 아노다이징 금속 프레임 · 멀리언 · 스테인리스 난간 미세 브러시드 질감
+    ctx.grain(amp=1.5, scale_px=2, height=0.04, seed=94)
+    ctx.rgb += ctx.noise(scale_px=18, amp=1.2, octaves=2, seed=95)[..., None]
 
 
 def _paint_lamp_strip(ctx):
@@ -579,56 +668,64 @@ def _paint_lamp_strip(ctx):
 
 def make_atlas(size=4096):
     A = K.Atlas(size=size, pad=16)
-    A.add("white_panel",   color=(247, 248, 246), ctrl=(0, 0, 0), metal=0.12, gloss=0.42,
+    A.add("white_panel",   color=(232, 234, 232), ctrl=(0, 0, 0), metal=0.14, gloss=0.42,
           px=1024, tile=(4.0, 4.0), variants=3, painter=_paint_white_panel, normal_strength=2.2)
-    A.add("white_grooved", color=(245, 246, 243), ctrl=(0, 0, 0), metal=0.14, gloss=0.42,
-          px=768, tile=(4.0, 4.0), variants=2, painter=_paint_white_grooved, normal_strength=2.3)
-    A.add("beige_stone",   color=(206, 198, 186), ctrl=(0, 0, 0), metal=0.0, gloss=0.26,
-          px=1024, tile=(3.0, 3.0), variants=2, painter=_paint_beige_stone, normal_strength=2.5)
-    A.add("brown_panel",   color=(68, 56, 52), ctrl=(0, 0, 0), metal=0.22, gloss=0.42,
-          px=960, tile=(4.0, 4.0), variants=2, painter=_paint_brown_panel, normal_strength=2.4)
-    A.add("roof_membrane", color=(232, 234, 230), ctrl=(0, 0, 0), metal=0.0, gloss=0.20,
+    A.add("white_grooved", color=(229, 231, 229), ctrl=(0, 0, 0), metal=0.15, gloss=0.42,
+          px=768, tile=(4.0, 4.0), variants=2, painter=_paint_white_grooved, normal_strength=2.6)
+    A.add("beige_stone",   color=(218, 204, 188), ctrl=(0, 0, 0), metal=0.0, gloss=0.26,
+          px=768, tile=(3.0, 3.0), variants=2, painter=_paint_beige_stone, normal_strength=2.4)
+    A.add("brown_panel",   color=(94, 78, 72), ctrl=(0, 0, 0), metal=0.28, gloss=0.44,
+          px=768, tile=(4.0, 4.0), variants=2, painter=_paint_brown_panel, normal_strength=2.4)
+    A.add("roof_membrane", color=(220, 224, 224), ctrl=(0, 0, 0), metal=0.0, gloss=0.20,
           px=512, tile=(3.2, 3.2), painter=_paint_roof_membrane, normal_strength=1.5)
-    A.add("roof_soffit",   color=(156, 162, 168), ctrl=(0, 0, 0), metal=0.10, gloss=0.22,
+    A.add("roof_concrete", color=(206, 202, 188), ctrl=(0, 0, 0), metal=0.0, gloss=0.18,
+          px=512, tile=(3.2, 3.2), painter=_paint_roof_concrete, normal_strength=1.5)
+    A.add("roof_soffit",   color=(198, 202, 206), ctrl=(0, 0, 0), metal=0.12, gloss=0.26,
           px=512, tile=(4.0, 4.0), painter=_paint_roof_soffit, normal_strength=1.6)
-    A.add("terrace_deck",  color=(112, 114, 110), ctrl=(0, 0, 0), metal=0.0, gloss=0.22,
-          px=512, tile=(4.0, 4.0), painter=_paint_terrace_deck, normal_strength=2.1)
-    A.add("plaza_paving",  color=(200, 198, 192), ctrl=(0, 0, 0), metal=0.0, gloss=0.18,
-          px=512, tile=(4.0, 4.0), painter=_paint_plaza_paving, normal_strength=1.8)
-    A.add("green_planter", color=(72, 108, 64), ctrl=(0, 0, 0), metal=0.0, gloss=0.12,
-          px=256, tile=(3.0, 3.0), painter=_paint_green_planter, normal_strength=1.8)
-    A.add("solar_pv",      color=(46, 66, 76), ctrl=(0, 0, 0), metal=0.35, gloss=0.84,
+    A.add("terrace_deck",  color=(84, 68, 60), ctrl=(0, 0, 0), metal=0.0, gloss=0.24,
+          px=512, tile=(4.0, 4.0), painter=_paint_terrace_deck, normal_strength=2.2)
+    A.add("stair_stone",   color=(124, 118, 112), ctrl=(0, 0, 0), metal=0.0, gloss=0.24,
+          px=512, tile=(4.0, 4.0), painter=_paint_stair_stone, normal_strength=2.2)
+    A.add("plaza_paving",  color=(216, 216, 214), ctrl=(0, 0, 0), metal=0.0, gloss=0.20,
+          px=512, tile=(4.0, 4.0), painter=_paint_plaza_paving, normal_strength=1.9)
+    A.add("green_planter", color=(66, 98, 56), ctrl=(0, 0, 0), metal=0.0, gloss=0.12,
+          px=256, tile=(3.0, 3.0), painter=_paint_green_planter, normal_strength=2.0)
+    A.add("solar_pv",      color=(46, 66, 76), ctrl=(0, 0, 0), metal=0.38, gloss=0.86,
           px=512, tile=(2.0, 2.0), painter=_paint_solar_pv, normal_strength=2.0)
-    A.add("louver_grille", color=(184, 190, 196), ctrl=(0, 0, 0), metal=0.45, gloss=0.45,
+    A.add("louver_grille", color=(190, 196, 202), ctrl=(0, 0, 0), metal=0.52, gloss=0.48,
           px=256, tile=(2.0, 1.5), painter=_paint_louver_grille, normal_strength=2.4)
-    A.add("spandrel_dark", color=(122, 186, 238), ctrl=(0, 0, 0), metal=0.06, gloss=0.90,
+    A.add("spandrel_dark", color=(36, 56, 72), ctrl=(0, 0, 0), metal=0.12, gloss=0.88,
           px=256, tile=(2.0, 2.0), painter=_paint_spandrel, normal_strength=1.2)
-    A.add("teal_glass",    color=(70, 140, 140), ctrl=(0, 0, 0), metal=0.10, gloss=0.90,
-          emissive=(255, 232, 190), px=512, tile=(22.6 / 38.0 * 6.0, 4.0),
+    A.add("teal_glass",    color=(46, 94, 98), ctrl=(0, 0, 0), metal=0.14, gloss=0.92,
+          emissive=(255, 228, 184), px=512, tile=(22.6 / 38.0 * 6.0, 4.0),
           painter=_paint_teal_glass, normal_strength=1.2)
-    A.add("frame_metal",   color=(58, 64, 70), ctrl=(0, 0, 0), metal=0.68, gloss=0.58, px=128)
-    A.add("curtain_frame", color=(94, 108, 124), ctrl=(0, 0, 0), metal=0.72, gloss=0.68, px=128)
-    A.add("louver_white",  color=(247, 248, 246), ctrl=(0, 0, 0), metal=0.22, gloss=0.48, px=128)
-    A.add("railing_steel", color=(212, 218, 224), ctrl=(0, 0, 0), metal=0.82, gloss=0.68, px=128)
-    A.add("glass_rail",    color=(142, 184, 200), ctrl=(0, 0, 0), metal=0.0, gloss=0.88, px=128)
-    A.add("door_entrance", color=(68, 98, 114), ctrl=(0, 0, 0), metal=0.25, gloss=0.78,
-          emissive=(235, 228, 205), px=256, painter=_paint_entrance_door, normal_strength=1.8)
-    A.add("equipment",     color=(196, 202, 208), ctrl=(0, 0, 0), metal=0.35, gloss=0.42,
+    A.add("frame_metal",   color=(40, 44, 50), ctrl=(0, 0, 0), metal=0.55, gloss=0.52,
+          px=128, painter=_paint_anodized_metal, normal_strength=1.0)
+    A.add("curtain_frame", color=(48, 54, 62), ctrl=(0, 0, 0), metal=0.58, gloss=0.55,
+          px=128, painter=_paint_anodized_metal, normal_strength=1.0)
+    A.add("louver_white",  color=(234, 235, 233), ctrl=(0, 0, 0), metal=0.18, gloss=0.46,
+          px=128, painter=_paint_louver_white, normal_strength=1.2)
+    A.add("railing_steel", color=(192, 198, 204), ctrl=(0, 0, 0), metal=0.85, gloss=0.72,
+          px=128, painter=_paint_anodized_metal, normal_strength=1.0)
+    A.add("glass_rail",    color=(154, 182, 196), ctrl=(0, 0, 0), metal=0.0, gloss=0.92, px=128)
+    A.add("door_entrance", color=(42, 62, 74), ctrl=(0, 0, 0), metal=0.20, gloss=0.84,
+          emissive=(235, 224, 198), px=256, painter=_paint_entrance_door, normal_strength=1.8)
+    A.add("equipment",     color=(194, 200, 206), ctrl=(0, 0, 0), metal=0.35, gloss=0.40,
           px=256, painter=_paint_equipment, normal_strength=1.8)
-    A.add("monolith_stone", color=(78, 82, 86), ctrl=(0, 0, 0), metal=0.0, gloss=0.22,
-          px=256, tile=(2.0, 2.0), painter=_paint_monolith_stone, normal_strength=2.6)
+    A.add("monolith_stone", color=(118, 120, 122), ctrl=(0, 0, 0), metal=0.0, gloss=0.20,
+          px=256, tile=(2.0, 2.0), painter=_paint_monolith_stone, normal_strength=2.8)
     A.add("lamp_strip",    color=(252, 248, 232), ctrl=(0, 0, 0), metal=0.10, gloss=0.65,
           emissive=(255, 244, 212), px=128, painter=_paint_lamp_strip)
-    A.add("window",        color=(124, 190, 242), ctrl=(0, 0, 0), metal=0.06, gloss=0.92,
-          emissive=(255, 228, 172), px=768, painter=_paint_window_atlas)
+    A.add("window",        color=(74, 118, 150), ctrl=(0, 0, 0), metal=0.14, gloss=0.93,
+          emissive=(255, 224, 166), px=768, painter=_paint_window_atlas)
     # 간판 4종 개별 고해상도 칸 (실사 가로세로 비율 정렬)
-    A.add("sign_center_roof", color=(248, 249, 248), ctrl=(0, 0, 0), metal=0.12, gloss=0.42,
+    A.add("sign_center_roof", color=(232, 234, 232), ctrl=(0, 0, 0), metal=0.14, gloss=0.42,
           emissive=(118, 126, 136), px=256, variants=11, painter=_paint_sign_center_roof, normal_strength=2.6)
     A.add("sign_welfare_led", color=(18, 22, 28), ctrl=(0, 0, 0), metal=0.18, gloss=0.48,
           emissive=(135, 235, 255), px=160, variants=11, painter=_paint_sign_welfare_led, normal_strength=2.4)
-    A.add("sign_localfood",   color=(248, 249, 248), ctrl=(0, 0, 0), metal=0.12, gloss=0.42,
-          emissive=(135, 215, 130), px=144, variants=12, painter=_paint_sign_localfood, normal_strength=2.5)
-    A.add("sign_monolith",    color=(74, 46, 38), ctrl=(0, 0, 0), metal=0.25, gloss=0.36,
+    A.add("sign_localfood",   color=(232, 234, 232), ctrl=(0, 0, 0), metal=0.14, gloss=0.42,
+          emissive=(215, 165, 110), px=144, variants=12, painter=_paint_sign_localfood, normal_strength=2.5)
+    A.add("sign_monolith",    color=(84, 54, 42), ctrl=(0, 0, 0), metal=0.34, gloss=0.40,
           emissive=(255, 242, 216), px=288, variants=2, painter=_paint_sign_monolith, normal_strength=2.4)
     return A
 
@@ -1058,8 +1155,8 @@ def build_east_stair_and_terrace(mb, stage):
     if stage >= 2:
         return
 
-    step_mat = {"top": "terrace_deck", "back": "terrace_deck", "default": "white_panel"}
-    deck_mat = {"top": "terrace_deck", "default": "white_panel"}
+    step_mat = {"top": "stair_stone", "back": "stair_stone", "default": "white_panel"}
+    deck_mat = {"top": "stair_stone", "default": "white_panel"}
 
     # 1. 동측 2층 데크 (Y=35.2..51.8, X=24.80..26.68, Z=4.05..4.75) + 외측 두꺼운 백색 측벽/파시아 (X=26.68..27.00)
     _box_var(mb, 24.80, 26.68, 35.20, 51.80, 4.05, 4.75, deck_mat, variant=0)
@@ -1310,7 +1407,7 @@ def build_middle_courtyard_and_east(mb, wins, gls, stage):
     """3. 중정(아트리움) · 서측 2~3층 그린테라스(#퍼골라) · 동측 본체 및 외부 대계단 (Y=35.2..50.4)."""
     if stage == 2:
         # LOD2: 서측 테라스 기단 (X=-24.6..-6.0, Z=9.2) + 동측 연결동 (1F 회랑 포함 Z=15.5), 중앙 중정은 개방 유지!
-        mb.box(-24.6, -6.0, 35.2, 50.4, 0.14, 9.20, "terrace_deck", skip=("bottom",))
+        mb.box(-24.6, -6.0, 35.2, 50.4, 0.14, 9.20, {"top": "terrace_deck", "default": "beige_stone"}, skip=("bottom",))
         mb.box(8.2, 22.0, 35.2, 50.4, 0.14, 4.45, "white_panel", skip=("bottom",))
         mb.box(8.2, 24.8, 35.2, 50.4, 4.45, 15.50, "white_panel")
         return
@@ -1365,7 +1462,7 @@ def build_middle_courtyard_and_east(mb, wins, gls, stage):
     # C. 동측 연결동 (X in [+8.2, +24.8], Y in [35.2, 50.4], 1층 회랑 후퇴 X=22.0 + 2~3층 백색 벽 Z=4.45..14.80)
     _box_var(mb, 8.2, 22.0, 35.2, 50.4, 0.14, 4.45, "white_panel", variant=0, skip=("bottom",))
     _box_var(mb, 8.2, 24.8, 35.2, 50.4, 4.45, 14.80, "white_panel", variant=1)
-    mb.box(8.2, 24.8, 35.2, 50.4, 14.80, 14.95, "roof_membrane")
+    mb.box(8.2, 24.8, 35.2, 50.4, 14.80, 14.95, "roof_concrete")
     # 동측 1층 회랑 백색 기둥 + 후퇴 창 (east_front_mid.png · east_ne_oblique.png 기준)
     for idx, cy in enumerate((40.2, 45.6)):
         _box_var(mb, 23.9, 24.6, cy - 0.32, cy + 0.32, 0.14, 4.45, "white_panel", variant=idx, skip=("bottom",))
@@ -1397,7 +1494,7 @@ def build_south_wings(mb, A, wins, gls, stage):
         mb.box(-19.3, 3.0, 10.75, 35.2, 14.80, 16.45, "white_panel")
         mb.box(3.0, 24.2, 10.75, 35.2, 14.80, 15.20, "roof_membrane")
         mb.box(24.2, 25.2, 10.75, 35.2, 14.80, 16.45, "white_panel")
-        mb.box(-24.6, -18.8, 10.2, 35.2, 0.14, 9.20, "white_panel", skip=("bottom",))
+        mb.box(-24.6, -18.8, 10.2, 35.2, 0.14, 9.20, {"top": "terrace_deck", "default": "beige_stone"}, skip=("bottom",))
         return
 
     # A. 남서 3층 백색 상자 매스 (X in [-18.8, +3.0], Y in [10.2, 35.2], Z in [0.14, 14.80]) + 상부 통합 지붕

@@ -167,6 +167,54 @@
    "bytes": 1313727,
    "duplicate_of": null,
    "observed": false
+  },
+  {
+   "file": "photos\\스크린샷 2026-11-12 155052.png",
+   "sha256": "fccdb24060a21e478a47273f6f4fba153e62946d1926765ab5076a2ed530b119",
+   "size": [
+    382,
+    565
+   ],
+   "mtime_ns": 1794466252490946500,
+   "bytes": 453286,
+   "duplicate_of": null,
+   "observed": false
+  },
+  {
+   "file": "photos\\스크린샷 2026-11-12 155129.png",
+   "sha256": "62aec3ac08bdced1a19215154b1833d982f3312294fade82405456aec405cca9",
+   "size": [
+    1881,
+    1416
+   ],
+   "mtime_ns": 1794466289936085000,
+   "bytes": 4044736,
+   "duplicate_of": null,
+   "observed": false
+  },
+  {
+   "file": "photos\\스크린샷 2026-11-12 155146.png",
+   "sha256": "14233ea3bdb9d57e428ecb3b73c576167ef3d99b6eeb5888e3517cd3781e9b39",
+   "size": [
+    1221,
+    1437
+   ],
+   "mtime_ns": 1794466306720109700,
+   "bytes": 2804423,
+   "duplicate_of": null,
+   "observed": false
+  },
+  {
+   "file": "photos\\스크린샷 2026-11-12 155809.png",
+   "sha256": "938baf6268f0f64c9ac1c6aafcb57a34c0443f96fcf13c9cb568f1ab14351c49",
+   "size": [
+    1592,
+    901
+   ],
+   "mtime_ns": 1794466689635215000,
+   "bytes": 2453685,
+   "duplicate_of": null,
+   "observed": false
   }
  ]
 }

@@ -1,0 +1,147 @@
+{
+ "visual_review": "PASS",
+ "current_stage": "review:PASS",
+ "generator": "median_barrier_cs2.py",
+ "generator_hash": "5de1372ced4fcbce9d2f1526de5255ef973841dc4a92f26aea11168ba5e1643c",
+ "current_preview_hash": "3dd00f796ccaf7f77ce7b2d8f3455ac04e1f6470d6d3d2b34f4ac8601cdaa5a5",
+ "last_gate": {
+  "status": "PASS",
+  "project": "highway-props",
+  "generator": "median_barrier_cs2.py",
+  "mode": "final",
+  "checks": {
+   "build": "PASS",
+   "geometry": "PASS",
+   "preview": "PASS",
+   "photo": "NOT_APPLICABLE",
+   "tiles": "NOT_APPLICABLE",
+   "lod": "PASS",
+   "fbx": "PASS",
+   "visual_review": "PASS"
+  },
+  "errors": [],
+  "next_action": {
+   "command": null,
+   "reason": "no fix needed"
+  },
+  "artifacts": {
+   "preview": "previews\\MedianBarrierConcrete_L1_1x1.png",
+   "report": "output\\MedianBarrierConcrete_L1_1x1\\_check\\report.json"
+  },
+  "asset": "MedianBarrierConcrete_L1_1x1",
+  "label": "final",
+  "time": "2026-11-18 10:36:20",
+  "build": {
+   "asset": "MedianBarrierConcrete_L1_1x1",
+   "fbx": true,
+   "warnings": []
+  },
+  "check": {
+   "errors": [],
+   "warnings": [
+    "win OBJ missing"
+   ],
+   "info": {
+    "size": [
+     4.0,
+     0.81,
+     1.27
+    ],
+    "pivot_offset": [
+     0.0,
+     0.0
+    ],
+    "zmin": 0.0,
+    "coords": "generator coordinates (before pivot move)",
+    "tris": {
+     "main": 42,
+     "lod1": 18,
+     "lod2": 10
+    },
+    "verts": {
+     "main": 104,
+     "lod1": 36,
+     "lod2": 20
+    },
+    "coplanar": {
+     "main": 0,
+     "lod1": 0,
+     "lod2": 0
+    },
+    "textures": {
+     "BaseColor": "1024x1024 RGBA",
+     "ControlMask": "1024x1024 RGBA",
+     "MaskMap": "1024x1024 RGBA",
+     "Normal": "1024x1024 RGB",
+     "Emissive": "1024x1024 RGB",
+     "LOD2_BaseColor": "256x256 RGBA",
+     "LOD2_ControlMask": "256x256 RGBA",
+     "LOD2_MaskMap": "256x256 RGBA",
+     "LOD2_Normal": "256x256 RGB",
+     "LOD2_Emissive": "256x256 RGB"
+    },
+    "texel_px_per_m": {
+     "p10": 66.5,
+     "median": 90.6,
+     "p90": 114.7
+    },
+    "windows": 0,
+    "win_dropped": 0,
+    "time_s": 0.0
+   },
+   "report": "output\\MedianBarrierConcrete_L1_1x1\\_check\\report.json"
+  },
+  "photo": {
+   "checked": false,
+   "mismatch": null,
+   "lines": [],
+   "status": "NOT_APPLICABLE"
+  },
+  "tiles": {
+   "checked": false,
+   "status": "NOT_APPLICABLE",
+   "simplified": [],
+   "detail": [],
+   "detail_color": [],
+   "color_off": [],
+   "tiles_off": 0,
+   "tiles_total": 0
+  },
+  "lod": {
+   "checked": true,
+   "status": "PASS",
+   "line": "LODCHECK PASS main max 0.000% (az 0, el -10) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\MedianBarrierConcrete_L1_1x1",
+   "notes": []
+  },
+  "agent": {
+   "status": "PASS",
+   "verts": {
+    "LOD0": 104,
+    "LOD1": 36,
+    "LOD2": 20
+   },
+   "action_tags": [],
+   "exact_fix_instruction": "no fix needed"
+  },
+  "gate": {
+   "status": "PASS",
+   "reasons": [],
+   "incomplete": []
+  }
+ },
+ "mismatch_attempts": {},
+ "next_action": {
+  "command": null,
+  "reason": "all requested checks passed"
+ },
+ "project": "highway-props",
+ "updated_at": "2026-11-18T10:36:20",
+ "visual_review_note": "중앙분리대: F형 1.27m·황색 반사체 확인",
+ "visual_review_artifacts": [
+  {
+   "file": "previews/MedianBarrierConcrete_L1_1x1.png",
+   "sha256": "3dd00f796ccaf7f77ce7b2d8f3455ac04e1f6470d6d3d2b34f4ac8601cdaa5a5"
+  }
+ ],
+ "reviewed_preview_hash": "3dd00f796ccaf7f77ce7b2d8f3455ac04e1f6470d6d3d2b34f4ac8601cdaa5a5"
+}

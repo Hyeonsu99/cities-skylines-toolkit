@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "exllu_109_cs2.py",
- "generator_hash": "b6a628fa44884d7012c38bcfd3977b4cdd9fe29cccf51c7406faaf4f2baa2793",
- "current_preview_hash": "6074093473c38971d8c51b02981e82e04a37e2a32367f6d5b8d9e6c4d1d0a068",
+ "generator_hash": "8ccc82a475a0dd84eec4feb9be6505f9bfa70d83b47bf34a036b38008177d3c2",
+ "current_preview_hash": "3fb0aa55e6c40e7c749dfd35782e55efa5f66bb695faa1fc031a4ae2d2c9205f",
  "last_gate": {
   "status": "PASS",
   "project": "exllu-109",
@@ -29,8 +29,8 @@
    "report": "output\\HighriseTower109_L1_5x4\\_check\\report.json"
   },
   "asset": "HighriseTower109_L1_5x4",
-  "label": "",
-  "time": "2026-11-13 17:26:16",
+  "label": "color",
+  "time": "2026-11-18 10:32:08",
   "build": {
    "asset": "HighriseTower109_L1_5x4",
    "fbx": true,
@@ -97,7 +97,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 10.5
+    "time_s": 3.0
    },
    "report": "output\\HighriseTower109_L1_5x4\\_check\\report.json"
   },
@@ -145,13 +145,13 @@
   "reason": "all requested checks passed"
  },
  "project": "exllu-109",
- "updated_at": "2026-11-13T17:26:51",
- "visual_review_note": "reviewed current artifacts",
+ "updated_at": "2026-11-18T10:33:04",
+ "visual_review_note": "Compared current preview against photo evidence. Rerun changed only the banner; photo and tile sheet hashes match inspected artifacts.",
  "visual_review_artifacts": [
   {
    "file": "previews/HighriseTower109_L1_5x4.png",
-   "sha256": "6074093473c38971d8c51b02981e82e04a37e2a32367f6d5b8d9e6c4d1d0a068"
+   "sha256": "3fb0aa55e6c40e7c749dfd35782e55efa5f66bb695faa1fc031a4ae2d2c9205f"
   }
  ],
- "reviewed_preview_hash": "6074093473c38971d8c51b02981e82e04a37e2a32367f6d5b8d9e6c4d1d0a068"
+ "reviewed_preview_hash": "3fb0aa55e6c40e7c749dfd35782e55efa5f66bb695faa1fc031a4ae2d2c9205f"
 }

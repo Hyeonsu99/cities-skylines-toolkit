@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "exllu_108_cs2.py",
- "generator_hash": "7b3fe83e39c8509a27434efcaeb72dd09e6aeb7f51b1573a246d151ffc3690f7",
- "current_preview_hash": "66845f573014ba8436d596466082c642244bf2b790d66e60c1d13a37fbd8c1f4",
+ "generator_hash": "c9ec2ed7bcf7dc18f7ef42bd7dc0bf1c8a9cc51715825c40268d705a13302080",
+ "current_preview_hash": "dd20dd5be7eaaf9c87fe5a04879953be9962478a27b40071b647eea4cec90f3a",
  "last_gate": {
   "status": "PASS",
   "project": "exllu-108",
@@ -29,8 +29,8 @@
    "report": "output\\HighriseTower108_L1_5x6\\_check\\report.json"
   },
   "asset": "HighriseTower108_L1_5x6",
-  "label": "",
-  "time": "2026-11-13 17:23:50",
+  "label": "color",
+  "time": "2026-11-18 10:32:28",
   "build": {
    "asset": "HighriseTower108_L1_5x6",
    "fbx": true,
@@ -97,7 +97,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 20.3
+    "time_s": 5.0
    },
    "report": "output\\HighriseTower108_L1_5x6\\_check\\report.json"
   },
@@ -106,7 +106,7 @@
    "mismatch": 0,
    "lines": [
     "INFO     back floor pitch: photo 2.20 m / model 2.95 m (+34%)  -> photo shows ~48 floor bands over the wall height, model ~36 (model needs MORE floors or lower floor height) (low-confidence photo evidence - do not auto-change floors)",
-    "MATCH    back window bay pitch: photo 3.35 m / model 2.75 m (-18%)",
+    "INFO     back window bay pitch: photo 3.35 m / model 2.30 m (-31%)  (bays differ - check window columns)",
     "INFO     back edge agreement 67%",
     "INFO     front floor pitch: photo 1.25 m / model 2.50 m (+100%)  -> photo shows ~5 floor bands over the wall height, model ~2 (model needs MORE floors or lower floor height) (low-confidence photo evidence - do not auto-change floors)",
     "MATCH    front window bay pitch: photo 1.90 m / model 1.55 m (-18%)",
@@ -118,14 +118,14 @@
    "checked": true,
    "status": "PASS",
    "simplified": [
-    "TILE back r0c1 x[10,20]m z[97,106]m recall 20% precision 25%  SIMPLIFIED",
-    "TILE back r7c2 x[20,30]m z[35,44]m recall 30% precision 49%  SIMPLIFIED",
-    "TILE back r0c0 x[0,10]m z[97,106]m recall 32% precision 23%  SIMPLIFIED",
-    "TILE front r0c0 x[0,7]m z[0,6]m recall 42% precision 47%  SIMPLIFIED"
+    "TILE back r0c1 x[10,20]m z[97,106]m recall 30% precision 27%  SIMPLIFIED",
+    "TILE back r7c2 x[20,30]m z[35,44]m recall 31% precision 48%  SIMPLIFIED",
+    "TILE back r0c0 x[0,10]m z[97,106]m recall 33% precision 22%  SIMPLIFIED",
+    "TILE front r0c0 x[0,7]m z[0,6]m recall 41% precision 47%  SIMPLIFIED"
    ],
    "detail": [
-    "DETAIL back recall 47% precision 48% worst r0c1 (20%) simplified_tiles 23/36",
-    "DETAIL front recall 42% precision 47% worst r0c0 (42%) simplified_tiles 1/1"
+    "DETAIL back recall 47% precision 48% worst r0c1 (30%) simplified_tiles 23/36",
+    "DETAIL front recall 41% precision 47% worst r0c0 (41%) simplified_tiles 1/1"
    ],
    "detail_color": [
     "DETAIL_COLOR back tiles_off 0/0 (dE>14; trusted tiles only)",
@@ -163,29 +163,29 @@
   "reason": "all requested checks passed"
  },
  "project": "exllu-108",
- "updated_at": "2026-11-13T17:24:19",
- "visual_review_note": "reviewed current artifacts",
+ "updated_at": "2026-11-18T10:33:04",
+ "visual_review_note": "Compared current preview against photo evidence. Rerun changed only the banner; photo and tile sheet hashes match inspected artifacts.",
  "visual_review_artifacts": [
   {
    "file": "previews/HighriseTower108_L1_5x6.png",
-   "sha256": "66845f573014ba8436d596466082c642244bf2b790d66e60c1d13a37fbd8c1f4"
+   "sha256": "dd20dd5be7eaaf9c87fe5a04879953be9962478a27b40071b647eea4cec90f3a"
   },
   {
    "file": "previews/photo_check/facade_back.png",
-   "sha256": "2d90e94513d8f4a97dd86cda2af18dc73abcadb626122b3a230cd7ade75ef74e"
+   "sha256": "2a2c79065aa0fe27dbc6c3c5663d8e88d5e28d43490dbf56a677b3e243f9e032"
   },
   {
    "file": "previews/photo_check/facade_front.png",
-   "sha256": "a461382045a69fec8c82d4a6c43d86a5a77a539674740a326e5c21dafba4aa8e"
+   "sha256": "5b9b1e0aabaad57a8ebee8514002b1c9d88eebd706ecb6f0224ecc8d47946650"
   },
   {
    "file": "previews/tiles/back_map.png",
-   "sha256": "668af1aee789564fc1e8fbc9d8bc1c388106cd76aaf3649dab4edc500662ba18"
+   "sha256": "a858a028f03ef2b8f743d9fc75b2466f803466c328362bfd34c9af54a6c9e1d8"
   },
   {
    "file": "previews/tiles/front_map.png",
-   "sha256": "abb83bffd9753cbc01b5c27cbbe10dad04ee1afb2fdc92e83e531db982d2a4c9"
+   "sha256": "23a32a5817d251b38cbca4250ef6e049a83c19ad935fd5ced508d163f576314f"
   }
  ],
- "reviewed_preview_hash": "66845f573014ba8436d596466082c642244bf2b790d66e60c1d13a37fbd8c1f4"
+ "reviewed_preview_hash": "dd20dd5be7eaaf9c87fe5a04879953be9962478a27b40071b647eea4cec90f3a"
 }

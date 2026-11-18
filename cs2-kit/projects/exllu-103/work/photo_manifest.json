@@ -7,7 +7,7 @@
     700,
     700
    ],
-   "mtime_ns": 1794316206165032500,
+   "mtime_ns": 1794278000282371700,
    "bytes": 791649,
    "duplicate_of": null,
    "observed": true
@@ -19,7 +19,7 @@
     2679,
     1659
    ],
-   "mtime_ns": 1794316206175033400,
+   "mtime_ns": 1794294910458996100,
    "bytes": 4188260,
    "duplicate_of": null,
    "observed": false
@@ -31,10 +31,10 @@
     1600,
     1100
    ],
-   "mtime_ns": 1794316206180032200,
+   "mtime_ns": 1794293349264837300,
    "bytes": 2107056,
    "duplicate_of": null,
-   "observed": false
+   "observed": true
   },
   {
    "file": "photos\\kakao-back-mid.png",
@@ -43,7 +43,7 @@
     1600,
     1100
    ],
-   "mtime_ns": 1794316206187033600,
+   "mtime_ns": 1794293349372728200,
    "bytes": 2569609,
    "duplicate_of": null,
    "observed": false
@@ -55,7 +55,7 @@
     518,
     387
    ],
-   "mtime_ns": 1794316206187033600,
+   "mtime_ns": 1794278000283877300,
    "bytes": 35075,
    "duplicate_of": null,
    "observed": true
@@ -67,7 +67,7 @@
     2992,
     2578
    ],
-   "mtime_ns": 1794316206192033500,
+   "mtime_ns": 1794278000288876400,
    "bytes": 834311,
    "duplicate_of": null,
    "observed": true
@@ -79,10 +79,46 @@
     1600,
     1100
    ],
-   "mtime_ns": 1794316206198033500,
+   "mtime_ns": 1794279298056869800,
    "bytes": 2396197,
    "duplicate_of": null,
    "observed": false
+  },
+  {
+   "file": "photos\\sv-front-far-a.png",
+   "sha256": "55ac41cb54eb44b641342961ca08d71a36f236e7109c8aac7b3ce2c080d13896",
+   "size": [
+    1600,
+    1100
+   ],
+   "mtime_ns": 1794441064027556100,
+   "bytes": 1963896,
+   "duplicate_of": null,
+   "observed": true
+  },
+  {
+   "file": "photos\\sv-front-far-b-low.png",
+   "sha256": "ea02bfbf963b3db47edd3c890a5e8db39a588750637c23b181ad445f2b2a91a5",
+   "size": [
+    1600,
+    1100
+   ],
+   "mtime_ns": 1794441064032061400,
+   "bytes": 1714590,
+   "duplicate_of": null,
+   "observed": true
+  },
+  {
+   "file": "photos\\sv-front-far-b.png",
+   "sha256": "96957b28e110c81c09f4b000bb3b3822e15218712e79547bdcc3f93ee5af9f77",
+   "size": [
+    1600,
+    1100
+   ],
+   "mtime_ns": 1794441064037561800,
+   "bytes": 2244424,
+   "duplicate_of": null,
+   "observed": true
   },
   {
    "file": "photos\\sv-front.png",
@@ -91,10 +127,10 @@
     1600,
     1100
    ],
-   "mtime_ns": 1794316206204034200,
+   "mtime_ns": 1794279298119719100,
    "bytes": 2257537,
    "duplicate_of": null,
-   "observed": false
+   "observed": true
   },
   {
    "file": "photos\\sv-nw.png",
@@ -103,10 +139,10 @@
     1600,
     1100
    ],
-   "mtime_ns": 1794316206211034800,
+   "mtime_ns": 1794279297996786600,
    "bytes": 2727586,
    "duplicate_of": null,
-   "observed": false
+   "observed": true
   },
   {
    "file": "photos\\user-01-tower.png",
@@ -115,7 +151,7 @@
     120,
     446
    ],
-   "mtime_ns": 1794316206212035900,
+   "mtime_ns": 1794278000289376400,
    "bytes": 99246,
    "duplicate_of": null,
    "observed": true
@@ -127,7 +163,7 @@
     833,
     954
    ],
-   "mtime_ns": 1794316206215035500,
+   "mtime_ns": 1794278000291876600,
    "bytes": 948942,
    "duplicate_of": null,
    "observed": true
@@ -139,7 +175,7 @@
     1186,
     866
    ],
-   "mtime_ns": 1794316206218540600,
+   "mtime_ns": 1794278000295877800,
    "bytes": 1401126,
    "duplicate_of": null,
    "observed": true
@@ -151,7 +187,7 @@
     1154,
     952
    ],
-   "mtime_ns": 1794316206222538500,
+   "mtime_ns": 1794278000300885800,
    "bytes": 1911798,
    "duplicate_of": null,
    "observed": true
@@ -163,7 +199,7 @@
     591,
     920
    ],
-   "mtime_ns": 1794316206225542000,
+   "mtime_ns": 1794278000302885100,
    "bytes": 642706,
    "duplicate_of": null,
    "observed": true
@@ -175,7 +211,7 @@
     467,
     326
    ],
-   "mtime_ns": 1794316206225542000,
+   "mtime_ns": 1794278000303885900,
    "bytes": 181378,
    "duplicate_of": null,
    "observed": true
@@ -187,7 +223,7 @@
     492,
     718
    ],
-   "mtime_ns": 1794316206227540200,
+   "mtime_ns": 1794278000305385100,
    "bytes": 489603,
    "duplicate_of": null,
    "observed": true
@@ -199,7 +235,7 @@
     424,
     721
    ],
-   "mtime_ns": 1794316206228542400,
+   "mtime_ns": 1794278000306885400,
    "bytes": 389783,
    "duplicate_of": null,
    "observed": true
@@ -211,7 +247,7 @@
     910,
     918
    ],
-   "mtime_ns": 1794316206230542200,
+   "mtime_ns": 1794278000308886000,
    "bytes": 734936,
    "duplicate_of": null,
    "observed": true
@@ -223,7 +259,7 @@
     1378,
     1064
    ],
-   "mtime_ns": 1794316206235540700,
+   "mtime_ns": 1794286290626034000,
    "bytes": 1772751,
    "duplicate_of": null,
    "observed": false
@@ -235,7 +271,7 @@
     869,
     1886
    ],
-   "mtime_ns": 1794316206240541200,
+   "mtime_ns": 1794288843675332200,
    "bytes": 1623522,
    "duplicate_of": null,
    "observed": false
@@ -247,10 +283,22 @@
     721,
     1812
    ],
-   "mtime_ns": 1794316206244540500,
+   "mtime_ns": 1794291614712546100,
    "bytes": 1342143,
    "duplicate_of": null,
    "observed": false
+  },
+  {
+   "file": "photos\\view_ref.png",
+   "sha256": "640bf7099706add2ce7677c2d639353bda2ad480e9f52a6aefc0a26ffe438d33",
+   "size": [
+    700,
+    700
+   ],
+   "mtime_ns": 1794451279310019600,
+   "bytes": 791649,
+   "duplicate_of": "photos\\aerial.png",
+   "observed": true
   },
   {
    "file": "photos\\vr-103-a.png",
@@ -259,7 +307,7 @@
     313,
     991
    ],
-   "mtime_ns": 1794316206245540500,
+   "mtime_ns": 1794293813500584600,
    "bytes": 383928,
    "duplicate_of": null,
    "observed": false
@@ -271,7 +319,7 @@
     280,
     956
    ],
-   "mtime_ns": 1794316206247540400,
+   "mtime_ns": 1794293813653889200,
    "bytes": 346938,
    "duplicate_of": null,
    "observed": false
@@ -283,7 +331,7 @@
     323,
     1024
    ],
-   "mtime_ns": 1794316206249540200,
+   "mtime_ns": 1794293813764139900,
    "bytes": 486526,
    "duplicate_of": null,
    "observed": false
@@ -295,7 +343,7 @@
     313,
     830
    ],
-   "mtime_ns": 1794316206250539900,
+   "mtime_ns": 1794293813873902500,
    "bytes": 335274,
    "duplicate_of": null,
    "observed": false
