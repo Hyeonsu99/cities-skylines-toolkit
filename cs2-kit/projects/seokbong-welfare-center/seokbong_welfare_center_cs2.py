@@ -818,6 +818,7 @@ def _add_window_bay(mb, wins, axis, c, s, a0, a1, z0, z1, floor, unit, stage=0, 
 
 
 RAMP_X0, RAMP_X1 = -18.8, 24.8
+RAMP_XK = 14.4                  # 경사 끝 → 로컬푸드직매장 위 수평 띠 (south_se_entrance: 행정복지 LED 우측 기둥에서 수평 전환)
 RAMP_DZ = 0.85
 
 
@@ -827,7 +828,7 @@ def _ramp_yf(x):
 
 
 def _ramp_zb(x):
-    t = (x - RAMP_X0) / (RAMP_X1 - RAMP_X0)
+    t = min(1.0, (x - RAMP_X0) / (RAMP_XK - RAMP_X0))
     return 8.30 - 4.30 * t
 
 
@@ -836,7 +837,7 @@ def _ramp_zt(x):
 
 
 def _ramp_x_at_zt(z):
-    return RAMP_X0 + (RAMP_X1 - RAMP_X0) * (8.30 + RAMP_DZ - z) / 4.30
+    return RAMP_X0 + (RAMP_XK - RAMP_X0) * (8.30 + RAMP_DZ - z) / 4.30
 
 
 def _sloped_y_bar(mb, x0, x1, y0, y1, zb0, zb1, zt0, zt1, region):
@@ -1042,11 +1043,17 @@ def _box_var(mb, x0, x1, y0, y1, z0, z1, region, variant=0, skip=()):
 
 def _segmented_ramp_slab(mb, x0, x1, yf0, yf1, y_back, zb0, zb1, dz, region, n_seg=11):
     """사선 램프 프리즘을 n_seg개 직교 근사/평면 분할로 생성해 _tiled 오버슈트 없이 256 px/m 텍셀·변형 교차 확보."""
+    # 경사 구간(x0..RAMP_XK)과 수평 구간(RAMP_XK..x1)을 꺾임점에서 나눠 분할 (zb는 _ramp_zb 를 따름)
+    n_flat = 3 if n_seg > 3 else 1
+    n_slope = max(1, n_seg - n_flat)
+    xs = [x0 + (RAMP_XK - x0) * k / n_slope for k in range(n_slope)] + \
+         [RAMP_XK + (x1 - RAMP_XK) * k / n_flat for k in range(n_flat + 1)]
+    n_seg = len(xs) - 1
     for i in range(n_seg):
-        t0, t1 = i / n_seg, (i + 1) / n_seg
-        xa, xb = x0 + (x1 - x0) * t0, x0 + (x1 - x0) * t1
+        xa, xb = xs[i], xs[i + 1]
+        t0, t1 = (xa - x0) / (x1 - x0), (xb - x0) / (x1 - x0)
         yfa, yfb = yf0 + (yf1 - yf0) * t0, yf0 + (yf1 - yf0) * t1
-        zba, zbb = zb0 + (zb1 - zb0) * t0, zb0 + (zb1 - zb0) * t1
+        zba, zbb = _ramp_zb(xa), _ramp_zb(xb)
         p0, p1 = (xa, yfa, zba), (xb, yfb, zbb)
         p2, p3 = (xb, y_back, zbb), (xa, y_back, zba)
         b0, b1, b2, b3 = p0, p1, p2, p3
@@ -1163,8 +1170,10 @@ def build_east_stair_and_terrace(mb, stage):
     _box_var(mb, 26.68, 27.00, 35.20, 51.80, 4.05, 4.85, "white_panel", variant=1)
     # 1b. 남측 날개 동면(X=24.4)을 따라 남동 모서리(Y=10.2)까지 연속 (sat_vworld_z19 동측 띠 · east_front_mid 2층 흰 띠)
     _box_var(mb, 24.40, 26.68, 10.20, 35.20, 4.05, 4.75, deck_mat, variant=1)
-    _box_var(mb, 26.68, 27.00, 9.88, 35.20, 4.05, 4.85, "white_panel", variant=2)
-    _box_var(mb, 24.40, 26.68, 9.88, 10.20, 4.05, 4.85, "white_panel", variant=0)
+    _box_var(mb, 26.68, 27.00, 6.70, 35.20, 4.05, 4.85, "white_panel", variant=2)
+    # 1c. 남동 모서리: 남측 경사로 수평 구간 끝(X=24.8, 로컬푸드직매장 상부 띠)과 동측 데크를 이음
+    _box_var(mb, 24.80, 26.68, 7.02, 10.20, 4.05, 4.75, deck_mat, variant=2, skip=("left",))
+    _box_var(mb, 24.80, 26.68, 6.70, 7.02, 4.05, 4.85, "white_panel", variant=0, skip=("left",))
 
     # 2. 계단 동선 본체 (Y=51.8..66.1, 3개 경사 구간 + 2개 중간 참; Y<=58.6 구간은 하부 1층 필로티 개방)
     flights = (
@@ -1226,10 +1235,10 @@ def build_east_stair_and_terrace(mb, stage):
 
     # 5. 외측·내측 금속 난간 및 북동 테라스 U형 가드레일·필로티 하부 안전펜스
     outer_rail_pts = (
-        (9.98, 4.85), (51.80, 4.85), (54.40, 4.15), (56.40, 4.15),
+        (6.80, 4.85), (51.80, 4.85), (54.40, 4.15), (56.40, 4.15),
         (60.80, 2.65), (63.00, 2.65), (66.10, 1.64), (69.72, 1.64), (71.36, 0.48),
     )
-    _pipe_railing_run(mb, "y", 10.04, 1, 24.45, 26.80, 4.85, h=1.02, stage=stage)
+    _pipe_railing_run(mb, "y", 6.80, 1, 24.80, 26.80, 4.85, h=1.02, stage=stage)
     _sloped_pipe_railing(mb, 26.84, outer_rail_pts, h=0.92, stage=stage)
     if stage == 0:
         inner_rail_pts = (
@@ -1620,14 +1629,15 @@ def build_south_ramp_and_entrance(mb, A, wins, stage):
     # 2) 사선 램프 상단 경사 3단 스테인리스 난간 (south_se_close.png 기준)
     if stage == 0:
         for rh in (0.36, 0.68, 1.02):
-            _closed_quad_prism(
-                mb,
-                (x_l, ramp_yf(x_l) + 0.05, ramp_zb(x_l) + dz_ramp + rh),
-                (x_r, ramp_yf(x_r) + 0.05, ramp_zb(x_r) + dz_ramp + rh),
-                (x_r, ramp_yf(x_r) + 0.12, ramp_zb(x_r) + dz_ramp + rh),
-                (x_l, ramp_yf(x_l) + 0.12, ramp_zb(x_l) + dz_ramp + rh),
-                0.045, "railing_steel",
-            )
+            for ra, rb in ((x_l, RAMP_XK), (RAMP_XK, x_r)):
+                _closed_quad_prism(
+                    mb,
+                    (ra, ramp_yf(ra) + 0.05, ramp_zb(ra) + dz_ramp + rh),
+                    (rb, ramp_yf(rb) + 0.05, ramp_zb(rb) + dz_ramp + rh),
+                    (rb, ramp_yf(rb) + 0.12, ramp_zb(rb) + dz_ramp + rh),
+                    (ra, ramp_yf(ra) + 0.12, ramp_zb(ra) + dz_ramp + rh),
+                    0.045, "railing_steel",
+                )
         n_posts = 22
         for i in range(n_posts):
             xp = x_l + (x_r - x_l) * i / (n_posts - 1)
