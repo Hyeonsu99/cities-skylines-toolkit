@@ -904,20 +904,23 @@ def _closed_quad_prism(mb, p0, p1, p2, p3, dz, region, skip_bottom=False, tiled=
     emit([b3, b0, t0, t3])                # edge 3-0
 
 
-def _glass_railing_run(mb, gls, axis, c, s, a0, a1, z_base, h=1.08, stage=0):
-    """유리 난간 + 상단 스테인리스 손스침 + 기둥 포스트 (지주 간격 ~1.8m)."""
+def _glass_railing_run(mb, gls, axis, c, s, a0, a1, z_base, h=1.08, stage=0,
+                       post_step=1.80, gls_a0=None, gls_a1=None):
+    """유리 난간 + 상단 스테인리스 손스침 + 기둥 포스트 (모서리 확장 옵션 포함)."""
     if stage >= 2:
         return
     # 상단 핸드레일 (닫힌 바)
     K.axbox(mb, axis, c, s, a0, a1, 0.01, 0.08, z_base + h - 0.06, z_base + h, "railing_steel")
     # 유리 패널 (Gls 메시, 양면이 아니므로 바깥/안쪽 약 1cm 분리된 한 면 또는 gls)
+    ga0 = a0 if gls_a0 is None else gls_a0
+    ga1 = a1 if gls_a1 is None else gls_a1
     if gls is not None and stage == 0:
-        gls.rect(K.face_pts(axis, c + s * 0.045, s, a0, a1, z_base + 0.06, z_base + h - 0.06), "glass_rail")
+        gls.rect(K.face_pts(axis, c + s * 0.045, s, ga0, ga1, z_base + 0.06, z_base + h - 0.06), "glass_rail")
         # 안쪽에서도 보이게 1cm 뒤로 반대면 추가 (두께 확보)
-        gls.rect(K.face_pts(axis, c + s * 0.030, -s, a0, a1, z_base + 0.06, z_base + h - 0.06), "glass_rail")
+        gls.rect(K.face_pts(axis, c + s * 0.030, -s, ga0, ga1, z_base + 0.06, z_base + h - 0.06), "glass_rail")
     if stage == 0:
         span = a1 - a0
-        n_posts = max(2, int(round(span / 1.80)) + 1)
+        n_posts = max(2, int(round(span / post_step)) + 1)
         for i in range(n_posts):
             ap = a0 + span * i / max(1, n_posts - 1)
             K.axbox(mb, axis, c, s, max(a0, ap - 0.025), min(a1, ap + 0.025),
@@ -1380,6 +1383,74 @@ def _sloped_x_pipe_railing(mb, y_c, pts_xz, h=0.92, stage=0):
                        zp, zp + h - 0.05, "railing_steel")
 
 
+def _sloped_x_glass_railing(mb, gls, y_c, pts_xzb_zt, post_step=1.40, stage=0):
+    """X축을 따라 측벽 위에 연속 설치되는 유리 난간 (상단 핸드레일 + 포스트 + 양면 글라스)."""
+    if stage >= 2 or len(pts_xzb_zt) < 2:
+        return
+    for idx in range(len(pts_xzb_zt) - 1):
+        x0, zb0, zt0 = pts_xzb_zt[idx]
+        x1, zb1, zt1 = pts_xzb_zt[idx + 1]
+        if x1 <= x0 + 1e-4:
+            continue
+        _cheek_x_segment(mb, x0, x1, y_c - 0.035, y_c + 0.035,
+                         zt0 - 0.06, zt1 - 0.06, zt0, zt1, "railing_steel")
+        if gls is not None and stage == 0:
+            gb0, gb1 = zb0 + 0.015, zb1 + 0.015
+            gt0, gt1 = zt0 - 0.06, zt1 - 0.06
+            if gt0 > gb0 + 0.02 or gt1 > gb1 + 0.02:
+                gls.rect([(x0, y_c - 0.015, gb0), (x1, y_c - 0.015, gb1),
+                          (x1, y_c - 0.015, gt1), (x0, y_c - 0.015, gt0)], "glass_rail")
+                gls.rect([(x1, y_c + 0.005, gb1), (x0, y_c + 0.005, gb0),
+                          (x0, y_c + 0.005, gt0), (x1, y_c + 0.005, gt1)], "glass_rail")
+        if stage == 0:
+            seg_len = math.hypot(x1 - x0, zt1 - zt0)
+            n_posts = max(2, int(round(seg_len / post_step)) + 1)
+            for p in range(n_posts):
+                if idx > 0 and p == 0:
+                    continue
+                t = p / max(1, n_posts - 1)
+                xp = x0 + (x1 - x0) * t
+                zb = zb0 + (zb1 - zb0) * t
+                zt = zt0 + (zt1 - zt0) * t
+                if zt - 0.06 > zb + 0.02:
+                    mb.box(max(x0, xp - 0.022), min(x1, xp + 0.022), y_c - 0.030, y_c + 0.030,
+                           zb, zt - 0.06, "railing_steel")
+
+
+def _cheek_top_pipe_railing(mb, x_c, pts_yzb_zt, post_step=1.20, stage=0):
+    """Y축 측벽 상부에 올라가는 2단 스테인리스 파이프 난간 (측벽 위 -> 테라스 높이 정합)."""
+    if stage >= 2 or len(pts_yzb_zt) < 2:
+        return
+    n_segs = len(pts_yzb_zt) - 1
+    mid_mat = {"front": None, "back": None, "default": "railing_steel"}
+    for idx in range(n_segs):
+        y0, zb0, zt0 = pts_yzb_zt[idx]
+        y1, zb1, zt1 = pts_yzb_zt[idx + 1]
+        if y1 <= y0 + 1e-4:
+            continue
+        _cheek_wall_segment(mb, x_c - 0.030, x_c + 0.030, y0, y1,
+                            zt0 - 0.055, zt1 - 0.055, zt0, zt1, "railing_steel")
+        if stage == 0:
+            zm0 = 0.5 * (zb0 + zt0)
+            zm1 = 0.5 * (zb1 + zt1)
+            if zm0 > zb0 + 0.08 and zm1 > zb1 + 0.08:
+                _cheek_wall_segment(mb, x_c - 0.022, x_c + 0.022, y0, y1,
+                                    zm0 - 0.02, zm1 - 0.02, zm0 + 0.02, zm1 + 0.02, mid_mat)
+            seg_len = math.hypot(y1 - y0, zt1 - zt0)
+            n_posts = max(2, int(round(seg_len / post_step)) + 1)
+            for p in range(n_posts):
+                if idx < n_segs - 1 and p == n_posts - 1:
+                    continue
+                t = p / max(1, n_posts - 1)
+                yp = y0 + (y1 - y0) * t
+                zb = zb0 + (zb1 - zb0) * t
+                zt = zt0 + (zt1 - zt0) * t
+                py0 = y0 if (idx == 0 and p == 0) else (y1 - 0.044 if (idx == n_segs - 1 and p == n_posts - 1) else yp - 0.022)
+                py1 = y0 + 0.044 if (idx == 0 and p == 0) else (y1 if (idx == n_segs - 1 and p == n_posts - 1) else yp + 0.022)
+                if zt - 0.055 > zb + 0.02:
+                    mb.box(x_c - 0.025, x_c + 0.025, py0, py1, zb, zt - 0.055, "railing_steel")
+
+
 def _cylinder_oct(mb, cx, cy, r, z0, z1, region, skip_bottom=True):
     """8각 원통 닫힌 매스 (원형 화분용)."""
     pts_b, pts_t = [], []
@@ -1543,7 +1614,7 @@ def build_plaza_and_site(mb, A, wins, gls, stage):
                     mb.atlas.uv_tile("plaza_paving", 6.2 - ya, pz) if mb.split_tiles else mb.atlas.uv("plaza_paving"), "plaza_paving")
 
     if stage >= 2:
-        mb.box(-24.6, -18.4, 7.45, 10.19, 0.14, 4.82, {"top": "terrace_deck", "default": "beige_stone"}, skip=("bottom",))
+        mb.box(-24.6, -18.4, 7.45, 10.19, 0.14, 4.82, {"top": "terrace_deck", "default": "white_panel"}, skip=("bottom",))
         return
 
     # 남서 외부 계단 (user side photo · crop_dnbarch2_sw · south_front_mid):
@@ -1594,18 +1665,26 @@ def build_plaza_and_site(mb, A, wins, gls, stage):
         _box_var(mb, x_mid_w, x_mid_e, sy0, sy1, 2.04, z_mid, {"top": "stair_stone", "default": "white_panel"}, variant=3)
         _cheek_x_segment(mb, x_top, x_mid_w, sy0, sy1, 4.40, 2.04, deck_z, z_mid, step_mat, variant_base=1)
 
-    # 계단 거리쪽(-Y) 공중 부양 3구간 백색 측벽 빔 (하단 X=-9.40 만 접지, 아래 비어 있음)
+    # 계단 거리쪽(-Y) 공중 부양 백색 측벽 빔 + 상단 연속 유리난간 (남서 데크 4.82 m 에서 단차 없이 연결)
     for idx, (xa, xb, zb_a, zb_b, zt_a, zt_b, on_g) in enumerate((
-        (x_mid_e, x_bot, 1.98, 0.14, z_mid + 1.05, 0.32 + 1.05, False),
-        (x_mid_w, x_mid_e, 1.98, 1.98, z_mid + 1.05, z_mid + 1.05, False),
-        (x_top, x_mid_w, 4.40, 1.98, deck_z + 1.05, z_mid + 1.05, False),
+        (x_top, -17.85, 4.40, 4.04, deck_z, 5.04, False),
+        (-17.85, x_mid_w, 4.04, 1.98, 5.04, z_mid + 0.56, False),
+        (x_mid_w, x_mid_e, 1.98, 1.98, z_mid + 0.56, z_mid + 0.56, False),
+        (x_mid_e, x_bot, 1.98, 0.14, z_mid + 0.56, 0.32 + 0.56, False),
     )):
         _cheek_x_segment(mb, xa, xb, cy0, sy0, zb_a, zb_b, zt_a, zt_b, "white_panel", skip_bottom=on_g, variant_base=idx)
+    _sloped_x_glass_railing(mb, gls, 6.495, (
+        (x_top, deck_z, deck_z + 1.05),
+        (-17.85, 5.04, 5.5125),
+        (x_mid_w, z_mid + 0.56, z_mid + 1.05),
+        (x_mid_e, z_mid + 0.56, z_mid + 1.05),
+        (x_bot, 0.32 + 0.56, 0.32 + 1.05),
+    ), stage=stage)
 
-    # 계단 뒤편 후퇴(Y=7.80..9.73) 하부 설비벽 & 소형 루버 (user side photo 기준, 앞 1.35 m 및 X>-12.4 완전 개방)
-    _cheek_x_segment(mb, x_top + 0.02, x_mid_w - 0.02, 7.80, 9.73, 0.14, 0.14, 4.36, 2.02, "beige_stone", skip_bottom=True, variant_base=1)
-    _box_var(mb, x_mid_w + 0.02, x_mid_e - 0.02, 7.80, 9.73, 0.14, 2.02, "beige_stone", variant=2, skip=("bottom",))
-    _cheek_x_segment(mb, x_mid_e + 0.02, -12.40, 7.80, 9.73, 0.14, 0.14, 2.02, 1.46, "beige_stone", skip_bottom=True, variant_base=3)
+    # 계단 뒤편 후퇴(Y=7.80..9.73) 하부 설비벽 & 소형 루버 (crop_dnbarch2_sw · yaw5 사진 기준 회백색 패널 통일)
+    _cheek_x_segment(mb, x_top + 0.02, x_mid_w - 0.02, 7.80, 9.73, 0.14, 0.14, 4.36, 2.02, "white_panel", skip_bottom=True, variant_base=1)
+    _box_var(mb, x_mid_w + 0.02, x_mid_e - 0.02, 7.80, 9.73, 0.14, 2.02, "white_panel", variant=2, skip=("bottom",))
+    _cheek_x_segment(mb, x_mid_e + 0.02, -12.40, 7.80, 9.73, 0.14, 0.14, 2.02, 1.46, "white_panel", skip_bottom=True, variant_base=3)
     if stage == 0:
         mb.box(-15.65, -15.05, 7.77, 7.80, 2.65, 3.05, "louver_grille")
 
@@ -1616,13 +1695,13 @@ def build_plaza_and_site(mb, A, wins, gls, stage):
         _sloped_x_pipe_railing(mb, 7.75, sw_rail_pts, h=0.88, stage=0)
         _sloped_x_pipe_railing(mb, 8.75, sw_rail_pts, h=0.88, stage=0)
 
-    # 남서 모서리 상부 캔틸레버 목재 데크 (X=-25.6..-18.4, Y=6.45..10.19, Z=4.40..4.82) + 유리난간
+    # 남서 모서리 상부 캔틸레버 목재 데크 (X=-25.6..-18.4, Y=6.45..10.19, Z=4.40..4.82) + 남측 모서리->계단 연속 유리난간
     _box_var(mb, -25.6, x_top, cy0, 10.19, 4.40, deck_z, deck_mat, variant=0)
-    _glass_railing_run(mb, gls, "y", cy0, -1, -25.55, x_top - 0.05, deck_z, h=1.06, stage=stage)
-    _glass_railing_run(mb, gls, "x", -25.6, -1, cy0 + 0.08, 10.15, deck_z, h=1.06, stage=stage)
+    _glass_railing_run(mb, gls, "y", 6.54, -1, -25.59, x_top, deck_z, h=1.05, stage=stage,
+                       post_step=1.40, gls_a0=-25.555, gls_a1=x_top)
 
-    # 데크 하부 후퇴된 1층 유리 코너실 (user side photo · crop_dnbarch2_sw 기준)
-    _box_var(mb, -24.6, x_top, 7.45, 10.19, 0.14, 4.40, "beige_stone", variant=1, skip=("bottom",))
+    # 데크 하부 후퇴된 1층 유리 코너실 (crop_dnbarch2_sw · crop_dnbarch3_sw 기준 회백색 패널)
+    _box_var(mb, -24.6, x_top, 7.45, 10.19, 0.14, 4.40, "white_panel", variant=1, skip=("bottom",))
     if stage <= 1:
         _curtain_wall_grid(mb, wins, "y", 7.45, -1, -23.60, -19.20, 0.50, 3.90, nx=3, nz=2,
                            floor0=0, unit0=340, stage=stage, frame_region="curtain_frame", louver_step=0)
@@ -1647,7 +1726,7 @@ def build_north_wing(mb, A, wins, gls, stage):
 
     if stage == 2:
         # LOD2: 북측 후퇴면(Y=68.4, 65.4)·동북 타워(Y=69.2)·평탄 캔틸레버 지붕(X=-27..27, Y=49.6..71.4, Z=18.55..20.15) 유지 + 폐합 입체
-        mb.box(-24.5, 13.5, 50.4, 68.4, 0.14, 9.10, "beige_stone", skip=("bottom",))
+        mb.box(-24.5, 13.5, 50.4, 68.4, 0.14, 9.10, {"left": "white_panel", "default": "beige_stone"}, skip=("bottom",))
         mb.box(13.5, 20.5, 50.4, 65.4, 0.14, 14.80, "white_panel", skip=("bottom",))
         mb.box(20.5, 24.8, 50.4, 64.0, 0.14, 14.80, "white_panel", skip=("bottom",))
         mb.box(20.5, 24.8, 64.0, 69.2, 0.14, 18.55, "white_panel", skip=("bottom",))
@@ -1656,8 +1735,8 @@ def build_north_wing(mb, A, wins, gls, stage):
         mb.box(rx0, rx1, ry0, ry1, 18.55, 20.15, roof_mat)
         return
 
-    # 1~2층 본체 (X in [-24.5, +13.5], Y in [50.4, 68.4])
-    _box_var(mb, -24.5, 13.5, 50.4, 68.4, 0.14, 9.10, "beige_stone", variant=0, skip=("bottom",))
+    # 1~2층 본체 (X in [-24.5, +13.5], Y in [50.4, 68.4]; 서측면은 회백색 패널, 북측 정면은 north_front_mid 근거 베이지 석재 유지)
+    _box_var(mb, -24.5, 13.5, 50.4, 68.4, 0.14, 9.10, {"left": "white_panel", "default": "beige_stone"}, variant=0, skip=("bottom",))
     # 동북 커튼월 로비 후퇴부 (X in [13.5, 20.5], Y in [50.4, 65.4], 1~3층 Z in [0.14, 14.80])
     _box_var(mb, 13.5, 20.5, 50.4, 65.4, 0.14, 14.80, "white_panel", variant=0, skip=("bottom",))
     # 동북 코너 솔리드 계단/엘리베이터 타워 (X in [20.5, 24.8], Y in [64.0, 69.2], Z in [0.14, 18.55])
@@ -1685,6 +1764,19 @@ def build_north_wing(mb, A, wins, gls, stage):
     mb.box(-19.5, 20.5, 68.4, 70.2, 8.85, 9.28, "white_panel")
     _glass_railing_run(mb, gls, "y", 70.2, 1, -24.4, 20.4, 4.78, h=1.08, stage=stage)
     _glass_railing_run(mb, gls, "y", 70.2, 1, -19.4, 20.4, 9.28, h=1.08, stage=stage)
+    # 서측~북서 모서리 2·3층 발코니 래핑 및 난간 연속 접속 (crop_dnbarch3_sw · north_nw_oblique · west_nw_corner 기준)
+    _box_var(mb, -25.60, -24.50, 50.40, 68.40, 4.40, 4.82, "white_panel", variant=1)
+    mb.box(-25.60, -24.50, 68.40, 70.20, 4.35, 4.78, "white_panel")
+    _glass_railing_run(mb, gls, "x", -25.51, -1, 68.40, 70.21, 4.78, h=1.08, stage=stage,
+                       post_step=1.40, gls_a0=68.40, gls_a1=70.245)
+    _glass_railing_run(mb, gls, "y", 70.20, 1, -25.59, -24.40, 4.78, h=1.08, stage=stage,
+                       post_step=1.40, gls_a0=-25.555, gls_a1=-24.40)
+    _box_var(mb, -25.00, -24.50, 50.40, 68.40, 8.85, 9.26, "white_panel", variant=2)
+    mb.box(-25.00, -19.50, 68.40, 70.20, 8.85, 9.28, "white_panel")
+    _glass_railing_run(mb, gls, "x", -24.91, -1, 68.40, 70.21, 9.28, h=1.08, stage=stage,
+                       post_step=1.40, gls_a0=68.40, gls_a1=70.245)
+    _glass_railing_run(mb, gls, "y", 70.20, 1, -24.99, -19.40, 9.28, h=1.08, stage=stage,
+                       post_step=1.40, gls_a0=-24.955, gls_a1=-19.40)
 
     # 북측 2층 세로형 창열 (Y = 68.4, Z in [5.25, 8.20]) — NW 코너까지 연속 배치 (north_nw_oblique.png 정합)
     north_2f_xs = [-23.2, -21.2, -19.2, -17.2, -15.2, -13.2, -11.0, -8.8, -6.6, -4.2, -1.8, 0.6, 3.0, 5.6, 8.0, 10.8]
@@ -1746,13 +1838,13 @@ def build_middle_courtyard_and_east(mb, wins, gls, stage):
     """3. 중정(아트리움) · 서측 2~3층 그린테라스(#퍼골라) · 동측 본체 및 외부 대계단 (Y=35.2..50.4)."""
     if stage == 2:
         # LOD2: 서측 테라스 기단 (X=-24.6..-6.0, Z=9.2) + 동측 연결동 (1F 회랑 포함 Z=15.5), 중앙 중정은 개방 유지!
-        mb.box(-24.6, -6.0, 35.2, 50.4, 0.14, 9.20, {"top": "terrace_deck", "default": "beige_stone"}, skip=("bottom",))
+        mb.box(-24.6, -6.0, 35.2, 50.4, 0.14, 9.20, {"top": "terrace_deck", "default": "white_panel"}, skip=("bottom",))
         mb.box(8.2, 22.0, 35.2, 50.4, 0.14, 4.45, "white_panel", skip=("bottom",))
         mb.box(8.2, 24.8, 35.2, 50.4, 4.45, 15.50, "white_panel")
         return
 
     # A. 서측 1~2층 그린테라스 하부 매스 (X in [-24.6, -6.0], Y in [35.2, 50.4], Z in [0.14, 9.10])
-    _box_var(mb, -24.6, -6.0, 35.2, 50.4, 0.14, 9.10, "beige_stone", variant=1, skip=("bottom",))
+    _box_var(mb, -24.6, -6.0, 35.2, 50.4, 0.14, 9.10, "white_panel", variant=1, skip=("bottom",))
     # 2층 서측 테라스 옥외 데크 바닥 (Z=9.10..9.24) + 조경 화단 + 유리 난간
     _box_var(mb, -25.0, -6.0, 35.2, 50.4, 9.10, 9.26, "terrace_deck", variant=0)
     if stage == 0:
@@ -1760,13 +1852,12 @@ def build_middle_courtyard_and_east(mb, wins, gls, stage):
         for i in range(6):
             wy0 = 36.2 + i * 2.35
             _add_window_bay(mb, wins, "x", -24.6, -1, wy0, wy0 + 1.05, 1.40, 3.85, 0, 100 + i, stage)
-            _add_window_bay(mb, wins, "x", -24.6, -1, wy0, wy0 + 1.05, 5.45, 8.15, 1, 110 + i, stage)
-        # 2층 돌출 발코니 슬래브 & 유리 난간 (X=-25.8..-24.6 깊이 1.2m -> Z=4.4..4.8)
-        # 참고: 위 1층 창(1.4..3.85)과 2층 창(5.45..8.15)은 Z구간이 달라 1.2m 난간에 가리지 않음!
-        _box_var(mb, -26.2, -24.6, 35.2, 50.4, 4.40, 4.82, "white_panel", variant=2)
-        _glass_railing_run(mb, gls, "x", -26.2, -1, 35.3, 50.3, 4.82, h=1.06, stage=stage)
-    # 3층 레벨 서측 그린테라스 외곽 유리 난간 (Z=9.26)
-    _glass_railing_run(mb, gls, "x", -25.0, -1, 35.3, 50.3, 9.26, h=1.08, stage=stage)
+            _add_window_bay(mb, wins, "x", -24.6, -1, wy0, wy0 + 1.05, 5.55, 8.20, 1, 110 + i, stage)
+        # 2층 돌출 발코니 슬래브 (X=-25.60..-24.60 — 남/서/북측동과 일직선 정렬; 난간은 build_south_wings 에서 Y=6.53..68.40 일체 연결)
+        _box_var(mb, -25.6, -24.6, 35.2, 50.4, 4.40, 4.82, "white_panel", variant=2)
+    # 3층 레벨 서측 그린테라스 -> 북측동 3층 서측 발코니 연속 유리난간 (Y=35.27..68.40, Z=9.26)
+    _glass_railing_run(mb, gls, "x", -24.91, -1, 35.27, 68.40, 9.26, h=1.08, stage=stage,
+                       post_step=1.40, gls_a0=35.235, gls_a1=68.40)
 
     # 서측 그린테라스 특징: #자형 백색 대형 퍼골라 캐노피 (sat_vworld_z19.png 실측 X in [-20.0, -9.4], Y in [37.4, 47.8])
     px0, px1 = -20.0, -9.4
@@ -1845,7 +1936,7 @@ def build_south_wings(mb, A, wins, gls, stage):
         mb.box(-19.3, 3.0, 10.75, 35.2, 14.80, 16.45, "white_panel")
         mb.box(3.0, 24.2, 10.75, 35.2, 14.80, 15.20, "roof_membrane")
         mb.box(24.2, 25.2, 10.75, 35.2, 14.80, 16.45, "white_panel")
-        mb.box(-24.6, -18.8, 10.2, 35.2, 0.14, 4.82, {"top": "terrace_deck", "default": "beige_stone"}, skip=("bottom",))
+        mb.box(-24.6, -18.8, 10.2, 35.2, 0.14, 4.82, {"top": "terrace_deck", "default": "white_panel"}, skip=("bottom",))
         return
 
     # A. 남서 3층 백색 상자 매스 (X in [-18.8, +3.0], Y in [10.2, 35.2], Z in [0.14, 14.80]) + 상부 통합 지붕
@@ -1861,12 +1952,16 @@ def build_south_wings(mb, A, wins, gls, stage):
             _box_var(mb, -18.2, -16.2, ry, ry + 0.55, 15.20, 16.30, "white_panel", variant=k)
 
     # 서측 1층 갤러리 포디엄(X in [-24.6, -18.8], Y in [10.2, 35.2], Z in [0.14, 4.82]) + 상부 2층 오픈 목재 테라스 & 2->3층 연결 계단
-    _box_var(mb, -24.6, -18.8, 10.2, 35.2, 0.14, 4.40, "beige_stone", variant=0, skip=("bottom",))
-    _box_var(mb, -25.6, -18.8, 10.2, 35.2, 4.40, 4.82, {"top": "terrace_deck", "default": "white_panel"}, variant=1)
-    _glass_railing_run(mb, gls, "x", -25.6, -1, 10.25, 35.15, 4.82, h=1.06, stage=stage)
-    # 3층 서측 그린테라스 남측 단부 안전 유리난간 (서측 계단 상단 X=-21.20 동쪽 및 -25.0..-24.6)
-    _glass_railing_run(mb, gls, "y", 35.2, -1, -21.20, -18.85, 9.26, h=1.08, stage=stage)
-    _glass_railing_run(mb, gls, "y", 35.2, -1, -24.98, -24.62, 9.26, h=1.08, stage=stage)
+    _box_var(mb, -24.6, -18.8, 10.2, 35.2, 0.14, 4.40, "white_panel", variant=0, skip=("bottom",))
+    _box_var(mb, -25.6, -18.8, 10.19, 35.2, 4.40, 4.82, {"top": "terrace_deck", "default": "white_panel"}, variant=1)
+    # 남서 모서리 -> 서측 2층 목재 테라스 -> 중정 -> 북서 모서리까지 일체 연속 유리난간 (Y=6.53..68.40)
+    _glass_railing_run(mb, gls, "x", -25.51, -1, 6.53, 68.40, 4.82, h=1.05, stage=stage,
+                       post_step=1.40, gls_a0=6.495, gls_a1=68.40)
+    # 3층 서측 그린테라스 남측 단부 안전 유리난간 (계단 내측 X=-21.24..-18.80 및 외측 -24.99..-24.42 빈틈 없이 접속)
+    _glass_railing_run(mb, gls, "y", 35.28, -1, -21.27, -18.80, 9.26, h=1.08, stage=stage,
+                       post_step=1.40, gls_a0=-21.24, gls_a1=-18.80)
+    _glass_railing_run(mb, gls, "y", 35.28, -1, -24.99, -24.42, 9.26, h=1.08, stage=stage,
+                       post_step=1.40, gls_a0=-24.955, gls_a1=-24.45)
 
     # 서측 2층 -> 3층 그린테라스 연결 외부 계단 (Y=23.80..35.20, Z=4.82 -> 9.26; X=-24.60..-21.20, crop_dnbarch3_sw · 위성 빨간 표시)
     w_step_mat = {"top": "stair_stone", "front": "stair_stone", "default": "white_panel"}
@@ -1907,29 +2002,33 @@ def build_south_wings(mb, A, wins, gls, stage):
         _box_var(mb, -24.30, -21.20, wy_m0, wy_m1, 6.64, wz_m, w_deck_mat, variant=2)
         _cheek_wall_segment(mb, -24.30, -21.20, wy_m1, wy_t1, 6.64, 8.86, wz_m, wz_t, w_deck_mat, variant_base=1)
 
-    # 서측 계단 외측(X=-24.60..-24.30) 백색 경사 측벽 및 하부 베이지 석재 마감(Y=26.20..35.20, 전면 노즈 2.4 m 하부 개방)
+    # 서측 계단 외측(X=-24.60..-24.30) 백색 경사 측벽 + 하부 회백색 쐐기 마감 (Y=26.20..35.20, crop_dnbarch3_sw 기준 동일 톤)
     for idx, (y0, y1, zb0, zb1, zt0, zt1, on_g) in enumerate((
-        (wy_b, wy_m0, wz_b, 6.58, wz_b + 1.05, wz_m + 1.05, True),
-        (wy_m0, wy_m1, 6.58, 6.58, wz_m + 1.05, wz_m + 1.05, False),
-        (wy_m1, wy_t0, 6.58, 8.80, wz_m + 1.05, wz_t + 1.05, False),
-        (wy_t0, wy_t1, 8.80, 8.80, wz_t + 1.05, wz_t + 1.05, False),
+        (wy_b, 24.35, wz_b, wz_b, wz_b, 5.62, True),
+        (24.35, wy_m0, wz_b, 6.58, 5.62, wz_m + 0.54, True),
+        (wy_m0, wy_m1, 6.58, 6.58, wz_m + 0.54, wz_m + 0.54, False),
+        (wy_m1, wy_t0, 6.58, 8.80, wz_m + 0.54, wz_t + 0.54, False),
+        (wy_t0, wy_t1, 8.80, 8.80, wz_t + 0.54, wz_t, False),
     )):
         _cheek_wall_segment(mb, -24.60, -24.30, y0, y1, zb0, zb1, zt0, zt1, "white_panel", skip_bottom=on_g, variant_base=idx)
-    _cheek_wall_segment(mb, -24.48, -21.35, 26.20, wy_m0 - 0.02, wz_b, wz_b, _west_stair_soffit(26.20) - 0.02, 6.62, "beige_stone", skip_bottom=True, variant_base=0)
-    _box_var(mb, -24.48, -21.35, wy_m0 + 0.02, wy_m1 - 0.02, wz_b, 6.62, "beige_stone", variant=1, skip=("bottom",))
-    _cheek_wall_segment(mb, -24.48, -21.35, wy_m1 + 0.02, wy_t0 - 0.02, wz_b, wz_b, 6.62, 8.84, "beige_stone", skip_bottom=True, variant_base=2)
-    _box_var(mb, -24.48, -21.35, wy_t0 + 0.02, wy_t1 - 0.02, wz_b, 8.84, "beige_stone", variant=3, skip=("bottom",))
-    if stage == 0:
-        for wy_s0, wy_s1, wz_s1 in ((28.80, 29.60, 6.45), (32.30, 33.20, 7.65)):
-            mb.box(-24.51, -24.485, wy_s0, wy_s1, 5.15, wz_s1, "frame_metal")
-            mb.quad(K.face_pts("x", -24.515, -1, wy_s0 + 0.05, wy_s1 - 0.05, 5.20, wz_s1 - 0.05), A.uv("spandrel_dark"), "spandrel_dark")
+    _cheek_wall_segment(mb, -24.48, -21.35, 26.20, wy_m0 - 0.02, wz_b, wz_b, _west_stair_soffit(26.20) - 0.02, 6.62, "white_panel", skip_bottom=True, variant_base=0)
+    _box_var(mb, -24.48, -21.35, wy_m0 + 0.02, wy_m1 - 0.02, wz_b, 6.62, "white_panel", variant=1, skip=("bottom",))
+    _cheek_wall_segment(mb, -24.48, -21.35, wy_m1 + 0.02, wy_t0 - 0.02, wz_b, wz_b, 6.62, 8.84, "white_panel", skip_bottom=True, variant_base=2)
+    _box_var(mb, -24.48, -21.35, wy_t0 + 0.02, wy_t1 - 0.02, wz_b, 8.84, "white_panel", variant=3, skip=("bottom",))
 
-    # 서측 계단 내·외·중앙 스테인리스 난간
+    # 서측 계단 내·외·중앙 스테인리스 난간 (외측 측벽 위 ~ 3층 테라스 10.34 m 까지 높이 일관 접속)
     w_rail_pts = ((wy_b, wz_b), (wy_m0, wz_m), (wy_m1, wz_m), (wy_t1, wz_t))
-    _sloped_pipe_railing(mb, -21.28, w_rail_pts, h=0.96, stage=stage)
+    _sloped_pipe_railing(mb, -21.24, w_rail_pts, h=1.08, stage=stage)
+    _cheek_top_pipe_railing(mb, -24.45, (
+        (wy_b, wz_b, wz_b + 1.05),
+        (24.35, 5.62, 5.09 + 1.08),
+        (wy_m0, wz_m + 0.54, wz_m + 1.08),
+        (wy_m1, wz_m + 0.54, wz_m + 1.08),
+        (wy_t0, wz_t + 0.54, wz_t + 1.08),
+        (wy_t1, wz_t, wz_t + 1.08),
+    ), stage=stage)
     if stage == 0:
-        _sloped_pipe_railing(mb, -22.78, w_rail_pts, h=0.92, stage=0)
-        _sloped_pipe_railing(mb, -24.45, ((wy_b, wz_b + 1.05), (wy_m0, wz_m + 1.05), (wy_m1, wz_m + 1.05), (wy_t1, wz_t + 1.05)), h=0.26, stage=0)
+        _sloped_pipe_railing(mb, -22.78, ((wy_b, wz_b), (wy_m0, wz_m), (wy_m1, wz_m), (wy_t0, wz_t)), h=0.92, stage=0)
         # 서측 2층 목재 테라스(Z=4.82) 원형 콘크리트 화분 4기·대나무 식재 및 벤치 2기 (crop_dnbarch2_sw · crop_dnbarch3_sw 기준)
         for px, py, hs in ((-24.00, 12.80, 0.90), (-21.30, 16.20, 1.05), (-23.70, 19.00, 0.95), (-22.20, 22.00, 1.10)):
             _terrace_planter_tree(mb, px, py, wz_b, height_scale=hs)
