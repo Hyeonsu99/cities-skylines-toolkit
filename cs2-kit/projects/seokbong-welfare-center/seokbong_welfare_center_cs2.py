@@ -297,30 +297,38 @@ def _paint_storefront_glass(ctx):
             drw.line((0, y, w, y), fill=(24 + reflection, 43 + reflection, 47 + reflection))
         drw.line((0, h * 0.63, w, h * 0.63), fill=(46, 63, 64), width=max(1, h // 110))
         letters = Image.new("L", (w, h))
+        # 실물 시트지: 둥근 굵은 고딕(Arial Rounded MT Bold 계열) + 오른쪽 아래로 밀린 주황 입체 그림자
+        font_round = [r"C:\Windows\Fonts\ARLRDBD.TTF"] + FONT_EN
 
-        def put(label, x0, x1, y0, y1, fill, outline, rotate=False):
-            # 실물 시트지는 장체(세로로 긴) 굵은 글자: 큰 크기로 그린 뒤 지정 칸에 맞춰 늘려 붙인다
-            big = _fit_font(drw, FONT_EN, label, 10 ** 6, 400)
+        def put(label, x0, x1, y0, y1, fill, shadow, shadow_k=0.085):
+            big = _fit_font(drw, font_round, label, 10 ** 6, 400)
             bx, by, tw, th = _text_metrics(drw, label, big)
-            s = 10
-            sk = Image.new("L", (tw + 2 * s, th + 2 * s))
-            fl = Image.new("L", sk.size)
-            ImageDraw.Draw(sk).text((s - bx, s - by), label, font=big, fill=255, stroke_width=s)
-            ImageDraw.Draw(fl).text((s - bx, s - by), label, font=big, fill=255)
-            if rotate:
-                sk, fl = sk.transpose(Image.Transpose.ROTATE_90), fl.transpose(Image.Transpose.ROTATE_90)
+            fl = Image.new("L", (tw, th))
+            ImageDraw.Draw(fl).text((-bx, -by), label, font=big, fill=255)
             size = (round(x1 - x0), round(y1 - y0))
-            sk, fl = sk.resize(size, Image.Resampling.LANCZOS), fl.resize(size, Image.Resampling.LANCZOS)
+            fl = fl.resize(size, Image.Resampling.LANCZOS)
+            off = round((y1 - y0) * shadow_k)
             org = (round(x0), round(y0))
-            rgb2.paste(outline, org, sk)
+            if shadow is not None and off > 0:
+                for k in range(1, off + 1):   # 대각 압출: 한 픽셀씩 밀어 쌓아 두께 있는 그림자
+                    rgb2.paste(shadow, (org[0] + k, org[1] + k), fl)
+                    letters.paste(255, (org[0] + k, org[1] + k), fl)
             rgb2.paste(fill, org, fl)
-            letters.paste(255, org, sk)
+            letters.paste(255, org, fl)
 
-        # roadview storefront_se_oblique/front_center: 글자는 통창 상단 약 12%~55% 높이, DAEDEOK 이 왼쪽 절반
-        y0, y1 = h * 0.12, h * 0.56
-        put("DAEDEOK", w * 0.02, w * 0.535, y0, y1, (78, 176, 104), (226, 196, 84))
-        put("LOCAL", w * 0.548, w * 0.598, y0, y1, (226, 206, 92), (40, 96, 66), rotate=True)
-        put("FOOD", w * 0.61, w * 0.985, y0, y1, (234, 206, 70), (214, 128, 40))
+        # 로드뷰 storefront_se_oblique·se_corner_alley·사용자 남동 사진 실측:
+        #   글자 높이 약 1.0 m(통창 3.86 m 의 26%), 상단은 통창 위 가로대(Z 3.31) 바로 아래 → v 0.19~0.44
+        #   DAEDEOK 은 1~6.5번째 칸(청록 초록 + 주황 그림자), LOCAL 은 한 칸에 바로 선 글자 5개를 세로로 쌓음,
+        #   FOOD 는 8~12번째 칸(연두 노랑 + 주황 그림자, O 는 거의 원형)
+        y0, y1 = h * 0.19, h * 0.44
+        put("DAEDEOK", w * 0.015, w * 0.50, y0, y1, (38, 166, 124), (232, 148, 44))
+        put("FOOD", w * 0.595, w * 0.965, y0, y1, (198, 214, 62), (230, 140, 42))
+        # LOCAL 칸은 큰 글자 폭의 약 0.6배, 위아래로 큰 글자 높이를 다 쓴다 (se_corner_alley)
+        lx0, lx1 = w * 0.514, w * 0.578
+        step = (y1 - y0) / 5
+        for i, ch_ in enumerate("LOCAL"):
+            put(ch_, lx0, lx1, y0 + i * step + step * 0.04, y0 + (i + 1) * step - step * 0.04,
+                (206, 214, 86), (30, 70, 50), shadow_k=0.10)
         mask2.paste(letters)
 
     _render_sign_cell(ctx, "storefront_glass", (24, 43, 47), paint_2x,
