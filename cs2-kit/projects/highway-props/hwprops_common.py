@@ -156,8 +156,11 @@ def draw_place(drw, x, y_top, kr, en, kr_h, cw_avail, anchor="l"):
     """지명: 국문 위, 영문 아래 (영문 글자 높이 = 국문의 1/2, 실사진 비례 정렬)."""
     fk = _fit_font(drw, FONT_KR, kr, cw_avail, int(kr_h * 1.24))
     fe = _fit_font(drw, FONT_EN, en, cw_avail, int(kr_h * 0.58))
-    _text_at(drw, x, y_top + kr_h * 0.48, kr, fk, SIGN_WHITE, anchor)
-    _text_at(drw, x, y_top + kr_h * 1.38, en, fe, SIGN_WHITE, anchor)
+    # 기준선 정렬: bbox 중심 정렬은 g·j 하강부가 있는 영문(Cheongju)을 위로 띄워 행마다 간격이 달라진다
+    for text, fnt, base in ((kr, fk, y_top + kr_h * 0.98), (en, fe, y_top + kr_h * 1.59)):
+        l, _, r, _ = drw.textbbox((0, 0), text, font=fnt, anchor="ls")
+        x0 = x - l if anchor == "l" else x - r if anchor == "r" else x - (l + r) / 2
+        drw.text((x0, base), text, font=fnt, fill=SIGN_WHITE, anchor="ls")
 
 
 def sign_border(drw, cw, ch):

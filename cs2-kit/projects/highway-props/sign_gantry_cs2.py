@@ -31,8 +31,8 @@ def _paint_straight(ctx):
         sign_border(drw, cw, ch)
         draw_route_shield(drw, cw * 0.11, ch * 0.42, ch * 0.42, "1")
         x = cw * 0.22
-        draw_place(drw, x, ch * 0.08, "청주", "Cheongju", ch * 0.22, int(cw * 0.50))
-        draw_place(drw, x, ch * 0.52, "서울", "Seoul", ch * 0.22, int(cw * 0.50))
+        draw_place(drw, x, ch * 0.10, "청주", "Cheongju", ch * 0.22, int(cw * 0.50))
+        draw_place(drw, x, ch * 0.54, "서울", "Seoul", ch * 0.22, int(cw * 0.50))
         draw_arrow(drw, cw * 0.86, ch * 0.50, ch * 0.62, "down")
     draw_canvas(ctx, "gantry_straight", w, h, fn)
 
@@ -43,8 +43,8 @@ def _paint_exit(ctx):
     def fn(drw, cw, ch):
         sign_border(drw, cw, ch)
         x = cw * 0.07
-        draw_place(drw, x, ch * 0.08, "신탄진", "Sintanjin", ch * 0.22, int(cw * 0.58))
-        draw_place(drw, x, ch * 0.52, "대전", "Daejeon", ch * 0.22, int(cw * 0.58))
+        draw_place(drw, x, ch * 0.10, "신탄진", "Sintanjin", ch * 0.22, int(cw * 0.58))
+        draw_place(drw, x, ch * 0.54, "대전", "Daejeon", ch * 0.22, int(cw * 0.58))
         draw_arrow(drw, cw * 0.83, ch * 0.36, ch * 0.46, "upright")
         bx0, bx1, by0, by1 = cw * 0.68, cw * 0.955, ch * 0.65, ch * 0.915
         drw.rounded_rectangle([bx0, by0, bx1, by1], radius=int(ch * 0.032), fill=SIGN_WHITE)

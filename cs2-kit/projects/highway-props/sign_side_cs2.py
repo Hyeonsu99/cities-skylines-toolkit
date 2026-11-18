@@ -23,13 +23,15 @@ def _paint_distance(ctx):
     def fn(drw, cw, ch):
         sign_border(drw, cw, ch)
         row_h = ch * 0.295
+        widest = max((r[2] for r in ROWS), key=len)          # 숫자 크기는 가장 긴 값 기준으로 세 행 공통
+        f = _fit_font(drw, FONT_EN, widest, int(cw * 0.22), int(row_h * 0.64))
+        fu = _fit_font(drw, FONT_EN, "km", int(cw * 0.10), int(row_h * 0.36))
         for i, (kr, en, km) in enumerate(ROWS):
             y0 = ch * 0.055 + i * row_h
             draw_place(drw, cw * 0.065, y0 + row_h * 0.06, kr, en, row_h * 0.45, int(cw * 0.56))
-            f = _fit_font(drw, FONT_EN, km, int(cw * 0.22), int(row_h * 0.64))
-            fu = _fit_font(drw, FONT_EN, "km", int(cw * 0.10), int(row_h * 0.36))
-            _text_at(drw, cw * 0.80, y0 + row_h * 0.44, km, f, SIGN_WHITE, "r")
-            _text_at(drw, cw * 0.82, y0 + row_h * 0.52, "km", fu, SIGN_WHITE, "l")
+            base = y0 + row_h * 0.68                         # 숫자·km 공통 기준선
+            drw.text((cw * 0.80, base), km, font=f, fill=SIGN_WHITE, anchor="rs")
+            drw.text((cw * 0.82, base), "km", font=fu, fill=SIGN_WHITE, anchor="ls")
             if i < len(ROWS) - 1:
                 yl = y0 + row_h * 0.96
                 drw.line([(cw * 0.055, yl), (cw * 0.945, yl)], fill=SIGN_WHITE, width=max(4, int(ch * 0.010)))
