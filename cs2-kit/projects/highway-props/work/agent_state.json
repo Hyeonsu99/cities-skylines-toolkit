@@ -1,13 +1,13 @@
 {
  "visual_review": "PASS",
  "current_stage": "review:PASS",
- "generator": "median_barrier_cs2.py",
- "generator_hash": "2583239ab3466a7e1bb726b529765c291f30d1448d0e252ed5d0fe08b0945fad",
- "current_preview_hash": "1f94882980190235545582d3150625f9bc689c99ea6e42028c7785bae41da466",
+ "generator": "sign_gantry_cs2.py",
+ "generator_hash": "fe707271fba87c1c6d236fbd793c02b8ba71277a853f84cfb236d9762261a807",
+ "current_preview_hash": "611f3db3ff0c861db061dc32a3f6ec355f6cb971d01c666859d8ffa99cf07a4d",
  "last_gate": {
   "status": "PASS",
   "project": "highway-props",
-  "generator": "median_barrier_cs2.py",
+  "generator": "sign_gantry_cs2.py",
   "mode": "final",
   "checks": {
    "build": "PASS",
@@ -25,14 +25,14 @@
    "reason": "no fix needed"
   },
   "artifacts": {
-   "preview": "previews\\MedianBarrierConcrete_L1_1x1.png",
-   "report": "output\\MedianBarrierConcrete_L1_1x1\\_check\\report.json"
+   "preview": "previews\\SignGantry_L1_3x1.png",
+   "report": "output\\SignGantry_L1_3x1\\_check\\report.json"
   },
-  "asset": "MedianBarrierConcrete_L1_1x1",
-  "label": "v2",
-  "time": "2026-11-18 12:06:14",
+  "asset": "SignGantry_L1_3x1",
+  "label": "fix",
+  "time": "2026-11-18 13:45:08",
   "build": {
-   "asset": "MedianBarrierConcrete_L1_1x1",
+   "asset": "SignGantry_L1_3x1",
    "fbx": true,
    "warnings": []
   },
@@ -43,9 +43,9 @@
    ],
    "info": {
     "size": [
-     4.0,
-     0.81,
-     1.32
+     23.04,
+     1.24,
+     8.9
     ],
     "pivot_offset": [
      0.0,
@@ -54,14 +54,14 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 114,
-     "lod1": 22,
-     "lod2": 10
+     "main": 1688,
+     "lod1": 464,
+     "lod2": 76
     },
     "verts": {
-     "main": 248,
-     "lod1": 44,
-     "lod2": 20
+     "main": 3468,
+     "lod1": 928,
+     "lod2": 152
     },
     "coplanar": {
      "main": 0,
@@ -69,11 +69,11 @@
      "lod2": 0
     },
     "textures": {
-     "BaseColor": "1024x1024 RGBA",
-     "ControlMask": "1024x1024 RGBA",
-     "MaskMap": "1024x1024 RGBA",
-     "Normal": "1024x1024 RGB",
-     "Emissive": "1024x1024 RGB",
+     "BaseColor": "2048x2048 RGBA",
+     "ControlMask": "2048x2048 RGBA",
+     "MaskMap": "2048x2048 RGBA",
+     "Normal": "2048x2048 RGB",
+     "Emissive": "2048x2048 RGB",
      "LOD2_BaseColor": "256x256 RGBA",
      "LOD2_ControlMask": "256x256 RGBA",
      "LOD2_MaskMap": "256x256 RGBA",
@@ -81,15 +81,15 @@
      "LOD2_Emissive": "256x256 RGB"
     },
     "texel_px_per_m": {
-     "p10": 177.3,
-     "median": 186.4,
-     "p90": 195.4
+     "p10": 64.8,
+     "median": 64.8,
+     "p90": 147.2
     },
     "windows": 0,
     "win_dropped": 0,
-    "time_s": 0.0
+    "time_s": 0.1
    },
-   "report": "output\\MedianBarrierConcrete_L1_1x1\\_check\\report.json"
+   "report": "output\\SignGantry_L1_3x1\\_check\\report.json"
   },
   "photo": {
    "checked": false,
@@ -110,15 +110,15 @@
   "lod": {
    "checked": true,
    "status": "PASS",
-   "line": "LODCHECK PASS main max 0.000% (az 0, el -10) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\MedianBarrierConcrete_L1_1x1",
+   "line": "LODCHECK PASS main max 0.007% (az 68, el +5) bad_views 0/64 | lod1 max 0.007% (az 112, el +5) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\SignGantry_L1_3x1",
    "notes": []
   },
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 248,
-    "LOD1": 44,
-    "LOD2": 20
+    "LOD0": 3468,
+    "LOD1": 928,
+    "LOD2": 152
    },
    "action_tags": [],
    "exact_fix_instruction": "no fix needed"
@@ -135,13 +135,13 @@
   "reason": "all requested checks passed"
  },
  "project": "highway-props",
- "updated_at": "2026-11-18T12:06:14",
- "visual_review_note": "v2 photoreal refinement PASS against street-view photos and compare_photo_v2 sheet",
+ "updated_at": "2026-11-18T13:45:20",
+ "visual_review_note": "지명 국문/영문 기준선 정렬, Cheongju 하강부 들뜸 해소, 블록 상단 여백 확보(BaseColor). 메시 변경 없음(FBX cached)",
  "visual_review_artifacts": [
   {
-   "file": "previews/MedianBarrierConcrete_L1_1x1.png",
-   "sha256": "1f94882980190235545582d3150625f9bc689c99ea6e42028c7785bae41da466"
+   "file": "previews/SignGantry_L1_3x1.png",
+   "sha256": "611f3db3ff0c861db061dc32a3f6ec355f6cb971d01c666859d8ffa99cf07a4d"
   }
  ],
- "reviewed_preview_hash": "1f94882980190235545582d3150625f9bc689c99ea6e42028c7785bae41da466"
+ "reviewed_preview_hash": "611f3db3ff0c861db061dc32a3f6ec355f6cb971d01c666859d8ffa99cf07a4d"
 }

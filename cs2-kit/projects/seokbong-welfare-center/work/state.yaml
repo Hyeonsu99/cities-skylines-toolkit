@@ -96,25 +96,26 @@
    "fbx": null
   },
   "final": {
-   "at": "2026-11-17T10:05:36",
+   "at": "2026-11-18T17:43:41",
    "mode": "final",
-   "status": "FAIL",
+   "status": "INCOMPLETE",
    "label": "final",
    "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
    "checks": {
     "build": "PASS",
     "geometry": "PASS",
     "preview": "PASS",
-    "photo": "NOT_APPLICABLE",
-    "tiles": "NOT_APPLICABLE",
-    "lod": "FAIL",
-    "fbx": "PASS"
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
    },
-   "generator_hash": "573232aa05ee02689dbdaeec989bc4567e59a3b02d77b8bf3f2927c2682ef9e9",
+   "generator_hash": "e39becc067ba6303b5d0c868e86c10555cd4e40ae78db60de111d3930051fa03",
    "preview": {
     "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
     "exists": true,
-    "sha256": "db3a8b761fd60290a031216c13360303d0b332dea31127f106fdf0b6bc814bc7",
+    "sha256": "b9b6de8a1f31fee3d132dbca89812c087da9b007925cbf525db44735fc183ed6",
     "key": null
    },
    "fbx": null
@@ -643,14 +644,39 @@
     "key": null
    },
    "fbx": null
+  },
+  "fix": {
+   "at": "2026-11-18T17:39:24",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "fix",
+   "gate": "output/SeokbongWelfareCenter_L1_7x9/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "e39becc067ba6303b5d0c868e86c10555cd4e40ae78db60de111d3930051fa03",
+   "preview": {
+    "path": "previews/SeokbongWelfareCenter_L1_7x9.png",
+    "exists": true,
+    "sha256": "1a910be76c7116143bd2498cf049b04cd1c2128984a1334836c54226792f52bc",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-18T10:46:30",
+ "updated_at": "2026-11-18T17:43:41",
  "current_stage": "final:INCOMPLETE",
  "generator": "seokbong_welfare_center_cs2.py",
- "generator_hash": "cc637ae54ab68cc2d7feececa68ffa49daad69ff0694ac24df124b3475979eda",
+ "generator_hash": "e39becc067ba6303b5d0c868e86c10555cd4e40ae78db60de111d3930051fa03",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "ef0d96bb46f136152960f00df84992e1ae9ddda55b8177ac62efcc408db47713",
+ "reviewed_preview_hash": "1a910be76c7116143bd2498cf049b04cd1c2128984a1334836c54226792f52bc",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",
