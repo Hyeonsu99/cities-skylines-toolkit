@@ -191,7 +191,10 @@
 - 커밋 메시지는 한국어로 씁니다.
 - `cs2-kit`은 서브모듈이 아니라 git subtree(squash)로 들어 있습니다. 원본 업데이트는 `git subtree pull --prefix cs2-kit https://github.com/nazunamoe/cs2-kit.git claude --squash`로 받습니다(원본 브랜치는 `claude`). `.chrome-vr`는 커밋하지 않습니다.
 - 간판 캐시(`projects/*/work/_sign_cache/`)와 로드뷰 추가 캡처(`projects/*/work/roadview_extra/`)는 커밋하지 않습니다.
-- CS2 에셋 가져오기(Asset Importer)에서는 반드시 `cs2-kit/projects/<프로젝트>/output/<에셋이름>` 폴더를 고릅니다. 프로젝트 맨 위 폴더를 고르면 `work/`·`photos/`·`previews/`까지 읽어 가짜 프리팹(`photos Mesh`, `tiles Mesh` 등)이 생기고, `previews/progress/<에셋이름>` 때문에 같은 이름 프리팹이 둘 생겨 오류가 납니다(2026-11-18 석봉센터에서 발생). 잘못 가져왔으면 게임을 끄고 `%USERPROFILE%\AppData\LocalLow\Colossal Order\Cities Skylines II\ImportedData\<캐시ID>\`에서 해당 항목을 지운 뒤 다시 가져옵니다.
+- **CS2에 가져갈 에셋 결과물은 항상 저장소 루트 `cs2-import/<에셋이름>/`에 둡니다.** 에셋을 빌드(final PASS)하거나 고친 작업자는 끝날 때 반드시 `python tools/sync_cs2_import.py`(특정 에셋만: 인자로 이름 일부)를 실행합니다. 스크립트는 각 `cs2-kit/projects/*/output/<에셋>/`의 FBX·PNG만 복사하고 대상 폴더를 매번 새로 만들어 옛 파일(`_Gls` 등)을 남기지 않습니다. `cs2-import/`는 생성물이라 git에 올리지 않습니다.
+- 게임 Asset Importer에서는 `cs2-import/<에셋이름>` 폴더 **하나만** 고릅니다. 프로젝트 폴더(`cs2-kit/projects/<프로젝트>`)를 고르면 `work/`·`photos/`·`previews/`까지 읽어 가짜 프리팹이 생기고, `previews/progress/<에셋이름>` 때문에 같은 ID 프리팹이 둘 생겨 저장 오류(`No entry found for the given Guid`)가 납니다(2026-11-18 석봉센터에서 두 번 발생).
+- 같은 게임 세션에서 같은 에셋을 두 번 가져오지 않습니다(캐시 `.Geometry` 잠김 `IOException`). 메시를 고친 뒤 다시 가져올 때는 게임을 끄고 `%USERPROFILE%\AppData\LocalLow\Colossal Order\Cities Skylines II\ImportedData\<캐시ID>\`에서 그 에셋 이름으로 시작하는 항목을 지운 뒤 가져옵니다. 옛 캐시가 남으면 `IndexOutOfRangeException`(서브메시·서피스 수 불일치)이 납니다.
+- 가져오기 프리셋: 6x6 이하 주거·상업 구역 건물은 `Spawnable (Growable)`(구역 종류·레벨·lot은 이름 `_L<레벨>_<너비>x<깊이>`), 6x6 초과(석봉센터 7x9, RailDepot 4x8)는 `Signature`. 구역 건물은 lot 크기마다 레벨 1~5 세트가 있어야 레벨업 때 바닐라 건물로 바뀌지 않습니다(CS2 위키 Asset Pipeline: Buildings). 톨게이트처럼 도로 위 구조물은 `Building` 프리셋 + Anarchy 배치(미확인).
 
 ## 작성·수정 이력
 
@@ -218,3 +221,4 @@
 | 2026-11-18 | Gemini 4 Argon (Antigravity) | 개선 기록 | 진행 상태, 석봉동·엑슬루 절 | 석봉센터 옥상 태양광 입체 경사 거치대(실제 남향 azimuth -11.2°, 기울기 16° # estimated) 개선, 간판 3종 발광 1/3 축소, 석봉센터 및 엑슬루 101~112동 화분·화단·식재 메시 분리(`work/subobjects.json` 생성, 13개 프로젝트 final PASS). |
 | 2026-11-18 | Codex | 진행 기록 | 진행 상태 | 한국형 저밀도 주거 M0+M1: A/B/C 현지 거리뷰·D 타 지역 보조 공개 사진 각 6장 출처 기록, A형 2층 벽돌 양옥 2×2 시제품 final 및 이미지 리뷰 PASS. main/LOD1/LOD2 3,096/1,286/422 tris(창 포함 3,152/1,342/478), 텍스처 2048/2048/512. 식생·화분·화단 틀·흙면 메시 제외, `work/subobjects.json` 제안만. 구역 성장·야간·프레임·lot는 사용자 게임 검증 후 M2 승인 대기. |
 | 2026-11-18 | Codex | 품질 개선 | 한국형 저밀도 주거 M1.5 | 사용자 승인 1~4 적용: 미장·모자이크·포세린·적벽돌, 흰 담·석재 문주·생활 디테일, 기와 처마·발코니·ㄱ자·강판 옥탑·셔터 가게와 시대/시드 조합. 대표 70s/80s/90s 및 기존 A01 final·이미지 리뷰 PASS, 36시드 기하 PASS·비교 시트 3장. 본체 main 5,032/4,036/4,652, LOD2 410/364/318(창 포함 466/408/366), 텍스처 2048/2048/512. 같은 2층 골격의 반복감은 일부 남음. 인게임·M2 승인 대기, `work/M15_REPORT.md` 참고. |
+| 2026-11-18 | Claude Opus 5.5 (Claude Code) | 규칙·도구 | 작업 규칙 | 에셋 결과물은 항상 `cs2-import/<에셋이름>/`에 두고 빌드 후 `tools/sync_cs2_import.py` 실행 규칙 추가, 가져오기 프리셋·캐시 정리 절차 정리. 석봉센터 프로젝트 폴더 재가져오기로 같은 ID 프리팹 중복·저장 오류 발생 사례 반영. 다음 작업(2026-11-19): 게임 종료 상태에서 석봉센터·가짜 항목 캐시 삭제 후 `cs2-import`로 재가져오기·저장, 인게임 확인 목록 진행, 한국형 집 레벨 1~5 세트 반영(Codex), LOD1 1024 키트 수정 여부·톨게이트 빌드·푸시 결정. 사용자(Hyeonsu99) 요청. |
