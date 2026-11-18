@@ -5,7 +5,7 @@ lot:
 dimensions:
   width_m: 13.6  # estimated; 담장 포함
   depth_m: 13.5  # estimated; 전면 포장 포함
-  height_m: 8.28  # estimated; 옥탑 상단
+  height_m: 8.08  # estimated; M1.5 강판 옥탑 상단
 floors: 2
 style: korean_brick_flat_roof
 zone: ResidentialLow  # candidate; 현행 게임의 저밀도 2x2 구역 등록 미확인
@@ -17,8 +17,8 @@ evidence:
   photo_match: archetype_synthesis_not_single_address
 estimated:
   - body 9.6 x 9.2 m, floor pitch 3.05 m # estimated
-  - roof waterproof parapet 0.62 m and rooftop stair head 2.18 m # estimated
-  - window opening 1.70 x 1.35 m, glass recessed 0.20 m # estimated
+  - roof floor only waterproof, parapet 0.62 m, cement coping and rooftop head 1.98 m # estimated
+  - window opening 1.70 x 1.35 m, glass recessed 0.20 m in main/LOD1; LOD2 flattened # estimated
   - wall thickness 0.24 m and stone sill projection 0.10 m # estimated
   - exterior stair width 1.17 m, rise 3.05/17 m, going 4.85/17 m # estimated
   - fence 1.15 m and gate 1.45 m high # estimated

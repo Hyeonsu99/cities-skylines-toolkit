@@ -1,0 +1,23 @@
+name: KoreanHouseA70s01
+lot: {width: 2, depth: 2}  # estimated; 게임 구역 등록 미확인
+dimensions:
+  width_m: 12.4  # estimated; 담장 포함
+  depth_m: 12.7  # estimated
+  height_m: 7.58  # estimated
+floors: 2
+style: korean_1970s_tile_eyebrow_house
+zone: ResidentialLow  # candidate
+signature: false
+era: 70s
+seed: 0
+evidence: {photos: photos/SOURCES.md, notes: shape_notes.md}
+estimated:
+  - body 8.4x8.4 m; floor pitch 2.8 m # estimated
+  - ivory stucco, red tile eyebrow eave 0.48 m projection # estimated
+  - windows 1.50x1.25 m, 0.20 m recessed, warm timber-tone frames # estimated
+  - open balcony 0.95 m projection, 0.92 m rail; upper floor access door # estimated
+  - white stucco wall 1.15 m, stone gate columns 1.73 m # estimated
+  - blue sheet-metal rooftop addition 2.3x2.0x1.98 m and drying rack # estimated
+photo_mismatch_notes:
+  - Archetype synthesis, not a replica of one address; photo and tiles NOT_APPLICABLE.
+  - Dates denote visual families and retrofits, not a verified construction year.

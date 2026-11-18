@@ -2,3 +2,5 @@
 /photos/*
 !/photos/SOURCES.md
 /work/photo_manifest.json
+/work/variety_assets/
+/work/lettering.npz

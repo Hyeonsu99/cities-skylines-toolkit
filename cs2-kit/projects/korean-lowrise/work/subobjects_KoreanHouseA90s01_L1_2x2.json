@@ -1,0 +1,20 @@
+{
+  "asset": "KoreanHouseA90s01_L1_2x2",
+  "coord": "CS2 asset local: x right, y back, z up; metres; pivot applied",
+  "items": [
+    {
+      "kind": "planter",
+      "suggest": "작은 사각 화분 (에디터 내장 소품)",
+      "x": -3.5,
+      "y": -4.85,
+      "z": 0,
+      "rot_deg": 0,
+      "scale": [
+        0.55,
+        0.55,
+        0.5
+      ],
+      "source": "A형 대문 옆 제안; 실측 아님"
+    }
+  ]
+}

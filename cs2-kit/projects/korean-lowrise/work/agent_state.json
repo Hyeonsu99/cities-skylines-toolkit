@@ -3,7 +3,7 @@
  "current_stage": "review:PASS",
  "generator": "korean_lowrise_cs2.py",
  "generator_hash": "a0a2ae08bb8447e5391c6bcdf4f6973274f650e0461f8da0e86a9c9cdb308a05",
- "current_preview_hash": "daca6fb101d2281f5619bf6dc33344e7bedf097921443d0f022b5c6eb1a8d978",
+ "current_preview_hash": "ef27f941028526b5f3022b5cec6367b4da1daf2b66d8e73727b4bad6ddf3abc3",
  "last_gate": {
   "status": "PASS",
   "project": "korean-lowrise",
@@ -29,8 +29,8 @@
    "report": "output\\KoreanHouseA01_L1_2x2\\_check\\report.json"
   },
   "asset": "KoreanHouseA01_L1_2x2",
-  "label": "m1-final",
-  "time": "2026-11-18 22:12:01",
+  "label": "m15-legacy",
+  "time": "2026-11-18 23:04:18",
   "build": {
    "asset": "KoreanHouseA01_L1_2x2",
    "fbx": true,
@@ -43,7 +43,7 @@
     "size": [
      13.6,
      13.5,
-     8.28
+     8.08
     ],
     "pivot_offset": [
      0.0,
@@ -52,19 +52,19 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 3096,
+     "main": 4484,
      "win": 56,
-     "lod1": 1286,
+     "lod1": 1512,
      "lod1_win": 56,
-     "lod2": 422,
+     "lod2": 326,
      "lod2_win": 56
     },
     "verts": {
-     "main": 6224,
+     "main": 9004,
      "win": 112,
-     "lod1": 2580,
+     "lod1": 3034,
      "lod1_win": 112,
-     "lod2": 852,
+     "lod2": 660,
      "lod2_win": 112
     },
     "coplanar": {
@@ -86,9 +86,9 @@
      "LOD2_Emissive": "512x512 RGB"
     },
     "texel_px_per_m": {
-     "p10": 119.7,
-     "median": 319.6,
-     "p90": 319.6
+     "p10": 44.9,
+     "median": 212.9,
+     "p90": 212.9
     },
     "windows": 28,
     "win_dropped": 0,
@@ -120,15 +120,15 @@
   "lod": {
    "checked": true,
    "status": "PASS",
-   "line": "LODCHECK PASS main max 0.001% (az 45, el +50) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\KoreanHouseA01_L1_2x2",
+   "line": "LODCHECK PASS main max 0.010% (az 248, el +5) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\KoreanHouseA01_L1_2x2",
    "notes": []
   },
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 6224,
-    "LOD1": 2580,
-    "LOD2": 852
+    "LOD0": 9004,
+    "LOD1": 3034,
+    "LOD2": 660
    },
    "action_tags": [],
    "exact_fix_instruction": "no fix needed"
@@ -145,17 +145,13 @@
   "reason": "all requested checks passed"
  },
  "project": "korean-lowrise",
- "updated_at": "2026-11-18T22:13:48",
- "visual_review_note": "현행 4방향 낮·야간 이미지 검토: 유리 후퇴·창대·인방·옥상·계단 확인, 넓은 면 발광 없음, 현관 소형 등만 발광. 게임 야간은 미검증.",
+ "updated_at": "2026-11-18T23:05:24",
+ "visual_review_note": "기존 KoreanHouseA01 경로의 M1.5 갱신본 확인: 흰 담·석재 문주·방범창·가스관·차양·강판 옥탑·빨래건조대·창 아래 오염, 녹색은 옥상 수평면만. 대표 3종의 별도 final 및 비교 시트 검토 완료.",
  "visual_review_artifacts": [
   {
    "file": "previews/KoreanHouseA01_L1_2x2.png",
-   "sha256": "daca6fb101d2281f5619bf6dc33344e7bedf097921443d0f022b5c6eb1a8d978"
-  },
-  {
-   "file": "previews/m1_night.png",
-   "sha256": "a23a7456b7d9c616622f484960ba7f60f7e5bd9ec81beff64d336c6cdd809d07"
+   "sha256": "ef27f941028526b5f3022b5cec6367b4da1daf2b66d8e73727b4bad6ddf3abc3"
   }
  ],
- "reviewed_preview_hash": "daca6fb101d2281f5619bf6dc33344e7bedf097921443d0f022b5c6eb1a8d978"
+ "reviewed_preview_hash": "ef27f941028526b5f3022b5cec6367b4da1daf2b66d8e73727b4bad6ddf3abc3"
 }

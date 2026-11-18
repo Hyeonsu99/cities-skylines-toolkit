@@ -1,0 +1,23 @@
+name: KoreanHouseA80s01
+lot: {width: 2, depth: 2}  # estimated; 게임 구역 등록 미확인
+dimensions:
+  width_m: 12.4  # estimated; 담장 포함
+  depth_m: 13.3  # estimated
+  height_m: 7.88  # estimated
+floors: 2
+style: korean_1980s_brick_slab_house
+zone: ResidentialLow  # candidate
+signature: false
+era: 80s
+seed: 1
+evidence: {photos: photos/SOURCES.md, notes: shape_notes.md}
+estimated:
+  - body envelope 8.4x9.0 m; L-plan rear notch 2.6x2.6 m # estimated
+  - floor pitch 2.95 m; red brick 0.24x0.075 m # estimated
+  - windows 1.70x1.35 m, 0.20 m recessed, aluminium-tone frames # estimated
+  - enclosed aluminium balcony 0.95 m projection with six glazed bays # estimated
+  - white stucco wall, black steel gate, stone columns, fictional address 17-8 # estimated
+  - orange sheet-metal rooftop addition and timber platform # estimated
+photo_mismatch_notes:
+  - Archetype synthesis, not a replica of one address; photo and tiles NOT_APPLICABLE.
+  - Later rooftop additions and balcony retrofits are mixed with period details.
