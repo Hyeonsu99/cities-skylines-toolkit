@@ -4,7 +4,7 @@
 review:PASS
 
 ## Generator
-median_barrier_cs2.py
+sign_side_cs2.py
 
 ## Last verification
 PASS

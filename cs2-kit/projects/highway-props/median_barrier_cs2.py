@@ -30,7 +30,26 @@ def profile(full):
     return left + right[::-1]
 
 
-A = make_atlas(["concrete", "reflector_y"])
+A = make_atlas(["concrete", "galv", "reflector_y"])
+
+
+def _side_delineator(mb, xc, s):
+    """경사 상부 양면 시선유도 반사체: 경사면 바깥에 돌출 부착된 아연도금 베젤 + 황색 반사지."""
+    z0, z1 = 0.94, 1.05
+    def yat(z): return s * (B_BRK + (B_TOP - B_BRK) * (z - Z_BRK) / (H - CH - Z_BRK))
+    ya0, ya1 = yat(z0), yat(z1)
+    # 경사 바깥(s*0.022)까지 돌출시켜 상단이 벽에 묻히지 않도록 함
+    yo = ya0 + s * 0.022
+    yi = ya1 - s * 0.004
+    mb.box(xc - 0.09, xc + 0.09, min(yo, yi), max(yo, yi), z0, z1, "galv")
+    yf = yo + s * 0.003
+    if s < 0:
+        pts = [(xc - 0.074, yf, z0 + 0.012), (xc + 0.074, yf, z0 + 0.012),
+               (xc + 0.074, yf, z1 - 0.012), (xc - 0.074, yf, z1 - 0.012)]
+    else:
+        pts = [(xc + 0.074, yf, z0 + 0.012), (xc - 0.074, yf, z0 + 0.012),
+               (xc - 0.074, yf, z1 - 0.012), (xc + 0.074, yf, z1 - 0.012)]
+    mb.quad(pts, A.uv_full("reflector_y"), "reflector_y")
 
 
 def build(stage):
@@ -41,20 +60,27 @@ def build(stage):
         poly = [p for p in poly if abs(p[1] - Z_LIP) > 1e-6]
     if stage == 2:          # 사다리꼴 (먼 거리)
         poly = [(-B, 0.0), (-B_TOP, H), (B_TOP, H), (B, 0.0)]
-    extrude(mb, A, poly, x0, x1, "concrete", cap="fan" if stage == 0 else "strip")
-    if stage == 0:          # 양면 반사체 (모듈당 1개, 꺾임점 위 상부 경사면) # estimated
+    extrude(mb, A, poly, x0, x1, "concrete", cap="fan" if stage == 0 else "strip",
+            map_mode="world_z" if stage < 2 else "perim", z_max=H)
+    if stage == 0:
+        for xc in (-1.0, 1.0):
+            for s in (-1, 1):
+                _side_delineator(mb, xc, s)
+        # 상단 중앙 시선유도 표지병 (작은 델리네이터 캡)
+        mb.box(-0.06, 0.06, -0.045, 0.045, H, H + 0.025, "galv", skip=("bottom",))
+        mb.box(-0.045, 0.045, -0.052, 0.052, H + 0.025, H + 0.055, "reflector_y", skip=("bottom",))
+    elif stage == 1:
         for s in (-1, 1):
             z0, z1 = 0.95, 1.05
             def yat(z): return s * (B_BRK + (B_TOP - B_BRK) * (z - Z_BRK) / (H - CH - Z_BRK))
             ya, yb = yat(z0), yat(z1)
             d = s * 0.012
-            if s < 0:
-                pts = [(-0.08, ya + d, z0), (0.08, ya + d, z0), (0.08, yb + d, z1), (-0.08, yb + d, z1)]
-            else:
-                pts = [(0.08, ya + d, z0), (-0.08, ya + d, z0), (-0.08, yb + d, z1), (0.08, yb + d, z1)]
+            pts = [(-0.08, ya + d, z0), (0.08, ya + d, z0), (0.08, yb + d, z1), (-0.08, yb + d, z1)]
+            if s > 0:
+                pts = [pts[1], pts[0], pts[3], pts[2]]
             mb.quad(pts, A.uv("reflector_y"), "reflector_y")
     return mb
 
 
 export("MedianBarrierConcrete", dict(main=build(0), lod1=build(1), lod2=build(2)), A, size_hint=(1, 1),
-       notes=dict(module_m=L, height_m=H, base_width_m=2 * B, top_width_m=2 * B_TOP, joint="4 m 신축이음 홈(텍스처)"))
+       notes=dict(module_m=L, height_m=H, base_width_m=2 * B, top_width_m=2 * B_TOP, joint="4 m 신축이음 홈 + 폼타이 + 오염"))

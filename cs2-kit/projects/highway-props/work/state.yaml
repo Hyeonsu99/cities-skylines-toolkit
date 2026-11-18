@@ -39,17 +39,42 @@
     "key": null
    },
    "fbx": null
+  },
+  "photo": {
+   "at": "2026-11-18T11:39:17",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "photo",
+   "gate": "output/SignSideDistance_L1_1x1/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "0f56891f797e97a2819da7846eaac6cc2a08085073dc5e00387e64c636aa2c8f",
+   "preview": {
+    "path": "previews/SignSideDistance_L1_1x1.png",
+    "exists": true,
+    "sha256": "e04b2b7ee1037ecb4b92a7559b228af68907b4c25533c18f5c0d4809ab10a364",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-18T10:36:20",
+ "updated_at": "2026-11-18T11:39:17",
  "current_stage": "final:INCOMPLETE",
- "generator": "median_barrier_cs2.py",
- "generator_hash": "5de1372ced4fcbce9d2f1526de5255ef973841dc4a92f26aea11168ba5e1643c",
+ "generator": "sign_side_cs2.py",
+ "generator_hash": "0f56891f797e97a2819da7846eaac6cc2a08085073dc5e00387e64c636aa2c8f",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "efdd3002ed653db3fb711c82407e823421e22aeb8fb8ecdfad4a4f974edff605",
+ "reviewed_preview_hash": "556d77ea59968b5c32a021fff248c511f65e4f593f0fd68449890facf0b954fe",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",
-  "path": "output/MedianBarrierConcrete_L1_1x1/_check/gate.json"
+  "path": "output/SignSideDistance_L1_1x1/_check/gate.json"
  }
 }

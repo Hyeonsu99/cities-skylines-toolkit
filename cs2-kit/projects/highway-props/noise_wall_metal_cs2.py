@@ -8,34 +8,52 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))   # Blender --pyt
 from hwprops_common import K, make_atlas, h_beam, export
 
 L = 2.0
-Z_BASE = 0.60           # # estimated
+Z_BASE = 0.55           # 세로 주름 콘크리트 기초벽 (실사진 비례)
 PANEL_H = 0.50          # 흡음판 1단 높이 (폭 0.5 m × 길이 2 m 판 수평 적층)
-N_PANEL = 7             # # estimated (총고 4.1 m)
+N_PANEL = 7             # 총고 4.05 m
 Z_TOP = Z_BASE + PANEL_H * N_PANEL
 HB, HH, TW, TF = 0.150, 0.150, 0.007, 0.010
-PANEL_T = 0.095         # # estimated
+PANEL_T = 0.095
 
-A = make_atlas(["concrete", "steel_post", "absorb_panel"])
+A = make_atlas(["concrete_fluted", "steel_post", "absorb_panel"])
 x0, x1 = -L / 2, L / 2
 xi0, xi1 = x0 + 0.004, x1 - 0.004
 
 
+def _panel_tier(mb, za, zb, ya, yb, i):
+    """i번째 단 흡음판: 앞·뒷면은 전체 7단 UV 중 i/7~(i+1)/7 구간에 정확히 맞춰 하단 스톤그레이/상단 챠콜을 구분."""
+    fv0, fv1 = i / N_PANEL, (i + 1) / N_PANEL
+    uv_f = A.uv_sub("absorb_panel", 0.0, fv0, 1.0, fv1)
+    uv_s = A.uv_sub("absorb_panel", 0.0, fv0, 0.08, fv1)
+    uv_t = A.uv_sub("absorb_panel", 0.0, max(0.0, fv1 - 0.04), 1.0, fv1)
+    # 앞(-y), 뒤(+y), 좌(-x), 우(+x)
+    mb.quad([(xi0, ya, za), (xi1, ya, za), (xi1, ya, zb), (xi0, ya, zb)], uv_f, "absorb_panel")
+    mb.quad([(xi1, yb, za), (xi0, yb, za), (xi0, yb, zb), (xi1, yb, zb)], uv_f, "absorb_panel")
+    mb.quad([(xi0, yb, za), (xi0, ya, za), (xi0, ya, zb), (xi0, yb, zb)], uv_s, "absorb_panel")
+    mb.quad([(xi1, ya, za), (xi1, yb, za), (xi1, yb, zb), (xi1, ya, zb)], uv_s, "absorb_panel")
+    if i % 2:
+        mb.quad([(xi0, ya, zb), (xi1, ya, zb), (xi1, yb, zb), (xi0, yb, zb)], uv_t, "absorb_panel")
+        mb.quad([(xi0, yb, za), (xi1, yb, za), (xi1, ya, za), (xi0, ya, za)], uv_t, "absorb_panel")
+
+
 def build(stage):
     mb = K.MeshBuilder(A)
-    mb.box(x0, x1, -0.15, 0.15, 0.0, Z_BASE, "concrete", skip=("bottom",))
+    mb.box(x0, x1, -0.15, 0.15, 0.0, Z_BASE, "concrete_fluted", skip=("bottom",))
     if stage == 0:
-        mb.box(x0 - 0.14, x0 + 0.14, -0.14, 0.14, Z_BASE, Z_BASE + 0.022, "steel_post", skip=("bottom",))
+        mb.box(x0 - 0.14, x0 + 0.14, -0.145, 0.145, Z_BASE, Z_BASE + 0.024, "steel_post", skip=("bottom",))
+        for s in (-1, 1):
+            y_in, y_out = s * (HH / 2), s * 0.13
+            for dx in (-0.042, 0.042):
+                mb.box(x0 + dx - 0.007, x0 + dx + 0.007, min(y_in, y_out), max(y_in, y_out),
+                       Z_BASE + 0.024, Z_BASE + 0.12, "steel_post", skip=("bottom",))
     h_beam(mb, x0, 0.0, Z_BASE, Z_TOP + 0.05, HB, HH, TW, TF, "steel_post", simple=stage >= 1)
     if stage == 0:
-        # 판마다 따로: 이음 그림자가 기하로도 드러나도록 단마다 앞면을 4 mm 씩 엇갈리게 (판 겹침 시공 모양)
         for i in range(N_PANEL):
             za = Z_BASE + i * PANEL_H
             off = 0.004 if i % 2 else 0.0
-            # 좁은 단(짝수)은 위·아래를 넓은 단이 덮으므로 생략 → 같은 평면 겹침 없음
-            sk = () if i % 2 else (("bottom",) if i == N_PANEL - 1 else ("bottom", "top"))
-            mb.box(xi0, xi1, -PANEL_T / 2 - off, PANEL_T / 2 + off, za, za + PANEL_H, "absorb_panel", skip=sk)
-        mb.box(x0 - 0.09, x0 + 0.09, -0.09, 0.09, Z_TOP + 0.05, Z_TOP + 0.07, "steel_post")
-        mb.box(xi0, xi1, -0.06, 0.06, Z_TOP, Z_TOP + 0.03, "steel_post")            # 상부 캡 채널
+            _panel_tier(mb, za, za + PANEL_H, -PANEL_T / 2 - off, PANEL_T / 2 + off, i)
+        mb.box(x0 - 0.095, x0 + 0.095, -0.095, 0.095, Z_TOP + 0.05, Z_TOP + 0.075, "steel_post")
+        mb.box(xi0, xi1, -0.062, 0.062, Z_TOP, Z_TOP + 0.032, "steel_post")
     else:
         mb.box(xi0, xi1, -PANEL_T / 2, PANEL_T / 2, Z_BASE, Z_TOP, "absorb_panel", skip=("bottom",))
     return mb
