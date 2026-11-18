@@ -1161,6 +1161,10 @@ def build_east_stair_and_terrace(mb, stage):
     # 1. 동측 2층 데크 (Y=35.2..51.8, X=24.80..26.68, Z=4.05..4.75) + 외측 두꺼운 백색 측벽/파시아 (X=26.68..27.00)
     _box_var(mb, 24.80, 26.68, 35.20, 51.80, 4.05, 4.75, deck_mat, variant=0)
     _box_var(mb, 26.68, 27.00, 35.20, 51.80, 4.05, 4.85, "white_panel", variant=1)
+    # 1b. 남측 날개 동면(X=24.4)을 따라 남동 모서리(Y=10.2)까지 연속 (sat_vworld_z19 동측 띠 · east_front_mid 2층 흰 띠)
+    _box_var(mb, 24.40, 26.68, 10.20, 35.20, 4.05, 4.75, deck_mat, variant=1)
+    _box_var(mb, 26.68, 27.00, 9.88, 35.20, 4.05, 4.85, "white_panel", variant=2)
+    _box_var(mb, 24.40, 26.68, 9.88, 10.20, 4.05, 4.85, "white_panel", variant=0)
 
     # 2. 계단 동선 본체 (Y=51.8..66.1, 3개 경사 구간 + 2개 중간 참; Y<=58.6 구간은 하부 1층 필로티 개방)
     flights = (
@@ -1222,10 +1226,10 @@ def build_east_stair_and_terrace(mb, stage):
 
     # 5. 외측·내측 금속 난간 및 북동 테라스 U형 가드레일·필로티 하부 안전펜스
     outer_rail_pts = (
-        (35.30, 4.85), (51.80, 4.85), (54.40, 4.15), (56.40, 4.15),
+        (9.98, 4.85), (51.80, 4.85), (54.40, 4.15), (56.40, 4.15),
         (60.80, 2.65), (63.00, 2.65), (66.10, 1.64), (69.72, 1.64), (71.36, 0.48),
     )
-    _pipe_railing_run(mb, "y", 35.22, 1, 24.85, 26.80, 4.75, h=1.02, stage=stage)
+    _pipe_railing_run(mb, "y", 10.04, 1, 24.45, 26.80, 4.85, h=1.02, stage=stage)
     _sloped_pipe_railing(mb, 26.84, outer_rail_pts, h=0.92, stage=stage)
     if stage == 0:
         inner_rail_pts = (
