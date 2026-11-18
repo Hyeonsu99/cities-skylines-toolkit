@@ -55,6 +55,7 @@ _SIGN_CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "work
 # 표지석(2.4 x 1.4 m = 1.714:1)은 576x288 칸 왼쪽 494x288 활성 영역만 사용해 비율 정확도 0.6% 이내 유지
 _SIGN_ACTIVE_W = {
     "sign_monolith": 494,
+    "storefront_glass": 672,
 }
 
 
@@ -234,7 +235,7 @@ def _paint_sign_welfare_led(ctx):
 
 
 def _paint_sign_localfood(ctx):
-    """사선 램프 우측 파시아 간판 (8.67x0.70 m, white_panel 바탕 + '대덕' 짙은 청남 + '로컬푸드직매장' 주황)."""
+    """램프 수평 파시아 간판 (9.98x0.70 m, 백색 바탕·무지개 아치·청남/주황 상호·원형 배지)."""
     def paint_2x(rgb2, mask2, emis2, w2, h2):
         from PIL import ImageDraw
         _draw_sign_panel_seams(rgb2, w2, h2, n_panels=9, seam_rgb=(208, 211, 209))
@@ -242,26 +243,74 @@ def _paint_sign_localfood(ctx):
         t_left = "대덕"
         t_right = "로컬푸드직매장"
         full = t_left + t_right
-        fnt = _fit_font(drw, FONT_KR, full, int(w2 * 0.78), int(h2 * 0.64))
+        fnt = _fit_font(drw, FONT_KR, full, int(w2 * 0.73), int(h2 * 0.79))
         bx, by, tw, th = _text_metrics(drw, full, fnt)
         _, _, tw_l, _ = _text_metrics(drw, t_left, fnt)
         badge_r = int(th * 0.42)
-        gap = int(badge_r * 0.70)
-        total_w = badge_r * 2 + gap + tw
-        start_x = (w2 - total_w) * 0.5
-        _draw_daedeok_badge(rgb2, mask2, start_x + badge_r, h2 * 0.5, badge_r, shadow_rgb=(162, 168, 172))
-        tx = start_x + badge_r * 2 + gap - bx
+        tx = (w2 - tw) * 0.5 - bx
         ty = (h2 - th) * 0.5 - by
+        cx, cy = w2 * 0.12, h2 * 0.70
+        for k, color in enumerate(((45, 87, 138), (58, 133, 166), (92, 153, 82), (221, 145, 64))):
+            r = badge_r * (1.13 - 0.23 * k)
+            bounds = (cx - r, cy - r, cx + r, cy + r)
+            stroke = max(2, round(badge_r * 0.16))
+            drw.arc(bounds, 180, 360, fill=color, width=stroke)
+            ImageDraw.Draw(mask2).arc(bounds, 180, 360, fill=255, width=stroke)
         _draw_3d_text(rgb2, mask2, emis2, tx, ty, t_left, fnt,
                       fill_rgb=(24, 54, 72), shadow_rgb=(160, 166, 170),
                       emis_val=155, shadow_off=(4, 4), shadow_blur=1.5)
         _draw_3d_text(rgb2, mask2, emis2, tx + tw_l + int(w2 * 0.004), ty, t_right, fnt,
                       fill_rgb=(198, 102, 34), shadow_rgb=(160, 166, 170),
                       emis_val=175, shadow_off=(4, 4), shadow_blur=1.5)
+        cx, cy = w2 * 0.90, h2 * 0.5
+        bounds = (cx - badge_r, cy - badge_r, cx + badge_r, cy + badge_r)
+        drw.ellipse(bounds, fill=(202, 107, 40))
+        ImageDraw.Draw(mask2).ellipse(bounds, fill=255)
+        drw.arc((cx - badge_r * 0.62, cy - badge_r * 0.38,
+                 cx + badge_r * 0.62, cy + badge_r * 0.45),
+                195, 345, fill=(243, 212, 145), width=max(2, badge_r // 9))
 
-    _render_sign_cell(ctx, "sign_localfood", (232, 234, 232), paint_2x, relief=0.82)
+    _render_sign_cell(ctx, "sign_localfood_arch", (232, 234, 232), paint_2x, relief=0.82)
     ctx.grain(amp=1.2, scale_px=2, height=0.05, seed=82)
     ctx.gloss[...] = 0.42
+
+
+def _paint_storefront_glass(ctx):
+    """어두운 매장 유리와 녹색·노란색 창문 그래픽을 한 칸에 굽는다."""
+    def paint_2x(rgb2, mask2, _emis2, w, h):
+        from PIL import Image, ImageDraw
+
+        drw = ImageDraw.Draw(rgb2)
+        for y in range(h):
+            reflection = round(17 * (1 - y / h) ** 2)
+            drw.line((0, y, w, y), fill=(24 + reflection, 43 + reflection, 47 + reflection))
+        drw.line((0, h * 0.63, w, h * 0.63), fill=(46, 63, 64), width=max(1, h // 110))
+        letters = Image.new("L", (w, h))
+        for label, x, span, color in (
+            ("DAEDEOK", 0.29, 0.51, (87, 183, 120)),
+            ("FOOD", 0.79, 0.36, (231, 209, 96)),
+        ):
+            font = _fit_font(drw, FONT_EN, label, round(w * span), round(h * 0.33))
+            bx, by, tw, th = _text_metrics(drw, label, font)
+            origin = (w * x - tw * 0.5 - bx, h * 0.35 - th * 0.5 - by)
+            stroke = max(1, h // 145)
+            drw.text(origin, label, font=font, fill=color, stroke_width=stroke,
+                     stroke_fill=(229, 205, 105))
+            ImageDraw.Draw(letters).text(origin, label, font=font, fill=255, stroke_width=stroke)
+        font = _fit_font(drw, FONT_EN, "LOCAL", round(h * 0.25), round(h * 0.11))
+        bx, by, tw, th = _text_metrics(drw, "LOCAL", font)
+        local = Image.new("L", (tw, th))
+        ImageDraw.Draw(local).text((-bx, -by), "LOCAL", font=font, fill=255)
+        local = local.transpose(Image.Transpose.ROTATE_90)
+        origin = (round(w * 0.574 - th * 0.5), round(h * 0.35 - tw * 0.5))
+        rgb2.paste((231, 209, 96), origin, local)
+        letters.paste(local, origin)
+        mask2.paste(letters)
+
+    _render_sign_cell(ctx, "storefront_glass", (24, 43, 47), paint_2x,
+                      active_w=_SIGN_ACTIVE_W["storefront_glass"], relief=1.0, edge_blur=0)
+    ctx.gloss[...] = 0.84 - 0.48 * ctx.height
+    ctx.height[...] = 0
 
 
 def _paint_sign_monolith(ctx):
@@ -727,6 +776,15 @@ def make_atlas(size=4096):
           emissive=(215, 165, 110), px=144, variants=12, painter=_paint_sign_localfood, normal_strength=2.5)
     A.add("sign_monolith",    color=(84, 54, 42), ctrl=(0, 0, 0), metal=0.34, gloss=0.40,
           emissive=(255, 242, 216), px=288, variants=2, painter=_paint_sign_monolith, normal_strength=2.4)
+    # 마지막 줄의 빈 공간에 넣어 기존 외장 아틀라스 UV를 이동시키지 않는다.
+    A.layout()
+    x, y, w, _ = A.cells["lamp_strip"]["rect"]
+    x += w + 2 * A.pad
+    assert x + 864 + A.pad <= size and y + 288 + A.pad <= size
+    A.add("storefront_glass", color=(24, 43, 47), gloss=0.84, px=288, variants=3,
+          painter=_paint_storefront_glass)
+    A.cells["storefront_glass"]["rect"] = (x, y, 864, 288)
+    A._laid = True
     return A
 
 
@@ -1041,7 +1099,7 @@ def _box_var(mb, x0, x1, y0, y1, z0, z1, region, variant=0, skip=()):
             _rect_var(mb, pts, reg, variant=variant + f_idx)
 
 
-def _segmented_ramp_slab(mb, x0, x1, yf0, yf1, y_back, zb0, zb1, dz, region, n_seg=11):
+def _segmented_ramp_slab(mb, x0, x1, yf0, yf1, y_back, dz, region, top_region, n_seg=11):
     """사선 램프 프리즘을 n_seg개 직교 근사/평면 분할로 생성해 _tiled 오버슈트 없이 256 px/m 텍셀·변형 교차 확보."""
     # 경사 구간(x0..RAMP_XK)과 수평 구간(RAMP_XK..x1)을 꺾임점에서 나눠 분할 (zb는 _ramp_zb 를 따름)
     n_flat = 3 if n_seg > 3 else 1
@@ -1062,9 +1120,11 @@ def _segmented_ramp_slab(mb, x0, x1, yf0, yf1, y_back, zb0, zb1, dz, region, n_s
         t_2 = (p2[0], p2[1], p2[2] + dz)
         t_3 = (p3[0], p3[1], p3[2] + dz)
         uv_f = mb.atlas.uv_tile(region, min(4.0, math.hypot(xb - xa, yfb - yfa)), dz, variant=i) if mb.split_tiles else mb.atlas.uv(region)
-        uv_top = mb.atlas.uv_tile(region, min(4.0, xb - xa), min(4.0, y_back - min(yfa, yfb)), variant=i + 1) if mb.split_tiles else mb.atlas.uv(region)
-        mb.quad([t_0, t_1, t_2, t_3], uv_top, region)
-        mb.quad([b3, b2, b1, b0], uv_top, region)
+        top_w, top_h = min(4.0, xb - xa), min(4.0, y_back - min(yfa, yfb))
+        uv_top = mb.atlas.uv_tile(top_region, top_w, top_h) if mb.split_tiles else mb.atlas.uv(top_region)
+        uv_bottom = mb.atlas.uv_tile(region, top_w, top_h, variant=i + 1) if mb.split_tiles else mb.atlas.uv(region)
+        mb.quad([t_0, t_1, t_2, t_3], uv_top, top_region)
+        mb.quad([b3, b2, b1, b0], uv_bottom, region)
         mb.quad([b0, b1, t_1, t_0], uv_f, region)
         mb.quad([b2, b3, t_3, t_2], uv_f, region)
         if i == 0:
@@ -1610,10 +1670,10 @@ def build_south_ramp_and_entrance(mb, A, wins, stage):
     x_l, x_r = RAMP_X0, RAMP_X1
     ramp_yf, ramp_zb, dz_ramp = _ramp_yf, _ramp_zb, RAMP_DZ
 
-    # 1) 사선 램프 백색 대들보/캐노피 슬래브 (y_back=10.16으로 Y=10.2 본체와 4cm 분리해 COPLANAR 방지)
+    # 1) 화강석 보행면과 백색 파시아·소핏 (본체 Y=10.20과 4cm 분리)
     _segmented_ramp_slab(
         mb, x_l, x_r, ramp_yf(x_l), ramp_yf(x_r), 10.16,
-        ramp_zb(x_l), ramp_zb(x_r), dz_ramp, "white_panel",
+        dz_ramp, "white_panel", "stair_stone",
         n_seg=(11 if stage < 2 else 1),
     )
 
@@ -1645,27 +1705,34 @@ def build_south_ramp_and_entrance(mb, A, wins, stage):
             zp = ramp_zb(xp) + dz_ramp
             mb.box(xp - 0.025, xp + 0.025, yp, yp + 0.06, zp, zp + 1.04, "railing_steel")
 
-    # 3) 1층 우측 주출입구 ('석봉동 행정복지센터' X in [+4.2, +14.2] + '대덕로컬푸드직매장' X in [+14.5, +22.0])
+    # 3) 1층 행정복지센터 및 대덕로컬푸드직매장
     _box_var(mb, 3.55, 4.25, 7.80, 8.50, 0.14, ramp_zb(3.90), "white_panel", variant=0, skip=("bottom",))
-    for idx, cx in enumerate((14.4, 19.2, 23.9)):
-        _box_var(mb, cx - 0.24, cx + 0.24, 7.05, 7.55, 0.14, ramp_zb(cx), "white_panel", variant=idx + 1, skip=("bottom",))
+    _box_var(mb, 14.16, 14.64, 7.05, 10.16, 0.14, ramp_zb(14.64), "white_panel", variant=1, skip=("bottom",))
 
     # 1층 행정복지센터 주출입구 문 프레임/자동문 (Y=10.2 벽 앞 정렬, 벽 두께 Y=10.20..10.28)
     K.paint(mb, "y", 10.20, -1, 4.4, 14.2, 0.14, 4.30, "frame_metal", layer=1)
     K.paint(mb, "y", 10.20, -1, 7.8, 10.8, 0.14, 3.05, "door_entrance", layer=2)
     _add_window_bay(mb, wins, "y", 10.16, -1, 4.7, 7.5, 0.35, 3.05, 0, 320, stage)
     _add_window_bay(mb, wins, "y", 10.16, -1, 11.1, 13.9, 0.35, 3.05, 0, 321, stage)
-    # 대덕로컬푸드직매장 전면 통창 (X in [+14.5, +21.9], Y=10.2)
-    _curtain_wall_grid(mb, wins, "y", 10.2, -1, 14.5, 21.9, 0.30, 3.80, nx=5, nz=2, floor0=0, unit0=330, stage=stage, louver_step=0)
+    # 간판 아래 10칸 통창과 동측 회랑으로 돌아가는 솔리드 모서리.
+    gx0, gx1, gy = 14.64, 23.68, 7.72
+    _box_var(mb, gx1, 24.80, 7.58, 10.16, 0.14, ramp_zb(gx1), "white_panel", variant=2, skip=("bottom",))
+    _sign_quad(mb, A, K.face_pts("y", gy, -1, gx0, gx1, 0.14, 4.00), "storefront_glass")
+    mb.rect(K.face_pts("y", 10.16, 1, gx0, gx1, 0.14, 4.00), "spandrel_dark")
+    for i in range(1, 10):
+        x = gx0 + (gx1 - gx0) * i / 10
+        mb.box(x - 0.043, x + 0.043, gy - 0.09, gy - 0.01, 0.26, 3.90, "louver_white", skip=("bottom", "top"))
+    mb.box(gx0, gx1, gy - 0.066, gy - 0.01, 0.15, 0.26, "louver_white")
+    mb.box(gx0, gx1, gy - 0.066, gy - 0.01, 3.90, 4.00, "louver_white")
 
     if stage == 0:
         _sign_quad(mb, A, [(5.0, 10.10, 3.14), (13.8, 10.10, 3.14), (13.8, 10.10, 3.96), (5.0, 10.10, 3.96)], "sign_welfare_led")
         _sign_quad(
             mb, A,
-            [(14.9, ramp_yf(14.9) - 0.03, ramp_zb(14.9) + 0.08),
-             (23.5, ramp_yf(23.5) - 0.03, ramp_zb(23.5) + 0.08),
-             (23.5, ramp_yf(23.5) - 0.03, ramp_zb(23.5) + 0.78),
-             (14.9, ramp_yf(14.9) - 0.03, ramp_zb(14.9) + 0.78)],
+            [(14.60, ramp_yf(14.60) - 0.02, 4.08),
+             (24.58, ramp_yf(24.58) - 0.02, 4.08),
+             (24.58, ramp_yf(24.58) - 0.02, 4.78),
+             (14.60, ramp_yf(14.60) - 0.02, 4.78)],
             "sign_localfood",
         )
         # 1층 캐노피·주출입구 전실 하부 매입 조명등 4개소 (경사로 저면 아래 비간섭 밀착)
