@@ -1,0 +1,161 @@
+{
+ "visual_review": "PASS",
+ "current_stage": "review:PASS",
+ "generator": "korean_lowrise_cs2.py",
+ "generator_hash": "a0a2ae08bb8447e5391c6bcdf4f6973274f650e0461f8da0e86a9c9cdb308a05",
+ "current_preview_hash": "daca6fb101d2281f5619bf6dc33344e7bedf097921443d0f022b5c6eb1a8d978",
+ "last_gate": {
+  "status": "PASS",
+  "project": "korean-lowrise",
+  "generator": "korean_lowrise_cs2.py",
+  "mode": "final",
+  "checks": {
+   "build": "PASS",
+   "geometry": "PASS",
+   "preview": "PASS",
+   "photo": "NOT_APPLICABLE",
+   "tiles": "NOT_APPLICABLE",
+   "lod": "PASS",
+   "fbx": "PASS",
+   "visual_review": "PASS"
+  },
+  "errors": [],
+  "next_action": {
+   "command": null,
+   "reason": "no fix needed"
+  },
+  "artifacts": {
+   "preview": "previews\\KoreanHouseA01_L1_2x2.png",
+   "report": "output\\KoreanHouseA01_L1_2x2\\_check\\report.json"
+  },
+  "asset": "KoreanHouseA01_L1_2x2",
+  "label": "m1-final",
+  "time": "2026-11-18 22:12:01",
+  "build": {
+   "asset": "KoreanHouseA01_L1_2x2",
+   "fbx": true,
+   "warnings": []
+  },
+  "check": {
+   "errors": [],
+   "warnings": [],
+   "info": {
+    "size": [
+     13.6,
+     13.5,
+     8.28
+    ],
+    "pivot_offset": [
+     0.0,
+     0.0
+    ],
+    "zmin": 0.0,
+    "coords": "generator coordinates (before pivot move)",
+    "tris": {
+     "main": 3096,
+     "win": 56,
+     "lod1": 1286,
+     "lod1_win": 56,
+     "lod2": 422,
+     "lod2_win": 56
+    },
+    "verts": {
+     "main": 6224,
+     "win": 112,
+     "lod1": 2580,
+     "lod1_win": 112,
+     "lod2": 852,
+     "lod2_win": 112
+    },
+    "coplanar": {
+     "main": 0,
+     "lod1": 0,
+     "lod2": 0,
+     "win": 0
+    },
+    "textures": {
+     "BaseColor": "2048x2048 RGBA",
+     "ControlMask": "2048x2048 RGBA",
+     "MaskMap": "2048x2048 RGBA",
+     "Normal": "2048x2048 RGB",
+     "Emissive": "2048x2048 RGB",
+     "LOD2_BaseColor": "512x512 RGBA",
+     "LOD2_ControlMask": "512x512 RGBA",
+     "LOD2_MaskMap": "512x512 RGBA",
+     "LOD2_Normal": "512x512 RGB",
+     "LOD2_Emissive": "512x512 RGB"
+    },
+    "texel_px_per_m": {
+     "p10": 119.7,
+     "median": 319.6,
+     "p90": 319.6
+    },
+    "windows": 28,
+    "win_dropped": 0,
+    "win_blocked": {
+     "win": 0,
+     "lod1_win": 0,
+     "lod2_win": 0
+    },
+    "time_s": 0.1
+   },
+   "report": "output\\KoreanHouseA01_L1_2x2\\_check\\report.json"
+  },
+  "photo": {
+   "checked": false,
+   "mismatch": null,
+   "lines": [],
+   "status": "NOT_APPLICABLE"
+  },
+  "tiles": {
+   "checked": false,
+   "status": "NOT_APPLICABLE",
+   "simplified": [],
+   "detail": [],
+   "detail_color": [],
+   "color_off": [],
+   "tiles_off": 0,
+   "tiles_total": 0
+  },
+  "lod": {
+   "checked": true,
+   "status": "PASS",
+   "line": "LODCHECK PASS main max 0.001% (az 45, el +50) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\KoreanHouseA01_L1_2x2",
+   "notes": []
+  },
+  "agent": {
+   "status": "PASS",
+   "verts": {
+    "LOD0": 6224,
+    "LOD1": 2580,
+    "LOD2": 852
+   },
+   "action_tags": [],
+   "exact_fix_instruction": "no fix needed"
+  },
+  "gate": {
+   "status": "PASS",
+   "reasons": [],
+   "incomplete": []
+  }
+ },
+ "mismatch_attempts": {},
+ "next_action": {
+  "command": null,
+  "reason": "all requested checks passed"
+ },
+ "project": "korean-lowrise",
+ "updated_at": "2026-11-18T22:13:48",
+ "visual_review_note": "현행 4방향 낮·야간 이미지 검토: 유리 후퇴·창대·인방·옥상·계단 확인, 넓은 면 발광 없음, 현관 소형 등만 발광. 게임 야간은 미검증.",
+ "visual_review_artifacts": [
+  {
+   "file": "previews/KoreanHouseA01_L1_2x2.png",
+   "sha256": "daca6fb101d2281f5619bf6dc33344e7bedf097921443d0f022b5c6eb1a8d978"
+  },
+  {
+   "file": "previews/m1_night.png",
+   "sha256": "a23a7456b7d9c616622f484960ba7f60f7e5bd9ec81beff64d336c6cdd809d07"
+  }
+ ],
+ "reviewed_preview_hash": "daca6fb101d2281f5619bf6dc33344e7bedf097921443d0f022b5c6eb1a8d978"
+}

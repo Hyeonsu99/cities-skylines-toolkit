@@ -114,6 +114,7 @@
 | 1 | 간선도로·격자 | 대기 | - | |
 | 2 | 신탄진 1km² 파일럿 | 대기 | - | |
 | 3 | 파란 지붕 공장 생성기 | 완료 | Gemini 4 Hydrogen (Antigravity) | `cs2-kit/projects/blue-factory/` 4규격(Small 3x4, Mid 4x6, Large 6x6, RailDepot 4x8) FBX/LOD 검증 완료 |
+| 3 | 한국형 저밀도 주거 에셋팩 | 진행 중 | Codex 총괄 | `cs2-kit/projects/korean-lowrise/` M0 유형별 사진 6장 조사, M1 A형 1종 final·이미지 리뷰 PASS. 사용자 인게임 승인 전 M2 정지. |
 | 3 | 신탄진IC 톨게이트 | 완료 | Gemini 4 Hydrogen (Antigravity) | `cs2-kit/projects/sintanjin-tollgate/` (`SintanjinTollgate_L1_6x4`, 7차선 비대칭 아치·간판·3갠트리) FBX/64뷰 LOD 검증 및 `asset-viewer` 연동 완료 |
 | 3 | 석봉동 행정복지센터 (석봉복합문화센터) | 진행 중 | Gemini 4 Hydrogen (Antigravity) 구현, Claude Opus 5.5 (Claude Code) 교차 검토 | `cs2-kit/projects/seokbong-welfare-center/` (`SeokbongWelfareCenter_L1_7x9`, lot 7x9 시그니처). final 전 항목 PASS. 2026-11-18 경사로-데크 연결·로컬푸드·남서/서측 계단·서측 색 통일 완료(아래 절). 남은 확인: 북측동 3층 띠 색, 인게임 |
 | 3 | 신탄진역 | 대기 | - | `--template generic` (파일럿 이질감 시 앞당겨 제작) |
@@ -214,3 +215,4 @@
 | 2026-11-18 | Claude Opus 5.5 (Claude Code) | 진행 기록 | 진행 상태 | 고속도로 소품 2차 보정(Antigravity 구현, 총괄 교차 검토): 투명 방음벽 매 실루엣·2×4 격자·투명 유리, 중앙분리대 4 m 끝 줄눈·밝은 회색, 문형표지 지주 보호용 2단 W빔(`GuardrailWBeamDouble`) 신설. 7종 final PASS, 인게임 미확인. |
 | 2026-11-18 | Claude Opus 5.5 (Claude Code) | 진행 기록 | 진행 상태, 석봉동 절(2026-11-18 작업 추가) | 석봉센터 경사로-동측 데크 연결(2안), 로컬푸드 통창·간판·유리 그래픽, 행정복지센터 현관, 전면 보도 톱니 제거, 남서·서측 계단과 2층 테라스, 서측 색 통일·난간 연결, 옥상 설비 재배치 기록(Codex·Antigravity 구현분 총괄 검토 포함). 고속도로 이정표 글자 정렬 수정. 남은 확인: 북측동 3층 띠 색·표지석 구성·인게임. 사용자(Hyeonsu99) 요청. |
 | 2026-11-18 | Claude Opus 5.5 (Claude Code) | 규칙 추가 | 작업 규칙 | CS2 가져오기는 `output/<에셋이름>` 폴더만 고른다는 규칙 추가. 석봉센터를 프로젝트 맨 위 폴더로 가져와 가짜 프리팹·이름 중복 오류가 난 사례(게임 `AssetPipeline.log` 확인). 사용자(Hyeonsu99) 요청. |
+| 2026-11-18 | Codex | 진행 기록 | 진행 상태 | 한국형 저밀도 주거 M0+M1: A/B/C 현지 거리뷰·D 타 지역 보조 공개 사진 각 6장 출처 기록, A형 2층 벽돌 양옥 2×2 시제품 final 및 이미지 리뷰 PASS. main/LOD1/LOD2 3,096/1,286/422 tris(창 포함 3,152/1,342/478), 텍스처 2048/2048/512. 식생·화분·화단 틀·흙면 메시 제외, `work/subobjects.json` 제안만. 구역 성장·야간·프레임·lot는 사용자 게임 검증 후 M2 승인 대기. |

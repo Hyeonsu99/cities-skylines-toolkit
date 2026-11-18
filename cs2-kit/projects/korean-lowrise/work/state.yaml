@@ -1,0 +1,124 @@
+{
+ "version": 1,
+ "project": "korean-lowrise",
+ "stages": {
+  "mass": {
+   "at": "2026-11-18T22:05:06",
+   "mode": "quick",
+   "status": "FAIL",
+   "label": "mass",
+   "gate": "output/KoreanHouseA01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "FAIL",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "a0a2ae08bb8447e5391c6bcdf4f6973274f650e0461f8da0e86a9c9cdb308a05",
+   "preview": null,
+   "fbx": null
+  },
+  "openings": {
+   "at": "2026-11-18T22:06:07",
+   "mode": "quick",
+   "status": "FAIL",
+   "label": "openings",
+   "gate": "output/KoreanHouseA01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "FAIL",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "a0a2ae08bb8447e5391c6bcdf4f6973274f650e0461f8da0e86a9c9cdb308a05",
+   "preview": null,
+   "fbx": null
+  },
+  "junctions": {
+   "at": "2026-11-18T22:07:06",
+   "mode": "quick",
+   "status": "FAIL",
+   "label": "junctions",
+   "gate": "output/KoreanHouseA01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "FAIL",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "a0a2ae08bb8447e5391c6bcdf4f6973274f650e0461f8da0e86a9c9cdb308a05",
+   "preview": null,
+   "fbx": null
+  },
+  "facade": {
+   "at": "2026-11-18T22:07:22",
+   "mode": "visual",
+   "status": "INCOMPLETE",
+   "label": "facade",
+   "gate": "output/KoreanHouseA01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "a0a2ae08bb8447e5391c6bcdf4f6973274f650e0461f8da0e86a9c9cdb308a05",
+   "preview": {
+    "path": "previews/KoreanHouseA01_L1_2x2.png",
+    "exists": true,
+    "sha256": "e3d635885242c11b9fc697073fb93c17538ec5891329d389a3635a87afe46812",
+    "key": null
+   },
+   "fbx": null
+  },
+  "m1-final": {
+   "at": "2026-11-18T22:12:01",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "m1-final",
+   "gate": "output/KoreanHouseA01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "a0a2ae08bb8447e5391c6bcdf4f6973274f650e0461f8da0e86a9c9cdb308a05",
+   "preview": {
+    "path": "previews/KoreanHouseA01_L1_2x2.png",
+    "exists": true,
+    "sha256": "daca6fb101d2281f5619bf6dc33344e7bedf097921443d0f022b5c6eb1a8d978",
+    "key": null
+   },
+   "fbx": null
+  }
+ },
+ "updated_at": "2026-11-18T22:12:01",
+ "current_stage": "final:INCOMPLETE",
+ "generator": "korean_lowrise_cs2.py",
+ "generator_hash": "a0a2ae08bb8447e5391c6bcdf4f6973274f650e0461f8da0e86a9c9cdb308a05",
+ "visual_review": "NOT_CHECKED",
+ "reviewed_preview_hash": null,
+ "last_gate": {
+  "mode": "final",
+  "status": "INCOMPLETE",
+  "path": "output/KoreanHouseA01_L1_2x2/_check/gate.json"
+ }
+}
