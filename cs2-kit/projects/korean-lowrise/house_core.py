@@ -21,7 +21,7 @@ class HouseSpec:
     depth: float = 9.2
     floors: int = 2
     floor_h: float = 3.05
-    wall_color: tuple = (151, 79, 57)
+    wall_color: tuple = (122, 72, 60)   # 골목 참고 사진의 탁한 적갈색 벽돌 (기존 151,79,57 은 채도 과다)
     roof_color: tuple = (80, 102, 87)
     stairs: bool = True
     tank: bool = True
@@ -498,9 +498,9 @@ def atlas(spec):
     tone_mul = 0.96 + (sv % 5) * 0.018
     m_shift = ((sv % 5) - 2) * 5.0
     m_warm = ((sv % 3) - 1) * 4.0
-    mortar_rgb = (int(np.clip(176 + m_shift + m_warm, 145, 200)),
-                  int(np.clip(158 + m_shift, 130, 185)),
-                  int(np.clip(137 + m_shift - m_warm, 110, 165)))
+    mortar_rgb = (int(np.clip(166 + m_shift + m_warm, 140, 190)),     # 회색 시멘트 줄눈 (베이지 아님)
+                  int(np.clip(162 + m_shift, 136, 186)),
+                  int(np.clip(154 + m_shift - m_warm, 128, 180)))
 
     a = K.Atlas(size=2048, pad=12)
     a.add("brick", color=spec.wall_color, ctrl=(0, 255, 0), px=512,
@@ -524,7 +524,7 @@ def atlas(spec):
           emissive=(255, 219, 171), painter=windows)
     a.add("window_backing", color=window_color, px=32, gloss=0.76)
     a.add("stone", color=(164, 161, 147), px=256, tile=(1.0, 1.2), gloss=0.28, painter=stone)
-    a.add("clay", color=(163, 73, 48), px=256, tile=(2.16, 0.8), gloss=0.34, painter=clay)
+    a.add("clay", color=(132, 80, 64), px=256, tile=(2.16, 0.8), gloss=0.34, painter=clay)
     a.add("blue", color=(74, 102, 120), px=128, tile=(2, 2), gloss=0.46, painter=corrugated)
     a.add("orange", color=(154, 109, 86), px=128, tile=(2, 2), gloss=0.46, painter=corrugated)
     a.add("shutter", color=(134, 139, 132), ctrl=(0, 0, 255), px=256, gloss=0.43, painter=louver)
@@ -578,6 +578,35 @@ def openings(spec, axis, side):
     if axis == "x" and side == 1 and spec.floors == 2 and spec.stairs:
         result.append((5.10, 6.05, spec.floor_h + 0.04, spec.floor_h + 2.22, "door", 1))
     return sorted(result)
+
+
+def _plinth_band(mb, spec, walls, x0, d):
+    """벽 하단 기단 띠(0~0.62 m, 2.5 cm 돌출)를 3D 로. 앞·뒤 벽 띠가 바깥 모서리를 감싸 끊김 없이 이어지고,
+    문·셔터 구간은 비운다. ㄱ자 안쪽 모서리는 맞댐."""
+    t, ztop = 0.025, 0.62
+    for axis, c, side, lo, hi in walls:
+        if axis == "y":
+            notch_in = spec.notch and abs(c - (d - 2.6)) < 1e-6
+            a0, a1 = lo - t, (hi if notch_in else hi + t)
+        else:
+            a0, a1 = lo, hi
+        gaps = [(o[0], o[1]) for o in openings(spec, axis, side) if o[4] == "door" and o[2] < 0.5 and lo < o[0] < hi]
+        if spec.shop and axis == "y" and side == -1 and abs(c) < 1e-6:
+            gaps += [(-spec.width * 0.40, -0.95), (0.95, spec.width * 0.40)]
+        spans = [(a0, a1)]
+        for g0, g1 in sorted(gaps):
+            nxt = []
+            for s0, s1 in spans:
+                if g1 <= s0 or g0 >= s1:
+                    nxt.append((s0, s1))
+                    continue
+                if g0 - s0 > 0.05:
+                    nxt.append((s0, g0))
+                if s1 - g1 > 0.05:
+                    nxt.append((g1, s1))
+            spans = nxt
+        for s0, s1 in spans:
+            K.axbox(mb, axis, c, side, s0, s1, 0.0, t, 0.0, ztop, {"default": "plinth", "top": "cement"}, skip=("bottom",))
 
 
 def _protruding_grille(mb, axis, c, side, a0, a1, z0, z1, depth=0.24):
@@ -701,7 +730,7 @@ def facade(mb, wins, spec, axis, c, side, stage, lo=None, hi=None):
                 for bx in (a0 - 0.06, a1 + 0.06):
                     K.axbox(mb, axis, c, side, bx - 0.03, bx + 0.03, 0.0, 0.18, z1 + 0.04, z1 + 0.13, "cement", skip=("top",))
     plo, phi = lo + 0.02, hi - 0.02  # 칠 띠가 모서리 끝에서 비쳐 보이지 않도록
-    K.paint(mb, axis, c, side, plo, phi, 0.16, 0.62, "plinth")
+    # 기단 띠는 build_stage 의 3D 띠(_plinth_band)가 맡는다 (칠 면은 벽마다 끊기고 문 아래를 덮었음)
     if spec.finish == "mosaic":
         K.paint(mb, axis, c, side, plo, phi, spec.floor_h-0.42, spec.floor_h-0.12, "pattern")
     # 파라펫·처마 아래 빗물 띠는 모든 집에서 사용자 요청으로 뺌 (2026-11-19)
@@ -1029,6 +1058,7 @@ def build_stage(spec, a, stage):
     meta = K.volume_prism(a, inner, h, volume_id="house", wall=spec.finish, roof="roof", mb=mb)
     if stage < 2:
         K.volume_prism(a, ring, 0.15, z0=0.0, wall="plinth", roof="cement", mb=mb)
+        _plinth_band(mb, spec, walls, x0, d)
     K.volume_prism(a, ring, 0.18, z0=h - 0.1, wall=spec.finish, roof="roof", mb=mb)
     coping_ov = 0.34
     for axis, c, side, lo, hi in walls:
@@ -1174,7 +1204,7 @@ def build_stage(spec, a, stage):
     if spec.stairs and spec.floors == 2:
         # 한국 단독주택 외부 계단: 콘크리트 디딤 + 벽 마감재 사선 난간벽 + 콘크리트 갓돌 (철골 살 난간이 아님)
         fh = spec.floor_h
-        sx0, sx1 = w / 2 + 0.08, w / 2 + 1.25
+        sx0, sx1 = w / 2 + 0.025, w / 2 + 1.25   # 벽(기단 띠 2.5 cm)에 붙임 — 8 cm 틈으로 아래가 보였음
         pw = 0.14                                          # 난간벽 두께
         rise = fh - 0.10
         if stage == 2:
@@ -1185,7 +1215,10 @@ def build_stage(spec, a, stage):
             for k in range(count):
                 y0, y1 = 0.25 + k * 4.85 / count, 0.25 + (k + 1) * 4.85 / count
                 z = (k + 1) * fh / count
-                mb.box(sx0, sx1 - pw, y0, y1, max(0, z - 0.13), z, "cement")
+                zb = max(0.0, z - 0.32)   # 단 높이보다 두껍게 (단 사이 틈 방지)
+                mb.box(sx0, sx1 - pw, y0, y1, zb, z, "cement", skip=("bottom",) if zb <= 0 else ())
+            # 경사 밑판 (밑면을 평평한 경사 슬래브로)
+            slope_box(mb, (sx0 + 0.005, sx1 - pw - 0.005, 0.255, 5.095, 0.0, 0.16), "cement", 1, rise)   # 디딤과 면 공유 방지
             # 바깥 사선 난간벽 + 갓돌
             slope_box(mb, (sx1 - pw, sx1, 0.25, 5.10, 0.0, 1.00), spec.finish, 1, rise)
             if stage == 0:

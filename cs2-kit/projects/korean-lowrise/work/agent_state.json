@@ -1,13 +1,13 @@
 {
  "visual_review": "PASS",
  "current_stage": "review:PASS",
- "generator": "house_70s_cs2.py",
- "generator_hash": "3d50b1ecd291a12877299d17a15c19efb51e7638de8aa300504e94bce15ff01b",
- "current_preview_hash": "407d1d1b99e2f7e829c9f076b2f28854b0cac910b96ea6fb2d3bd12e2a31cfa5",
+ "generator": "house_80s_cs2.py",
+ "generator_hash": "18a9e9f213f8a0a6579d3343fea340978d6cab138c02d6d9a1a80db95260bd10",
+ "current_preview_hash": "3ebab67c52aff8f6fa049c92fc83ee96048106727cc02a27429b3524498cf1f1",
  "last_gate": {
   "status": "PASS",
   "project": "korean-lowrise",
-  "generator": "house_70s_cs2.py",
+  "generator": "house_80s_cs2.py",
   "mode": "final",
   "checks": {
    "build": "PASS",
@@ -25,25 +25,27 @@
    "reason": "no fix needed"
   },
   "artifacts": {
-   "preview": "previews\\KoreanHouseA70s01_L1_2x2.png",
-   "report": "output\\KoreanHouseA70s01_L1_2x2\\_check\\report.json"
+   "preview": "previews\\KoreanHouseA80s01_L1_2x2.png",
+   "report": "output\\KoreanHouseA80s01_L1_2x2\\_check\\report.json"
   },
-  "asset": "KoreanHouseA70s01_L1_2x2",
-  "label": "eaves-band-fix",
-  "time": "2026-11-19 14:50:38",
+  "asset": "KoreanHouseA80s01_L1_2x2",
+  "label": "plinth-stairs-color",
+  "time": "2026-11-19 14:54:52",
   "build": {
-   "asset": "KoreanHouseA70s01_L1_2x2",
+   "asset": "KoreanHouseA80s01_L1_2x2",
    "fbx": true,
    "warnings": []
   },
   "check": {
    "errors": [],
-   "warnings": [],
+   "warnings": [
+    "2 windows have no wall within 1 m behind (flipped or floating?)"
+   ],
    "info": {
     "size": [
      12.46,
-     12.7,
-     9.05
+     13.3,
+     9.35
     ],
     "pivot_offset": [
      0.0,
@@ -52,20 +54,20 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 12958,
-     "win": 56,
-     "lod1": 2054,
-     "lod1_win": 56,
-     "lod2": 408,
-     "lod2_win": 56
+     "main": 9926,
+     "win": 48,
+     "lod1": 1916,
+     "lod1_win": 48,
+     "lod2": 350,
+     "lod2_win": 48
     },
     "verts": {
-     "main": 27240,
-     "win": 112,
-     "lod1": 4118,
-     "lod1_win": 112,
-     "lod2": 824,
-     "lod2_win": 112
+     "main": 20894,
+     "win": 96,
+     "lod1": 3848,
+     "lod1_win": 96,
+     "lod2": 712,
+     "lod2_win": 96
     },
     "coplanar": {
      "main": 0,
@@ -86,11 +88,11 @@
      "LOD2_Emissive": "512x512 RGB"
     },
     "texel_px_per_m": {
-     "p10": 106.2,
-     "median": 159.6,
-     "p90": 159.6
+     "p10": 98.6,
+     "median": 212.9,
+     "p90": 212.9
     },
-    "windows": 28,
+    "windows": 24,
     "win_dropped": 0,
     "win_blocked": {
      "win": 0,
@@ -99,7 +101,7 @@
     },
     "time_s": 0.3
    },
-   "report": "output\\KoreanHouseA70s01_L1_2x2\\_check\\report.json"
+   "report": "output\\KoreanHouseA80s01_L1_2x2\\_check\\report.json"
   },
   "photo": {
    "checked": false,
@@ -120,17 +122,15 @@
   "lod": {
    "checked": true,
    "status": "PASS",
-   "line": "LODCHECK PASS main max 0.045% (az 90, el +25) bad_views 0/64 | lod1 max 0.002% (az 90, el +5) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64 marginal=1  -> previews\\lod_check\\KoreanHouseA70s01_L1_2x2",
-   "notes": [
-    "LOD margin is close to the 0.05% limit"
-   ]
+   "line": "LODCHECK PASS main max 0.025% (az 202, el +5) bad_views 0/64 | lod1 max 0.003% (az 68, el +50) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\KoreanHouseA80s01_L1_2x2",
+   "notes": []
   },
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 27240,
-    "LOD1": 4118,
-    "LOD2": 824
+    "LOD0": 20894,
+    "LOD1": 3848,
+    "LOD2": 712
    },
    "action_tags": [],
    "exact_fix_instruction": "no fix needed"
@@ -147,13 +147,13 @@
   "reason": "all requested checks passed"
  },
  "project": "korean-lowrise",
- "updated_at": "2026-11-19T14:50:52",
- "visual_review_note": "70s 파라펫·처마 아래 띠 제거, 옆벽 기와 처마 모서리까지 연장·물끊기 턱 끝면 정렬(LOD 구멍 해소), 근접·미리보기 확인",
+ "updated_at": "2026-11-19T14:55:56",
+ "visual_review_note": "fix: 계단 벽 밀착·두꺼운 디딤·경사 밑판(틈 제거), 기단 띠 3D 모서리 연속·문 구간 비움, 벽돌·줄눈·기와 색 참고 사진 톤. 근접 렌더 확인",
  "visual_review_artifacts": [
   {
-   "file": "previews/KoreanHouseA70s01_L1_2x2.png",
-   "sha256": "407d1d1b99e2f7e829c9f076b2f28854b0cac910b96ea6fb2d3bd12e2a31cfa5"
+   "file": "previews/KoreanHouseA80s01_L1_2x2.png",
+   "sha256": "3ebab67c52aff8f6fa049c92fc83ee96048106727cc02a27429b3524498cf1f1"
   }
  ],
- "reviewed_preview_hash": "407d1d1b99e2f7e829c9f076b2f28854b0cac910b96ea6fb2d3bd12e2a31cfa5"
+ "reviewed_preview_hash": "3ebab67c52aff8f6fa049c92fc83ee96048106727cc02a27429b3524498cf1f1"
 }
