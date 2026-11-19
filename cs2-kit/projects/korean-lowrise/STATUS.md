@@ -1,16 +1,16 @@
 # STATUS.md - agent handoff
 
 ## Current stage
-review:PASS
+final:INCOMPLETE
 
 ## Generator
-house_90s_cs2.py
+house_80s_cs2.py
 
 ## Last verification
-PASS
+INCOMPLETE
 
 ## Next action
-all requested checks passed
+python tools/agent.py review --project korean-lowrise --status PASS --note "reviewed current artifacts" --artifact "previews/KoreanHouseA80s01_L1_2x2.png"
 
 ## Notes
 Machine state: work/agent_state.json. Photo observations: work/observations.json.

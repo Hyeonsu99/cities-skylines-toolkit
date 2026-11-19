@@ -266,8 +266,20 @@ SIGN_BAND = (0.30, 0.70)   # 간판 칸(1024x256)에서 쓰는 띠 = 10:1
 SIGN_V_BAND = (0.0, 0.0, 0.30, 0.30)   # 같은 간판 칸의 아래 띠(u0, v0, u1, v1) = 돌출 간판(1:4)을 90도 눕혀 그림
 
 
-def _sign_text(d, dm, xy, text, font, fill, stroke, stroke_fill=(20, 24, 40), anchor="mm"):
-    """외곽선 두 겹(어두운 바깥 + 흰 안쪽) 굵은 간판 글씨. dm 은 발광 마스크."""
+SIGN_FONTS = {   # 한글(HWP) 간판 글꼴. 없으면 work/_sign_cache 의 이전 그림을 쓴다.
+    "round": "C:/Windows/Fonts/HMKMRHD.TTF",    # 휴먼둥근헤드라인 — 상호
+    "gothic": "C:/Windows/Fonts/H2GTRE.TTF",    # HY견고딕 — 돌출 간판·전화번호
+    "headline": "C:/Windows/Fonts/H2HDRM.TTF",  # HY헤드라인M — 담배 띠
+    "marker": "C:/Windows/Fonts/HMKMMAG.TTF",   # 휴먼매직체 — 업종(손글씨)
+}
+
+
+def _sign_text(d, dm, xy, text, font, fill, stroke, stroke_fill=(20, 24, 40), anchor="mm", extrude=0):
+    """외곽선 두 겹(어두운 바깥 + 흰 안쪽) 굵은 간판 글씨. extrude = 오른쪽 아래 대각선 입체 그림자 px.
+    dm 은 발광 마스크."""
+    for k in range(extrude, 0, -1):
+        d.text((xy[0] + k, xy[1] + k), text, font=font, fill=stroke_fill, stroke_width=int(stroke * 1.9),
+               stroke_fill=stroke_fill, anchor=anchor)
     d.text(xy, text, font=font, fill=stroke_fill, stroke_width=int(stroke * 1.9), stroke_fill=stroke_fill, anchor=anchor)
     d.text(xy, text, font=font, fill=fill, stroke_width=stroke, stroke_fill=(250, 250, 246), anchor=anchor)
     dm.text(xy, text, font=font, fill=255, stroke_width=stroke, anchor=anchor)
@@ -278,8 +290,8 @@ def sign(ctx):
     가운데 띠(v 0.30~0.70) = 1층 가로 간판 10:1 (노랑 바탕 + 빨강 상호 + 파랑 업종 블록).
     아래 띠(u 0~0.30, v 0~0.30) = 세로 돌출 간판 1:4 (빨강 바탕 흰 세로 글씨)를 90도 눕혀 그림.
     상호 '다온상회'·번호는 가상."""
-    cache = HERE / "work" / "_sign_cache" / f"sign6_{ctx.w}x{ctx.h}.npz"
-    bold = "C:/Windows/Fonts/malgunbd.ttf"
+    cache = HERE / "work" / "_sign_cache" / f"sign7_{ctx.w}x{ctx.h}.npz"
+    F = SIGN_FONTS
     try:
         from PIL import Image, ImageDraw, ImageFont
         S = 4
@@ -291,13 +303,14 @@ def sign(ctx):
         top, bot = int(H * (1 - SIGN_BAND[1])), int(H * (1 - SIGN_BAND[0]))
         ph = bot - top
         cy = top + ph * 0.5
-        f1 = ImageFont.truetype(bold, int(ph * 0.70))
-        _sign_text(d, dm, (W * 0.30, cy), "다온상회", f1, (186, 18, 24), max(3, int(ph * 0.016)))
+        f1 = ImageFont.truetype(F["round"], int(ph * 0.74))
+        _sign_text(d, dm, (W * 0.30, cy), "다온상회", f1, (186, 18, 24), max(3, int(ph * 0.018)),
+                   (40, 16, 18), extrude=int(ph * 0.045))
         bx0, bx1 = W * 0.585, W * 0.975                         # 파랑 업종 블록
         by0, by1 = top + ph * 0.12, bot - ph * 0.12
         d.rounded_rectangle([bx0, by0, bx1, by1], radius=ph * 0.08, fill=(28, 66, 150), outline=(250, 250, 246), width=max(3, int(ph * 0.025)))
-        f2 = ImageFont.truetype(bold, int(ph * 0.30))
-        f3 = ImageFont.truetype(bold, int(ph * 0.20))
+        f2 = ImageFont.truetype(F["marker"], int(ph * 0.36))
+        f3 = ImageFont.truetype(F["gothic"], int(ph * 0.22))
         xm = (bx0 + bx1) / 2
         _sign_text(d, dm, (xm, top + ph * 0.38), "생활용품 · 잡화", f2, (250, 250, 246), max(2, int(ph * 0.012)), (16, 30, 70))
         _sign_text(d, dm, (xm, top + ph * 0.70), "☎ 123-4567", f3, (252, 222, 70), max(2, int(ph * 0.010)), (16, 30, 70))
@@ -310,12 +323,15 @@ def sign(ctx):
         vd, vdm = ImageDraw.Draw(vim), ImageDraw.Draw(vmk)
         m = int(vw * 0.06)
         vd.rectangle([m, m, vw - 1 - m, vh - 1 - m], outline=(250, 250, 246), width=max(3, int(vw * 0.03)))
-        fv = ImageFont.truetype(bold, int(vw * 0.62))
+        fv = ImageFont.truetype(F["gothic"], int(vw * 0.64))
         for k, ch in enumerate("다온상회"):
-            _sign_text(vd, vdm, (vw / 2, vh * (0.13 + 0.19 * k)), ch, fv, (250, 250, 246), max(3, int(vw * 0.025)), (60, 10, 12))
-        fvs = ImageFont.truetype(bold, int(vw * 0.15))
-        vd.rectangle([m * 2, vh * 0.88, vw - m * 2, vh * 0.95], fill=(246, 206, 46))
-        vd.text((vw / 2, vh * 0.915), "123-4567", font=fvs, fill=(120, 16, 20), anchor="mm")
+            _sign_text(vd, vdm, (vw / 2, vh * (0.11 + 0.175 * k)), ch, fv, (250, 250, 246), max(3, int(vw * 0.025)),
+                       (60, 10, 12), extrude=int(vw * 0.03))
+        # 아래: 구멍가게 '담배' 띠 (노랑 바탕 빨강 글씨)
+        vd.rectangle([m * 2, vh * 0.79, vw - m * 2, vh * 0.94], fill=(246, 206, 46), outline=(250, 250, 246), width=max(2, int(vw * 0.02)))
+        fvs = ImageFont.truetype(F["headline"], int(vw * 0.36))
+        vd.text((vw / 2, vh * 0.865), "담배", font=fvs, fill=(186, 18, 24), anchor="mm")
+        vdm.text((vw / 2, vh * 0.865), "담배", font=fvs, fill=255, anchor="mm")
         x0p, y0p = int(W * u0), int(H * (1 - v1))
         im.paste(vim.rotate(90, expand=True), (x0p, y0p))
         mk.paste(vmk.rotate(90, expand=True), (x0p, y0p))
