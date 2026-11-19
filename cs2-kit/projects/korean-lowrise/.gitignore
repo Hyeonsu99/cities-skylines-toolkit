@@ -1,6 +1,0 @@
-# 저작권 거리뷰·재생성 가능한 이미지와 원본 큐브맵은 로컬 보관.
-/photos/*
-!/photos/SOURCES.md
-/work/photo_manifest.json
-/work/variety_assets/
-/work/lettering.npz
