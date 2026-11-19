@@ -263,53 +263,62 @@ def address(ctx):
 SIGN_BAND = (0.30, 0.70)   # 간판 칸(1024x256)에서 쓰는 띠 = 10:1
 
 
+SIGN_V_BAND = (0.0, 0.0, 0.30, 0.30)   # 같은 간판 칸의 아래 띠(u0, v0, u1, v1) = 돌출 간판(1:4)을 90도 눕혀 그림
+
+
+def _sign_text(d, dm, xy, text, font, fill, stroke, stroke_fill=(20, 24, 40), anchor="mm"):
+    """외곽선 두 겹(어두운 바깥 + 흰 안쪽) 굵은 간판 글씨. dm 은 발광 마스크."""
+    d.text(xy, text, font=font, fill=stroke_fill, stroke_width=int(stroke * 1.9), stroke_fill=stroke_fill, anchor=anchor)
+    d.text(xy, text, font=font, fill=fill, stroke_width=stroke, stroke_fill=(250, 250, 246), anchor=anchor)
+    dm.text(xy, text, font=font, fill=255, stroke_width=stroke, anchor=anchor)
+
+
 def sign(ctx):
-    """1990년대 상가 아크릴 내부조명 간판(10:1). 알루미늄 테두리는 메시라 그림에는 넣지 않는다.
-    청색 아크릴(이음선 4줄, 형광등 3열 밝기 차, 위 가장자리 때) + 노란 원형 이니셜 로고 + 외곽선 있는 흰 상호(가상 '다온상회')
-    + 노란 업종 + 아래 빨강 띠."""
-    cache = HERE / "work" / "_sign_cache" / f"sign4_{ctx.w}x{ctx.h}.npz"
+    """한국 상가 간판 문법(굵은 글씨가 판을 채움, 원색 대비, 색 블록, 전화번호 줄).
+    가운데 띠(v 0.30~0.70) = 1층 가로 간판 10:1 (노랑 바탕 + 빨강 상호 + 파랑 업종 블록).
+    아래 띠(u 0~0.30, v 0~0.30) = 세로 돌출 간판 1:4 (빨강 바탕 흰 세로 글씨)를 90도 눕혀 그림.
+    상호 '다온상회'·번호는 가상."""
+    cache = HERE / "work" / "_sign_cache" / f"sign6_{ctx.w}x{ctx.h}.npz"
+    bold = "C:/Windows/Fonts/malgunbd.ttf"
     try:
-        from PIL import Image, ImageDraw, ImageFont, ImageFilter
+        from PIL import Image, ImageDraw, ImageFont
         S = 4
         W, H = ctx.w * S, ctx.h * S
-        top, bot = int(H * (1 - SIGN_BAND[1])), int(H * (1 - SIGN_BAND[0]))
-        ph = bot - top
-        yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
-        fy = np.clip((yy - top) / ph, 0, 1)
-        fx = xx / W
-        # 형광등 3열 밝기 차 + 위아래 가장자리 어두움 (아크릴 내부조명)
-        glow = sum(np.exp(-((fx - c) / 0.16) ** 2) for c in (0.17, 0.5, 0.83)) * 0.10
-        shade = 0.86 + glow - 0.20 * np.abs(fy - 0.45) ** 1.5
-        base = np.array((40, 76, 136), np.float32)
-        img = np.clip(base[None, None, :] * shade[..., None], 0, 255)
-        for k in range(1, 5):                                   # 아크릴 판 이음선
-            x = int(W * k / 5)
-            img[top:bot, x - 2:x + 2] *= 0.72
-        sb0 = top + int(ph * 0.84)                              # 아래 빨강 띠 + 흰 선
-        img[sb0:bot] = (176, 40, 38)
-        img[sb0 - max(2, ph // 60):sb0] = (232, 232, 226)
-        im = Image.fromarray(img.astype(np.uint8))
+        im = Image.new("RGB", (W, H), (236, 190, 36))
         mk = Image.new("L", (W, H), 0)
         d, dm = ImageDraw.Draw(im), ImageDraw.Draw(mk)
-        cy = top + ph * 0.43
-        r = ph * 0.30                                           # 원형 로고: 노란 원 + 흰 테 + 남색 이니셜 '다'
-        lx = W * 0.075
-        d.ellipse([lx - r, cy - r, lx + r, cy + r], fill=(246, 204, 58), outline=(240, 240, 236), width=max(3, int(r * 0.10)))
-        fl = ImageFont.truetype("C:/Windows/Fonts/malgunbd.ttf", int(r * 1.15))
-        bb = d.textbbox((0, 0), "다", font=fl)
-        d.text((lx - (bb[2] - bb[0]) / 2 - bb[0], cy - (bb[3] - bb[1]) / 2 - bb[1]), "다", font=fl, fill=(24, 46, 96))
-        dm.ellipse([lx - r, cy - r, lx + r, cy + r], fill=110)
-        f1 = ImageFont.truetype("C:/Windows/Fonts/malgunbd.ttf", int(ph * 0.56))
-        f2 = ImageFont.truetype("C:/Windows/Fonts/malgunbd.ttf", int(ph * 0.25))
-        for text, font, x_c, col, stroke in (("다온상회", f1, 0.40, (250, 250, 246), max(4, int(ph * 0.025))),
-                                             ("생활용품 · 잡화", f2, 0.80, (252, 218, 72), max(3, int(ph * 0.015)))):
-            bb = d.textbbox((0, 0), text, font=font, stroke_width=stroke)
-            pos = (W * x_c - (bb[2] - bb[0]) / 2 - bb[0], cy - (bb[3] - bb[1]) / 2 - bb[1])
-            shadow = Image.new("L", (W, H), 0)                   # 글자 그림자
-            ImageDraw.Draw(shadow).text((pos[0] + ph * 0.025, pos[1] + ph * 0.03), text, font=font, fill=150)
-            im.paste((14, 28, 60), mask=shadow.filter(ImageFilter.GaussianBlur(ph * 0.012)))
-            d.text(pos, text, font=font, fill=col, stroke_width=stroke, stroke_fill=(18, 34, 74))
-            dm.text(pos, text, font=font, fill=255)
+        # --- 가로 간판
+        top, bot = int(H * (1 - SIGN_BAND[1])), int(H * (1 - SIGN_BAND[0]))
+        ph = bot - top
+        cy = top + ph * 0.5
+        f1 = ImageFont.truetype(bold, int(ph * 0.70))
+        _sign_text(d, dm, (W * 0.30, cy), "다온상회", f1, (186, 18, 24), max(3, int(ph * 0.016)))
+        bx0, bx1 = W * 0.585, W * 0.975                         # 파랑 업종 블록
+        by0, by1 = top + ph * 0.12, bot - ph * 0.12
+        d.rounded_rectangle([bx0, by0, bx1, by1], radius=ph * 0.08, fill=(28, 66, 150), outline=(250, 250, 246), width=max(3, int(ph * 0.025)))
+        f2 = ImageFont.truetype(bold, int(ph * 0.30))
+        f3 = ImageFont.truetype(bold, int(ph * 0.20))
+        xm = (bx0 + bx1) / 2
+        _sign_text(d, dm, (xm, top + ph * 0.38), "생활용품 · 잡화", f2, (250, 250, 246), max(2, int(ph * 0.012)), (16, 30, 70))
+        _sign_text(d, dm, (xm, top + ph * 0.70), "☎ 123-4567", f3, (252, 222, 70), max(2, int(ph * 0.010)), (16, 30, 70))
+        # --- 세로 돌출 간판 (세로로 그린 뒤 90도 눕혀 아래 띠에 붙임)
+        u0, v0, u1, v1 = SIGN_V_BAND
+        rw, rh = int(W * (u1 - u0)), int(H * (v1 - v0))           # 눕힌 크기 (가로 rw, 세로 rh)
+        vw, vh = rh, rw                                           # 세운 크기
+        vim = Image.new("RGB", (vw, vh), (198, 32, 38))
+        vmk = Image.new("L", (vw, vh), 0)
+        vd, vdm = ImageDraw.Draw(vim), ImageDraw.Draw(vmk)
+        m = int(vw * 0.06)
+        vd.rectangle([m, m, vw - 1 - m, vh - 1 - m], outline=(250, 250, 246), width=max(3, int(vw * 0.03)))
+        fv = ImageFont.truetype(bold, int(vw * 0.62))
+        for k, ch in enumerate("다온상회"):
+            _sign_text(vd, vdm, (vw / 2, vh * (0.13 + 0.19 * k)), ch, fv, (250, 250, 246), max(3, int(vw * 0.025)), (60, 10, 12))
+        fvs = ImageFont.truetype(bold, int(vw * 0.15))
+        vd.rectangle([m * 2, vh * 0.88, vw - m * 2, vh * 0.95], fill=(246, 206, 46))
+        vd.text((vw / 2, vh * 0.915), "123-4567", font=fvs, fill=(120, 16, 20), anchor="mm")
+        x0p, y0p = int(W * u0), int(H * (1 - v1))
+        im.paste(vim.rotate(90, expand=True), (x0p, y0p))
+        mk.paste(vmk.rotate(90, expand=True), (x0p, y0p))
         rgb = np.asarray(im.resize((ctx.w, ctx.h), Image.LANCZOS)).astype(np.float32)
         txt = np.asarray(mk.resize((ctx.w, ctx.h), Image.LANCZOS)).astype(np.float32) / 255
         cache.parent.mkdir(parents=True, exist_ok=True)
@@ -318,12 +327,16 @@ def sign(ctx):
         z = np.load(cache)
         rgb, txt = z["rgb"], z["txt"]
     ctx.rgb[...] = rgb
+    # 아크릴 내부조명 밝기 차 + 위 가장자리 때 (가로 간판 띠)
     band_v = (ctx.v - SIGN_BAND[0]) / (SIGN_BAND[1] - SIGN_BAND[0])
-    dirt = np.clip((band_v - 0.82) / 0.18, 0, 1) * (0.5 + 0.5 * ctx.noise(scale_px=6, seed=43))
-    ctx.rgb *= (1.0 - 0.22 * dirt)[..., None]                  # 위 가장자리 먼지·빗물
+    inb = (band_v >= 0) & (band_v <= 1)
+    glow = sum(np.exp(-((ctx.u - c) / 0.16) ** 2) for c in (0.17, 0.5, 0.83))
+    ctx.rgb *= np.where(inb, 0.92 + 0.07 * glow, 1.0)[..., None]
+    dirt = inb * np.clip((band_v - 0.85) / 0.15, 0, 1) * (0.5 + 0.5 * ctx.noise(scale_px=6, seed=43))
+    ctx.rgb *= (1.0 - 0.20 * dirt)[..., None]
     ctx.grain(amp=1.2, scale_px=2, height=0.02, seed=41)
     ctx.gloss = np.clip(0.60 + 0.04 * _var(ctx, scale_px=10, seed=42) - 0.12 * dirt, 0.44, 0.68)   # 아크릴 광택
-    ctx.emis[...] = 0.06 + 0.86 * txt
+    ctx.emis[...] = 0.08 + 0.84 * txt
 
 
 def _make_brick_painter(seed, mortar_rgb, stain_amt, tone_mul):
@@ -953,6 +966,17 @@ def living_details(mb, spec, stage):
                 mb.box(e0, e1, -0.19, -0.16, z0s + fr, z1s - fr, "frame")
             if stage == 0:
                 mb.box(-sx_ - 0.03, sx_ + 0.03, -0.21, -0.015, z1s + 0.01, z1s + 0.04, "frame")  # 빗물 덮개
+            # 세로 돌출 간판 (정면 오른쪽 모서리, 벽에서 0.10~0.55 m, 1:4) — 양면에 같은 그림을 90도 돌려 붙임
+            vx, vz0, vz1 = w / 2 - 0.30, 3.05, 4.85
+            mb.box(vx - 0.06, vx + 0.06, -0.55, -0.10, vz0, vz1, "frame", skip=("left", "right"))
+            r = KX.uv_cell(mb.atlas, "sign", *SIGN_V_BAND)
+            rot = [r[1], r[2], r[3], r[0]]          # 그림을 90도 눕혀 저장했으므로 UV 를 돌려 바로 세움
+            for c_, s_ in ((vx - 0.06, -1), (vx + 0.06, 1)):
+                pts = K.face_pts("x", c_, s_, -0.55, -0.10, vz0, vz1)
+                # face_pts 의 p0 = 바깥에서 본 왼쪽 아래. 오른쪽(+x) 면에서는 벽 쪽이 왼쪽이라 글자 방향은 같다.
+                mb.quad(pts, rot, "sign")
+            for az in (vz0 + 0.15, vz1 - 0.15):     # 벽 고정 팔
+                mb.box(vx - 0.03, vx + 0.03, -0.10, -0.001, az - 0.03, az + 0.03, "steel")
 
 
 def build_stage(spec, a, stage):
