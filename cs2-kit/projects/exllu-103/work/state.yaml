@@ -1521,14 +1521,64 @@
     "key": null
    },
    "fbx": null
+  },
+  "window-depth": {
+   "at": "2026-11-19T08:55:57",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "window-depth",
+   "gate": "output/HighriseTower103_L1_5x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "0d23e5293ca5e2069a87fe570df793438263845d3139d03910982cc6d1faac7b",
+   "preview": {
+    "path": "previews/HighriseTower103_L1_5x4.png",
+    "exists": true,
+    "sha256": "ce99202c48d3df488182c837bf906d54feef5b97968b2c40dd1e983b1fa91305",
+    "key": null
+   },
+   "fbx": null
+  },
+  "p0": {
+   "at": "2026-11-19T10:07:00",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "p0",
+   "gate": "output/HighriseTower103_L1_5x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "988d347d5e921242b48232437e2a9095b396d0a8a3234db4f6ede4f181254e7b",
+   "preview": {
+    "path": "previews/HighriseTower103_L1_5x4.png",
+    "exists": true,
+    "sha256": "bb7b4078f4448b7f1089f9b5237d427651fe58a9c3d83036b31181c6488d349a",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-18T22:40:43",
+ "updated_at": "2026-11-19T10:07:00",
  "current_stage": "final:INCOMPLETE",
  "generator": "exllu_103_cs2.py",
- "generator_hash": "1c0058d97f4d80403c1fdbd94dfc58989cc1dac58dacb7a0e07662908cdd099e",
+ "generator_hash": "988d347d5e921242b48232437e2a9095b396d0a8a3234db4f6ede4f181254e7b",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "030c76e2d8d875a4a709185c5511f854f0c4cf074c6e0f0403825a896c764ea6",
+ "reviewed_preview_hash": "ce99202c48d3df488182c837bf906d54feef5b97968b2c40dd1e983b1fa91305",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",

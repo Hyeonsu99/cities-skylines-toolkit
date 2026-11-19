@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "exllu_105_cs2.py",
- "generator_hash": "2daf5d1e96ebb1959d4434d18a8a32f9994d08cd77653585badc93273af837ff",
- "current_preview_hash": "d923fe37f497e46c1ad4a16320853160e8348aa83229d58bfd8906a7e9877783",
+ "generator_hash": "0eefb6e285d32a0804147f3d2f92839dbf05c41484ebc4d8fa57987beff3161c",
+ "current_preview_hash": "21a565db0cd039e3b01e5dff41e76b411efa26d59438ae1848d1ef0b9ef6c8ed",
  "last_gate": {
   "status": "PASS",
   "project": "exllu-105",
@@ -29,8 +29,8 @@
    "report": "output\\HighriseTower105_L1_5x6\\_check\\report.json"
   },
   "asset": "HighriseTower105_L1_5x6",
-  "label": "subobjects",
-  "time": "2026-11-18 22:40:28",
+  "label": "p1p2",
+  "time": "2026-11-19 10:46:34",
   "build": {
    "asset": "HighriseTower105_L1_5x6",
    "fbx": true,
@@ -52,17 +52,17 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 88172,
+     "main": 71438,
      "win": 2908,
-     "lod1": 17768,
+     "lod1": 17860,
      "lod1_win": 2908,
      "lod2": 392,
      "lod2_win": 2908
     },
     "verts": {
-     "main": 176344,
+     "main": 142876,
      "win": 5816,
-     "lod1": 35536,
+     "lod1": 35720,
      "lod1_win": 5816,
      "lod2": 784,
      "lod2_win": 5816
@@ -97,7 +97,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 2.6
+    "time_s": 4.5
    },
    "report": "output\\HighriseTower105_L1_5x6\\_check\\report.json"
   },
@@ -106,8 +106,8 @@
    "mismatch": 0,
    "lines": [
     "INFO     front floor pitch: photo 1.30 m / model 3.15 m (+142%)  -> photo shows ~5 floor bands over the wall height, model ~2 (model needs MORE floors or lower floor height) (low-confidence photo evidence - do not auto-change floors)",
-    "INFO     front window bay pitch: photo 3.20 m / model 1.55 m (-52%)  (bays differ - check window columns)",
-    "INFO     front edge agreement 43%"
+    "INFO     front window bay pitch: photo 3.20 m / model 4.85 m (+52%)  (bays differ - check window columns)",
+    "INFO     front edge agreement 52%"
    ],
    "status": "PASS"
   },
@@ -115,10 +115,10 @@
    "checked": true,
    "status": "PASS",
    "simplified": [
-    "TILE front r0c0 x[0,8]m z[0,6]m recall 40% precision 44%  SIMPLIFIED"
+    "TILE front r0c0 x[0,8]m z[0,6]m recall 37% precision 45%  SIMPLIFIED"
    ],
    "detail": [
-    "DETAIL front recall 40% precision 44% worst r0c0 (40%) simplified_tiles 1/1"
+    "DETAIL front recall 37% precision 45% worst r0c0 (37%) simplified_tiles 1/1"
    ],
    "detail_color": [
     "DETAIL_COLOR front tiles_off 0/0 (dE>14; trusted tiles only)"
@@ -130,14 +130,14 @@
   "lod": {
    "checked": true,
    "status": "PASS",
-   "line": "LODCHECK PASS main max 0.008% (az 202, el -10) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\HighriseTower105_L1_5x6",
+   "line": "LODCHECK PASS main max 0.015% (az 0, el +5) bad_views 0/64 | lod1 max 0.003% (az 45, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\HighriseTower105_L1_5x6",
    "notes": []
   },
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 176344,
-    "LOD1": 35536,
+    "LOD0": 142876,
+    "LOD1": 35720,
     "LOD2": 784
    },
    "action_tags": [],
@@ -155,21 +155,21 @@
   "reason": "all requested checks passed"
  },
  "project": "exllu-105",
- "updated_at": "2026-11-18T22:43:44",
- "visual_review_note": "planters and shrubs separated into work/subobjects.json",
+ "updated_at": "2026-11-19T10:47:09",
+ "visual_review_note": "P1 polygon reallocation (92660->71438 tris), portico & rooftop details, stone gloss/rain stains, and P2 interior window depth verified visually",
  "visual_review_artifacts": [
   {
    "file": "previews/HighriseTower105_L1_5x6.png",
-   "sha256": "d923fe37f497e46c1ad4a16320853160e8348aa83229d58bfd8906a7e9877783"
+   "sha256": "21a565db0cd039e3b01e5dff41e76b411efa26d59438ae1848d1ef0b9ef6c8ed"
   },
   {
    "file": "previews/photo_check/facade_front.png",
-   "sha256": "7e175d26d5ec8d14d9d334248c1c61a8dd6cf20382e4686974115e338f41cc0a"
+   "sha256": "f2b0538c6a5e402a6c9dc386ca5375e6e18dedb2daea2d31ec2f38c60fc6c0fa"
   },
   {
    "file": "previews/tiles/front_map.png",
-   "sha256": "225f25605024c284613a5924b4085bb6c2f0f73665c235224ff2ff87e8c5f8a1"
+   "sha256": "64e041c6e8076584fccbf581258b4f7f38221cd720d970147968186038d39a0b"
   }
  ],
- "reviewed_preview_hash": "d923fe37f497e46c1ad4a16320853160e8348aa83229d58bfd8906a7e9877783"
+ "reviewed_preview_hash": "21a565db0cd039e3b01e5dff41e76b411efa26d59438ae1848d1ef0b9ef6c8ed"
 }

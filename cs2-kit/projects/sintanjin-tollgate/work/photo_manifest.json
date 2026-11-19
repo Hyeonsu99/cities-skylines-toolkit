@@ -10,7 +10,7 @@
    "mtime_ns": 1794788073555147900,
    "bytes": 1698877,
    "duplicate_of": null,
-   "observed": false
+   "observed": true
   },
   {
    "file": "photos\\east_far_look_w.png",
@@ -70,7 +70,7 @@
    "mtime_ns": 1794788094897498800,
    "bytes": 2371117,
    "duplicate_of": null,
-   "observed": false
+   "observed": true
   },
   {
    "file": "photos\\north_side_look_s.png",
@@ -82,7 +82,7 @@
    "mtime_ns": 1794788119089652600,
    "bytes": 3503178,
    "duplicate_of": null,
-   "observed": false
+   "observed": true
   },
   {
    "file": "photos\\sat_tollgate_z19.png",
@@ -106,7 +106,7 @@
    "mtime_ns": 1794788130690269700,
    "bytes": 3442660,
    "duplicate_of": null,
-   "observed": false
+   "observed": true
   },
   {
    "file": "photos\\under_look_n.png",
@@ -118,7 +118,7 @@
    "mtime_ns": 1794788105702609400,
    "bytes": 2606331,
    "duplicate_of": null,
-   "observed": false
+   "observed": true
   },
   {
    "file": "photos\\under_look_s.png",
@@ -130,7 +130,7 @@
    "mtime_ns": 1794788106460709200,
    "bytes": 1793787,
    "duplicate_of": null,
-   "observed": false
+   "observed": true
   },
   {
    "file": "photos\\west_close_look_ne.png",
@@ -178,7 +178,7 @@
    "mtime_ns": 1794788061890626100,
    "bytes": 2021958,
    "duplicate_of": null,
-   "observed": false
+   "observed": true
   }
  ]
 }

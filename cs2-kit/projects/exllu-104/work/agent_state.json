@@ -1,11 +1,11 @@
 {
- "visual_review": "PASS",
- "current_stage": "review:PASS",
+ "visual_review": "NOT_CHECKED",
+ "current_stage": "final:INCOMPLETE",
  "generator": "exllu_104_cs2.py",
- "generator_hash": "9ff815017d6f81460991eeacec5fb7e4f829603483531f2f691206eff1a4ec98",
- "current_preview_hash": "c0e42df22832cc7e12709226341ef3f9ea1301d3c98f5c5194f301b2621d0a87",
+ "generator_hash": "eab1ba3db14d133fc36291ef27dfd2590f2b5317370de097b8b95cfff257dcb8",
+ "current_preview_hash": "fa391075b05ceaa32539c06314e1e962ba18366c5cb225a8e921c259480c1610",
  "last_gate": {
-  "status": "PASS",
+  "status": "INCOMPLETE",
   "project": "exllu-104",
   "generator": "exllu_104_cs2.py",
   "mode": "final",
@@ -17,7 +17,7 @@
    "tiles": "PASS",
    "lod": "PASS",
    "fbx": "PASS",
-   "visual_review": "PASS"
+   "visual_review": "NOT_CHECKED"
   },
   "errors": [],
   "next_action": {
@@ -29,8 +29,8 @@
    "report": "output\\HighriseTower104_L1_5x4\\_check\\report.json"
   },
   "asset": "HighriseTower104_L1_5x4",
-  "label": "subobjects",
-  "time": "2026-11-18 22:41:13",
+  "label": "p1p2",
+  "time": "2026-11-19 10:47:13",
   "build": {
    "asset": "HighriseTower104_L1_5x4",
    "fbx": true,
@@ -41,9 +41,9 @@
    "warnings": [],
    "info": {
     "size": [
-     30.18,
-     27.31,
-     113.4
+     30.21,
+     27.85,
+     113.46
     ],
     "pivot_offset": [
      0.0,
@@ -52,17 +52,17 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 64284,
+     "main": 54968,
      "win": 1720,
-     "lod1": 9204,
+     "lod1": 9628,
      "lod1_win": 1720,
      "lod2": 458,
      "lod2_win": 1720
     },
     "verts": {
-     "main": 128842,
+     "main": 110338,
      "win": 3440,
-     "lod1": 18410,
+     "lod1": 19258,
      "lod1_win": 3440,
      "lod2": 916,
      "lod2_win": 3440
@@ -97,7 +97,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 2.0
+    "time_s": 2.6
    },
    "report": "output\\HighriseTower104_L1_5x4\\_check\\report.json"
   },
@@ -106,8 +106,8 @@
    "mismatch": 0,
    "lines": [
     "MATCH    front floor pitch: photo 2.90 m / model 2.95 m (+2%)",
-    "INFO     front window bay pitch: photo 1.70 m / model 3.40 m (+100%)  (bays differ - check window columns)",
-    "INFO     front edge agreement 89%"
+    "INFO     front window bay pitch: photo 1.70 m / model 7.90 m (+365%)  (bays differ - check window columns)",
+    "INFO     front edge agreement 51%"
    ],
    "status": "PASS"
   },
@@ -116,7 +116,7 @@
    "status": "PASS",
    "simplified": [],
    "detail": [
-    "DETAIL front recall 76% precision 91% worst r0c0 (76%) simplified_tiles 0/1"
+    "DETAIL front recall 69% precision 69% worst r0c0 (69%) simplified_tiles 0/1"
    ],
    "detail_color": [
     "DETAIL_COLOR front tiles_off 0/1 (dE>14; trusted tiles only)"
@@ -128,14 +128,14 @@
   "lod": {
    "checked": true,
    "status": "PASS",
-   "line": "LODCHECK PASS main max 0.002% (az 22, el +5) bad_views 0/64 | lod1 max 0.002% (az 112, el +5) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\HighriseTower104_L1_5x4",
+   "line": "LODCHECK PASS main max 0.004% (az 135, el -10) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.002% (az 158, el +5) bad_views 0/64  -> previews\\lod_check\\HighriseTower104_L1_5x4",
    "notes": []
   },
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 128842,
-    "LOD1": 18410,
+    "LOD0": 110338,
+    "LOD1": 19258,
     "LOD2": 916
    },
    "action_tags": [],
@@ -144,30 +144,32 @@
   "gate": {
    "status": "PASS",
    "reasons": [],
-   "incomplete": []
+   "incomplete": [
+    "visual_review=NOT_CHECKED"
+   ]
   }
  },
  "mismatch_attempts": {},
  "next_action": {
-  "command": null,
-  "reason": "all requested checks passed"
+  "command": "python tools/agent.py review --project exllu-104 --status PASS --note \"reviewed current artifacts\" --artifact \"previews/HighriseTower104_L1_5x4.png\" --artifact \"previews/photo_check/facade_front.png\" --artifact \"previews/tiles/front_map.png\"",
+  "reason": "inspect the listed current artifacts, then record the review"
  },
  "project": "exllu-104",
- "updated_at": "2026-11-18T22:43:44",
- "visual_review_note": "planters and shrubs separated into work/subobjects.json",
+ "updated_at": "2026-11-19T10:47:13",
+ "visual_review_note": "reviewed current artifacts",
  "visual_review_artifacts": [
   {
    "file": "previews/HighriseTower104_L1_5x4.png",
-   "sha256": "c0e42df22832cc7e12709226341ef3f9ea1301d3c98f5c5194f301b2621d0a87"
+   "sha256": "0d72482f83b8fad53dccce594c824dd5fc64d620db1320b0e8ddaae6f726c251"
   },
   {
    "file": "previews/photo_check/facade_front.png",
-   "sha256": "759bab2f9af7a2226bc64941ddfa01c5cac2722c0a340184264211146dd3264e"
+   "sha256": "f5bd51cbad4bac5714241766c993f9374a34312ec3f5192c59f312ac153db680"
   },
   {
    "file": "previews/tiles/front_map.png",
-   "sha256": "38a9edd833badf11938818a0474fd24cc91b3665f6f5dbf2ddc320fb343c8c8c"
+   "sha256": "d31cde29cf5b9f0cb4d8b1f56edaef580cd2f06033e730122057ee560a768331"
   }
  ],
- "reviewed_preview_hash": "c0e42df22832cc7e12709226341ef3f9ea1301d3c98f5c5194f301b2621d0a87"
+ "reviewed_preview_hash": "0d72482f83b8fad53dccce594c824dd5fc64d620db1320b0e8ddaae6f726c251"
 }

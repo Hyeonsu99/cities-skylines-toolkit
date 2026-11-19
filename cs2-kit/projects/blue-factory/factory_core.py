@@ -48,9 +48,9 @@ class FactorySpec:
     roof_overhang: float = 0.55
     roof_t: float = 0.26
     plinth_h: float = 0.85
-    roof_color: tuple = (38, 86, 152)
-    wall_color: tuple = (224, 226, 228)
-    accent_color: tuple = (36, 74, 134)
+    roof_color: tuple = (68, 98, 136)
+    wall_color: tuple = (204, 206, 208)
+    accent_color: tuple = (64, 90, 124)
     lot: tuple = None
     front_yard: float = 4.0
     office: OfficeSpec = field(default_factory=OfficeSpec)
@@ -76,6 +76,7 @@ class FactorySpec:
     side_equipment: bool = True
     side_equipment_kind: str = "factory"  # "factory" | "depot"
     sign_key: str = "mid"
+    rib_pitch: float = 0.85               # 3D corrugated roof rib spacing along Y (m)
 
 
 PRESETS = {
@@ -88,9 +89,9 @@ PRESETS = {
         ridge_rise=1.75,  # ~1:5.7 slope (9.9 deg), total height ~10.45m
         gables=1,
         roof_overhang=0.50,
-        roof_color=(44, 96, 162),
-        wall_color=(228, 229, 230),
-        accent_color=(40, 82, 144),
+        roof_color=(72, 106, 142),
+        wall_color=(208, 210, 210),
+        accent_color=(68, 98, 132),
         lot=(3, 4),
         office=OfficeSpec(enabled=True, width=9.8, depth=4.0, height=6.6,
                           align="left", door_side="left", sign_zone="spandrel", parapet_h=0.34),
@@ -110,6 +111,7 @@ PRESETS = {
         side_equipment=True,
         side_equipment_kind="factory",
         sign_key="small",
+        rib_pitch=0.50,
     ),
     "mid": FactorySpec(
         name_base="BlueFactoryMid",
@@ -120,9 +122,9 @@ PRESETS = {
         ridge_rise=2.15,  # ~1:6.5 slope (8.7 deg), total height ~12.4m
         gables=1,
         roof_overhang=0.55,
-        roof_color=(36, 84, 150),
-        wall_color=(222, 225, 228),
-        accent_color=(34, 72, 132),
+        roof_color=(66, 98, 136),
+        wall_color=(204, 207, 210),
+        accent_color=(64, 92, 126),
         lot=(4, 6),
         office=OfficeSpec(enabled=True, width=13.2, depth=4.4, height=7.0,
                           align="right", door_side="right", sign_zone="spandrel", parapet_h=0.38),
@@ -142,6 +144,7 @@ PRESETS = {
         side_equipment=True,
         side_equipment_kind="factory",
         sign_key="mid",
+        rib_pitch=0.75,
     ),
     "large": FactorySpec(
         name_base="BlueFactoryLarge",
@@ -152,9 +155,9 @@ PRESETS = {
         ridge_rise=2.00,  # ~1:5.25 slope per 21m twin-gable span (10.8 deg), total height ~13.3m
         gables=2,         # Twin-gable blue roof (Daedeok Industrial Complex signature)
         roof_overhang=0.55,
-        roof_color=(34, 78, 142),
-        wall_color=(218, 222, 226),
-        accent_color=(32, 68, 124),
+        roof_color=(64, 94, 132),
+        wall_color=(201, 205, 208),
+        accent_color=(62, 88, 120),
         lot=(6, 6),
         office=OfficeSpec(enabled=True, width=18.0, depth=4.6, height=7.4,
                           align="center", door_side="center", sign_zone="fascia", parapet_h=0.46),
@@ -174,6 +177,7 @@ PRESETS = {
         side_equipment=True,
         side_equipment_kind="factory",
         sign_key="large",
+        rib_pitch=2.20,
     ),
     "depot": FactorySpec(
         name_base="BlueRailDepot",
@@ -184,9 +188,9 @@ PRESETS = {
         ridge_rise=2.15,  # ~1:6.0 slope (9.4 deg), with monitor apex ~14.45m
         gables=1,
         roof_overhang=0.55,
-        roof_color=(46, 98, 158),
-        wall_color=(214, 218, 222),
-        accent_color=(38, 78, 136),
+        roof_color=(74, 106, 142),
+        wall_color=(198, 202, 206),
+        accent_color=(68, 96, 130),
         lot=(4, 8),
         office=OfficeSpec(enabled=False),
         front_shutters=0,
@@ -210,6 +214,7 @@ PRESETS = {
         side_equipment=True,
         side_equipment_kind="depot",
         sign_key="depot",
+        rib_pitch=2.40,
     ),
 }
 
@@ -347,6 +352,13 @@ def _periodic_weather(ctx, amount=0.018, cycles_u=4, cycles_v=4, seed=11):
     ctx.gloss *= (1.0 - 0.12 * amount * (0.5 + 0.5 * w))
 
 
+def _vary_gloss(ctx, amp=0.055, micro_amp=0.025, scale_px=24, lo=0.08, hi=0.88, seed=100):
+    """Modulate ctx.gloss with multi-scale noise so surfaces never remain single-constant roughness."""
+    gn = ctx.noise(scale_px=scale_px, amp=1.0, octaves=3, seed=seed)
+    fn = ctx.noise(scale_px=3, amp=1.0, octaves=2, seed=seed + 1)
+    ctx.gloss[...] = np.clip(ctx.gloss + amp * gn + micro_amp * fn, lo, hi)
+
+
 def _paint_corrugated_blue_roof(ctx):
     """Long-span trapezoidal color-steel roof sheets (1000mm effective width, 250mm ribs, slope-aligned stains)."""
     mx, my = ctx.meters()
@@ -355,7 +367,7 @@ def _paint_corrugated_blue_roof(ctx):
     trough = np.clip(-rib, 0.0, 1.0)
 
     # Fine coated-steel grain + isotropic weathering blotches (wrapped smoothly at tile edges)
-    ctx.grain(amp=1.8, scale_px=3, height=0.05, seed=121)
+    ctx.grain(amp=1.8, scale_px=3, height=0.10, seed=121)
     rgb_pre_stain = ctx.rgb.copy()
     ctx.stains(amount=0.055, scale_px=80, streaks=0.0, seed=111)
     v_wrap = np.sin(math.pi * ctx.v) ** 0.30
@@ -383,7 +395,7 @@ def _paint_corrugated_blue_roof(ctx):
     ctx.rgb = _preserve_mean_rgb(ctx.rgb, base_mean)
 
     ctx.height += 0.60 * rib
-    ctx.rgb += (rib * 7.5)[..., None]
+    ctx.rgb += (rib * 6.5)[..., None]
     # Continuous 1.0m longitudinal sheet overlap seam along my
     seam_y = np.abs((my % 1.0) - 0.5) > 0.486
     ctx.rgb[seam_y] *= 0.84
@@ -394,6 +406,7 @@ def _paint_corrugated_blue_roof(ctx):
     ctx.height[bolt] += 0.20
     # Lower gloss in weathered rib troughs for natural semi-matte Posco color-steel look
     ctx.gloss[...] = (0.34 + 0.08 * np.clip(rib, 0.0, 1.0)) * (1.0 - 0.22 * roof_stain)
+    _vary_gloss(ctx, amp=0.045, micro_amp=0.020, scale_px=24, lo=0.14, hi=0.58, seed=125)
     _periodic_weather(ctx, amount=0.014, cycles_u=4, cycles_v=4, seed=11)
 
 
@@ -403,9 +416,9 @@ def _paint_sandwich_wall(ctx):
     base_mean = ctx.rgb[:1, :1, :].copy()
 
     # Subtle coated-metal surface grain + gentle kit stains (edge-feathered in v to avoid 4m horizontal seam)
-    ctx.grain(amp=1.4, scale_px=3, height=0.05, seed=101)
+    ctx.grain(amp=1.5, scale_px=3, height=0.11, seed=101)
     rgb_pre_stain = ctx.rgb.copy()
-    ctx.stains(amount=0.045, scale_px=72, streaks=0.22, seed=103)
+    ctx.stains(amount=0.048, scale_px=72, streaks=0.22, seed=103)
     v_wrap = np.sin(math.pi * ctx.v) ** 0.35
     ctx.rgb = rgb_pre_stain + (ctx.rgb - rgb_pre_stain) * v_wrap[..., None]
 
@@ -435,24 +448,27 @@ def _paint_sandwich_wall(ctx):
     streak_dark = 0.048 * rain_k * (0.45 + 0.35 * trough + 0.20 * joint)
     ctx.rgb *= (1.0 - streak_dark)[..., None]
     ctx.rgb += panel_shift[..., None]
-    # Restore mean brightness of clean wall panels so white walls never turn gray
+    # Restore mean brightness of clean wall panels so walls stay calibrated
     ctx.rgb = _preserve_mean_rgb(ctx.rgb, base_mean)
 
     # Apply crisp 1.0m panel joints & 0.25m micro-ribs after mean brightness preservation
     ctx.rgb *= (1.0 - 0.24 * joint)[..., None]
     ctx.height -= 0.85 * joint
-    ctx.height += 0.14 * bead
+    ctx.height += 0.16 * bead
     ctx.rgb += (bead * 2.2)[..., None]
+    ctx.rgb[...] = np.clip(ctx.rgb, 110.0, 224.0)
     ctx.gloss *= (1.0 - 0.18 * streak_dark)
+    _vary_gloss(ctx, amp=0.055, micro_amp=0.025, scale_px=28, lo=0.14, hi=0.56, seed=208)
+    ctx.gloss[...] = np.clip(ctx.gloss - 0.12 * joint, 0.10, 0.56)
     _periodic_weather(ctx, amount=0.014, cycles_u=2, cycles_v=1, seed=9)
 
 
 def _paint_office_panel(ctx):
     """Horizontal aluminum composite cladding (2.0m x 1.0m modular grid, under-joint rainwater runoff, 2 variants)."""
     base_mean = ctx.rgb[:1, :1, :].copy()
-    ctx.joints(cols=2, rows=2, width_m=0.018, depth=0.75, stagger=0.0, darken=0.26, tone=2.2, seed=13)
-    ctx.grain(amp=1.4, scale_px=2, height=0.05, seed=131)
-    ctx.stains(amount=0.045, scale_px=52, streaks=0.38, seed=133)
+    d = ctx.joints(cols=2, rows=2, width_m=0.018, depth=0.82, stagger=0.0, darken=0.26, tone=2.2, seed=13)
+    ctx.grain(amp=1.4, scale_px=2, height=0.11, seed=131)
+    ctx.stains(amount=0.048, scale_px=52, streaks=0.38, seed=133)
 
     _, my = ctx.meters()
     # Subtle rainwater runoff right beneath horizontal 1.0m panel joints (v_panel=1 is top of each 1m panel)
@@ -465,19 +481,22 @@ def _paint_office_panel(ctx):
         var_noise[m] = n_v[m]
     drip = 0.040 * runoff_band * np.clip(0.55 + 0.45 * var_noise, 0.0, 1.0)
     ctx.rgb *= (1.0 - drip)[..., None]
-    # Keep office Alucobond bright crisp off-white (compensate only stain/drip loss, preserve joint darkening)
+    # Keep office Alucobond clean calibrated off-white (compensate only stain/drip loss, preserve joint darkening)
     ctx.rgb = _preserve_mean_rgb(ctx.rgb, base_mean * 0.985)
 
     fine_line = np.abs(((my * 2.0) % 1.0) - 0.5) > 0.488
     ctx.rgb[fine_line] *= 0.94
+    ctx.rgb[...] = np.clip(ctx.rgb, 118.0, 224.0)
     ctx.gloss *= (1.0 - 0.20 * drip)
+    _vary_gloss(ctx, amp=0.055, micro_amp=0.025, scale_px=24, lo=0.18, hi=0.66, seed=241)
+    ctx.gloss[...] = np.clip(ctx.gloss - 0.14 * d, 0.14, 0.66)
     _periodic_weather(ctx, amount=0.012, cycles_u=1, cycles_v=1, seed=15)
 
 
 def _paint_plinth(ctx):
     """Concrete foundation plinth (2m control joints, aggregate grain, stains, lower splash grime)."""
-    ctx.joints(cols=2, rows=1, width_m=0.014, depth=0.45, stagger=0.0, darken=0.22, tone=2.5, seed=141)
-    ctx.grain(amp=6.0, scale_px=2, height=0.42, seed=143)
+    d = ctx.joints(cols=2, rows=1, width_m=0.015, depth=0.58, stagger=0.0, darken=0.22, tone=2.5, seed=141)
+    ctx.grain(amp=6.0, scale_px=2, height=0.45, seed=143)
     ctx.stains(amount=0.085, scale_px=44, streaks=0.50, seed=145)
     # Plinth sits strictly at ground level (ny=1, v=0 is ground z=0), so lower splash grime stays at wall base
     splash_noise = np.zeros((ctx.h, ctx.w), np.float32)
@@ -489,15 +508,19 @@ def _paint_plinth(ctx):
     splash = 0.12 * splash_band * np.clip(0.55 + 0.45 * splash_noise, 0.15, 1.0)
     ctx.rgb *= (1.0 - splash)[..., None]
     ctx.gloss *= (1.0 - 0.35 * splash)
+    _vary_gloss(ctx, amp=0.050, micro_amp=0.025, scale_px=18, lo=0.06, hi=0.38, seed=261)
+    ctx.gloss[...] = np.clip(ctx.gloss - 0.08 * d, 0.05, 0.38)
     _periodic_weather(ctx, amount=0.03, cycles_u=2, cycles_v=1, seed=19)
 
 
 def _paint_shutter(ctx):
     """Roll-up industrial steel shutter with horizontal slats, brushed grain, and subtle dust streaks."""
-    ctx.joints(cols=1, rows=32, width_m=0.012, depth=0.78, stagger=0.0, darken=0.28, tone=1.6, seed=21)
-    ctx.grain(amp=2.0, scale_px=3, height=0.08, seed=151)
+    d = ctx.joints(cols=1, rows=32, width_m=0.012, depth=0.82, stagger=0.0, darken=0.28, tone=1.6, seed=21)
+    ctx.grain(amp=2.0, scale_px=3, height=0.14, seed=151)
     ctx.stains(amount=0.055, scale_px=64, streaks=0.45, seed=153)
     ctx.rgb += ctx.noise(scale_px=32, amp=1.8, octaves=2, seed=155)[..., None]
+    _vary_gloss(ctx, amp=0.055, micro_amp=0.025, scale_px=24, lo=0.18, hi=0.66, seed=251)
+    ctx.gloss[...] = np.clip(ctx.gloss - 0.14 * d, 0.12, 0.66)
 
 
 def _paint_skylight(ctx):
@@ -512,6 +535,7 @@ def _paint_skylight(ctx):
     ctx.rgb += ctx.noise(scale_px=32, amp=2.8, octaves=2, seed=161)[..., None]
     ctx.emis[...] = 0.0
     ctx.gloss[...] = np.where(frame, 0.42, 0.74)
+    _vary_gloss(ctx, amp=0.045, micro_amp=0.020, scale_px=20, lo=0.26, hi=0.88, seed=263)
 
 
 def _paint_louver_vent(ctx):
@@ -524,11 +548,12 @@ def _paint_louver_vent(ctx):
     ctx.rgb[border] = np.array([62, 68, 74], np.float32)
     ctx.rgb[slat_shadow & ~border] = np.array([34, 38, 44], np.float32)
     ctx.rgb[slat_face] = np.array([148, 154, 160], np.float32)
-    ctx.grain(amp=1.5, scale_px=2, height=0.05, seed=167)
+    ctx.grain(amp=1.5, scale_px=2, height=0.12, seed=167)
     ctx.height[border] += 0.25
     ctx.height[slat_shadow & ~border] -= 0.55
     ctx.height[slat_face] += 0.15
     ctx.gloss[...] = np.where(border, 0.45, np.where(slat_face, 0.52, 0.18))
+    _vary_gloss(ctx, amp=0.050, micro_amp=0.020, scale_px=16, lo=0.10, hi=0.68, seed=267)
 
 
 def _paint_solar_pv(ctx):
@@ -554,16 +579,18 @@ def _paint_solar_pv(ctx):
 
 def _paint_equipment(ctx):
     """HVAC / dust-collector metal cabinet with inspection door seams and louvered intake grilles."""
-    ctx.joints(cols=2, rows=2, width_m=0.014, depth=0.65, darken=0.25, tone=2.5, seed=31)
-    ctx.grain(amp=2.2, scale_px=2, height=0.10, seed=171)
-    ctx.stains(amount=0.05, scale_px=32, streaks=0.35, seed=173)
+    d = ctx.joints(cols=2, rows=2, width_m=0.015, depth=0.72, darken=0.25, tone=2.5, seed=31)
+    ctx.grain(amp=2.2, scale_px=2, height=0.16, seed=171)
+    ctx.stains(amount=0.055, scale_px=32, streaks=0.35, seed=173)
     louver = (ctx.u > 0.14) & (ctx.u < 0.86) & (ctx.v > 0.22) & (ctx.v < 0.78) & (((ctx.v * 26.0) % 1.0) < 0.44)
     ctx.rgb[louver] *= 0.48
     ctx.height[louver] -= 0.48
+    _vary_gloss(ctx, amp=0.055, micro_amp=0.025, scale_px=16, lo=0.18, hi=0.64, seed=271)
+    ctx.gloss[...] = np.clip(ctx.gloss - 0.14 * d - 0.22 * louver.astype(np.float32), 0.10, 0.64)
 
 
 def _paint_window_atlas(ctx):
-    """5x5 REF_GRID window atlas: cells 0..3 = factory clerestory wire/frosted glass (lit), 4..24 = office blinds (4..8 lit, 9..24 unlit)."""
+    """Workshop glazing in cells 0..3, office glazing in cells 4..24."""
     g = K.REF_GRID
     fu = (ctx.u * g) % 1.0
     fv = (ctx.v * g) % 1.0
@@ -599,18 +626,12 @@ def _paint_window_atlas(ctx):
     edge = np.minimum(np.minimum(fu, 1.0 - fu), np.minimum(fv, 1.0 - fv))
     ctx.rgb *= (0.72 + 0.28 * np.clip(edge / 0.04, 0.0, 1.0))[..., None]
 
-    # Contiguous 9-cell lit block (cells 0..8); pad=False kills outer 16px border to prevent mip bleed
-    lit_cells = 9
-    lit = cell_id < lit_cells
-    r = max(2, round(ctx.w * 0.016))
-    m = np.pad(lit, r, constant_values=False)
-    for ax in (0, 1):
-        m = np.logical_and.reduce([np.roll(m, k, ax) for k in range(-r, r + 1)])
-    lit = m[r:-r, r:-r]
-
-    work_glow = (0.80 + 0.14 * (1.0 - np.abs(fv - 0.56))) * (0.90 + 0.10 * ((h * 13.0) % 1.0)) * np.where(wire, 0.85, 1.0)
+    # Keep a narrow guard between cells without masking WindowSet's inner slots.
+    guard = np.clip(edge / 0.025, 0.0, 1.0)
+    work_level = np.array([0.92, 0.62, 0.31, 0.0])[np.minimum(cell_id, 3)]
+    work_glow = work_level * (0.74 + 0.26 * fv) * np.where(wire, 0.85, 1.0)
     office_glow = (0.52 + 0.26 * ((h * 19.0) % 1.0)) * (0.76 + 0.24 * fv) * np.where(blind, 0.56, 1.0)
-    ctx.emis[...] = np.where(lit, np.where(workshop, work_glow, office_glow), 0.0)
+    ctx.emis[...] = guard * np.where(workshop, work_glow, np.where(cell_id < 9, office_glow, 0.0))
     ctx.gloss[...] = np.where(workshop, 0.56, np.where(blind, 0.35, 0.86))
 
 
@@ -750,9 +771,42 @@ def _paint_hazard(ctx):
     """45-degree yellow/black safety clearance warning stripe."""
     mx, my = ctx.meters()
     stripe = ((mx + my) * 3.0) % 1.0 < 0.5
-    ctx.rgb[stripe] = np.array([232, 180, 28], np.float32)
+    ctx.rgb[stripe] = np.array([200, 164, 64], np.float32)
     ctx.rgb[~stripe] = np.array([34, 36, 40], np.float32)
+    ctx.grain(amp=1.8, scale_px=2, height=0.18, seed=341)
+    ctx.stains(amount=0.04, scale_px=20, streaks=0.10, seed=342)
     ctx.gloss[...] = 0.42
+    _vary_gloss(ctx, amp=0.055, micro_amp=0.025, scale_px=16, lo=0.20, hi=0.62, seed=343)
+
+
+def _paint_band_blue(ctx):
+    """Upper color-steel fascia band with subtle coated-steel grain and gloss variation."""
+    ctx.grain(amp=1.8, scale_px=2, height=0.18, seed=301)
+    ctx.stains(amount=0.045, scale_px=18, streaks=0.20, seed=302)
+    _vary_gloss(ctx, amp=0.055, micro_amp=0.025, scale_px=16, lo=0.20, hi=0.60, seed=303)
+
+
+def _paint_trim_silver(ctx):
+    """Galvanized steel flashing, downspouts, and canopy trim with fine grain and gloss variation."""
+    ctx.grain(amp=2.2, scale_px=2, height=0.22, seed=311)
+    ctx.stains(amount=0.045, scale_px=16, streaks=0.15, seed=312)
+    _vary_gloss(ctx, amp=0.065, micro_amp=0.030, scale_px=14, lo=0.34, hi=0.80, seed=313)
+
+
+def _paint_frame(ctx):
+    """Dark powder-coated structural steel jambs, curbs, and mullions with fine surface grain."""
+    ctx.grain(amp=1.8, scale_px=2, height=0.18, seed=321)
+    ctx.stains(amount=0.040, scale_px=16, streaks=0.15, seed=322)
+    _vary_gloss(ctx, amp=0.060, micro_amp=0.025, scale_px=14, lo=0.30, hi=0.72, seed=323)
+
+
+def _paint_safety_yellow(ctx):
+    """Painted safety bollard enamel with muted industrial saturation and micro-surface variation."""
+    n = ctx.noise(scale_px=2, amp=1.0, octaves=2, seed=331)
+    ctx.rgb *= np.clip(1.0 + 0.022 * n, 0.92, 1.08)[..., None]
+    ctx.height += 0.20 * n * 0.1
+    ctx.stains(amount=0.040, scale_px=16, streaks=0.10, seed=332)
+    _vary_gloss(ctx, amp=0.055, micro_amp=0.025, scale_px=14, lo=0.20, hi=0.60, seed=333)
 
 
 def _paint_warm_light(ctx):
@@ -780,17 +834,17 @@ def make_atlas(spec: FactorySpec, size=4096):
     A.add("roof_blue", color=spec.roof_color, ctrl=(255, 0, 0), metal=0.28, gloss=0.38,
           px=1024, tile=(4.0, 4.0), variants=2, painter=_paint_corrugated_blue_roof, normal_strength=2.2)
     A.add("wall_panel", color=spec.wall_color, ctrl=(0, 255, 0), metal=0.08, gloss=0.34,
-          px=1024, tile=(4.0, 4.0), variants=3, painter=_paint_sandwich_wall, normal_strength=2.0)
-    A.add("office_panel", color=(232, 234, 236), ctrl=(0, 0, 0), metal=0.20, gloss=0.44,
-          px=512, tile=(4.0, 2.0), variants=2, painter=_paint_office_panel, normal_strength=2.0)
+          px=1024, tile=(4.0, 4.0), variants=3, painter=_paint_sandwich_wall, normal_strength=2.2)
+    A.add("office_panel", color=(210, 213, 216), ctrl=(0, 0, 0), metal=0.20, gloss=0.44,
+          px=512, tile=(4.0, 2.0), variants=2, painter=_paint_office_panel, normal_strength=2.2)
     A.add("shutter", color=(158, 164, 170), ctrl=(0, 0, 255), metal=0.58, gloss=0.45,
-          px=1024, tile=(4.0, 4.0), painter=_paint_shutter, normal_strength=2.2)
+          px=1024, tile=(4.0, 4.0), painter=_paint_shutter, normal_strength=2.3)
     A.add("window", color=(64, 102, 114), ctrl=(0, 0, 0), metal=0.0, gloss=0.88,
           emissive=(236, 244, 255), px=1024, painter=_paint_window_atlas)
     A.add("sign_plate", color=(22, 50, 94), ctrl=(0, 0, 0), metal=0.22, gloss=0.42,
           emissive=(225, 240, 255), px=1024, painter=_paint_factory_sign, normal_strength=2.5)
     A.add("plinth", color=(108, 112, 116), ctrl=(0, 0, 0), metal=0.0, gloss=0.20,
-          px=512, tile=(4.0, 2.0), variants=2, painter=_paint_plinth, normal_strength=2.4)
+          px=512, tile=(4.0, 2.0), variants=2, painter=_paint_plinth, normal_strength=2.5)
     A.add("skylight_frp", color=(198, 224, 234), ctrl=(0, 0, 0), metal=0.0, gloss=0.74,
           px=512, tile=(2.0, 4.0), painter=_paint_skylight)
     A.add("louver_vent", color=(140, 146, 152), ctrl=(0, 0, 0), metal=0.50, gloss=0.44,
@@ -798,17 +852,21 @@ def make_atlas(spec: FactorySpec, size=4096):
     A.add("solar_pv", color=(24, 38, 70), ctrl=(0, 0, 0), metal=0.25, gloss=0.84,
           px=512, tile=(2.0, 2.0), painter=_paint_solar_pv)
     A.add("equipment", color=(142, 148, 152), ctrl=(0, 0, 0), metal=0.48, gloss=0.42,
-          px=256, tile=(2.0, 2.0), painter=_paint_equipment)
+          px=256, tile=(2.0, 2.0), painter=_paint_equipment, normal_strength=2.2)
     A.add("door", color=(50, 56, 62), ctrl=(0, 0, 0), metal=0.45, gloss=0.68,
           emissive=(255, 224, 170), px=512, painter=_paint_entrance_door)
     A.add("exit_door", color=(116, 122, 128), ctrl=(0, 0, 0), metal=0.52, gloss=0.40,
           px=256, painter=_paint_exit_door)
-    A.add("hazard_stripe", color=(232, 180, 28), ctrl=(0, 0, 0), metal=0.10, gloss=0.42,
-          px=128, tile=(1.0, 0.5), painter=_paint_hazard)
-    A.add("band_blue", color=spec.accent_color, ctrl=(255, 0, 0), metal=0.28, gloss=0.40, px=64)
-    A.add("trim_silver", color=(184, 190, 196), ctrl=(0, 0, 0), metal=0.72, gloss=0.58, px=64)
-    A.add("frame", color=(56, 60, 66), ctrl=(0, 0, 0), metal=0.68, gloss=0.52, px=64)
-    A.add("safety_yellow", color=(224, 172, 34), ctrl=(0, 0, 0), metal=0.10, gloss=0.40, px=64)
+    A.add("hazard_stripe", color=(200, 164, 64), ctrl=(0, 0, 0), metal=0.10, gloss=0.42,
+          px=128, tile=(1.0, 0.5), painter=_paint_hazard, normal_strength=1.8)
+    A.add("band_blue", color=spec.accent_color, ctrl=(255, 0, 0), metal=0.28, gloss=0.40,
+          px=128, painter=_paint_band_blue, normal_strength=1.8)
+    A.add("trim_silver", color=(184, 190, 196), ctrl=(0, 0, 0), metal=0.72, gloss=0.58,
+          px=64, painter=_paint_trim_silver, normal_strength=1.8)
+    A.add("frame", color=(56, 60, 66), ctrl=(0, 0, 0), metal=0.68, gloss=0.52,
+          px=64, painter=_paint_frame, normal_strength=1.8)
+    A.add("safety_yellow", color=(196, 162, 68), ctrl=(0, 0, 0), metal=0.10, gloss=0.40,
+          px=64, painter=_paint_safety_yellow, normal_strength=1.8)
     A.add("light_warm", color=(255, 246, 224), ctrl=(0, 0, 0), metal=0.0, gloss=0.85,
           emissive=(255, 232, 185), px=64, painter=_paint_warm_light)
     A.add("signal_red", color=(228, 64, 48), ctrl=(0, 0, 0), metal=0.20, gloss=0.78,
@@ -1008,16 +1066,138 @@ def _add_frustum_z(mb, cx, cy, z0, z1, r0, r1, sides, region, cap_top=True, cap_
             mb.tri([bot_c, pts0[j], pts0[i]], uv3, region)
 
 
+def _add_frustum_y(mb, cx, y0, y1, cz, r0, r1, sides, region, cap_front=True, cap_back=True):
+    """Closed N-sided cylindrical/tapered frustum aligned along +Y with outward normals."""
+    step = 2.0 * math.pi / sides
+    pts0 = [(cx + r0 * math.cos(i * step), y0, cz + r0 * math.sin(i * step)) for i in range(sides)]
+    pts1 = [(cx + r1 * math.cos(i * step), y1, cz + r1 * math.sin(i * step)) for i in range(sides)]
+    for i in range(sides):
+        j = (i + 1) % sides
+        mb.rect([pts0[j], pts0[i], pts1[i], pts1[j]], region)
+    uv3 = mb.atlas.uv(region)[:3]
+    if cap_front and r0 > 1e-4:
+        fc = (cx, y0, cz)
+        for i in range(sides):
+            j = (i + 1) % sides
+            mb.tri([fc, pts0[i], pts0[j]], uv3, region)
+    if cap_back and r1 > 1e-4:
+        bc = (cx, y1, cz)
+        for i in range(sides):
+            j = (i + 1) % sides
+            mb.tri([bc, pts1[j], pts1[i]], uv3, region)
+
+
+def _add_frustum_x(mb, x0, x1, cy, cz, r0, r1, sides, region, cap_left=True, cap_right=True):
+    """Closed N-sided cylindrical/tapered frustum aligned along +X with outward normals."""
+    step = 2.0 * math.pi / sides
+    pts0 = [(x0, cy + r0 * math.cos(i * step), cz + r0 * math.sin(i * step)) for i in range(sides)]
+    pts1 = [(x1, cy + r1 * math.cos(i * step), cz + r1 * math.sin(i * step)) for i in range(sides)]
+    for i in range(sides):
+        j = (i + 1) % sides
+        mb.rect([pts0[i], pts0[j], pts1[j], pts1[i]], region)
+    uv3 = mb.atlas.uv(region)[:3]
+    if cap_left and r0 > 1e-4:
+        lc = (x0, cy, cz)
+        for i in range(sides):
+            j = (i + 1) % sides
+            mb.tri([lc, pts0[j], pts0[i]], uv3, region)
+    if cap_right and r1 > 1e-4:
+        rc = (x1, cy, cz)
+        for i in range(sides):
+            j = (i + 1) % sides
+            mb.tri([rc, pts1[i], pts1[j]], uv3, region)
+
+
+def _subtract_intervals(base_span, blocks):
+    """Subtract blocked [b0, b1] intervals from [u0, u1], returning sorted remaining spans."""
+    spans = [base_span]
+    for b0, b1 in blocks:
+        nxt = []
+        for s0, s1 in spans:
+            if b1 <= s0 or b0 >= s1:
+                nxt.append((s0, s1))
+            else:
+                if b0 > s0 + 1e-4:
+                    nxt.append((s0, b0))
+                if b1 < s1 - 1e-4:
+                    nxt.append((b1, s1))
+        spans = nxt
+    return spans
+
+
+def _add_roof_rib_segment(mb, gx0, gx1, ze_u, zr_u, roof_t, yc, u0, u1, side="left",
+                          bhw=0.052, thw=0.022, rib_h=0.055, region="roof_blue"):
+    """Closed trapezoidal standing-seam / corrugated 3D roof rib along slope (omits underside resting on slab)."""
+    xa, za, xb, zb, ux, uz, nx, nz = _slope_geom(gx0, gx1, ze_u, zr_u, roof_t, u0, u1, side)
+    seg_len = math.hypot(xb - xa, zb - za)
+    if seg_len < 0.25:
+        return
+    # Ensure left/right end normals match slope orientation
+    bl0 = (xa, yc - bhw, za)
+    bl1 = (xb, yc - bhw, zb)
+    br0 = (xa, yc + bhw, za)
+    br1 = (xb, yc + bhw, zb)
+    tl0 = (xa + nx * rib_h, yc - thw, za + nz * rib_h)
+    tl1 = (xb + nx * rib_h, yc - thw, zb + nz * rib_h)
+    tr0 = (xa + nx * rib_h, yc + thw, za + nz * rib_h)
+    tr1 = (xb + nx * rib_h, yc + thw, zb + nz * rib_h)
+
+    uv_top = mb.atlas.uv_tile(region, min(4.0, seg_len), 0.14)
+    uv_flank = mb.atlas.uv_tile(region, min(4.0, seg_len), 0.10)
+    uv_cap = mb.atlas.uv(region)
+
+    if side == "left":
+        # u runs +X (gx0 -> gxm), so u x y = +n
+        mb.quad([tl0, tl1, tr1, tr0], uv_top, region)
+        mb.quad([bl0, bl1, tl1, tl0], uv_flank, region)
+        mb.quad([br1, br0, tr0, tr1], uv_flank, region)
+        mb.quad([br0, bl0, tl0, tr0], uv_cap, region)
+        mb.quad([bl1, br1, tr1, tl1], uv_cap, region)
+    else:
+        # On right slope, u runs +X (gxm -> gx1) with uz < 0, and nx = -uz > 0, nz = ux > 0, u x y = +n holds!
+        mb.quad([tl0, tl1, tr1, tr0], uv_top, region)
+        mb.quad([bl0, bl1, tl1, tl0], uv_flank, region)
+        mb.quad([br1, br0, tr0, tr1], uv_flank, region)
+        mb.quad([br0, bl0, tl0, tr0], uv_cap, region)
+        mb.quad([bl1, br1, tr1, tl1], uv_cap, region)
+
+
+def _add_roof_ribs(mb, gx0, gx1, ze_l_u, ze_r_u, zr_u, rt, ry0, ry1, pitch, obstacles_l, obstacles_r):
+    """Populate 3D trapezoidal ribs along both roof slopes, cleanly avoiding skylights/solar/monitor/fans."""
+    y_start = ry0 + 0.18
+    y_end = ry1 - 0.18
+    span_y = y_end - y_start
+    if span_y < 0.5 or pitch <= 0.1:
+        return
+    n_ribs = max(4, int(round(span_y / pitch)))
+    for i in range(n_ribs + 1):
+        yc = y_start + span_y * (i / n_ribs)
+        for side, ze_u, obs_list in (("left", ze_l_u, obstacles_l), ("right", ze_r_u, obstacles_r)):
+            u_min, u_max = (0.025, 0.955) if side == "left" else (0.045, 0.975)
+            blocks = [(u0, u1) for (oy0, oy1, u0, u1) in obs_list if oy0 <= yc <= oy1]
+            for s0, s1 in _subtract_intervals((u_min, u_max), blocks):
+                if s1 - s0 >= 0.06:
+                    _add_roof_rib_segment(mb, gx0, gx1, ze_u, zr_u, rt, yc, s0, s1, side=side)
+
+
 def _add_ventilator(mb, cx, cy, zr_top, slope, radius=0.30):
-    """Korean industrial rotary turbine ventilator seated flush into ridge cap & roof slopes."""
-    # Curb base drops below zr_top - curb_half*slope so outer flanges never float above sloped sheets
+    """Korean industrial rotary turbine ventilator with radial rotor vanes seated flush into ridge cap."""
     curb_half = radius + 0.05
     curb_z0 = zr_top - curb_half * slope - 0.03
     z_collar = zr_top + 0.22
     mb.box(cx - curb_half, cx + curb_half, cy - curb_half, cy + curb_half, curb_z0, z_collar, "trim_silver", skip=("bottom",))
-    _add_frustum_z(mb, cx, cy, z_collar, z_collar + 0.09, radius * 0.78, radius * 0.74, 8, "trim_silver", cap_top=False)
-    _add_frustum_z(mb, cx, cy, z_collar + 0.09, z_collar + 0.09 + radius, radius, radius, 8, "equipment", cap_top=False)
-    _add_frustum_z(mb, cx, cy, z_collar + 0.09 + radius, z_collar + 0.20 + radius, radius * 1.06, radius * 0.45, 8, "trim_silver", cap_top=True)
+    _add_frustum_z(mb, cx, cy, z_collar, z_collar + 0.03, radius * 0.92, radius * 0.92, 12, "frame", cap_top=True, cap_bottom=True)
+    _add_frustum_z(mb, cx, cy, z_collar + 0.03, z_collar + 0.10, radius * 0.78, radius * 0.74, 12, "trim_silver", cap_top=False)
+    z_rot0 = z_collar + 0.10
+    z_rot1 = z_rot0 + radius
+    _add_frustum_z(mb, cx, cy, z_rot0, z_rot1, radius * 0.96, radius * 0.96, 12, "equipment", cap_top=False)
+    # 8 exterior turbine vane ribs around rotor circumference for crisp silhouette & shadow relief
+    for vi in range(8):
+        ang = 2.0 * math.pi * vi / 8.0
+        vx = cx + (radius * 0.98) * math.cos(ang)
+        vy = cy + (radius * 0.98) * math.sin(ang)
+        mb.box(vx - 0.018, vx + 0.018, vy - 0.018, vy + 0.018, z_rot0 + 0.02, z_rot1 - 0.02, "trim_silver")
+    _add_frustum_z(mb, cx, cy, z_rot1, z_rot1 + 0.12, radius * 1.08, radius * 0.42, 12, "trim_silver", cap_top=True)
 
 
 def _add_roof_box_fan(mb, gx0, gx1, ze_u, zr_u, roof_t, cy, u_frac=0.74, side="left", half_w=0.52):
@@ -1040,26 +1220,24 @@ def _add_roof_box_fan(mb, gx0, gx1, ze_u, zr_u, roof_t, cy, u_frac=0.74, side="l
            z_curb_top + 0.28, z_curb_top + 0.42, "trim_silver")
 
 
-def _add_framed_window(mb, wins, stage, axis, c, s, a0, a1, z0, z1, floor, unit_seq, bays=1):
-    """Multi-bay window with real perimeter frame and mullions; each bay maps to unit_seq[i]."""
-    if stage != 0:
-        return
+def _add_framed_window(mb, wins, axis, c, s, a0, a1, z0, z1, unit_seq):
+    """Keep glass at the wall while the jambs, sill and head project in front."""
     m = 0.06
     mw = 0.03
-    K.axbox(mb, axis, c, s, a0 - m, a1 + m, 0.0, 0.08, z0 - m, z0, "frame")
-    K.axbox(mb, axis, c, s, a0 - m, a1 + m, 0.0, 0.08, z1, z1 + m, "frame")
-    K.axbox(mb, axis, c, s, a0 - m, a0, 0.0, 0.08, z0, z1, "frame")
-    K.axbox(mb, axis, c, s, a1, a1 + m, 0.0, 0.08, z0, z1, "frame")
-    bay_w = (a1 - a0) / max(1, bays)
-    for i in range(bays):
+    K.axbox(mb, axis, c, s, a0 - 0.10, a1 + 0.10, 0.0, 0.20, z0 - 0.07, z0, "trim_silver")
+    K.axbox(mb, axis, c, s, a0 - 0.09, a1 + 0.09, 0.0, 0.16, z1, z1 + m, "trim_silver")
+    K.axbox(mb, axis, c, s, a0 - m, a0, 0.0, 0.12, z0, z1, "frame")
+    K.axbox(mb, axis, c, s, a1, a1 + m, 0.0, 0.12, z0, z1, "frame")
+    bay_w = (a1 - a0) / len(unit_seq)
+    for i, unit in enumerate(unit_seq):
         pa0 = a0 + i * bay_w + (mw if i > 0 else 0.0)
-        pa1 = a0 + (i + 1) * bay_w - (mw if i < bays - 1 else 0.0)
+        pa1 = a0 + (i + 1) * bay_w - (mw if i < len(unit_seq) - 1 else 0.0)
         if i > 0:
             mx = a0 + i * bay_w
-            K.axbox(mb, axis, c, s, mx - mw, mx + mw, 0.0, 0.07, z0, z1, "frame")
+            K.axbox(mb, axis, c, s, mx - mw, mx + mw, 0.0, 0.10, z0, z1, "frame")
         if pa1 - pa0 > 0.15:
-            u_val = unit_seq[i] if isinstance(unit_seq, (list, tuple)) else unit_seq
-            wins.add_face(axis, c, s, pa0, pa1, z0, z1, floor=floor, unit=u_val)
+            # Floor zero keeps the chosen atlas cell independent of WindowSet's unit count.
+            wins.add_face(axis, c, s, pa0, pa1, z0, z1, floor=0, unit=unit)
 
 
 def _add_diagonal_strut_y(mb, x, y_wall, z_wall, y_tip, z_tip, half_w=0.025, region="trim_silver"):
@@ -1120,12 +1298,12 @@ def _add_shutter(mb, stage, axis, c, s, center_a, w, h, z0=0.0, is_freight=True,
     a0, a1 = center_a - w * 0.5, center_a + w * 0.5
     z1 = z0 + h
     if stage == 0:
-        # Concrete threshold apron (plus steel track rail stubs for RailDepot)
+        # Concrete threshold apron >= 0.05m (0.06m, plus steel track rail stubs for RailDepot)
         apron_d = 1.25 if is_track else 0.75
-        K.axbox(mb, axis, c, s, a0 - 0.35, a1 + 0.35, 0.0, apron_d, 0.0, 0.05, "plinth", skip=("bottom",))
+        K.axbox(mb, axis, c, s, a0 - 0.35, a1 + 0.35, 0.0, apron_d, 0.0, 0.06, "plinth", skip=("bottom",))
         if is_track:
             for rx in (center_a - 0.72, center_a + 0.72):
-                K.axbox(mb, axis, c, s, rx - 0.05, rx + 0.05, 0.0, apron_d - 0.05, 0.05, 0.11, "trim_silver", skip=("bottom",))
+                K.axbox(mb, axis, c, s, rx - 0.05, rx + 0.05, 0.0, apron_d - 0.05, 0.06, 0.12, "trim_silver", skip=("bottom",))
 
         K.axbox(mb, axis, c, s, a0, a1, 0.0, 0.05, z0, z1, "shutter", skip=("bottom",))
         fw = 0.16 if is_track else 0.14
@@ -1136,14 +1314,35 @@ def _add_shutter(mb, stage, axis, c, s, center_a, w, h, z0=0.0, is_freight=True,
         K.axbox(mb, axis, c, s, a0 - fw, a1 + fw, 0.0, 0.25, z1, z1 + 0.14, "hazard_stripe")
 
         if is_freight or is_track:
-            aw_d = 1.10 if is_track else 0.95
+            aw_d = 1.15 if is_track else 1.00
             aw_z0 = z1 + 0.52
             aw_z1 = aw_z0 + 0.11
-            K.axbox(mb, axis, c, s, a0 - 0.32, a1 + 0.32, 0.0, aw_d, aw_z0, aw_z1, "band_blue")
-            K.axbox(mb, axis, c, s, a0 - 0.34, a1 + 0.34, aw_d, aw_d + 0.04, aw_z0 - 0.01, aw_z1 + 0.02, "trim_silver")
-            K.axbox(mb, axis, c, s, center_a - 0.34, center_a + 0.34, 0.35, 0.55, aw_z0 - 0.07, aw_z0, "light_warm")
+            K.axbox(mb, axis, c, s, a0 - 0.34, a1 + 0.34, 0.0, aw_d, aw_z0, aw_z1, "band_blue")
+            K.axbox(mb, axis, c, s, a0 - 0.36, a1 + 0.36, aw_d, aw_d + 0.04, aw_z0 - 0.01, aw_z1 + 0.02, "trim_silver")
+            # Canopy end-caps (strictly outside main canopy slab), steel purlins & transverse rafters
+            for end_a0, end_a1 in ((a0 - 0.38, a0 - 0.34), (a1 + 0.34, a1 + 0.38)):
+                K.axbox(mb, axis, c, s, end_a0, end_a1, 0.0, aw_d, aw_z0 - 0.02, aw_z1 + 0.01, "trim_silver")
+            for pur_o0, pur_o1 in ((0.20, 0.27), (aw_d - 0.16, aw_d - 0.09)):
+                K.axbox(mb, axis, c, s, a0 - 0.30, a1 + 0.30, pur_o0, pur_o1, aw_z0 - 0.05, aw_z0, "frame", skip=("top",))
+            n_rafters = 5 if is_track else 4
+            for ri in range(n_rafters):
+                ra = (a0 - 0.24) + ((a1 + 0.24) - (a0 - 0.24)) * (ri / max(1, n_rafters - 1))
+                K.axbox(mb, axis, c, s, ra - 0.03, ra + 0.03, 0.0, aw_d - 0.04, aw_z0 - 0.11, aw_z0 - 0.05, "frame")
+                # Wall-mounted under-canopy knee gusset bracket
+                if ri in (0, n_rafters - 1):
+                    K.axbox(mb, axis, c, s, ra - 0.04, ra + 0.04, 0.0, 0.28, aw_z0 - 0.28, aw_z0 - 0.11, "frame")
+            K.axbox(mb, axis, c, s, center_a - 0.34, center_a + 0.34, 0.35, 0.55, aw_z0 - 0.06, aw_z0, "light_warm", skip=("top",))
+            # Diagonal upper tension tie-rods with wall gusset plates & clevis sleeves
             for bx in (a0 + 0.25, a1 - 0.25):
-                _add_canopy_brace(mb, axis, c, s, bx, aw_z1 + 0.65, aw_d * 0.85, aw_z1, half_w=0.022, region="trim_silver")
+                K.axbox(mb, axis, c, s, bx - 0.08, bx + 0.08, 0.0, 0.06, aw_z1 + 0.56, aw_z1 + 0.74, "frame")
+                K.axbox(mb, axis, c, s, bx - 0.06, bx + 0.06, aw_d * 0.85 - 0.06, aw_d * 0.85 + 0.06,
+                        aw_z1, aw_z1 + 0.05, "frame")
+                _add_canopy_brace(mb, axis, c, s, bx, aw_z1 + 0.65, aw_d * 0.85, aw_z1, half_w=0.026, region="trim_silver")
+            # Industrial rubber/steel dock bumper pads flanking freight shutter jambs
+            if is_freight:
+                for dbx in (a0 - 0.26, a1 + 0.26):
+                    K.axbox(mb, axis, c, s, dbx - 0.09, dbx + 0.09, 0.0, 0.14, 0.68, 1.32, "frame")
+                    K.axbox(mb, axis, c, s, dbx - 0.07, dbx + 0.07, 0.14, 0.16, 0.76, 1.24, "hazard_stripe")
 
         if is_track:
             # Yard entry warning signal lamp on right portal jamb
@@ -1202,35 +1401,78 @@ def _add_gable_louver(mb, stage, y, s, xm, span_w, eh, ridge_rise):
         K.paint(mb, "y", y, s, xm - lw * 0.5, xm + lw * 0.5, lz0, lz1, "louver_vent")
 
 
-def _add_gutters_and_downspouts(mb, spec: FactorySpec, x0, x1, y0, y1, ry0, ry1, eh, ze_u, col_ys, eq_span=None):
-    """Exterior eave rain gutters seated flush at overhang edge, collector elbows, downspouts & pilasters."""
+def _add_gutters_and_downspouts(mb, spec: FactorySpec, x0, x1, y0, y1, ry0, ry1, eh, ze_u, col_ys,
+                                eq_span=None, side_blocked_l=(), side_blocked_r=()):
+    """Exterior eave rain gutters with hanger brackets, collector hoppers, octagonal downspouts & pilasters."""
     band_z0 = eh - 0.72
     ph = spec.plinth_h
 
     # Flush eave gutters against roof overhang edges (no 5mm gap)
     gx_l = x0 - spec.roof_overhang
     gx_r = x1 + spec.roof_overhang
-    mb.box(gx_l - 0.12, gx_l + 0.01, ry0 + 0.03, ry1 - 0.03, ze_u - 0.14, ze_u + 0.05, "band_blue")
-    mb.box(gx_r - 0.01, gx_r + 0.12, ry0 + 0.03, ry1 - 0.03, ze_u - 0.14, ze_u + 0.05, "band_blue")
+    mb.box(gx_l - 0.13, gx_l + 0.01, ry0 + 0.03, ry1 - 0.03, ze_u - 0.14, ze_u + 0.05, "band_blue")
+    mb.box(gx_r - 0.01, gx_r + 0.13, ry0 + 0.03, ry1 - 0.03, ze_u - 0.14, ze_u + 0.05, "band_blue")
+    # Continuous gutter lip trim
+    mb.box(gx_l - 0.15, gx_l - 0.13, ry0 + 0.03, ry1 - 0.03, ze_u + 0.01, ze_u + 0.06, "trim_silver")
+    mb.box(gx_r + 0.13, gx_r + 0.15, ry0 + 0.03, ry1 - 0.03, ze_u + 0.01, ze_u + 0.06, "trim_silver")
 
-    for side_x, side_s, gx_edge in ((x0, -1, gx_l), (x1, 1, gx_r)):
+    ds_by_side = {}
+    for side_x, side_s, gx_edge, blocked_spans in (
+        (x0, -1, gx_l, side_blocked_l),
+        (x1, 1, gx_r, side_blocked_r),
+    ):
         for cy in col_ys:
             if side_s < 0 and eq_span and eq_span[0] - 0.35 <= cy <= eq_span[1] + 0.35:
                 continue
-            K.axbox(mb, "x", side_x, side_s, cy - 0.11, cy + 0.11, 0.0, 0.05, ph, band_z0, "trim_silver", skip=("bottom",))
-        ds_ys = [col_ys[0], col_ys[-1]]
-        for cy in col_ys[1:-1]:
-            if side_s < 0 and eq_span and eq_span[0] - 0.4 <= cy <= eq_span[1] + 0.4:
+            if any(sa <= cy <= sb for sa, sb in blocked_spans):
+                continue
+            # Structural wall pilaster + base anchor plate + eave haunch (stacked cleanly without overlap)
+            K.axbox(mb, "x", side_x, side_s, cy - 0.16, cy + 0.16, 0.0, 0.10, ph, ph + 0.06, "frame", skip=("bottom",))
+            K.axbox(mb, "x", side_x, side_s, cy - 0.13, cy + 0.13, 0.0, 0.07, ph + 0.06, band_z0 - 0.16, "trim_silver", skip=("bottom",))
+            K.axbox(mb, "x", side_x, side_s, cy - 0.15, cy + 0.15, 0.0, 0.11, band_z0 - 0.16, band_z0, "frame")
+
+        # Place octagonal downspouts at structural bay columns (clear of equipment, doors & shutters)
+        ds_ys = []
+        for cy in col_ys:
+            if side_s < 0 and eq_span and eq_span[0] - 0.45 <= cy <= eq_span[1] + 0.45:
+                continue
+            if any(sa - 0.3 <= cy <= sb + 0.3 for sa, sb in blocked_spans):
                 continue
             ds_ys.append(cy)
-            break
+        if not ds_ys:
+            ds_ys = [col_ys[0], col_ys[-1]]
+        ds_by_side[side_s] = ds_ys
+
         for dy in ds_ys:
             ex0, ex1 = sorted((gx_edge, side_x))
-            mb.box(ex0, ex1, dy - 0.06, dy + 0.06, ze_u - 0.24, ze_u - 0.14, "trim_silver", skip=("top",))
-            K.axbox(mb, "x", side_x, side_s, dy - 0.055, dy + 0.055, 0.02, 0.13, 0.20, ze_u - 0.24, "trim_silver", skip=("bottom", "top"))
-            K.axbox(mb, "x", side_x, side_s, dy - 0.07, dy + 0.07, 0.02, 0.20, 0.05, 0.20, "trim_silver")
-            for sz in (1.8, 0.5 * (1.8 + ze_u - 0.8), ze_u - 0.9):
-                K.axbox(mb, "x", side_x, side_s, dy - 0.08, dy + 0.08, 0.0, 0.15, sz - 0.04, sz + 0.04, "frame")
+            pipe_x = side_x + side_s * 0.11
+            # Collector hopper box under gutter + sloped/stepped gooseneck elbow
+            mb.box(gx_edge - 0.11, gx_edge + 0.11, dy - 0.13, dy + 0.13, ze_u - 0.28, ze_u - 0.14, "trim_silver", skip=("top",))
+            mb.box(gx_edge - 0.13, gx_edge + 0.13, dy - 0.15, dy + 0.15, ze_u - 0.18, ze_u - 0.14, "frame", skip=("top",))
+            mb.box(ex0, ex1, dy - 0.055, dy + 0.055, ze_u - 0.34, ze_u - 0.23, "trim_silver")
+            # 8-sided vertical downspout shaft + flanged upper collar + bottom discharge shoe
+            _add_frustum_z(mb, pipe_x, dy, 0.22, ze_u - 0.28, 0.052, 0.052, 8, "trim_silver", cap_top=True, cap_bottom=False)
+            _add_frustum_z(mb, pipe_x, dy, ze_u - 0.36, ze_u - 0.28, 0.068, 0.068, 8, "frame", cap_top=True, cap_bottom=True)
+            _add_frustum_z(mb, pipe_x, dy, 0.07, 0.22, 0.072, 0.056, 8, "trim_silver", cap_top=False, cap_bottom=True)
+            # Concrete splash block >= 0.05m
+            K.axbox(mb, "x", side_x, side_s, dy - 0.11, dy + 0.11, 0.02, 0.26, 0.0, 0.07, "plinth", skip=("bottom",))
+            # 4 octagonal pipe clamp collars & wall standoff brackets
+            n_clamps = 4
+            for ci in range(n_clamps):
+                sz = 1.4 + (ze_u - 1.0 - 1.4) * (ci / max(1, n_clamps - 1))
+                _add_frustum_z(mb, pipe_x, dy, sz - 0.04, sz + 0.04, 0.065, 0.065, 8, "frame", cap_top=True, cap_bottom=True)
+                K.axbox(mb, "x", side_x, side_s, dy - 0.075, dy + 0.075, 0.0, 0.10, sz - 0.03, sz + 0.03, "frame")
+
+    # Gutter hanger brackets every ~2.2m along both eaves (skipping positions occupied by downspout hoppers)
+    n_br = max(5, int(round((ry1 - ry0) / 2.2)))
+    for bi in range(n_br + 1):
+        by = ry0 + 0.25 + ((ry1 - ry0) - 0.50) * (bi / n_br)
+        if not any(abs(by - dy) < 0.25 for dy in ds_by_side[-1]):
+            mb.box(gx_l - 0.14, x0, by - 0.025, by + 0.025, ze_u - 0.19, ze_u - 0.14, "trim_silver", skip=("top",))
+            mb.box(gx_l - 0.14, gx_l + 0.02, by - 0.02, by + 0.02, ze_u + 0.05, ze_u + 0.075, "frame", skip=("bottom",))
+        if not any(abs(by - dy) < 0.25 for dy in ds_by_side[1]):
+            mb.box(x1, gx_r + 0.14, by - 0.025, by + 0.025, ze_u - 0.19, ze_u - 0.14, "trim_silver", skip=("top",))
+            mb.box(gx_r - 0.02, gx_r + 0.14, by - 0.02, by + 0.02, ze_u + 0.05, ze_u + 0.075, "frame", skip=("bottom",))
 
 
 def _compute_office_bounds(spec: FactorySpec):
@@ -1249,6 +1491,54 @@ def _compute_office_bounds(spec: FactorySpec):
     else:
         ox0, ox1 = -ow * 0.5, ow * 0.5
     return ox0, ox1, -spec.office.depth, 0.0, spec.office.height
+
+
+def _add_ac_condenser(mb, x0, x1, y0, y1, z0, z1, axis="y", s=-1):
+    """Detailed industrial outdoor AC condenser unit with skid feet, fan shroud ring, guard bars & conduit."""
+    # Base mounting skid feet
+    mb.box(x0 + 0.03, x0 + 0.13, y0 + 0.03, y1 - 0.03, z0, z0 + 0.06, "frame", skip=("bottom",))
+    mb.box(x1 - 0.13, x1 - 0.03, y0 + 0.03, y1 - 0.03, z0, z0 + 0.06, "frame", skip=("bottom",))
+    # Main louvered housing cabinet + top lid overhang
+    mb.box(x0, x1, y0, y1, z0 + 0.06, z1 - 0.04, dict(default="equipment", top="trim_silver"), skip=("bottom",))
+    mb.box(x0 - 0.02, x1 + 0.02, y0 - 0.02, y1 + 0.02, z1 - 0.04, z1, "trim_silver")
+    # 8-sided circular fan shroud & hub on front face
+    zc = 0.5 * (z0 + 0.06 + z1 - 0.04)
+    r_fan = min(0.28, (z1 - z0 - 0.18) * 0.40, (x1 - x0 if axis == "y" else y1 - y0) * 0.28)
+    if axis == "y":
+        cx = 0.5 * (x0 + x1) - (x1 - x0) * 0.10
+        fy0 = y0 - 0.035 if s < 0 else y1
+        fy1 = y0 if s < 0 else y1 + 0.035
+        _add_frustum_y(mb, cx, fy0, fy1, zc, r_fan, r_fan, 8, "frame", cap_front=(s < 0), cap_back=(s > 0))
+        _add_frustum_y(mb, cx, fy0 - (0.015 if s < 0 else 0.0), fy1 + (0.015 if s > 0 else 0.0),
+                       zc, r_fan * 0.28, r_fan * 0.28, 8, "trim_silver", cap_front=(s < 0), cap_back=(s > 0))
+        # Side electrical service panel box
+        sx0 = x1 - 0.16
+        mb.box(sx0, x1 - 0.04, fy0, fy1, z0 + 0.14, z1 - 0.14, "trim_silver")
+    else:
+        cy = 0.5 * (y0 + y1) - (y1 - y0) * 0.10
+        fx0 = x0 - 0.035 if s < 0 else x1
+        fx1 = x0 if s < 0 else x1 + 0.035
+        _add_frustum_x(mb, fx0, fx1, cy, zc, r_fan, r_fan, 8, "frame", cap_left=(s < 0), cap_right=(s > 0))
+        _add_frustum_x(mb, fx0 - (0.015 if s < 0 else 0.0), fx1 + (0.015 if s > 0 else 0.0),
+                       cy, zc, r_fan * 0.28, r_fan * 0.28, 8, "trim_silver", cap_left=(s < 0), cap_right=(s > 0))
+        sy0 = y1 - 0.16
+        mb.box(fx0, fx1, sy0, y1 - 0.04, z0 + 0.14, z1 - 0.14, "trim_silver")
+
+
+def _add_sunshade_visor(mb, axis, c, s, a0, a1, z_base, depth=0.56, n_brackets=5):
+    """Architectural horizontal louver sunshade visor mounted strictly above window head (never blocks horizontal rays)."""
+    if a1 - a0 < 1.0:
+        return
+    # Cantilevered steel outrigger brackets (stop behind front fascia bar to avoid coplanar overlap)
+    for bi in range(n_brackets):
+        ba = a0 + (a1 - a0) * (bi / max(1, n_brackets - 1))
+        K.axbox(mb, axis, c, s, ba - 0.03, ba + 0.03, 0.06, depth - 0.04, z_base, z_base + 0.09, "frame")
+        K.axbox(mb, axis, c, s, ba - 0.04, ba + 0.04, 0.0, 0.06, z_base - 0.04, z_base + 0.13, "frame")
+    # 5 horizontal sunshade louver slats (strictly between wall flange and front fascia) + front fascia bar
+    for li in range(5):
+        lo = 0.10 + (depth - 0.18) * (li / 4.0)
+        K.axbox(mb, axis, c, s, a0 - 0.04, a1 + 0.04, lo - 0.022, lo + 0.022, z_base + 0.09, z_base + 0.12, "trim_silver")
+    K.axbox(mb, axis, c, s, a0 - 0.05, a1 + 0.05, depth - 0.04, depth + 0.02, z_base, z_base + 0.12, "frame")
 
 
 def _build_office(mb, wins, atlas, spec: FactorySpec, stage, ob):
@@ -1278,7 +1568,7 @@ def _build_office(mb, wins, atlas, spec: FactorySpec, stage, ob):
     else:
         door_x = ox0 + 2.2
     if stage == 0:
-        # 2-step concrete landing pad + threshold riser
+        # 2-step concrete landing pad >= 0.05m + threshold riser
         mb.box(door_x - 1.45, door_x + 1.45, oy0 - 1.15, oy0, 0.0, 0.08, "plinth", skip=("bottom", "back"))
         mb.box(door_x - 1.32, door_x + 1.32, oy0 - 0.90, oy0, 0.08, 0.16, "plinth", skip=("bottom", "back"))
         # Flanking entrance pilasters + recessed glazed vestibule door + upper transom bar
@@ -1289,20 +1579,23 @@ def _build_office(mb, wins, atlas, spec: FactorySpec, stage, ob):
                  (door_x + 0.96, oy0 - 0.05, 2.48), (door_x - 0.96, oy0 - 0.05, 2.48)],
                 atlas.uv_full("door"), "door")
 
-        # Sleek dual-tone entrance canopy + steel tie-rod hangers + under-soffit light
+        # Sleek dual-tone entrance canopy + steel purlin rafters + tie-rod hangers + under-soffit light
         mb.box(door_x - 1.72, door_x + 1.72, oy0 - 1.45, oy0, 2.68, 2.82,
                dict(default="band_blue", top="trim_silver", bottom="trim_silver"), skip=("back",))
         mb.box(door_x - 1.74, door_x + 1.74, oy0 - 1.48, oy0 - 1.43, 2.67, 2.84, "trim_silver")
+        for rx_r in (door_x - 1.55, door_x - 0.78, door_x + 0.78, door_x + 1.55):
+            mb.box(rx_r - 0.03, rx_r + 0.03, oy0 - 1.40, oy0, 2.61, 2.68, "frame", skip=("back",))
         K.axbox(mb, "y", oy0, -1, door_x - 0.36, door_x + 0.36, 0.35, 0.55, 2.62, 2.68, "light_warm")
         for rx in (door_x - 1.35, door_x + 1.35):
+            K.axbox(mb, "y", oy0, -1, rx - 0.07, rx + 0.07, 0.0, 0.06, 3.52, 3.68, "frame")
             _add_diagonal_strut_y(mb, rx, oy0, 3.60, oy0 - 1.20, 2.82, half_w=0.024, region="trim_silver")
 
         # Illuminated corporate signboard: upper 2F fascia (Large) or spandrel beside canopy (Small/Mid)
         if spec.office.sign_zone == "fascia":
             sw = min(5.4, max(2.8, (ox1 - ox0) * 0.32))
             sx_c = 0.5 * (ox0 + ox1)
-            sz0 = max(5.84, oh - 1.38)
-            sz1 = min(oh - 0.38, sz0 + 0.88)
+            sz0 = max(5.96, oh - 1.32)
+            sz1 = min(oh - 0.32, sz0 + 0.88)
         else:
             sw = min(3.8, max(2.2, (ox1 - ox0) * 0.32))
             if spec.office.door_side == "right":
@@ -1319,7 +1612,7 @@ def _build_office(mb, wins, atlas, spec: FactorySpec, stage, ob):
         # Continuous horizontal spandrel sill flashing below 2F windows (clear of frames)
         K.axbox(mb, "y", oy0, -1, ox0 + 0.70, ox1 - 0.70, 0.0, 0.05, 3.84, 3.92, "trim_silver")
 
-        # Rooftop outdoor AC condensers on mounting rails + refrigerant pipe conduit + roof hatch
+        # Rooftop detailed outdoor AC condensers on mounting rails + octagonal pipe conduit + roof hatch
         n_ac = 2 if (ox1 - ox0) < 13.0 else 3
         ac_on_left = (spec.office.align == "right")
         if ac_on_left:
@@ -1328,9 +1621,8 @@ def _build_office(mb, wins, atlas, spec: FactorySpec, stage, ob):
             mb.box(rail_x0, rail_x1, oy0 + 1.05, oy0 + 1.70, oh, oh + 0.12, "frame", skip=("bottom",))
             for ai in range(n_ac):
                 cx = ac_x0 + ai * 1.45
-                mb.box(cx - 0.46, cx + 0.46, oy0 + 1.12, oy0 + 1.63, oh + 0.12, oh + 1.08,
-                       dict(default="equipment", top="trim_silver"), skip=("bottom",))
-            mb.box(ac_x0 - 0.3, rail_x1 - 0.2, oy0 + 1.70, oy0 + 1.86, oh + 0.18, oh + 0.30, "trim_silver")
+                _add_ac_condenser(mb, cx - 0.46, cx + 0.46, oy0 + 1.12, oy0 + 1.63, oh + 0.12, oh + 1.08, axis="y", s=-1)
+            _add_frustum_x(mb, ac_x0 - 0.3, rail_x1 - 0.1, oy0 + 1.78, oh + 0.24, 0.045, 0.045, 8, "trim_silver")
             mb.box(rail_x1 - 0.25, rail_x1 + 0.35, oy0 + 1.65, oy0 + 2.15, oh, oh + 0.42, "trim_silver", skip=("bottom",))
             hx0, hx1 = ox1 - 2.2, ox1 - 1.0
         else:
@@ -1339,21 +1631,26 @@ def _build_office(mb, wins, atlas, spec: FactorySpec, stage, ob):
             mb.box(rail_x0, ac_x0 + 0.55, oy0 + 1.05, oy0 + 1.70, oh, oh + 0.12, "frame", skip=("bottom",))
             for ai in range(n_ac):
                 cx = ac_x0 - ai * 1.45
-                mb.box(cx - 0.46, cx + 0.46, oy0 + 1.12, oy0 + 1.63, oh + 0.12, oh + 1.08,
-                       dict(default="equipment", top="trim_silver"), skip=("bottom",))
-            mb.box(rail_x0 + 0.2, ac_x0 + 0.3, oy0 + 1.70, oy0 + 1.86, oh + 0.18, oh + 0.30, "trim_silver")
+                _add_ac_condenser(mb, cx - 0.46, cx + 0.46, oy0 + 1.12, oy0 + 1.63, oh + 0.12, oh + 1.08, axis="y", s=-1)
+            _add_frustum_x(mb, rail_x0 + 0.1, ac_x0 + 0.3, oy0 + 1.78, oh + 0.24, 0.045, 0.045, 8, "trim_silver")
             mb.box(rail_x0 - 0.35, rail_x0 + 0.25, oy0 + 1.65, oy0 + 2.15, oh, oh + 0.42, "trim_silver", skip=("bottom",))
             hx0, hx1 = ox0 + 1.0, ox0 + 2.2
         # Steel roof access hatch with curb and handle bar
         mb.box(hx0, hx1, oy0 + 1.15, oy0 + 2.35, oh, oh + 0.24, "frame", skip=("bottom",))
         mb.box(hx0 - 0.06, hx1 + 0.06, oy0 + 1.09, oy0 + 2.41, oh + 0.24, oh + 0.36, "trim_silver")
+
+        # Office corner octagonal rainwater downspouts (on outer corners away from factory wall)
+        for dx_o in (ox0 + 0.12, ox1 - 0.12):
+            _add_frustum_z(mb, dx_o, oy1 - 0.14, 0.08, oh, 0.042, 0.042, 8, "trim_silver", cap_top=True, cap_bottom=False)
+            for cz_o in (1.5, 3.6, oh - 0.6):
+                _add_frustum_z(mb, dx_o, oy1 - 0.14, cz_o - 0.03, cz_o + 0.03, 0.054, 0.054, 8, "frame", cap_top=True, cap_bottom=True)
     elif stage == 1:
         K.paint(mb, "y", oy0, -1, door_x - 1.0, door_x + 1.0, 0.0, 2.50, "door")
         mb.box(door_x - 1.65, door_x + 1.65, oy0 - 1.40, oy0, 2.62, 2.80, "band_blue", skip=("back",))
     else:
         K.paint(mb, "y", oy0, -1, door_x - 1.0, door_x + 1.0, 0.0, 2.50, "door")
 
-    # Organic per-room night-lit office windows on 1F (floor=0) and 2F (floor=1) + side flanks
+    # Neighboring panes share a room's night lighting on both storeys.
     if stage == 0:
         if spec.office.door_side == "center":
             win_spans_1f = [(ox0 + 0.85, door_x - 1.95, 17), (door_x + 1.95, ox1 - 0.85, 19)]
@@ -1365,29 +1662,28 @@ def _build_office(mb, wins, atlas, spec: FactorySpec, stage, ob):
             if win_x1 - win_x0 >= 2.0:
                 bays_1f = max(2, int((win_x1 - win_x0) / 1.8))
                 u_1f = [_win_unit_for(0, i // 2, seed=w_seed) for i in range(bays_1f)]
-                _add_framed_window(mb, wins, stage, "y", oy0, -1, win_x0, win_x1, 0.92, 2.42,
-                                   floor=0, unit_seq=u_1f, bays=bays_1f)
+                _add_framed_window(mb, wins, "y", oy0, -1, win_x0, win_x1, 0.92, 2.42, u_1f)
 
         wx0_2f, wx1_2f = ox0 + 0.85, ox1 - 0.85
         wxm_2f = 0.5 * (wx0_2f + wx1_2f)
         bays_half = max(2, int((wxm_2f - wx0_2f) / 1.75))
         u_2f_l = [_win_unit_for(1, i // 2, seed=23) for i in range(bays_half)]
-        u_2f_r = [_win_unit_for(1, (i + 10) // 2, seed=29) for i in range(bays_half)]
-        _add_framed_window(mb, wins, stage, "y", oy0, -1, wx0_2f, wxm_2f - 0.08, 4.05, 5.65,
-                           floor=0, unit_seq=u_2f_l, bays=bays_half)
-        _add_framed_window(mb, wins, stage, "y", oy0, -1, wxm_2f + 0.08, wx1_2f, 4.05, 5.65,
-                           floor=0, unit_seq=u_2f_r, bays=bays_half)
+        u_2f_r = [_win_unit_for(1, (i + 10) // 2, seed=28) for i in range(bays_half)]
+        _add_framed_window(mb, wins, "y", oy0, -1, wx0_2f, wxm_2f - 0.12, 4.05, 5.65, u_2f_l)
+        _add_framed_window(mb, wins, "y", oy0, -1, wxm_2f + 0.12, wx1_2f, 4.05, 5.65, u_2f_r)
+        # Projecting horizontal louver sunshade visors strictly above 2F windows (z >= 5.75m)
+        _add_sunshade_visor(mb, "y", oy0, -1, wx0_2f - 0.06, wxm_2f - 0.06, 5.76, depth=0.54, n_brackets=4)
+        _add_sunshade_visor(mb, "y", oy0, -1, wxm_2f + 0.06, wx1_2f + 0.06, 5.76, depth=0.54, n_brackets=4)
 
         side_flanks = [(-1, ox0), (1, ox1)] if spec.office.align == "center" else (
             [(1, ox1)] if spec.office.align == "right" else [(-1, ox0)]
         )
         for fi, (side_s, side_x) in enumerate(side_flanks):
             u_side_2f = [_win_unit_for(1, 30 + fi * 4 + i, seed=31) for i in range(2)]
-            _add_framed_window(mb, wins, stage, "x", side_x, side_s, oy0 + 0.85, oy1 - 0.85, 4.05, 5.65,
-                               floor=0, unit_seq=u_side_2f, bays=2)
+            _add_framed_window(mb, wins, "x", side_x, side_s, oy0 + 0.85, oy1 - 0.85, 4.05, 5.65, u_side_2f)
+            _add_sunshade_visor(mb, "x", side_x, side_s, oy0 + 0.79, oy1 - 0.79, 5.76, depth=0.42, n_brackets=3)
             u_side_1f = [_win_unit_for(0, 30 + fi * 4 + i, seed=37) for i in range(2)]
-            _add_framed_window(mb, wins, stage, "x", side_x, side_s, oy0 + 0.85, oy1 - 0.85, 0.92, 2.42,
-                               floor=0, unit_seq=u_side_1f, bays=2)
+            _add_framed_window(mb, wins, "x", side_x, side_s, oy0 + 0.85, oy1 - 0.85, 0.92, 2.42, u_side_1f)
 
 
 def _add_side_equipment(mb, spec: FactorySpec, stage, x0, eh, y0, D, stack_y):
@@ -1428,6 +1724,67 @@ def _add_side_equipment(mb, spec: FactorySpec, stage, x0, eh, y0, D, stack_y):
             mb.box(x0 - 1.08, x0 - 1.00, gy0, gy1, 0.08, 1.05, "safety_yellow", skip=("bottom",))
             return (gy0, cab_y1)
     return (eq_y0, cab_y1)
+
+
+def _add_exterior_pipe_rack_and_ac_bank(mb, spec: FactorySpec, x0, x1, y0, y1, eh, eq_span, side_shutter_spans):
+    """Exterior wall multi-pipe rack (octagonal pipes + cantilevered brackets) & ground/wall AC condenser bank."""
+    # 1. Exterior multi-tier pipe rack along -X wall (runs behind/north of dust collector at z=3.1..3.9m, clear of clerestory)
+    rack_y0 = (eq_span[1] + 0.45) if eq_span else (y0 + 2.5)
+    rack_y1 = y1 - 1.2
+    if rack_y1 - rack_y0 >= 4.0:
+        pipe_zs = (3.15, 3.50, 3.85)
+        pipe_rs = (0.052, 0.042, 0.036)
+        pipe_regs = ("trim_silver", "band_blue", "trim_silver")
+        for pz, pr, preg in zip(pipe_zs, pipe_rs, pipe_regs):
+            _add_frustum_y(mb, x0 - 0.28, rack_y0, rack_y1, pz, pr, pr, 8, preg, cap_front=True, cap_back=True)
+        # Vertical 8-sided riser drops at both ends + concrete manifold pad (>= 0.08m) + wall escutcheons
+        for ry_end in (rack_y0 + 0.25, rack_y1 - 0.25):
+            mb.box(x0 - 0.55, x0, ry_end - 0.30, ry_end + 0.30, 0.0, 0.08, "plinth", skip=("bottom", "right"))
+            _add_frustum_z(mb, x0 - 0.28, ry_end, 0.08, pipe_zs[-1] + 0.12, 0.050, 0.050, 8, "trim_silver", cap_top=True, cap_bottom=False)
+            _add_frustum_x(mb, x0 - 0.28, x0, ry_end, pipe_zs[0], 0.048, 0.048, 8, "trim_silver", cap_left=True, cap_right=False)
+            K.axbox(mb, "x", x0, -1, ry_end - 0.12, ry_end + 0.12, 0.0, 0.05, pipe_zs[0] - 0.12, pipe_zs[0] + 0.12, "frame")
+        # Cantilevered steel pipe support brackets & U-clamps every ~2.6m
+        n_sup = max(3, int(round((rack_y1 - rack_y0) / 2.6)))
+        for si in range(n_sup + 1):
+            sy = rack_y0 + 0.4 + (rack_y1 - rack_y0 - 0.8) * (si / n_sup)
+            K.axbox(mb, "x", x0, -1, sy - 0.04, sy + 0.04, 0.0, 0.40, pipe_zs[0] - 0.14, pipe_zs[0] - 0.07, "frame")
+            K.axbox(mb, "x", x0, -1, sy - 0.03, sy + 0.03, 0.36, 0.42, pipe_zs[0] - 0.07, pipe_zs[-1] + 0.08, "frame")
+            _add_diagonal_strut_x(mb, sy, x0, pipe_zs[0] - 0.52, x0 - 0.36, pipe_zs[0] - 0.10, half_w=0.022, region="frame")
+            for pz, pr in zip(pipe_zs, pipe_rs):
+                _add_frustum_y(mb, x0 - 0.28, sy - 0.035, sy + 0.035, pz, pr + 0.012, pr + 0.012, 8, "frame")
+
+    # 2. Multi-unit ground-pad outdoor AC condenser bank along +X or -X wall (clear of shutters & equipment)
+    if spec.side_equipment_kind == "depot":
+        # Place 5-unit HVAC condenser bank on +X wall between shutters/exit doors (mid-rear clear bay)
+        bank_y0 = y0 + 13.5
+        n_units = 5
+        bank_x, bank_s = x1, 1
+    else:
+        # Place 3-unit (Small/Mid) or 4-unit (Large) AC condenser bank on +X wall near front clear of side shutter
+        bank_y0 = y0 + 2.0
+        n_units = 4 if spec.width >= 35.0 else 3
+        bank_x, bank_s = x1, 1
+    # Check it doesn't overlap side shutters
+    bank_len = n_units * 1.25 + 0.4
+    if not any(sa - 0.6 <= bank_y0 + bank_len and sb + 0.6 >= bank_y0 for sa, sb in side_shutter_spans):
+        px0, px1 = (bank_x, bank_x + 0.95) if bank_s > 0 else (bank_x - 0.95, bank_x)
+        mb.box(px0, px1, bank_y0, bank_y0 + bank_len, 0.0, 0.09, "plinth",
+               skip=("bottom", "left" if bank_s > 0 else "right"))
+        for ui in range(n_units):
+            uy0 = bank_y0 + 0.25 + ui * 1.25
+            uy1 = uy0 + 0.95
+            ux0, ux1 = (bank_x + 0.22, bank_x + 0.78) if bank_s > 0 else (bank_x - 0.78, bank_x - 0.22)
+            _add_ac_condenser(mb, ux0, ux1, uy0, uy1, 0.09, 1.05, axis="x", s=bank_s)
+        # Refrigerant pipe header & riser into wall
+        hx = bank_x + bank_s * 0.14
+        _add_frustum_y(mb, hx, bank_y0 + 0.4, bank_y0 + bank_len - 0.3, 0.85, 0.036, 0.036, 8, "trim_silver")
+        _add_frustum_z(mb, hx, bank_y0 + bank_len - 0.35, 0.85, 2.40, 0.036, 0.036, 8, "trim_silver")
+        K.axbox(mb, "x", bank_x, bank_s, bank_y0 + bank_len - 0.48, bank_y0 + bank_len - 0.22, 0.0, 0.06, 2.28, 2.52, "frame")
+        # Protective yellow bollards at both ends of AC bank
+        for by_bol in (bank_y0 + 0.12, bank_y0 + bank_len - 0.12):
+            bx_bol = bank_x + bank_s * 1.08
+            mb.box(bx_bol - 0.08, bx_bol + 0.08, by_bol - 0.08, by_bol + 0.08, 0.0, 0.10, "frame", skip=("bottom",))
+            mb.box(bx_bol - 0.07, bx_bol + 0.07, by_bol - 0.07, by_bol + 0.07, 0.10, 0.88, "safety_yellow", skip=("bottom",))
 
 
 def _add_depot_equipment(mb, stage, x0, eh, y0, D, pier_ys):
@@ -1531,6 +1888,7 @@ def _build_stage(spec: FactorySpec, atlas, stage):
             _add_gable_louver(mb, stage, y1, 1, sxm, span_w, eh, spec.ridge_rise)
 
         if stage == 0:
+            obs_l, obs_r = [], []
             if spec.skylight_rows > 0:
                 u_l0, u_l1 = spec.skylight_u
                 u_r0, u_r1 = 1.0 - u_l1, 1.0 - u_l0
@@ -1546,8 +1904,10 @@ def _build_stage(spec: FactorySpec, atlas, stage):
                         if sy1 > sy0 + 1.0:
                             if si % 2 == 0:
                                 _add_skylight_strip(mb, gx0, gx1, ze_l_u, zr_u, rt, sy0, sy1, u_l0, u_l1, side="left", bay_len=bay_l)
+                                obs_l.append((sy0 - 0.12, sy1 + 0.12, u_l0 - 0.015, u_l1 + 0.015))
                             else:
                                 _add_skylight_strip(mb, gx0, gx1, ze_r_u, zr_u, rt, sy0, sy1, u_r0, u_r1, side="right", bay_len=bay_l)
+                                obs_r.append((sy0 - 0.12, sy1 + 0.12, u_r0 - 0.015, u_r1 + 0.015))
                 elif spec.skylight_pattern == "twin_varied" and spec.gables == 2:
                     # Outer slopes get full bay cassettes; inner valley slopes stay higher toward ridge & staggered
                     for si in range(n_rows):
@@ -1556,8 +1916,10 @@ def _build_stage(spec: FactorySpec, atlas, stage):
                         if sy1 > sy0 + 1.0:
                             if gi == 0:
                                 _add_skylight_strip(mb, gx0, gx1, ze_l_u, zr_u, rt, sy0, sy1, u_l0, u_l1, side="left", bay_len=bay_l)
+                                obs_l.append((sy0 - 0.12, sy1 + 0.12, u_l0 - 0.015, u_l1 + 0.015))
                             else:
                                 _add_skylight_strip(mb, gx0, gx1, ze_r_u, zr_u, rt, sy0, sy1, u_r0, u_r1, side="right", bay_len=bay_l)
+                                obs_r.append((sy0 - 0.12, sy1 + 0.12, u_r0 - 0.015, u_r1 + 0.015))
                     inner_rows = max(1, n_rows - 1)
                     in_seg = usable_y / inner_rows
                     for si in range(inner_rows):
@@ -1566,8 +1928,10 @@ def _build_stage(spec: FactorySpec, atlas, stage):
                         if sy1 > sy0 + 1.0:
                             if gi == 0:
                                 _add_skylight_strip(mb, gx0, gx1, ze_r_u, zr_u, rt, sy0, sy1, 0.24, 0.39, side="right", bay_len=bay_l)
+                                obs_r.append((sy0 - 0.12, sy1 + 0.12, 0.225, 0.405))
                             else:
                                 _add_skylight_strip(mb, gx0, gx1, ze_l_u, zr_u, rt, sy0, sy1, 0.61, 0.76, side="left", bay_len=bay_l)
+                                obs_l.append((sy0 - 0.12, sy1 + 0.12, 0.595, 0.775))
                 else:
                     for si in range(n_rows):
                         sy0 = y0 + 2.2 + si * seg_len + seg_len * (1.0 - spec.skylight_fill) * 0.5
@@ -1575,6 +1939,8 @@ def _build_stage(spec: FactorySpec, atlas, stage):
                         if sy1 > sy0 + 1.0:
                             _add_skylight_strip(mb, gx0, gx1, ze_l_u, zr_u, rt, sy0, sy1, u_l0, u_l1, side="left", bay_len=bay_l)
                             _add_skylight_strip(mb, gx0, gx1, ze_r_u, zr_u, rt, sy0, sy1, u_r0, u_r1, side="right", bay_len=bay_l)
+                            obs_l.append((sy0 - 0.12, sy1 + 0.12, u_l0 - 0.015, u_l1 + 0.015))
+                            obs_r.append((sy0 - 0.12, sy1 + 0.12, u_r0 - 0.015, u_r1 + 0.015))
 
             if spec.ventilators > 0 and not spec.roof_monitor:
                 if spec.vent_pattern == "ridge_rear_bias":
@@ -1591,12 +1957,15 @@ def _build_stage(spec: FactorySpec, atlas, stage):
                     _add_ventilator(mb, sxm, vy, zr_u + rt + 0.07, slope, radius=spec.vent_radius)
 
             if spec.roof_box_fans > 0 and not spec.roof_monitor:
+                half_span = max(1e-4, 0.5 * (gx1 - gx0))
                 if spec.gables == 2:
                     fan_side = "left" if gi == 0 else "right"
                     fan_u = 0.74 if fan_side == "left" else 0.26
                     fan_y = y1 - 6.5 if gi == 0 else y1 - 11.0
                     _add_roof_box_fan(mb, gx0, gx1, ze_l_u if fan_side == "left" else ze_r_u, zr_u, rt,
                                       fan_y, u_frac=fan_u, side=fan_side)
+                    du = 0.65 / half_span
+                    (obs_l if fan_side == "left" else obs_r).append((fan_y - 0.65, fan_y + 0.65, fan_u - du, fan_u + du))
                 else:
                     for fi in range(spec.roof_box_fans):
                         fan_side = "left" if fi % 2 == 0 else "right"
@@ -1605,18 +1974,31 @@ def _build_stage(spec: FactorySpec, atlas, stage):
                         if fan_y > y0 + 6.0:
                             _add_roof_box_fan(mb, gx0, gx1, ze_l_u if fan_side == "left" else ze_r_u, zr_u, rt,
                                               fan_y, u_frac=fan_u, side=fan_side)
+                            du = 0.65 / half_span
+                            (obs_l if fan_side == "left" else obs_r).append((fan_y - 0.65, fan_y + 0.65, fan_u - du, fan_u + du))
+
+            if spec.solar_arrays:
+                obs_l.append((y0 + 3.05, y1 - 3.05, 0.115, 0.405))
+                obs_r.append((y0 + 3.05, y1 - 3.05, 0.595, 0.885))
+            if spec.roof_monitor:
+                obs_l.append((y0 + 2.45, y1 - 2.45, 0.72, 1.00))
+                obs_r.append((y0 + 2.45, y1 - 2.45, 0.00, 0.28))
+
+            _add_roof_ribs(mb, gx0, gx1, ze_l_u, ze_r_u, zr_u, rt, ry0, ry1, spec.rib_pitch, obs_l, obs_r)
 
         if spec.solar_arrays and stage < 2:
             _add_roof_solar_bank(mb, gx0, gx1, ze_l_u, zr_u, rt, y0 + 3.2, y1 - 3.2, 0.13, 0.39, side="left", stage=stage)
             _add_roof_solar_bank(mb, gx0, gx1, ze_r_u, zr_u, rt, y0 + 3.2, y1 - 3.2, 0.61, 0.87, side="right", stage=stage)
 
-    # Twin-gable valley gutter + rear central collector hopper & downspout
+    # Twin-gable valley gutter + rear central collector hopper & octagonal downspout
     if spec.gables == 2 and stage < 2:
         mb.box(-0.24, 0.24, ry0 + 0.02, ry1 - 0.02, eh + rt, eh + rt + 0.07, "trim_silver", skip=("bottom",))
         if stage == 0:
             mb.box(-0.18, 0.18, y1, ry1 - 0.02, eh - 0.18, eh + rt, "trim_silver")
-            K.axbox(mb, "y", y1, 1, -0.07, 0.07, 0.02, 0.16, 0.20, eh - 0.18, "trim_silver", skip=("bottom", "top"))
-            K.axbox(mb, "y", y1, 1, -0.08, 0.08, 0.02, 0.22, 0.05, 0.20, "trim_silver")
+            _add_frustum_z(mb, 0.0, y1 + 0.10, 0.07, eh - 0.18, 0.060, 0.060, 8, "trim_silver", cap_top=True, cap_bottom=False)
+            mb.box(-0.12, 0.12, y1 + 0.02, y1 + 0.26, 0.0, 0.07, "plinth", skip=("bottom",))
+            for cz_v in (1.6, 4.2, 6.8, eh - 0.9):
+                _add_frustum_z(mb, 0.0, y1 + 0.10, cz_v - 0.04, cz_v + 0.04, 0.072, 0.072, 8, "frame", cap_top=True, cap_bottom=True)
 
     # Optional raised clerestory roof monitor (Rail Depot: total apex ~14.45m matching TASK.md 14.5m)
     if spec.roof_monitor:
@@ -1627,13 +2009,21 @@ def _build_stage(spec: FactorySpec, atlas, stage):
         mz1 = eh + spec.ridge_rise + rt + 0.92
         mb.box(-mw * 0.5, mw * 0.5, my0, my1, mz0, mz1, "wall_panel", skip=("bottom", "top"))
         _add_gable_end_walls(mb, atlas, -mw * 0.5, mw * 0.5, my0, my1, mz1, m_rise, "wall_panel", split_tiles=(stage < 2))
+        mon_gx0, mon_gx1 = -mw * 0.5 - 0.30, mw * 0.5 + 0.30
+        mon_ze_u = mz1 - 0.30 * (m_rise / (mw * 0.5))
         _add_gable_roof_span(
-            mb, -mw * 0.5 - 0.30, mw * 0.5 + 0.30, my0 - 0.30, my1 + 0.30,
-            mz1 - 0.30 * (m_rise / (mw * 0.5)), mz1 - 0.30 * (m_rise / (mw * 0.5)), mz1 + m_rise, 0.18,
+            mb, mon_gx0, mon_gx1, my0 - 0.30, my1 + 0.30,
+            mon_ze_u, mon_ze_u, mz1 + m_rise, 0.18,
             roof_reg="roof_blue", trim_reg="band_blue" if stage == 2 else "trim_silver", soffit_reg="wall_panel",
         )
         if stage == 0:
             mb.box(-0.16, 0.16, my0 - 0.28, my1 + 0.28, mz1 + m_rise + 0.18, mz1 + m_rise + 0.24, "band_blue", skip=("bottom",))
+            _add_roof_ribs(mb, mon_gx0, mon_gx1, mon_ze_u, mon_ze_u, mz1 + m_rise, 0.18, my0 - 0.30, my1 + 0.30,
+                           spec.rib_pitch * 1.1, [], [])
+            # Monitor ridge ventilators (row of 4 low-profile roof exhaust fans along monitor ridge)
+            for mvi in range(4):
+                mvy = my0 + 6.0 + (my1 - my0 - 12.0) * (mvi / 3.0)
+                _add_ventilator(mb, 0.0, mvy, mz1 + m_rise + 0.24, m_rise / (mw * 0.5), radius=0.26)
             # Monitor end gable louvers + framed side clerestory skylight strips
             for m_y, m_s in ((my0, -1), (my1, 1)):
                 K.axbox(mb, "y", m_y, m_s, -1.0, 1.0, 0.0, 0.06, mz1 - 0.20, mz1 + 0.32, "louver_vent")
@@ -1656,6 +2046,8 @@ def _build_stage(spec: FactorySpec, atlas, stage):
 
     # 4. Shutters / Track Portals / Rear Doors / Exhaust Louvers
     side_shutter_spans = []
+    side_blocked_l = []
+    side_blocked_r = []
     if spec.through_tracks:
         dw, dh = spec.track_door_size
         xs_c = [(-dw * 0.72 if spec.track_bays == 2 else 0.0), (dw * 0.72)] if spec.track_bays == 2 else [0.0]
@@ -1667,6 +2059,8 @@ def _build_stage(spec: FactorySpec, atlas, stage):
             _add_exit_door(mb, atlas, "x", x1, 1, y0 + 8.5)
             _add_exit_door(mb, atlas, "x", x1, 1, y1 - 8.5)
             _add_exit_door(mb, atlas, "x", x0, -1, y0 + 8.5)
+            side_blocked_r.extend([(y0 + 7.6, y0 + 9.4), (y1 - 9.4, y1 - 7.6)])
+            side_blocked_l.append((y0 + 7.6, y0 + 9.4))
     else:
         sw, sh = spec.shutter_size
         if spec.front_shutters > 0:
@@ -1698,7 +2092,7 @@ def _build_stage(spec: FactorySpec, atlas, stage):
             else:
                 _add_exit_door(mb, atlas, "y", y1, 1, x0 + 3.2)
 
-            fan_z0 = min(eh - 3.2, 5.4)
+            fan_z0 = min(eh - 3.2, 6.4)
             for fx in (-0.28 * W, 0.28 * W):
                 _add_wall_exhaust_hood(mb, atlas, "y", y1, 1, fx, fan_z0)
 
@@ -1708,6 +2102,7 @@ def _build_stage(spec: FactorySpec, atlas, stage):
             cy = y0 + 5.0 + (D - 10.0) * ((si + 0.5) / spec.side_shutters)
             _add_shutter(mb, stage, "x", x1, 1, cy, sw, sh)
             side_shutter_spans.append((cy - sw * 0.5 - 0.6, cy + sw * 0.5 + 0.6))
+            side_blocked_r.append((cy - sw * 0.5 - 0.6, cy + sw * 0.5 + 0.6))
 
     # 5. High Clerestory Ribbon Windows & Structural Bay Columns / Gutters / Downspouts
     col_ys = [y0 + 0.55]
@@ -1715,15 +2110,15 @@ def _build_stage(spec: FactorySpec, atlas, stage):
     if spec.clerestory_bays > 0:
         cz0, cz1 = eh - 2.35, eh - 1.05
         bay_span = (D - 4.0) / spec.clerestory_bays
+        workshop_cells = (0, 1, 0, 3, 2, 0, 2, 1, 3, 0)
         for bi in range(spec.clerestory_bays):
             wa0 = y0 + 2.2 + bi * bay_span
             wa1 = wa0 + bay_span - 0.9
             if wa1 - wa0 >= 1.5 and stage == 0:
-                # 본동은 한 공간: 고측창은 전부 작업장 전용 점등 칸(0..3, 전체 0..8 점등 블록 내)에 배정
-                u_l = [(((bi * 2 + k) % 4) * 18) % 25 for k in range(2)]
-                u_r = [(((bi * 2 + k + 2) % 4) * 18) % 25 for k in range(2)]
-                _add_framed_window(mb, wins, stage, "x", x0, -1, wa0, wa1, cz0, cz1, floor=0, unit_seq=u_l, bays=2)
-                _add_framed_window(mb, wins, stage, "x", x1, 1, wa0, wa1, cz0, cz1, floor=0, unit_seq=u_r, bays=2)
+                for side, wall, shift in ((-1, x0, 0), (1, x1, 4)):
+                    cell = workshop_cells[(bi + shift) % len(workshop_cells)]
+                    unit = (cell * 18) % 25
+                    _add_framed_window(mb, wins, "x", wall, side, wa0, wa1, cz0, cz1, (unit, unit))
             col_c = y0 + 2.2 + (bi + 1) * bay_span - 0.45
             if bi < spec.clerestory_bays - 1:
                 pier_ys.append(col_c)
@@ -1741,8 +2136,10 @@ def _build_stage(spec: FactorySpec, atlas, stage):
             eq_span = _add_side_equipment(mb, spec, stage, x0, eh, y0, D, stack_y)
 
     if stage == 0:
+        _add_exterior_pipe_rack_and_ac_bank(mb, spec, x0, x1, y0, y1, eh, eq_span, side_blocked_r)
         ze_outer_u = eh - spec.roof_overhang * slope
-        _add_gutters_and_downspouts(mb, spec, x0, x1, y0, y1, ry0, ry1, eh, ze_outer_u, col_ys, eq_span=eq_span)
+        _add_gutters_and_downspouts(mb, spec, x0, x1, y0, y1, ry0, ry1, eh, ze_outer_u, col_ys,
+                                    eq_span=eq_span, side_blocked_l=side_blocked_l, side_blocked_r=side_blocked_r)
 
     return mb, wins
 

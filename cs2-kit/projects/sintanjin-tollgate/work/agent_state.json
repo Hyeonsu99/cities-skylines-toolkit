@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "sintanjin_tollgate_cs2.py",
- "generator_hash": "abf9ab58a9e8ddb8858612b8f04ff142bd33e51c66b32d888c3ffdbd091b6562",
- "current_preview_hash": "d5e75aa0bfe7e87d4c76b0da55df05741b4f6981e95644502ed00a1fcfa454f2",
+ "generator_hash": "f8d86b4158f5cf4269e5e22ea505ec88b678556dc9973fb283477a673cb7585d",
+ "current_preview_hash": "5e1fc42fb7b607d48b9559550f6afb683656a63942779589a9a1b255bf46b6b6",
  "last_gate": {
   "status": "PASS",
   "project": "sintanjin-tollgate",
@@ -29,8 +29,8 @@
    "report": "output\\SintanjinTollgate_L1_6x4\\_check\\report.json"
   },
   "asset": "SintanjinTollgate_L1_6x4",
-  "label": "cross-review",
-  "time": "2026-11-16 14:37:57",
+  "label": "drain-coplanar-fix",
+  "time": "2026-11-19 11:10:59",
   "build": {
    "asset": "SintanjinTollgate_L1_6x4",
    "fbx": true,
@@ -52,17 +52,17 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 14662,
+     "main": 18716,
      "win": 48,
-     "lod1": 4156,
+     "lod1": 3484,
      "lod1_win": 48,
      "lod2": 482,
      "lod2_win": 48
     },
     "verts": {
-     "main": 29324,
+     "main": 37432,
      "win": 96,
-     "lod1": 8312,
+     "lod1": 6968,
      "lod1_win": 96,
      "lod2": 964,
      "lod2_win": 96
@@ -86,7 +86,7 @@
      "LOD2_Emissive": "1024x1024 RGB"
     },
     "texel_px_per_m": {
-     "p10": 255.7,
+     "p10": 102.8,
      "median": 323.5,
      "p90": 341.0
     },
@@ -97,7 +97,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 1.3
+    "time_s": 0.4
    },
    "report": "output\\SintanjinTollgate_L1_6x4\\_check\\report.json"
   },
@@ -120,14 +120,14 @@
   "lod": {
    "checked": true,
    "status": "PASS",
-   "line": "LODCHECK PASS main max 0.007% (az 45, el +5) bad_views 0/64 | lod1 max 0.004% (az 45, el +5) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\SintanjinTollgate_L1_6x4",
+   "line": "LODCHECK PASS main max 0.007% (az 225, el +5) bad_views 0/64 | lod1 max 0.004% (az 45, el +5) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\SintanjinTollgate_L1_6x4",
    "notes": []
   },
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 29324,
-    "LOD1": 8312,
+    "LOD0": 37432,
+    "LOD1": 6968,
     "LOD2": 964
    },
    "action_tags": [],
@@ -145,13 +145,13 @@
   "reason": "all requested checks passed"
  },
  "project": "sintanjin-tollgate",
- "updated_at": "2026-11-16T14:38:31",
- "visual_review_note": "총괄 교차검토: 주간 4방향·야간 부스(4동 24창 전량 점등)·cmp_west_far/cmp_under_n 실사 대조 확인. cmp_top_sat 은 위성과 모델 회전이 맞지 않아 평면 정합 근거로는 약함",
+ "updated_at": "2026-11-19T11:11:04",
+ "visual_review_note": "드레인 호퍼·외곽 드레인 상단 겹침 수정 후 4뷰 확인: 형태·신호 배치 변화 없음",
  "visual_review_artifacts": [
   {
    "file": "previews/SintanjinTollgate_L1_6x4.png",
-   "sha256": "d5e75aa0bfe7e87d4c76b0da55df05741b4f6981e95644502ed00a1fcfa454f2"
+   "sha256": "5e1fc42fb7b607d48b9559550f6afb683656a63942779589a9a1b255bf46b6b6"
   }
  ],
- "reviewed_preview_hash": "d5e75aa0bfe7e87d4c76b0da55df05741b4f6981e95644502ed00a1fcfa454f2"
+ "reviewed_preview_hash": "5e1fc42fb7b607d48b9559550f6afb683656a63942779589a9a1b255bf46b6b6"
 }

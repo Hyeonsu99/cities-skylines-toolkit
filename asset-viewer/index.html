@@ -1,2 +1,401 @@
-<!doctype html><html lang="ko"><meta charset="utf-8"><title>에셋 시뮬레이터</title><style>body{margin:0;background:#18212a;color:white;font:15px system-ui}header{padding:12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}canvas{display:block}input[type=number]{width:65px}</style><header><strong>에셋 시뮬레이터</strong><select id="dong_select" aria-label="금강엑슬루타워 동 선택"><option value="">-- 금강엑슬루타워 동 선택 --</option><option value="101">101동 (36층 / Type B)</option><option value="102">102동 (50층 / Type A)</option><option value="103">103동 (50층 / Type A)</option><option value="104">104동 (36층 / Type B)</option><option value="105">105동 (50층 / Type C)</option><option value="106">106동 (50층 / Type C)</option><option value="107">107동 (50층 / Type C)</option><option value="108">108동 (50층 / Type C)</option><option value="109">109동 (36층 / Type B)</option><option value="110">110동 (50층 / Type A)</option><option value="111">111동 (50층 / Type A)</option><option value="112">112동 (36층 / Type B)</option></select><select id="factory_select" aria-label="신탄진 공장 및 랜드마크 선택"><option value="">-- 신탄진 공장·랜드마크 선택 --</option><option value="BlueFactorySmall_L1_3x4">소형 공장 (3×4 / BlueFactorySmall)</option><option value="BlueFactoryMid_L1_4x6">중형 공장 (4×6 / BlueFactoryMid)</option><option value="BlueFactoryLarge_L2_6x6">대형 쌍둥이 박공 (6×6 / BlueFactoryLarge)</option><option value="BlueRailDepot_L1_4x8">철도 검수고 (4×8 / BlueRailDepot)</option><option value="SintanjinTollgate_L1_6x4">신탄진 톨게이트 (6×4 / SintanjinTollgate)</option><option value="SeokbongWelfareCenter_L1_7x9">석봉동 행정복지센터 (7×9 / SeokbongWelfareCenter)</option><option value="NoiseWallClear_L1_1x1">방음벽 투명형 (2 m 모듈 / NoiseWallClear)</option><option value="NoiseWallMetal_L1_1x1">방음벽 흡음형 (2 m 모듈 / NoiseWallMetal)</option><option value="SignGantry_L1_3x1">문형 도로 안내표지 (SignGantry)</option><option value="SignSideDistance_L1_1x1">측주식 거리 표지 (SignSideDistance)</option><option value="GuardrailWBeam_L1_1x1">W빔 가드레일 (4 m / GuardrailWBeam)</option><option value="GuardrailWBeamDouble_L1_1x1">W빔 가드레일 2단 (4 m / GuardrailWBeamDouble)</option><option value="MedianBarrierConcrete_L1_1x1">콘크리트 중앙분리대 (4 m / MedianBarrierConcrete)</option></select><label>GLB / FBX 가져오기 <input id="file" type="file" multiple accept=".glb,.fbx,.png,.jpg,.jpeg"></label><label>에셋 폴더 <input id="folder" type="file" webkitdirectory multiple></label><label>시간 <input id="time" type="range" min="0" max="23.9" step=".1" value="14"></label><output id="hour"></output><label><input id="shadows" type="checkbox" checked> &#44536;&#47548;&#51088;</label><select id="assets" aria-label="배치된 에셋"></select><label>X <input id="x" type="number" value="0"></label><label>Z <input id="z" type="number" value="0"></label><label>회전 <input id="angle" type="number" value="0"></label><button id="remove">삭제</button><output id="status" role="status"></output></header><script type="module" src="/editor.js"></script>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>에셋 시뮬레이터</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-header: #0f1724;
+      --bg-card: #162235;
+      --bg-input: #0d1624;
+      --bg-hover: #1e2f49;
+      --border: #26364f;
+      --border-strong: #374f73;
+      --text: #e6edf7;
+      --text-muted: #93a7c3;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.14);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.14);
+      --radius: 8px;
+    }
 
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #0b121c;
+      color: var(--text);
+      font: 13px/1.4 "Pretendard", "Malgun Gothic", system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+    }
+
+    canvas { display: block; }
+
+    header {
+      background: linear-gradient(180deg, #121c2c 0%, var(--bg-header) 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+      position: relative;
+      z-index: 10;
+    }
+
+    .toolbar-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding-right: 10px;
+      margin-right: 2px;
+      border-right: 1px solid var(--border);
+    }
+
+    .brand-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #f8fafc;
+      white-space: nowrap;
+    }
+
+    .brand-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 2px 7px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .panel-group {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 4px 8px;
+    }
+
+    .group-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+
+    select,
+    input[type="number"] {
+      background: var(--bg-input);
+      color: var(--text);
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      padding: 5px 8px;
+      font: inherit;
+      font-size: 12.5px;
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    select {
+      cursor: pointer;
+      max-width: 290px;
+    }
+
+    select:hover,
+    input[type="number"]:hover {
+      border-color: #4b6a96;
+    }
+
+    select:focus,
+    input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.18);
+    }
+
+    select optgroup {
+      background: #142033;
+      color: #7dd3fc;
+      font-weight: 700;
+      font-style: normal;
+      padding: 6px 4px;
+    }
+
+    select option {
+      background: #0d1624;
+      color: #e6edf7;
+      font-weight: 400;
+      padding: 4px 8px;
+    }
+
+    input[type="number"] {
+      width: 60px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .btn,
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--bg-input);
+      color: var(--text);
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    .btn:hover,
+    button:hover {
+      background: var(--bg-hover);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .btn-danger {
+      color: #fca5a5;
+      border-color: rgba(248, 113, 113, 0.35);
+      background: var(--danger-soft);
+    }
+
+    .btn-danger:hover {
+      background: rgba(248, 113, 113, 0.24);
+      border-color: var(--danger);
+      color: #ffffff;
+    }
+
+    .time-presets {
+      display: inline-flex;
+      gap: 3px;
+    }
+
+    .time-chip {
+      padding: 3px 7px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 5px;
+      background: var(--bg-input);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .time-chip.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: rgba(56, 189, 248, 0.45);
+    }
+
+    input[type="range"] {
+      width: 112px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    #hour {
+      min-width: 44px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: #fde68a;
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      border-radius: 5px;
+      padding: 2px 6px;
+    }
+
+    .check-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+      padding: 2px 4px;
+    }
+
+    .check-pill input[type="checkbox"] {
+      accent-color: var(--accent);
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .field-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    #status {
+      margin-left: auto;
+      font-size: 12px;
+      color: #cbd5e1;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 10px;
+      max-width: 360px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #status:empty {
+      display: none;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="toolbar-row">
+      <div class="brand">
+        <span class="brand-title">에셋 시뮬레이터</span>
+        <span class="brand-badge">29 Assets</span>
+      </div>
+
+      <div class="panel-group">
+        <span class="group-label">엑슬루타워</span>
+        <select id="dong_select" aria-label="금강엑슬루타워 동 선택">
+          <option value="">-- 동 선택 (12종) --</option>
+          <optgroup label="A형 · 50층 (5×4)">
+            <option value="102">102동 (50층 · Type A)</option>
+            <option value="103">103동 (50층 · Type A)</option>
+            <option value="110">110동 (50층 · Type A)</option>
+            <option value="111">111동 (50층 · Type A)</option>
+          </optgroup>
+          <optgroup label="B형 · 36층 (5×4)">
+            <option value="101">101동 (36층 · Type B)</option>
+            <option value="104">104동 (36층 · Type B)</option>
+            <option value="109">109동 (36층 · Type B)</option>
+            <option value="112">112동 (36층 · Type B)</option>
+          </optgroup>
+          <optgroup label="C형 · 50층 (5×6)">
+            <option value="105">105동 (50층 · Type C)</option>
+            <option value="106">106동 (50층 · Type C)</option>
+            <option value="107">107동 (50층 · Type C)</option>
+            <option value="108">108동 (50층 · Type C)</option>
+          </optgroup>
+        </select>
+
+        <span class="group-label">신탄진 · 한국형 에셋</span>
+        <select id="factory_select" aria-label="신탄진 공장 및 랜드마크 선택">
+          <option value="">-- 카테고리별 선택 (17종) --</option>
+          <optgroup label="푸른 공장 · 산업 (4종)">
+            <option value="BlueFactorySmall_L1_3x4">[공장] 소형 공장 (3×4 · Small)</option>
+            <option value="BlueFactoryMid_L1_4x6">[공장] 중형 공장 (4×6 · Mid)</option>
+            <option value="BlueFactoryLarge_L2_6x6">[공장] 대형 쌍둥이 박공 (6×6 · Large)</option>
+            <option value="BlueRailDepot_L1_4x8">[공장] 철도 검수고 (4×8 · RailDepot)</option>
+          </optgroup>
+          <optgroup label="랜드마크 · 도로시설 (2종)">
+            <option value="SintanjinTollgate_L1_6x4">[랜드마크] 신탄진 톨게이트 (6×4)</option>
+            <option value="SeokbongWelfareCenter_L1_7x9">[랜드마크] 석봉동 행정복지센터 (7×9)</option>
+          </optgroup>
+          <optgroup label="한국형 저밀도 주거 (4종)">
+            <option value="KoreanHouseA01_L1_2x2">[주거] 한국형 주택 A01 (2×2)</option>
+            <option value="KoreanHouseA70s01_L1_2x2">[주거] 70년대 주택 (2×2 · A70s01)</option>
+            <option value="KoreanHouseA80s01_L1_2x2">[주거] 80년대 주택 (2×2 · A80s01)</option>
+            <option value="KoreanHouseA90s01_L1_2x2">[주거] 90년대 주택 (2×2 · A90s01)</option>
+          </optgroup>
+          <optgroup label="고속도로 소품 (7종)">
+            <option value="NoiseWallClear_L1_1x1">[소품] 방음벽 투명형 (2 m)</option>
+            <option value="NoiseWallMetal_L1_1x1">[소품] 방음벽 흡음형 (2 m)</option>
+            <option value="SignGantry_L1_3x1">[소품] 문형 도로 안내표지 (3×1)</option>
+            <option value="SignSideDistance_L1_1x1">[소품] 측주식 거리 표지 (1×1)</option>
+            <option value="GuardrailWBeam_L1_1x1">[소품] W빔 가드레일 (4 m)</option>
+            <option value="GuardrailWBeamDouble_L1_1x1">[소품] W빔 가드레일 2단 (4 m)</option>
+            <option value="MedianBarrierConcrete_L1_1x1">[소품] 콘크리트 중앙분리대 (4 m)</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="panel-group">
+        <span class="group-label">불러오기</span>
+        <label class="btn">FBX / GLB<input id="file" class="sr-only" type="file" multiple accept=".glb,.fbx,.png,.jpg,.jpeg"></label>
+        <label class="btn">에셋 폴더<input id="folder" class="sr-only" type="file" webkitdirectory multiple></label>
+      </div>
+
+      <output id="status" role="status"></output>
+    </div>
+
+    <div class="toolbar-row">
+      <div class="panel-group">
+        <span class="group-label">조명 · 시간</span>
+        <input id="time" type="range" min="0" max="23.9" step="0.1" value="14" aria-label="시간">
+        <output id="hour">14.0시</output>
+        <div class="time-presets" role="group" aria-label="시간 프리셋">
+          <button type="button" class="time-chip" data-time="9">아침</button>
+          <button type="button" class="time-chip active" data-time="14">낮</button>
+          <button type="button" class="time-chip" data-time="18.2">노을</button>
+          <button type="button" class="time-chip" data-time="22">밤</button>
+        </div>
+        <label class="check-pill"><input id="shadows" type="checkbox" checked> 그림자</label>
+      </div>
+
+      <div class="panel-group">
+        <span class="group-label">배치된 에셋</span>
+        <select id="assets" aria-label="배치된 에셋"></select>
+        <label class="field-inline">X <input id="x" type="number" value="0"></label>
+        <label class="field-inline">Z <input id="z" type="number" value="0"></label>
+        <label class="field-inline">회전 <input id="angle" type="number" value="0"></label>
+        <button id="remove" type="button" class="btn-danger">삭제</button>
+      </div>
+    </div>
+  </header>
+
+  <script type="module" src="/editor.js"></script>
+  <script type="module">
+    const timeEl = document.getElementById('time');
+    const chips = Array.from(document.querySelectorAll('.time-chip'));
+    const syncChips = () => {
+      const val = parseFloat(timeEl.value);
+      for (const chip of chips) {
+        chip.classList.toggle('active', Math.abs(parseFloat(chip.dataset.time) - val) < 0.15);
+      }
+    };
+    for (const chip of chips) {
+      chip.addEventListener('click', () => {
+        timeEl.value = chip.dataset.time;
+        timeEl.dispatchEvent(new Event('input', { bubbles: true }));
+        syncChips();
+      });
+    }
+    timeEl.addEventListener('input', syncChips);
+  </script>
+</body>
+</html>

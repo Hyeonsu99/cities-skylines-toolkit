@@ -20,7 +20,7 @@ estimated:
   - office annex 9.8 x 4.0 x 6.6 m (align left, door_side left, spandrel signboard, parapet 0.34 m) # estimated
   - shutter layout (1 front 4.0x4.4 m, 1 right side 4.0x4.4 m, 1 rear steel fire exit door) # estimated
   - roof FRP skylight layout (2 paired lower-mid cassettes per slope u=0.28..0.43), 3 O500 ridge ventilators, left dust collector & cyclone stack # estimated
-  - clerestory workshop glass (cells 0..3 wire/frosted cool white, 100% lit) vs office blinds (cells 4..24, ~36% room lit hash, 16px guard) # estimated
+  - 120 mm jambs, 200 mm sills and 160 mm heads from the wall; cool clerestory glass with three light levels and off bays; room-paired office panes # estimated
 metrics:
   tris_main: 2768
   tris_lod1: 174

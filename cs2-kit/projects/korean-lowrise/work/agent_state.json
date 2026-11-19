@@ -1,13 +1,13 @@
 {
  "visual_review": "PASS",
  "current_stage": "review:PASS",
- "generator": "korean_lowrise_cs2.py",
- "generator_hash": "a0a2ae08bb8447e5391c6bcdf4f6973274f650e0461f8da0e86a9c9cdb308a05",
- "current_preview_hash": "ef27f941028526b5f3022b5cec6367b4da1daf2b66d8e73727b4bad6ddf3abc3",
+ "generator": "house_90s_cs2.py",
+ "generator_hash": "ca3e32a7503004bb1805d517752a48b06a60f13e17fbcc02eb897c4d9cfb2329",
+ "current_preview_hash": "326c2c0dcfe71c8d8df4124a421bb29e083f926d2972e1a02b929541f31c6a6a",
  "last_gate": {
   "status": "PASS",
   "project": "korean-lowrise",
-  "generator": "korean_lowrise_cs2.py",
+  "generator": "house_90s_cs2.py",
   "mode": "final",
   "checks": {
    "build": "PASS",
@@ -25,14 +25,14 @@
    "reason": "no fix needed"
   },
   "artifacts": {
-   "preview": "previews\\KoreanHouseA01_L1_2x2.png",
-   "report": "output\\KoreanHouseA01_L1_2x2\\_check\\report.json"
+   "preview": "previews\\KoreanHouseA90s01_L1_2x2.png",
+   "report": "output\\KoreanHouseA90s01_L1_2x2\\_check\\report.json"
   },
-  "asset": "KoreanHouseA01_L1_2x2",
-  "label": "m15-legacy",
-  "time": "2026-11-18 23:04:18",
+  "asset": "KoreanHouseA90s01_L1_2x2",
+  "label": "p0",
+  "time": "2026-11-19 10:05:14",
   "build": {
-   "asset": "KoreanHouseA01_L1_2x2",
+   "asset": "KoreanHouseA90s01_L1_2x2",
    "fbx": true,
    "warnings": []
   },
@@ -42,7 +42,7 @@
    "info": {
     "size": [
      13.6,
-     13.5,
+     12.65,
      8.08
     ],
     "pivot_offset": [
@@ -52,20 +52,20 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 4484,
-     "win": 56,
-     "lod1": 1512,
-     "lod1_win": 56,
-     "lod2": 326,
-     "lod2_win": 56
+     "main": 4938,
+     "win": 48,
+     "lod1": 1390,
+     "lod1_win": 48,
+     "lod2": 316,
+     "lod2_win": 48
     },
     "verts": {
-     "main": 9004,
-     "win": 112,
-     "lod1": 3034,
-     "lod1_win": 112,
-     "lod2": 660,
-     "lod2_win": 112
+     "main": 9936,
+     "win": 96,
+     "lod1": 2802,
+     "lod1_win": 96,
+     "lod2": 640,
+     "lod2_win": 96
     },
     "coplanar": {
      "main": 0,
@@ -86,20 +86,20 @@
      "LOD2_Emissive": "512x512 RGB"
     },
     "texel_px_per_m": {
-     "p10": 44.9,
-     "median": 212.9,
-     "p90": 212.9
+     "p10": 53.2,
+     "median": 319.4,
+     "p90": 319.4
     },
-    "windows": 28,
+    "windows": 24,
     "win_dropped": 0,
     "win_blocked": {
      "win": 0,
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 0.1
+    "time_s": 0.2
    },
-   "report": "output\\KoreanHouseA01_L1_2x2\\_check\\report.json"
+   "report": "output\\KoreanHouseA90s01_L1_2x2\\_check\\report.json"
   },
   "photo": {
    "checked": false,
@@ -120,15 +120,15 @@
   "lod": {
    "checked": true,
    "status": "PASS",
-   "line": "LODCHECK PASS main max 0.010% (az 248, el +5) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\KoreanHouseA01_L1_2x2",
+   "line": "LODCHECK PASS main max 0.005% (az 248, el +50) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\KoreanHouseA90s01_L1_2x2",
    "notes": []
   },
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 9004,
-    "LOD1": 3034,
-    "LOD2": 660
+    "LOD0": 9936,
+    "LOD1": 2802,
+    "LOD2": 640
    },
    "action_tags": [],
    "exact_fix_instruction": "no fix needed"
@@ -145,13 +145,13 @@
   "reason": "all requested checks passed"
  },
  "project": "korean-lowrise",
- "updated_at": "2026-11-18T23:05:24",
- "visual_review_note": "기존 KoreanHouseA01 경로의 M1.5 갱신본 확인: 흰 담·석재 문주·방범창·가스관·차양·강판 옥탑·빨래건조대·창 아래 오염, 녹색은 옥상 수평면만. 대표 3종의 별도 final 및 비교 시트 검토 완료.",
+ "updated_at": "2026-11-19T10:05:47",
+ "visual_review_note": "90s z=0 paving removed, roof green and blue corrugated toned down, gloss and normal grain verified",
  "visual_review_artifacts": [
   {
-   "file": "previews/KoreanHouseA01_L1_2x2.png",
-   "sha256": "ef27f941028526b5f3022b5cec6367b4da1daf2b66d8e73727b4bad6ddf3abc3"
+   "file": "previews/KoreanHouseA90s01_L1_2x2.png",
+   "sha256": "326c2c0dcfe71c8d8df4124a421bb29e083f926d2972e1a02b929541f31c6a6a"
   }
  ],
- "reviewed_preview_hash": "ef27f941028526b5f3022b5cec6367b4da1daf2b66d8e73727b4bad6ddf3abc3"
+ "reviewed_preview_hash": "326c2c0dcfe71c8d8df4124a421bb29e083f926d2972e1a02b929541f31c6a6a"
 }

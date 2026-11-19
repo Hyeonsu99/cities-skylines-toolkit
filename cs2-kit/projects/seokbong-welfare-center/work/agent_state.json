@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "seokbong_welfare_center_cs2.py",
- "generator_hash": "2e4ad78fa3974b2d80be15da7e38cc1e27dae3438246ead6e560629e96d04a31",
- "current_preview_hash": "45ba4cbf86de3e6a580b243483359fea22ecf06848547b83df5437884c70244c",
+ "generator_hash": "b31b8ffd89408a10a90d448d940245d2f816b00658572f14a822e6083ff52cca",
+ "current_preview_hash": "ced2631c648288982dee33f4c12c774879cb33b3793c25118393ed80df8260fa",
  "last_gate": {
   "status": "PASS",
   "project": "seokbong-welfare-center",
@@ -29,13 +29,12 @@
    "report": "output\\SeokbongWelfareCenter_L1_7x9\\_check\\report.json"
   },
   "asset": "SeokbongWelfareCenter_L1_7x9",
-  "label": "solar_subobj_sign",
-  "time": "2026-11-18 22:29:44",
+  "label": "p0",
+  "time": "2026-11-19 10:05:14",
   "build": {
    "asset": "SeokbongWelfareCenter_L1_7x9",
    "fbx": true,
    "warnings": [
-    "[cs2kit][WARN] lot 7x9 > 6x6 -> register as signature building",
     "[cs2kit][WARN] lot 7x9 > 6x6 -> register as signature building"
    ]
   },
@@ -57,17 +56,17 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 46503,
+     "main": 48661,
      "win": 1364,
-     "lod1": 10279,
+     "lod1": 14997,
      "lod1_win": 1364,
      "lod2": 258,
      "lod2_win": 1364
     },
     "verts": {
-     "main": 93009,
+     "main": 97325,
      "win": 2728,
-     "lod1": 20561,
+     "lod1": 29997,
      "lod1_win": 2728,
      "lod2": 516,
      "lod2_win": 2728
@@ -91,7 +90,7 @@
      "LOD2_Emissive": "1024x1024 RGB"
     },
     "texel_px_per_m": {
-     "p10": 52.7,
+     "p10": 48.1,
      "median": 223.7,
      "p90": 223.8
     },
@@ -102,7 +101,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 1.0
+    "time_s": 1.7
    },
    "report": "output\\SeokbongWelfareCenter_L1_7x9\\_check\\report.json"
   },
@@ -122,17 +121,19 @@
    "status": "PASS",
    "simplified": [
     "TILE satellite r2c1 x[14,27]m y[29,43]m recall 17% precision 36%  SIMPLIFIED",
-    "TILE satellite r3c3 x[40,54]m y[14,29]m recall 17% precision 10%  SIMPLIFIED",
-    "TILE satellite r3c0 x[0,14]m y[14,29]m recall 24% precision 39%  SIMPLIFIED"
+    "TILE satellite r3c3 x[40,54]m y[14,29]m recall 19% precision 10%  SIMPLIFIED",
+    "TILE satellite r3c0 x[0,14]m y[14,29]m recall 25% precision 39%  SIMPLIFIED"
    ],
    "detail": [
-    "DETAIL satellite recall 40% precision 50% worst r2c1 (17%) simplified_tiles 16/19"
+    "DETAIL satellite recall 41% precision 51% worst r2c1 (17%) simplified_tiles 14/19"
    ],
    "detail_color": [
-    "DETAIL_COLOR satellite tiles_off 0/7 (dE>14; trusted tiles only)"
+    "DETAIL_COLOR satellite tiles_off 1/7 (dE>14; trusted tiles only)"
    ],
-   "color_off": [],
-   "tiles_off": 0,
+   "color_off": [
+    "COLOR satellite r0c3 x[40,54]m photo #37484e model #5b6c78 dE 16  COLOR_OFF confidence=trusted"
+   ],
+   "tiles_off": 1,
    "tiles_total": 7
   },
   "lod": {
@@ -144,8 +145,8 @@
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 93009,
-    "LOD1": 20561,
+    "LOD0": 97325,
+    "LOD1": 29997,
     "LOD2": 516
    },
    "action_tags": [],
@@ -163,21 +164,21 @@
   "reason": "all requested checks passed"
  },
  "project": "seokbong-welfare-center",
- "updated_at": "2026-11-18T22:32:07",
- "visual_review_note": "3D sloped solar racks (azimuth -11.2, tilt 16 deg), all planters/plants separated to work/subobjects.json, sign emissive reduced to ~1/3",
+ "updated_at": "2026-11-19T10:05:29",
+ "visual_review_note": "P0-2 albedo/gloss/normal calibration reviewed: white panels, roof membrane, stone, paving toned down without blowout; panel joints and signage integration verified",
  "visual_review_artifacts": [
   {
    "file": "previews/SeokbongWelfareCenter_L1_7x9.png",
-   "sha256": "45ba4cbf86de3e6a580b243483359fea22ecf06848547b83df5437884c70244c"
+   "sha256": "ced2631c648288982dee33f4c12c774879cb33b3793c25118393ed80df8260fa"
   },
   {
    "file": "previews/photo_check/satellite.png",
-   "sha256": "3ad809bf422329e5354852f139dfb45e7da48ad9adfb615d6132c4c3f535d1c9"
+   "sha256": "477adca34b79aa968893a3000fa6bf35afebc0634a49fa2420c9108b21d12671"
   },
   {
    "file": "previews/tiles/satellite_map.png",
-   "sha256": "08d1355563d711c69ee12c0f19308489eb0b4dd9afc477d5376b05f691fc0d53"
+   "sha256": "6876fe9bf0030de9aeac4a62398eabde0a4b515484478e6bcd809e55bb18ce7b"
   }
  ],
- "reviewed_preview_hash": "45ba4cbf86de3e6a580b243483359fea22ecf06848547b83df5437884c70244c"
+ "reviewed_preview_hash": "ced2631c648288982dee33f4c12c774879cb33b3793c25118393ed80df8260fa"
 }

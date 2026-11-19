@@ -20,7 +20,7 @@ estimated:
   - symmetric rooftop photovoltaic solar banks along outer slopes + 4 framed bay FRP skylight cassettes per slope between monitor & solar banks # estimated
   - front & rear 2-bay rail track doors (5.2 x 6.6 m) with track rail stubs, rain hoods, signal beacons # estimated
   - depot MEP equipment on left flank (substation switchgear, compressed-air receiver tank, eave access ladder) + 3 personnel exit doors # estimated
-  - clerestory workshop glass (cells 0..3 wire/frosted cool white, floor=0 invariant mapping so all 16 bays 100% lit) and red portal signal beacons # estimated
+  - 120 mm jambs, 200 mm sills and 160 mm heads from the wall; cool clerestory glass with three light levels and off bays; red portal signal beacons # estimated
 metrics:
   tris_main: 5518
   tris_lod1: 244

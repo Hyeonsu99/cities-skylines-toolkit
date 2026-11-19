@@ -216,6 +216,15 @@ def _paint_booth_metal(ctx):
     ctx.stains(amount=0.04, scale_px=48, streaks=0.25, seed=73)
 
 
+def _paint_trim_white(ctx):
+    """백색 아연/알루미늄 트림·거터·코핑 패널 (6m×6m 타일로 분할 절감 + 1.0m×1.5m 줄눈 질감 유지)."""
+    ctx.joints(cols=6, rows=4, width_m=0.010, depth=0.75, darken=0.20, tone=3.2, seed=74)
+    ctx.grain(amp=2.4, scale_px=2, height=0.10, seed=75)
+    ctx.stains(amount=0.04, scale_px=48, streaks=0.25, seed=76)
+    n = ctx.noise(scale_px=20, amp=1.0, octaves=2, seed=79)
+    ctx.gloss[...] = np.clip(ctx.gloss + 0.07 * n, 0.34, 0.62)
+
+
 def _paint_painted_steel(ctx):
     ctx.grain(amp=2.4, scale_px=3, height=0.10, seed=77)
     ctx.stains(amount=0.05, scale_px=40, streaks=0.30, seed=78)
@@ -238,13 +247,16 @@ def _paint_lamp_strip(ctx):
 
 
 def _paint_window(ctx):
-    # 부스 창문: 5x5 WindowSet 슬롯 전 영역 균일 청록 반사 유리 + 야간 유인부스 전 창 실내 발광
+    # 네 부스 모두 켜진 상태에서 실내 밝기와 반사광 높이만 다르게 표현한다.
     subtle = ctx.noise(scale_px=24, amp=3.5, octaves=2, seed=85)
+    u, v = ctx.u * K.REF_GRID, ctx.v * K.REF_GRID
+    col = u.astype(int)
+    glow = np.array([0.80, 0.62, 0.74, 0.55, 0.0])[col]
+    height = v % 1.0
     ctx.rgb[...] = np.array((52, 88, 106), dtype=np.float32)
-    ctx.rgb += subtle[..., None]
+    ctx.rgb += (subtle + 14 * height)[..., None]
     ctx.gloss[...] = 0.90
-    # 전역 프레임/멀리온 차단 제거로 5x5 셀 내 모든 유인 부스(1~4번) 창이 소등 없이 균일 점등
-    ctx.emis[...] = np.clip(0.84 + 0.008 * subtle, 0.78, 0.90)
+    ctx.emis[...] = np.clip(glow * (0.70 + 0.30 * height) + 0.004 * subtle, 0.0, 1.0)
 
 
 def _fit_font(drw, candidates, text, max_w, init_px):
@@ -528,7 +540,7 @@ def make_atlas(size=4096):
     A.add("blue_curb", color=(28, 86, 168), metal=0.0, gloss=0.35, px=512, tile=(2.0, 0.5), painter=_paint_blue_curb, normal_strength=2.2)
     A.add("booth_orange", color=(230, 108, 30), metal=0.18, gloss=0.52, px=512, tile=(2.0, 1.5), painter=_paint_booth_metal, normal_strength=2.4)
     A.add("booth_silver", color=(204, 210, 216), metal=0.42, gloss=0.56, px=512, tile=(2.0, 1.5), painter=_paint_booth_metal, normal_strength=2.2)
-    A.add("trim_white", color=(236, 240, 244), metal=0.18, gloss=0.48, px=512, tile=(2.0, 2.0), painter=_paint_booth_metal, normal_strength=1.8)
+    A.add("trim_white", color=(236, 240, 244), metal=0.18, gloss=0.48, px=512, tile=(6.0, 6.0), painter=_paint_trim_white, normal_strength=1.8)
     A.add("green_dome", color=(34, 126, 78), metal=0.14, gloss=0.48, px=512, tile=(2.0, 2.0), painter=_paint_green_dome, normal_strength=2.4)
     A.add("sig_green_down", color=(16, 20, 22), gloss=0.58, emissive=(50, 255, 114), px=512, painter=_paint_sig_green_down)
     A.add("sig_red_x", color=(16, 20, 22), gloss=0.58, emissive=(255, 56, 44), px=512, painter=_paint_sig_red_x)
@@ -592,8 +604,8 @@ def build_graphic_box(mb, A, x0, x1, y0, y1, z0, z1, frame_tag, front_tag=None, 
         mb.rect([(x1, y0, z0), (x0, y0, z0), (x0, y1, z0), (x1, y1, z0)], frame_tag)
 
 
-def build_sloped_fascia_signal(mb, A, xc, half_w, z0, z1, y_wall0, y_wall1, side, tag, frame_tag="dark_steel", proud=0.04):
-    """스카이블루 경사 파시아 면과 평행하게(+proud m) 밀착 매립되는 차로제어 신호박스."""
+def build_sloped_signal(mb, A, xc, half_w, z0, z1, y_wall0, y_wall1, side, tag, frame_tag="dark_steel", proud=0.04):
+    """경사 전면 그래픽과 수직 후면을 가진 신호함."""
     x0, x1 = xc - half_w, xc + half_w
     yf0 = y_wall0 + side * proud
     yf1 = y_wall1 + side * proud
@@ -880,6 +892,27 @@ def build_octagonal_prism(mb, A, cx, cy, z0, z1, r, tag, cap_tag=None, skip_bott
         mb.quad([pts0[4], pts0[3], pts0[0], pts0[7]], uv_cap, cap_tag)
 
 
+def build_octagonal_prism_y(mb, A, cx, y0, y1, cz, r, tag, cap_front=True, cap_back=True):
+    """Y축 방향 폐합 팔각 기둥 솔리드 (소형 실외기 팬 슈라우드 등)."""
+    pts0, pts1 = [], []
+    for k in range(8):
+        ang = 2.0 * math.pi * (k + 0.5) / 8.0
+        pts0.append((cx + r * math.cos(ang), y0, cz + r * math.sin(ang)))
+        pts1.append((cx + r * math.cos(ang), y1, cz + r * math.sin(ang)))
+    uv_s = A.uv(tag)
+    for k in range(8):
+        nk = (k + 1) % 8
+        mb.quad([pts0[nk], pts0[k], pts1[k], pts1[nk]], uv_s, tag)
+    if cap_front:
+        mb.quad([pts0[0], pts0[1], pts0[2], pts0[3]], uv_s, tag)
+        mb.quad([pts0[4], pts0[5], pts0[6], pts0[7]], uv_s, tag)
+        mb.quad([pts0[7], pts0[0], pts0[3], pts0[4]], uv_s, tag)
+    if cap_back:
+        mb.quad([pts1[3], pts1[2], pts1[1], pts1[0]], uv_s, tag)
+        mb.quad([pts1[7], pts1[6], pts1[5], pts1[4]], uv_s, tag)
+        mb.quad([pts1[4], pts1[3], pts1[0], pts1[7]], uv_s, tag)
+
+
 def build_island(mb, A, x0, x1, y0, y1, nose_len, stage):
     """하단 로얄블루 연석(0..0.16) + 상단 콘크리트 방호벽(0.16..0.56) + 테이퍼 불노즈."""
     w = x1 - x0
@@ -1007,12 +1040,15 @@ def build_stage(A, stage):
 
     # 4. 비대칭 폴리카보네이트 아치 지붕 (실측: Wing 0 서측 상향 갈매기 날개 + 1/7차선 하부 원통 볼트 + 남측 6차선 W3/E3 상향 캔틸레버)
     n_arch = 16 if stage == 0 else (5 if stage == 1 else 2)
+    arch_thick = 0.06
+    w1 = (-14.32, -2.88, -10.30, -5.72, 4.94, 5.56, None)  # 서측 2+3차선
+    w2 = (-2.52, 8.62, -10.30, -5.72, 4.94, 5.56, None)    # 서측 4+5차선
     if stage == 2:
         arch_specs = [
             (-19.80, -15.48, -10.30, 8.58, 4.36, 4.86, None),        # Wing 0 통합 간소화
             (15.40, 19.70, -10.20, 5.70, 4.34, 4.78, None),          # Wing S (7차선 하부)
-            (-14.32, -2.88, -10.30, -5.72, 4.94, 5.56, None),        # W1
-            (-2.52, 8.62, -10.30, -5.72, 4.94, 5.56, None),          # W2
+            w1,
+            w2,
             (8.98, 15.80, -10.30, -5.72, 4.94, 5.44, "north"),       # W3 (6차선 상향 캔틸레버)
             (-8.44, -2.88, 5.72, 8.60, 4.94, 5.40, None),            # E1 (3차선 단독)
             (-2.52, 8.62, 5.72, 14.20, 4.94, 5.56, None),            # E2 (4+5차선)
@@ -1023,8 +1059,8 @@ def build_stage(A, stage):
             (-19.80, -14.64, -10.30, -5.72, 4.94, 5.46, "south"),    # Wing 0 West: 1차선 서측 외향 상향 날개
             (-19.80, -15.48, -6.50, 8.58, 4.28, 4.68, None),         # Wing 0 Main/East: 1차선 하부 원통 캐노피
             (15.40, 19.70, -10.20, 5.70, 4.34, 4.78, None),          # Wing S: 남측 7차선 하부 원통 캐노피 (동측 개방)
-            (-14.32, -2.88, -10.30, -5.72, 4.94, 5.56, None),        # W1: 서측 2+3차선
-            (-2.52, 8.62, -10.30, -5.72, 4.94, 5.56, None),          # W2: 서측 4+5차선
+            w1,
+            w2,
             (8.98, 15.80, -10.30, -5.72, 4.94, 5.44, "north"),       # W3: 서측 6차선 상향 캔틸레버 날개
             (-8.44, -2.88, 5.72, 8.60, 4.94, 5.40, None),            # E1: 동측 3차선 단독 단축 (2차선 개방)
             (-2.52, 8.62, 5.72, 14.20, 4.94, 5.56, None),            # E2: 동측 4+5차선 장대
@@ -1032,7 +1068,7 @@ def build_stage(A, stage):
         ]
     for ax0, ax1, ay0, ay1, ze, zc, hm in arch_specs:
         build_closed_arch_vault(
-            mb, A, ax0, ax1, ay0, ay1, ze, zc, 0.06, n_arch,
+            mb, A, ax0, ax1, ay0, ay1, ze, zc, arch_thick, n_arch,
             tag="polycarb", edge_tag="trim_white", half_mode=hm,
         )
 
@@ -1100,8 +1136,16 @@ def build_stage(A, stage):
     if stage < 2:
         for cx, cy, zt in steel_cols:
             if stage == 0:
-                mb.box(cx - 0.24, cx + 0.24, cy - 0.24, cy + 0.24, z_isl, z_isl + 0.16, "concrete", skip=("bottom",))
-                build_octagonal_prism(mb, A, cx, cy, z_isl + 0.16, zt - 0.005, 0.14, "trim_white", skip_bottom=True)
+                mb.box(cx - 0.24, cx + 0.24, cy - 0.24, cy + 0.24, z_isl, z_isl + 0.14, "concrete", skip=("bottom",))
+                # 강재 베이스플레이트 + 4개 앵커볼트 + 팔각 기둥 + 상단 거셋 새들 + 중단 브레이싱 접합 칼라
+                mb.box(cx - 0.19, cx + 0.19, cy - 0.19, cy + 0.19, z_isl + 0.14, z_isl + 0.175, "dark_steel", skip=("bottom",))
+                for adx in (-0.14, 0.14):
+                    for ady in (-0.14, 0.14):
+                        mb.box(cx + adx - 0.018, cx + adx + 0.018, cy + ady - 0.018, cy + ady + 0.018,
+                               z_isl + 0.175, z_isl + 0.21, "dark_steel", skip=("bottom",))
+                build_octagonal_prism(mb, A, cx, cy, z_isl + 0.175, zt - 0.08, 0.14, "trim_white", skip_bottom=True)
+                mb.box(cx - 0.17, cx + 0.17, cy - 0.17, cy + 0.17, zt - 0.08, zt - 0.005, "dark_steel")
+                build_octagonal_prism(mb, A, cx, cy, 3.00, 3.36, 0.172, "dark_steel", skip_bottom=False)
             else:
                 mb.box(cx - 0.13, cx + 0.13, cy - 0.13, cy + 0.13, z_isl, zt - 0.005, "trim_white", skip=("bottom",))
         if stage == 0:
@@ -1130,7 +1174,23 @@ def build_stage(A, stage):
                 build_diagonal_strut(mb, A, 19.72, cy, 3.05, 17.65, cy, 4.72, 0.062, "trim_white")
             build_diagonal_strut(mb, A, 19.72, -5.78, 3.05, 19.72, -8.50, 4.30, 0.060, "trim_white")
 
-    # 7. 차선별 슬림 선형 천장 LED 등기구 & 1차선 1신호 원칙 매립/아치 신호박스
+            # 교각·외곽 지주 팔각 드레인 파이프 (상부 집수 호퍼 + 고정 밴드 3단 + 하부 배수 슈)
+            pier_drains = [(-14.50, -3.75), (-14.50, 3.75), (-2.70, -3.75), (-2.70, 3.75), (8.80, -3.75), (8.80, 3.75)]
+            for dx, dy in pier_drains:
+                px_d = dx + 0.36
+                mb.box(px_d - 0.09, px_d + 0.09, dy - 0.09, dy + 0.09, z_isl, z_isl + 0.09, "dark_steel", skip=("bottom",))
+                build_octagonal_prism(mb, A, px_d, dy, z_isl + 0.09, 4.88, 0.052, "booth_silver", skip_bottom=True)
+                mb.box(px_d - 0.10, px_d + 0.10, dy - 0.10, dy + 0.10, 4.88, 5.17, "dark_steel", skip=("top",))  # 보 플랜지(±0.11)와 면 공유 방지
+                for bz in (1.50, 2.75, 4.00):
+                    build_octagonal_prism(mb, A, px_d, dy, bz - 0.035, bz + 0.035, 0.066, "dark_steel", skip_bottom=False)
+            for dx_w, dy_w, zt_w in ((-19.88, 1.55, 4.20), (19.80, 0.35, 4.26)):
+                mb.box(dx_w - 0.08, dx_w + 0.08, dy_w - 0.08, dy_w + 0.08, z_isl, z_isl + 0.08, "dark_steel", skip=("bottom",))
+                build_octagonal_prism(mb, A, dx_w, dy_w, z_isl + 0.08, zt_w - 0.08, 0.048, "booth_silver", skip_bottom=True)
+                mb.box(dx_w - 0.09, dx_w + 0.09, dy_w - 0.22, dy_w + 0.08, zt_w - 0.12, zt_w - 0.02, "dark_steel")  # 기둥 새들 상면과 같은 높이 방지
+                for bz in (1.40, 2.75):
+                    build_octagonal_prism(mb, A, dx_w, dy_w, bz - 0.03, bz + 0.03, 0.060, "dark_steel", skip_bottom=False)
+
+    # 7. 차선별 슬림 선형 천장 LED 등기구 & 소핏 하부 종/횡 강재 보 & 1차선 1신호 원칙 매립/아치 신호박스
     lane_centers = [-17.40, -11.75, -5.50, 0.10, 5.85, 11.65, 17.15]
     if stage == 0:
         # 본체 천장 전폭 연속 이열 LED 등기구, 모듈 분할 보·테두리 트림 (under_look_n/s 실물 비례)
@@ -1147,6 +1207,22 @@ def build_stage(A, stage):
             mb.box(bx0 + 0.02, bx1 - 0.02, sy_trim0, sy_trim1, 5.110, z_dec_bot, "booth_silver", skip=("top",))
         for sx_trim0, sx_trim1 in ((bx0 + 0.02, bx0 + 0.14), (bx1 - 0.14, bx1 - 0.02)):
             mb.box(sx_trim0, sx_trim1, -5.56, 5.56, 5.115, z_dec_bot, "booth_silver", skip=("top",))
+
+        # 소핏 하부 종/횡 강재 보 구조 (교각 코벨·등기구·트림과 겹치지 않는 z=4.94..5.108 층 분리)
+        for gx_b in (-14.50, -2.70, 8.80, 14.40):
+            for gy0_s, gy1_s in ((-5.54, -4.22), (-3.28, 3.28), (4.22, 5.54)):
+                mb.box(gx_b - 0.08, gx_b + 0.08, gy0_s, gy1_s, 4.98, 5.108, "dark_steel")
+                mb.box(gx_b - 0.14, gx_b + 0.14, gy0_s, gy1_s, 4.94, 4.98, "booth_silver")
+        for gx_b in (-8.60, 2.90):
+            mb.box(gx_b - 0.07, gx_b + 0.07, -5.54, 5.54, 4.99, 5.108, "dark_steel")
+            mb.box(gx_b - 0.12, gx_b + 0.12, -5.54, 5.54, 4.95, 4.99, "booth_silver")
+        # 종방향(X) I형 강재 보 (y = ±3.75 코벨 사이 경간 + 중앙 y = 0.0)
+        for ly_b in (-3.75, 3.75):
+            for lx0_s, lx1_s in ((-14.12, -3.08), (-2.32, 8.42), (9.18, 14.02)):
+                mb.box(lx0_s, lx1_s, ly_b - 0.06, ly_b + 0.06, 5.01, 5.105, "dark_steel")
+                mb.box(lx0_s, lx1_s, ly_b - 0.11, ly_b + 0.11, 4.97, 5.01, "booth_silver")
+        for lx0_s, lx1_s in ((-15.10, -14.60), (-14.40, -8.70), (-8.50, -2.80), (-2.60, 2.80), (3.00, 8.70), (8.90, 14.30), (14.50, 15.62)):
+            mb.box(lx0_s, lx1_s, -0.05, 0.05, 5.02, 5.105, "dark_steel")
         # 아치 하부 종방향 선형 등기구 바
         arch_lamp_specs = [
             (-17.64, (-4.8, -1.5, 2.0, 5.5), 4.63),
@@ -1162,19 +1238,24 @@ def build_stage(A, stage):
                 mb.box(lx - 0.09, lx + 0.09, ly - 1.15, ly + 1.15, lz - 0.04, lz, "lamp_strip")
 
     if stage < 2:
-        # 서측(-Y) 스카이블루 경사 파시아: 아치 정점 바로 위(z=5.44..5.96)에 실측 신호 매립 (3차선 Red X, W2 정점 Green ↓)
-        z_sig0, z_sig1 = 5.44, 5.96
-        y_slope0 = 5.70 + 0.38 * (z_sig0 - z_dec_bot) / (z_dec_top - z_dec_bot)
-        y_slope1 = 5.70 + 0.38 * (z_sig1 - z_dec_bot) / (z_dec_top - z_dec_bot)
-        build_sloped_fascia_signal(mb, A, lane_centers[2], 0.27, z_sig0, z_sig1, -y_slope0, -y_slope1, -1, "sig_red_x")
-        build_sloped_fascia_signal(mb, A, 2.60, 0.27, z_sig0, z_sig1, -y_slope0, -y_slope1, -1, "sig_green_down")
+        # 서측 사진의 전면 테두리 이음부 기준 X 추정값 (3차선 / 4차선).
+        for cx, arch, tag in ((-5.20, w1, "sig_red_x"), (0.50, w2, "sig_green_down")):
+            ax0, ax1, front_y, _, ze, zc, _ = arch
+            xs, zs = zip(*arch_profile_circular(ax0, ax1, ze, zc, n_arch))
+            x0, x1 = cx - 0.27, cx + 0.27
+            # 양쪽 모서리가 닿도록 실제 분할된 쉘의 낮은 상면에서 5 mm 내린다.
+            base = min(np.interp((x0, x1), xs, zs)) + arch_thick / 2 - 0.005
+            build_graphic_box(mb, A, x0, x1, front_y - 0.01, front_y + 0.23,
+                              base, base + 0.52, "dark_steel", front_tag=tag)
 
         # 동측(+Y): E1 3차선 단축아치 전면 Red X (east_near_look_w 실측) + Lane 2/4/5 파시아 소형 CCTV/센서 하우징
         build_graphic_box(mb, A, lane_centers[2] - 0.28, lane_centers[2] + 0.28, 8.46, 8.68, 5.20, 5.76, "dark_steel",
                           back_tag="sig_red_x")
         if stage == 0:
+            y_slope0 = 5.70 + 0.38 * (5.44 - z_dec_bot) / (z_dec_top - z_dec_bot)
+            y_slope1 = 5.70 + 0.38 * (5.96 - z_dec_bot) / (z_dec_top - z_dec_bot)
             for cx in (-12.50, -11.00, lane_centers[3], lane_centers[4]):
-                build_sloped_fascia_signal(mb, A, cx, 0.18, 5.76, 6.10, +y_slope0, +y_slope1, +1, None)
+                build_sloped_signal(mb, A, cx, 0.18, 5.76, 6.10, y_slope0, y_slope1, +1, None)
 
     # 8. 오렌지-실버 요금소 부스 4동 (Islands 1..4) + 슬림 백색 지붕 캡 + WindowSet 유리
     booth_xs = [-14.50, -8.60, -2.70, 2.90]
@@ -1198,29 +1279,54 @@ def build_stage(A, stage):
                         mb.box(cx_s, cx_s + 0.04, cy_s, cy_s + 0.04, 1.28, 2.58, "dark_steel", skip=("bottom", "top"))
                 for sx_off in (-(w2 + 0.05), w2 + 0.01):
                     mb.box(bx + sx_off, bx + sx_off + 0.04, -1.10, 1.10, 2.54, 2.58, "lamp_strip", skip=("top",))
-                # 측면 창호 외곽 프레임 (WIN_OFF=0.02 비차단 범위)
-                for sx in (-1, +1):
-                    fx0 = (bx + sx * w2 - 0.005) if sx > 0 else (bx + sx * w2 - 0.025)
-                    fx1 = (bx + sx * w2 + 0.025) if sx > 0 else (bx + sx * w2 + 0.005)
-                    mb.box(fx0, fx1, -1.47, 1.47, 1.45, 1.50, "dark_steel")
-                    mb.box(fx0, fx1, -1.47, 1.47, 2.48, 2.53, "dark_steel")
-                    for vy0, vy1 in ((-1.47, -1.42), (-0.15, -0.10), (0.10, 0.15), (1.42, 1.47)):
-                        mb.box(fx0, fx1, vy0, vy1, 1.50, 2.48, "dark_steel", skip=("bottom", "top"))
-                # 전·후면 창호 외곽 프레임
-                for sy, yb, z_sill in ((-1, by0_b, 1.62), (1, by1_b, 1.50)):
-                    fy0 = (yb - 0.005) if sy > 0 else (yb - 0.025)
-                    fy1 = (yb + 0.025) if sy > 0 else (yb + 0.005)
-                    mb.box(bx - 0.55, bx + 0.55, fy0, fy1, z_sill - 0.05, z_sill, "dark_steel")
-                    mb.box(bx - 0.55, bx + 0.55, fy0, fy1, 2.48, 2.53, "dark_steel")
-                    for vx0, vx1 in ((bx - 0.55, bx - 0.50), (bx + 0.50, bx + 0.55)):
-                        mb.box(vx0, vx1, fy0, fy1, z_sill, 2.48, "dark_steel", skip=("bottom", "top"))
+
+                # 창호 하부 스테인리스 거래 선반/카운터 + 요금 수납 인터컴 박스 (창틀 z=1.445 하부)
+                for side_s, sx_wall in ((-1, bx - w2), (1, bx + w2)):
+                    K.axbox(mb, "x", sx_wall, side_s, -1.18, 1.18, 0.0, 0.20, 1.37, 1.43, "booth_silver")
+                    for bky in (-0.95, 0.0, 0.95):
+                        K.axbox(mb, "x", sx_wall, side_s, bky - 0.03, bky + 0.03, 0.0, 0.16, 1.29, 1.37, "dark_steel")
+                    K.axbox(mb, "x", sx_wall, side_s, 0.18, 0.56, 0.0, 0.06, 0.94, 1.22, "dark_steel")
+                    K.axbox(mb, "x", sx_wall, side_s, 0.23, 0.51, 0.06, 0.08, 0.99, 1.17, "booth_silver")
+
+                # 부스 전면(-Y) 하단 외벽 소형 실외기 + L브라켓 + 팬 슈라우드 + 냉매 배관 덕트
+                ac_x0, ac_x1 = bx - 0.42, bx + 0.22
+                for ac_bx in (ac_x0 + 0.08, ac_x1 - 0.08):
+                    mb.box(ac_bx - 0.025, ac_bx + 0.025, by0_b - 0.22, by0_b, 0.72, 0.77, "dark_steel", skip=("back",))
+                mb.box(ac_x0, ac_x1, by0_b - 0.24, by0_b, 0.77, 1.24,
+                       dict(default="booth_silver", top="trim_white"), skip=("back",))
+                build_octagonal_prism_y(mb, A, bx - 0.18, by0_b - 0.27, by0_b - 0.24, 1.01, 0.17, "dark_steel",
+                                        cap_front=True, cap_back=False)
+                build_octagonal_prism_y(mb, A, bx - 0.18, by0_b - 0.285, by0_b - 0.27, 1.01, 0.05, "trim_white",
+                                        cap_front=True, cap_back=False)
+                mb.box(ac_x1 + 0.04, ac_x1 + 0.10, by0_b - 0.06, by0_b, 0.92, 2.56, "dark_steel", skip=("back",))
+
+                # 부스 지붕 상부 환기팬 유닛 + 통신 정션박스 + 지붕 파라펫 트림 림
+                mb.box(bx - 0.30, bx + 0.30, -0.88, -0.28, 3.10, 3.20, "dark_steel", skip=("bottom",))
+                mb.box(bx - 0.24, bx + 0.24, -0.82, -0.34, 3.20, 3.34, "booth_silver", skip=("bottom",))
+                mb.box(bx - 0.34, bx + 0.34, -0.92, -0.24, 3.34, 3.41, "trim_white")
+                mb.box(bx - 0.22, bx + 0.22, 0.42, 0.88, 3.10, 3.26, "dark_steel", skip=("bottom",))
+                mb.box(bx - 0.24, bx + 0.24, 0.40, 0.90, 3.26, 3.30, "booth_silver")
+                for py_lip in (by0_b - 0.06, by1_b + 0.02):
+                    mb.box(bx - w2 - 0.06, bx + w2 + 0.06, py_lip, py_lip + 0.04, 3.10, 3.14, "dark_steel")
 
         if wins is not None:
-            for sx in (-1, +1):
-                wins.add_face("x", bx + sx * w2, sx, -1.42, -0.15, 1.50, 2.48, floor=0, unit=b_idx)
-                wins.add_face("x", bx + sx * w2, sx, 0.15, 1.42, 1.50, 2.48, floor=0, unit=b_idx)
-            wins.add_face("y", by1_b, +1, bx - 0.50, bx + 0.50, 1.50, 2.48, floor=0, unit=b_idx)
-            wins.add_face("y", by0_b, -1, bx - 0.50, bx + 0.50, 1.62, 2.48, floor=0, unit=b_idx)
+            unit = (b_idx * 18) % 25  # WindowSet의 7배 stride를 역변환해 부스별 셀 0..3 사용.
+            booth_faces = (
+                ("x", bx - w2, -1, -1.42, 1.42, 1.50, ((-1.42, -0.04), (0.04, 1.42))),
+                ("x", bx + w2, +1, -1.42, 1.42, 1.50, ((-1.42, -0.04), (0.04, 1.42))),
+                ("y", by0_b, -1, bx - 0.50, bx + 0.50, 1.62, ((bx - 0.50, bx + 0.50),)),
+                ("y", by1_b, +1, bx - 0.50, bx + 0.50, 1.50, ((bx - 0.50, bx + 0.50),)),
+            )
+            for axis, wall, side, a0, a1, z0, panes in booth_faces:
+                z1 = 2.48
+                K.axbox(mb, axis, wall, side, a0 - 0.08, a1 + 0.08, 0, 0.145, z0 - 0.055, z0, "booth_silver")
+                K.axbox(mb, axis, wall, side, a0 - 0.07, a1 + 0.07, 0, 0.105, z1, z1 + 0.055, "booth_silver")
+                for lo, hi in ((a0 - 0.05, a0), (a1, a1 + 0.05)):
+                    K.axbox(mb, axis, wall, side, lo, hi, 0, 0.085, z0, z1, "booth_silver")
+                if len(panes) == 2:
+                    K.axbox(mb, axis, wall, side, -0.04, 0.04, 0, 0.075, z0, z1, "booth_silver")
+                for lo, hi in panes:
+                    wins.add_face(axis, wall, side, lo, hi, z0, z1, floor=0, unit=unit)
 
     if stage == 0:
         # 무인정산기·단말기 기둥 및 적백 차단기 바 + 북측 화물차선 노란색 U자 안전가드 & W-빔 가드레일
@@ -1310,16 +1416,16 @@ def build_stage(A, stage):
             [(8.80, z_isl), (8.80, 5.65), (9.35, 6.20), (19.05, 6.20), (19.60, 5.65), (19.60, z_isl)],
             gy_w, 0.18, 0.16, "gantry_lime", skip_bottom=True,
         )
-        mb.box(14.24, 14.56, gy_w - 0.18, gy_w + 0.18, z_isl, 6.04, "gantry_lime", skip=("bottom", "top"))
-        # 하부 트러스 레일 (z=4.98..5.08) + LED 박스 (z=5.12..6.04) + 상부 녹색 화살표 박스
-        mb.box(9.55, 19.00, gy_w - 0.14, gy_w + 0.14, 4.98, 5.08, "gantry_lime")
-        build_graphic_box(mb, A, 9.65, 13.75, gy_w - 0.26, gy_w + 0.10, 5.12, 6.04, "dark_steel",
-                          front_tag="led_hipass", back_tag=None)
-        build_graphic_box(mb, A, 15.10, 19.20, gy_w - 0.26, gy_w + 0.10, 5.12, 6.04, "dark_steel",
-                          front_tag="led_warn", back_tag=None)
-        for sx in (11.65, 17.15):
-            build_graphic_box(mb, A, sx - 0.36, sx + 0.36, gy_w - 0.20, gy_w + 0.20, 6.36, 7.02, "dark_steel",
-                              front_tag="sig_green_down", back_tag=None)
+        mb.box(14.24, 14.56, gy_w - 0.17, gy_w + 0.17, z_isl, 6.04, "gantry_lime", skip=("bottom", "top"))
+        # west_far_look_e: 두 전광판은 모따기 안쪽에 현수, 화살표는 상부 보 위에 장착.
+        mb.box(8.95, 19.45, gy_w - 0.14, gy_w + 0.14, 4.98, 5.08, "gantry_lime")
+        for sx, x0_s, x1_s, tag in ((11.65, 9.70, 13.85, "led_hipass"), (17.15, 14.95, 18.90, "led_warn")):
+            build_graphic_box(mb, A, x0_s, x1_s, gy_w - 0.22, gy_w + 0.10, 5.17, 5.96,
+                              "dark_steel", front_tag=tag)
+            for mount in (sx - 0.85, sx + 0.85):
+                mb.box(mount - 0.045, mount + 0.045, gy_w - 0.075, gy_w + 0.075, 5.95, 6.05, "dark_steel")
+            build_graphic_box(mb, A, sx - 0.33, sx + 0.33, gy_w - 0.15, gy_w + 0.15, 6.36, 6.99,
+                              "dark_steel", front_tag="sig_green_down", skip=("bottom",))
         if stage == 0:
             # 각 차로 중앙에 현수된 백색 사각 제한속도 30 표지판 + 기둥 하단 황흑 보호패드
             for gx in (8.80, 14.40, 19.60):
@@ -1342,17 +1448,21 @@ def build_stage(A, stage):
             [(-14.50, z_isl), (-14.50, 5.55), (-14.00, 6.06), (-9.10, 6.06), (-8.60, 5.55), (-8.60, z_isl)],
             gy_e2, 0.16, 0.15, "gantry_grey", skip_bottom=True,
         )
-        # 하부 개방형 격자 트러스 프레임(z=4.66..5.92) + LED(z=5.18..5.96) + 상부 녹색 화살표
-        mb.box(-14.35, -8.75, gy_e2 - 0.10, gy_e2 + 0.10, 4.66, 4.74, "gantry_grey")
-        build_graphic_box(mb, A, -13.75, -9.35, gy_e2 - 0.08, gy_e2 + 0.24, 5.18, 5.96, "dark_steel",
+        # east_near_look_w: 전광판 상단은 포털 보 하단과 분리하고 트러스에 지지.
+        mb.box(-14.36, -8.74, gy_e2 - 0.10, gy_e2 + 0.10, 4.66, 4.74, "gantry_grey")
+        build_graphic_box(mb, A, -13.63, -9.47, gy_e2 - 0.08, gy_e2 + 0.19, 5.04, 5.86, "dark_steel",
                           front_tag=None, back_tag="led_hipass")
-        build_graphic_box(mb, A, -12.11, -11.39, gy_e2 - 0.20, gy_e2 + 0.20, 6.21, 6.86, "dark_steel",
-                          front_tag=None, back_tag="sig_green_down")
+        for mount in (-13.20, -9.90):
+            mb.box(mount - 0.045, mount + 0.045, gy_e2 - 0.06, gy_e2 + 0.06, 5.85, 5.92, "gantry_grey")
+        build_graphic_box(mb, A, -12.11, -11.39, gy_e2 - 0.15, gy_e2 + 0.15, 6.21, 6.86, "dark_steel",
+                          back_tag="sig_green_down", skip=("bottom",))
     if stage == 0:
+        for px_g in (-14.50, -8.60):
+            mb.box(px_g - 0.24, px_g + 0.24, gy_e2 - 0.24, gy_e2 + 0.24, z_isl, z_isl + 0.04, "dark_steel", skip=("bottom",))
         for lx_s in (-14.15, -8.95):
             mb.box(lx_s - 0.025, lx_s + 0.025, gy_e2 - 0.05, gy_e2 + 0.05, 4.74, 5.92, "gantry_grey", skip=("bottom", "top"))
         for lx_s in (-13.10, -12.00, -11.00, -9.95):
-            mb.box(lx_s - 0.022, lx_s + 0.022, gy_e2 - 0.04, gy_e2 + 0.04, 4.74, 5.18, "gantry_grey", skip=("bottom", "top"))
+            mb.box(lx_s - 0.022, lx_s + 0.022, gy_e2 - 0.04, gy_e2 + 0.04, 4.74, 5.05, "gantry_grey", skip=("bottom", "top"))
         # 하부 카메라 센서 포드
         mb.box(-11.88, -11.62, gy_e2 - 0.08, gy_e2 + 0.14, 4.42, 4.66, "trim_white")
         # Island 1 & Island 2 독립 원형 표지판 지주 (트럭진입금지 + 보조명판 + 제한속도 30, east_far_look_w 실물)
@@ -1383,13 +1493,17 @@ def build_stage(A, stage):
             [(-19.80, z_isl), (-19.80, 4.82), (-19.28, 5.34), (-15.02, 5.34), (-14.50, 4.82), (-14.50, z_isl)],
             gy_e1, 0.17, 0.15, "gantry_orange", skip_bottom=True,
         )
-        build_graphic_box(mb, A, -19.45, -14.85, gy_e1 - 0.14, gy_e1 + 0.22, 5.49, 6.26, "dark_steel",
+        for mount in (-18.80, -15.50):
+            mb.box(mount - 0.10, mount + 0.10, gy_e1 - 0.09, gy_e1 + 0.09, 5.48, 5.54, "dark_steel")
+        build_graphic_box(mb, A, -19.45, -14.85, gy_e1 - 0.14, gy_e1 + 0.22, 5.53, 6.26, "dark_steel",
                           front_tag=None, back_tag="led_freight")
-        build_graphic_box(mb, A, -17.76, -17.04, gy_e1 - 0.20, gy_e1 + 0.20, 6.26, 6.92, "dark_steel",
-                          front_tag=None, back_tag="sig_green_down")
+        build_graphic_box(mb, A, -17.76, -17.04, gy_e1 - 0.13, gy_e1 + 0.17, 6.26, 6.92, "dark_steel",
+                          back_tag="sig_green_down", skip=("bottom",))
     if stage == 0:
+        for px_g in (-19.80, -14.50):
+            mb.box(px_g - 0.24, px_g + 0.24, gy_e1 - 0.24, gy_e1 + 0.24, z_isl, z_isl + 0.04, "dark_steel", skip=("bottom",))
         # 하부 슬림 실버 트러스 & 우측 차로 카메라 하우징 (east_near_look_w 실물)
-        mb.box(-19.45, -14.85, gy_e1 - 0.10, gy_e1 + 0.10, 4.92, 4.98, "gantry_grey")
+        mb.box(-19.58, -14.72, gy_e1 - 0.10, gy_e1 + 0.10, 4.92, 4.98, "gantry_grey")
         for lx_f in (-18.80, -17.70, -16.60, -15.50):
             mb.box(lx_f - 0.025, lx_f + 0.025, gy_e1 - 0.04, gy_e1 + 0.04, 4.98, 5.19, "gantry_grey", skip=("bottom", "top"))
         mb.box(-16.15, -15.85, gy_e1 - 0.10, gy_e1 + 0.26, 4.68, 4.92, "trim_white")

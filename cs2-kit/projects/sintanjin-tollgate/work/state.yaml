@@ -346,14 +346,138 @@
     "key": null
    },
    "fbx": null
+  },
+  "signals-booth": {
+   "at": "2026-11-19T09:00:38",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "signals-booth",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "1a0c0b931d7280e93baa8614e6477ef4e830e05cc8ec1f7b5e6ac122bbbdb1d6",
+   "preview": {
+    "path": "previews/SintanjinTollgate_L1_6x4.png",
+    "exists": true,
+    "sha256": "66eadf91e18e28ec7dd99402e8ad26221258d0c8c2dc791a9844eddc2c4bcd8e",
+    "key": null
+   },
+   "fbx": null
+  },
+  "west-signal-saddle": {
+   "at": "2026-11-19T09:39:32",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "west-signal-saddle",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "eebbcf968306ad07ed6a81c03763a352cf8d6afba29896a79b0eaa7fc66f168b",
+   "preview": {
+    "path": "previews/SintanjinTollgate_L1_6x4.png",
+    "exists": true,
+    "sha256": "981f62ad4985f0bf2156eda06c152c64d4d79b041c7d35df9daa0c323b95037a",
+    "key": null
+   },
+   "fbx": null
+  },
+  "signal-photo-alignment": {
+   "at": "2026-11-19T09:46:17",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "signal-photo-alignment",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "3f097a3f9a51a01ff0c0b77a051ab159357641313466fef13a96725a562d347d",
+   "preview": {
+    "path": "previews/SintanjinTollgate_L1_6x4.png",
+    "exists": true,
+    "sha256": "9ca10cf51b34dc6b098467f34901dbbf08367609b574b3cba374bab39b99848e",
+    "key": null
+   },
+   "fbx": null
+  },
+  "p1": {
+   "at": "2026-11-19T10:47:57",
+   "mode": "final",
+   "status": "FAIL",
+   "label": "p1",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "FAIL",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS"
+   },
+   "generator_hash": "a06b261e973a5b5b2c0894a0b73c1c78e802ea25ba9513f3dce605e4807922b5",
+   "preview": {
+    "path": "previews/SintanjinTollgate_L1_6x4.png",
+    "exists": true,
+    "sha256": "91dbf1e4aae5cd4baf8717ade1d324bf975fcae1c880e08472e4f2926071a799",
+    "key": null
+   },
+   "fbx": null
+  },
+  "drain-coplanar-fix": {
+   "at": "2026-11-19T11:10:59",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "drain-coplanar-fix",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "f8d86b4158f5cf4269e5e22ea505ec88b678556dc9973fb283477a673cb7585d",
+   "preview": {
+    "path": "previews/SintanjinTollgate_L1_6x4.png",
+    "exists": true,
+    "sha256": "5e1fc42fb7b607d48b9559550f6afb683656a63942779589a9a1b255bf46b6b6",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-16T14:37:57",
+ "updated_at": "2026-11-19T11:10:59",
  "current_stage": "final:INCOMPLETE",
  "generator": "sintanjin_tollgate_cs2.py",
- "generator_hash": "abf9ab58a9e8ddb8858612b8f04ff142bd33e51c66b32d888c3ffdbd091b6562",
+ "generator_hash": "f8d86b4158f5cf4269e5e22ea505ec88b678556dc9973fb283477a673cb7585d",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "18b46b01e40c94bcccb0d7a0935e79500397e288887d93935d43b27ac9c703a1",
+ "reviewed_preview_hash": "91dbf1e4aae5cd4baf8717ade1d324bf975fcae1c880e08472e4f2926071a799",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",

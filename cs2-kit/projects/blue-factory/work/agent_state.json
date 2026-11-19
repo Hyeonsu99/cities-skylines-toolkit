@@ -1,11 +1,11 @@
 {
- "visual_review": "PASS",
- "current_stage": "review:PASS",
+ "visual_review": "NOT_CHECKED",
+ "current_stage": "final:INCOMPLETE",
  "generator": "blue_rail_depot_cs2.py",
  "generator_hash": "31cba983e9bcce6f6fd186c7180eaa07e70b7539e53b3b7dac7d07e48aa6489b",
- "current_preview_hash": "11cd16162f46345cdbd168b7f974e29f0b40f8b30a1fab15e4bd61bd24f8c122",
+ "current_preview_hash": "445434f4686697cb3ac14b5f30b5498de5a4bb10b2a4b8e3500af2d882ab4134",
  "last_gate": {
-  "status": "PASS",
+  "status": "INCOMPLETE",
   "project": "blue-factory",
   "generator": "blue_rail_depot_cs2.py",
   "mode": "final",
@@ -17,7 +17,7 @@
    "tiles": "NOT_APPLICABLE",
    "lod": "PASS",
    "fbx": "PASS",
-   "visual_review": "PASS"
+   "visual_review": "NOT_CHECKED"
   },
   "errors": [],
   "next_action": {
@@ -29,12 +29,13 @@
    "report": "output\\BlueRailDepot_L1_4x8\\_check\\report.json"
   },
   "asset": "BlueRailDepot_L1_4x8",
-  "label": "xreview_tex",
-  "time": "2026-11-17 15:41:47",
+  "label": "p1",
+  "time": "2026-11-19 10:46:33",
   "build": {
    "asset": "BlueRailDepot_L1_4x8",
    "fbx": true,
    "warnings": [
+    "[cs2kit][WARN] lot 4x8 > 6x6 -> register as signature building",
     "[cs2kit][WARN] lot 4x8 > 6x6 -> register as signature building"
    ]
   },
@@ -45,9 +46,9 @@
    ],
    "info": {
     "size": [
-     28.97,
+     29.14,
      57.5,
-     14.49
+     15.19
     ],
     "pivot_offset": [
      0.0,
@@ -56,7 +57,7 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 5518,
+     "main": 15768,
      "win": 64,
      "lod1": 244,
      "lod1_win": 64,
@@ -64,7 +65,7 @@
      "lod2_win": 64
     },
     "verts": {
-     "main": 11052,
+     "main": 33608,
      "win": 128,
      "lod1": 496,
      "lod1_win": 128,
@@ -90,7 +91,7 @@
      "LOD2_Emissive": "1024x1024 RGB"
     },
     "texel_px_per_m": {
-     "p10": 23.2,
+     "p10": 21.6,
      "median": 255.7,
      "p90": 255.8
     },
@@ -101,7 +102,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 0.3
+    "time_s": 0.5
    },
    "report": "output\\BlueRailDepot_L1_4x8\\_check\\report.json"
   },
@@ -124,13 +125,13 @@
   "lod": {
    "checked": true,
    "status": "PASS",
-   "line": "LODCHECK PASS main max 0.002% (az 45, el +5) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\BlueRailDepot_L1_4x8",
+   "line": "LODCHECK PASS main max 0.003% (az 202, el +25) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\BlueRailDepot_L1_4x8",
    "notes": []
   },
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 11052,
+    "LOD0": 33608,
     "LOD1": 496,
     "LOD2": 176
    },
@@ -140,22 +141,24 @@
   "gate": {
    "status": "PASS",
    "reasons": [],
-   "incomplete": []
+   "incomplete": [
+    "visual_review=NOT_CHECKED"
+   ]
   }
  },
  "mismatch_attempts": {},
  "next_action": {
-  "command": null,
-  "reason": "all requested checks passed"
+  "command": "python tools/agent.py review --project blue-factory --status PASS --note \"reviewed current artifacts\" --artifact \"previews/BlueRailDepot_L1_4x8.png\"",
+  "reason": "inspect the listed current artifacts, then record the review"
  },
  "project": "blue-factory",
- "updated_at": "2026-11-17T15:41:47",
- "visual_review_note": "텍스처·간판 교차검토(Claude): final 재실행 PASS, 4096 아틀라스, 가상 상호 실글자 간판(그림자·양각) 근접 렌더 선명, 골강판·지붕 빗물자국/결 과하지 않음, 형태·삼각형 불변",
+ "updated_at": "2026-11-19T10:46:33",
+ "visual_review_note": "P0-2 BlueRailDepot color/gloss/normal calibration verified",
  "visual_review_artifacts": [
   {
    "file": "previews/BlueRailDepot_L1_4x8.png",
-   "sha256": "11cd16162f46345cdbd168b7f974e29f0b40f8b30a1fab15e4bd61bd24f8c122"
+   "sha256": "25bd388530a3c9a926cb4acef8d64e26164ff7a44cb9f51e417046f5874b85bf"
   }
  ],
- "reviewed_preview_hash": "11cd16162f46345cdbd168b7f974e29f0b40f8b30a1fab15e4bd61bd24f8c122"
+ "reviewed_preview_hash": "25bd388530a3c9a926cb4acef8d64e26164ff7a44cb9f51e417046f5874b85bf"
 }

@@ -174,11 +174,11 @@ def _draw_daedeok_badge(rgb_im, mask_im, cx, cy, r, shadow_rgb=(162, 168, 174)):
     drw.pieslice([x0, y0, x1, y1], 345, 95, fill=(32, 146, 172))
     drw.pieslice([x0, y0, x1, y1], 95, 195, fill=(28, 96, 152))
     ir = max(4, int(r * 0.42))
-    drw.ellipse([int(cx - ir), int(cy - ir), int(cx + ir), int(cy + ir)], fill=(232, 234, 232))
+    drw.ellipse([int(cx - ir), int(cy - ir), int(cx + ir), int(cy + ir)], fill=(210, 213, 212))
     ImageDraw.Draw(mask_im).ellipse([x0, y0, x1, y1], fill=255)
 
 
-def _draw_sign_panel_seams(rgb2, w2, h2, n_panels, seam_rgb=(210, 212, 210)):
+def _draw_sign_panel_seams(rgb2, w2, h2, n_panels, seam_rgb=(188, 191, 190)):
     """간판 배경이 외벽 white_panel 줄눈과 자연스럽게 이어지도록 수직 패널 이음선 추가."""
     from PIL import ImageDraw
     drw = ImageDraw.Draw(rgb2)
@@ -191,7 +191,7 @@ def _paint_sign_center_roof(ctx):
     """남측·서측 지붕 파시아 간판 (15.4x1.34 m, white_panel 정합 바탕 + 대덕 심볼 + 짙은 차콜 입체 글자)."""
     def paint_2x(rgb2, mask2, emis2, w2, h2):
         from PIL import ImageDraw
-        _draw_sign_panel_seams(rgb2, w2, h2, n_panels=15, seam_rgb=(208, 211, 209))
+        _draw_sign_panel_seams(rgb2, w2, h2, n_panels=15, seam_rgb=(186, 189, 188))
         drw = ImageDraw.Draw(rgb2)
         text = "석봉복합문화센터"
         fnt = _fit_font(drw, FONT_KR, text, int(w2 * 0.72), int(h2 * 0.66))
@@ -200,16 +200,18 @@ def _paint_sign_center_roof(ctx):
         gap = int(badge_r * 0.75)
         total_w = badge_r * 2 + gap + tw
         start_x = (w2 - total_w) * 0.5
-        _draw_daedeok_badge(rgb2, mask2, start_x + badge_r, h2 * 0.5, badge_r, shadow_rgb=(160, 165, 172))
+        _draw_daedeok_badge(rgb2, mask2, start_x + badge_r, h2 * 0.5, badge_r, shadow_rgb=(146, 151, 158))
         tx = start_x + badge_r * 2 + gap - bx
         ty = (h2 - th) * 0.5 - by
         _draw_3d_text(rgb2, mask2, emis2, tx, ty, text, fnt,
-                      fill_rgb=(40, 46, 54), shadow_rgb=(156, 162, 168),
+                      fill_rgb=(40, 46, 54), shadow_rgb=(144, 150, 156),
                       emis_val=95, shadow_off=(5, 5), shadow_blur=1.8)
 
-    _render_sign_cell(ctx, "sign_center_roof", (232, 234, 232), paint_2x, relief=0.92)
-    ctx.grain(amp=1.2, scale_px=2, height=0.05, seed=81)
+    _render_sign_cell(ctx, "sign_center_roof", (210, 213, 212), paint_2x, relief=0.92)
+    ctx.grain(amp=1.2, scale_px=2, height=0.09, seed=81)
     ctx.gloss[...] = 0.42
+    _vary_gloss(ctx, amp=0.045, micro_amp=0.020, scale_px=20, lo=0.24, hi=0.64, seed=281)
+    ctx.gloss[...] = np.clip(ctx.gloss + 0.10 * np.clip(ctx.height, 0.0, 1.0), 0.24, 0.68)
 
 
 def _paint_sign_welfare_led(ctx):
@@ -239,13 +241,14 @@ def _paint_sign_welfare_led(ctx):
 
     _render_sign_cell(ctx, "sign_welfare_led", (18, 22, 28), paint_2x, relief=0.58)
     ctx.gloss[...] = 0.48
+    _vary_gloss(ctx, amp=0.045, micro_amp=0.020, scale_px=16, lo=0.30, hi=0.68, seed=284)
 
 
 def _paint_sign_localfood(ctx):
     """램프 수평 파시아 간판 (9.98x0.70 m, 백색 바탕·무지개 아치·청남/주황 상호·원형 배지)."""
     def paint_2x(rgb2, mask2, emis2, w2, h2):
         from PIL import ImageDraw
-        _draw_sign_panel_seams(rgb2, w2, h2, n_panels=9, seam_rgb=(208, 211, 209))
+        _draw_sign_panel_seams(rgb2, w2, h2, n_panels=9, seam_rgb=(186, 189, 188))
         drw = ImageDraw.Draw(rgb2)
         t_left = "대덕"
         t_right = "로컬푸드직매장"
@@ -266,24 +269,26 @@ def _paint_sign_localfood(ctx):
             drw.arc(bounds, 180, 360, fill=color, width=stroke)
             ImageDraw.Draw(mask2).arc(bounds, 180, 360, fill=255, width=stroke)
         _draw_3d_text(rgb2, mask2, emis2, tx, ty, t_left, fnt,
-                      fill_rgb=(24, 54, 72), shadow_rgb=(160, 166, 170),
+                      fill_rgb=(24, 54, 72), shadow_rgb=(146, 152, 156),
                       emis_val=90, shadow_off=(4, 4), shadow_blur=1.5)
         _draw_3d_text(rgb2, mask2, emis2, tx + tw_l + int(w2 * 0.004), ty, t_right, fnt,
-                      fill_rgb=(198, 102, 34), shadow_rgb=(160, 166, 170),
+                      fill_rgb=(198, 102, 34), shadow_rgb=(146, 152, 156),
                       emis_val=100, shadow_off=(4, 4), shadow_blur=1.5)
         # 오른쪽 잎 모양 배지 (위 주황 반원 + 아래 초록 잎, 흰 테두리) — 실물 직매장 심볼
         cx, cy = tx + bx + tw + badge_r * 1.45, h2 * 0.5
         r = badge_r * 1.05
         mdr = ImageDraw.Draw(mask2)
-        drw.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(246, 246, 242))
+        drw.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(224, 224, 220))
         drw.pieslice((cx - r * 0.86, cy - r * 0.86, cx + r * 0.86, cy + r * 0.86), 180, 360, fill=(222, 112, 38))
         drw.chord((cx - r * 0.86, cy - r * 0.62, cx + r * 0.86, cy + r * 0.86), 0, 180, fill=(70, 150, 72))
-        drw.line((cx - r * 0.6, cy + r * 0.10, cx + r * 0.55, cy + r * 0.32), fill=(246, 246, 242), width=max(2, int(r * 0.10)))
+        drw.line((cx - r * 0.6, cy + r * 0.10, cx + r * 0.55, cy + r * 0.32), fill=(224, 224, 220), width=max(2, int(r * 0.10)))
         mdr.ellipse((cx - r, cy - r, cx + r, cy + r), fill=255)
 
-    _render_sign_cell(ctx, "sign_localfood_arch", (232, 234, 232), paint_2x, relief=0.82)
-    ctx.grain(amp=1.2, scale_px=2, height=0.05, seed=82)
+    _render_sign_cell(ctx, "sign_localfood_arch", (210, 213, 212), paint_2x, relief=0.82)
+    ctx.grain(amp=1.2, scale_px=2, height=0.09, seed=82)
     ctx.gloss[...] = 0.42
+    _vary_gloss(ctx, amp=0.045, micro_amp=0.020, scale_px=20, lo=0.24, hi=0.64, seed=282)
+    ctx.gloss[...] = np.clip(ctx.gloss + 0.10 * np.clip(ctx.height, 0.0, 1.0), 0.24, 0.68)
 
 
 def _paint_storefront_glass(ctx):
@@ -379,14 +384,26 @@ def _paint_sign_monolith(ctx):
     rust = ctx.noise(scale_px=20, amp=7.0, octaves=3, seed=82) + ctx.noise(scale_px=5, amp=4.0, octaves=2, seed=84)
     plate = (ctx.height[:, :active_w] < 0.05)
     ctx.rgb[:, :active_w, :][plate] += rust[:, :active_w][plate][..., None] * np.array([1.3, 0.7, 0.45], np.float32)
-    ctx.grain(amp=2.2, scale_px=2, height=0.07, seed=83)
-    ctx.rgb[...] = np.clip(ctx.rgb, 48.0, 250.0)
+    ctx.grain(amp=2.2, scale_px=2, height=0.14, seed=83)
+    ctx.rgb[...] = np.clip(ctx.rgb, 48.0, 224.0)
     ctx.gloss[...] = 0.28
+    _vary_gloss(ctx, amp=0.055, micro_amp=0.025, scale_px=18, lo=0.14, hi=0.52, seed=283)
+    ctx.gloss[:, :active_w] = np.clip(
+        ctx.gloss[:, :active_w] + 0.14 * np.clip(ctx.height[:, :active_w], 0.0, 1.0),
+        0.14, 0.58,
+    )
 
 
 # ---------------------------------------------------------------------------
 # 아틀라스 재질 페인터 (4096x4096)
 # ---------------------------------------------------------------------------
+
+def _vary_gloss(ctx, amp=0.055, micro_amp=0.025, scale_px=24, lo=0.08, hi=0.88, seed=100):
+    """노이즈와 미세 결에 연동해 단일 상수 광택을 ±0.05~0.10 범위로 변주한다."""
+    gn = ctx.noise(scale_px=scale_px, amp=1.0, octaves=3, seed=seed)
+    fn = ctx.noise(scale_px=3, amp=1.0, octaves=2, seed=seed + 1)
+    ctx.gloss[...] = np.clip(ctx.gloss + amp * gn + micro_amp * fn, lo, hi)
+
 
 def _variant_weather(ctx, amount=0.025, cu=3, cv=3, seed=7):
     """변형(vi)마다 서로 다른 시드로 주기적 미세 웨더링을 적용해 넓은 벽의 반복감을 줄인다."""
@@ -405,61 +422,67 @@ def _variant_weather(ctx, amount=0.025, cu=3, cv=3, seed=7):
 
 
 def _paint_white_panel(ctx):
-    # 백색 대형 알루미늄 복합판넬 (north_ne_oblique.png · dnbarch_3.jpg 기준: 과노출 클리핑 방지 + 1x1m 패널 줄눈/변주)
+    # 백색 대형 알루미늄 복합판넬 (north_ne_oblique.png · dnbarch_3.jpg 기준: 과노출 날림 방지 + 1x1m 패널 줄눈/변주)
     base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
-    d = ctx.joints(cols=4, rows=4, width_m=0.012, depth=0.72, stagger=0.0, darken=0.14, tone=2.4, seed=11)
-    ctx.grain(amp=1.4, scale_px=2, height=0.07, seed=12)
+    d = ctx.joints(cols=4, rows=4, width_m=0.015, depth=0.92, stagger=0.0, darken=0.18, tone=2.6, seed=11)
+    ctx.grain(amp=1.5, scale_px=2, height=0.12, seed=12)
     ctx.rgb += ctx.noise(scale_px=48, amp=1.4, octaves=3, seed=13)[..., None]
-    ctx.stains(amount=0.040, scale_px=64, streaks=0.45, seed=14)
+    ctx.stains(amount=0.045, scale_px=64, streaks=0.45, seed=14)
     _variant_weather(ctx, amount=0.018, cu=2, cv=2, seed=15)
     face = d < 0.15
     if np.any(face):
         cur_mean = ctx.rgb[face].mean(axis=0)
         ctx.rgb[face] += (base_mean - cur_mean)
-    ctx.rgb[...] = np.clip(ctx.rgb, 180.0, 244.0)
+    ctx.rgb[...] = np.clip(ctx.rgb, 158.0, 224.0)
+    _vary_gloss(ctx, amp=0.055, micro_amp=0.025, scale_px=28, lo=0.18, hi=0.62, seed=211)
+    ctx.gloss[...] = np.clip(ctx.gloss - 0.14 * d, 0.14, 0.62)
 
 
 def _paint_white_grooved(ctx):
     # 북측 체육관 상단 4단 수평 그루브 백색 메탈 파시아 (north_front_mid.png 기준)
     base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
     _, my = ctx.meters()
-    d = ctx.joints(cols=2, rows=5, width_m=0.014, depth=0.68, stagger=0.0, darken=0.14, tone=2.2, seed=16)
+    d = ctx.joints(cols=2, rows=5, width_m=0.016, depth=0.88, stagger=0.0, darken=0.18, tone=2.4, seed=16)
     groove = np.abs((my % 0.80) - 0.40) > 0.378
     ctx.rgb[groove] *= 0.64
-    ctx.height[groove] -= 0.85
-    ctx.grain(amp=1.4, scale_px=2, height=0.07, seed=17)
+    ctx.height[groove] -= 1.05
+    ctx.grain(amp=1.5, scale_px=2, height=0.12, seed=17)
     ctx.rgb += ctx.noise(scale_px=48, amp=1.4, octaves=3, seed=18)[..., None]
-    ctx.stains(amount=0.040, scale_px=56, streaks=0.45, seed=19)
+    ctx.stains(amount=0.045, scale_px=56, streaks=0.45, seed=19)
     _variant_weather(ctx, amount=0.016, cu=2, cv=1, seed=20)
     face = (d < 0.15) & ~groove
     if np.any(face):
         cur_mean = ctx.rgb[face].mean(axis=0)
         ctx.rgb[face] += (base_mean - cur_mean)
-    ctx.rgb[...] = np.clip(ctx.rgb, 138.0, 242.0)
+    ctx.rgb[...] = np.clip(ctx.rgb, 120.0, 222.0)
+    _vary_gloss(ctx, amp=0.055, micro_amp=0.025, scale_px=24, lo=0.18, hi=0.62, seed=216)
+    ctx.gloss[...] = np.clip(ctx.gloss - 0.14 * d - 0.18 * groove.astype(np.float32), 0.12, 0.62)
 
 
 def _paint_beige_stone(ctx):
     # 1~2층 웜베이지 화강석 석재 패널 (north_front_mid.png · dnbarch_3.jpg 기준: 밝고 따뜻한 아이보리/크림 화강석)
     base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
-    d = ctx.joints(cols=2, rows=5, width_m=0.012, depth=0.72, stagger=0.5, darken=0.19, tone=3.0, seed=21)
-    ctx.grain(amp=3.2, scale_px=2, height=0.20, seed=22)
+    d = ctx.joints(cols=2, rows=5, width_m=0.015, depth=0.85, stagger=0.5, darken=0.20, tone=3.2, seed=21)
+    ctx.grain(amp=3.4, scale_px=2, height=0.24, seed=22)
     fleck = ctx.noise(scale_px=3, amp=1.0, octaves=1, seed=26) < -1.20
     ctx.rgb[fleck] *= 0.93
     ctx.rgb += ctx.noise(scale_px=32, amp=1.8, octaves=3, seed=23)[..., None]
-    ctx.stains(amount=0.045, scale_px=56, streaks=0.40, seed=24)
+    ctx.stains(amount=0.050, scale_px=56, streaks=0.40, seed=24)
     _variant_weather(ctx, amount=0.018, cu=2, cv=2, seed=25)
     face = d < 0.15
     if np.any(face):
         cur_mean = ctx.rgb[face].mean(axis=0)
         ctx.rgb[face] += (base_mean - cur_mean)
-    ctx.rgb[...] = np.clip(ctx.rgb, 148.0, 236.0)
+    ctx.rgb[...] = np.clip(ctx.rgb, 138.0, 222.0)
+    _vary_gloss(ctx, amp=0.050, micro_amp=0.030, scale_px=24, lo=0.10, hi=0.46, seed=221)
+    ctx.gloss[...] = np.clip(ctx.gloss + np.where(fleck, 0.05, 0.0) - 0.10 * d, 0.08, 0.46)
 
 
 def _paint_brown_panel(ctx):
     # 북측 3층·중정 상부 다크 브론즈-에스프레소 수평 메탈 패널 (north_front_mid.png · dnbarch_4.jpg 기준)
     base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
-    d = ctx.joints(cols=2, rows=5, width_m=0.012, depth=0.70, stagger=0.0, darken=0.24, tone=3.2, seed=31)
-    ctx.grain(amp=1.8, scale_px=2, height=0.08, seed=32)
+    d = ctx.joints(cols=2, rows=5, width_m=0.014, depth=0.78, stagger=0.0, darken=0.24, tone=3.2, seed=31)
+    ctx.grain(amp=1.8, scale_px=2, height=0.11, seed=32)
     ctx.rgb += ctx.noise(scale_px=40, amp=1.8, octaves=3, seed=33)[..., None]
     ctx.stains(amount=0.055, scale_px=48, streaks=0.40, seed=34)
     _variant_weather(ctx, amount=0.022, cu=2, cv=2, seed=35)
@@ -468,50 +491,56 @@ def _paint_brown_panel(ctx):
         cur_mean = ctx.rgb[face].mean(axis=0)
         ctx.rgb[face] += (base_mean - cur_mean)
     ctx.rgb[...] = np.clip(ctx.rgb, 48.0, 128.0)
+    _vary_gloss(ctx, amp=0.055, micro_amp=0.025, scale_px=24, lo=0.20, hi=0.64, seed=231)
+    ctx.gloss[...] = np.clip(ctx.gloss - 0.14 * d, 0.14, 0.64)
 
 
 def _paint_roof_membrane(ctx):
     # 남서·남동 주지붕 밝은 쿨화이트 방수 시트 (sat_vworld_z19.png · dnbarch_3.jpg 기준)
     base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
-    d = ctx.joints(cols=4, rows=2, width_m=0.015, depth=0.28, darken=0.08, tone=1.8, seed=41)
-    ctx.grain(amp=2.6, scale_px=2, height=0.12, seed=42)
+    d = ctx.joints(cols=4, rows=2, width_m=0.016, depth=0.38, darken=0.10, tone=1.8, seed=41)
+    ctx.grain(amp=2.6, scale_px=2, height=0.14, seed=42)
     ctx.rgb += ctx.noise(scale_px=44, amp=2.2, octaves=3, seed=43)[..., None]
-    ctx.stains(amount=0.038, scale_px=64, streaks=0.10, seed=44)
+    ctx.stains(amount=0.045, scale_px=64, streaks=0.10, seed=44)
     _variant_weather(ctx, amount=0.018, cu=2, cv=2, seed=45)
     face = d < 0.15
     if np.any(face):
         cur_mean = ctx.rgb[face].mean(axis=0)
         ctx.rgb[face] += (base_mean - cur_mean)
-    ctx.rgb[...] = np.clip(ctx.rgb, 185.0, 238.0)
+    ctx.rgb[...] = np.clip(ctx.rgb, 168.0, 220.0)
+    _vary_gloss(ctx, amp=0.045, micro_amp=0.020, scale_px=28, lo=0.08, hi=0.36, seed=241)
 
 
 def _paint_roof_concrete(ctx):
     # 동측 연결동 옥상 웜 스톤-콘크리트 지붕 바닥 (sat_vworld_z19.png 기준)
     base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
-    d = ctx.joints(cols=3, rows=3, width_m=0.014, depth=0.35, darken=0.10, tone=2.2, seed=46)
-    ctx.grain(amp=3.4, scale_px=2, height=0.15, seed=47)
+    d = ctx.joints(cols=3, rows=3, width_m=0.015, depth=0.42, darken=0.11, tone=2.2, seed=46)
+    ctx.grain(amp=3.4, scale_px=2, height=0.17, seed=47)
     ctx.rgb += ctx.noise(scale_px=38, amp=2.4, octaves=3, seed=48)[..., None]
-    ctx.stains(amount=0.048, scale_px=56, streaks=0.10, seed=49)
+    ctx.stains(amount=0.052, scale_px=56, streaks=0.10, seed=49)
     face = d < 0.15
     if np.any(face):
         cur_mean = ctx.rgb[face].mean(axis=0)
         ctx.rgb[face] += (base_mean - cur_mean)
-    ctx.rgb[...] = np.clip(ctx.rgb, 165.0, 228.0)
+    ctx.rgb[...] = np.clip(ctx.rgb, 160.0, 220.0)
+    _vary_gloss(ctx, amp=0.045, micro_amp=0.020, scale_px=24, lo=0.06, hi=0.34, seed=246)
 
 
 def _paint_roof_soffit(ctx):
     # 지붕 캔틸레버 하부 soffit 백색-라이트그레이 패널 (north_ne_oblique.png 기준: 그림자는 조명/AO가 처리)
     base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
-    d = ctx.joints(cols=4, rows=4, width_m=0.014, depth=0.62, stagger=0.0, darken=0.15, tone=1.8, seed=19)
-    ctx.grain(amp=1.4, scale_px=2, height=0.07, seed=20)
+    d = ctx.joints(cols=4, rows=4, width_m=0.015, depth=0.72, stagger=0.0, darken=0.16, tone=1.8, seed=19)
+    ctx.grain(amp=1.4, scale_px=2, height=0.10, seed=20)
     ctx.rgb += ctx.noise(scale_px=48, amp=1.6, octaves=2, seed=28)[..., None]
-    ctx.stains(amount=0.035, scale_px=64, streaks=0.10, seed=29)
+    ctx.stains(amount=0.038, scale_px=64, streaks=0.10, seed=29)
     _variant_weather(ctx, amount=0.015, cu=2, cv=2, seed=30)
     face = d < 0.15
     if np.any(face):
         cur_mean = ctx.rgb[face].mean(axis=0)
         ctx.rgb[face] += (base_mean - cur_mean)
-    ctx.rgb[...] = np.clip(ctx.rgb, 150.0, 222.0)
+    ctx.rgb[...] = np.clip(ctx.rgb, 150.0, 218.0)
+    _vary_gloss(ctx, amp=0.045, micro_amp=0.020, scale_px=24, lo=0.10, hi=0.42, seed=250)
+    ctx.gloss[...] = np.clip(ctx.gloss - 0.08 * d, 0.08, 0.42)
 
 
 def _paint_terrace_deck(ctx):
@@ -529,21 +558,23 @@ def _paint_terrace_deck(ctx):
     ctx.rgb += ctx.noise(scale_px=36, amp=2.0, octaves=3, seed=53)[..., None]
     seam = plank_seam | end_seam
     ctx.rgb[seam] *= 0.68
-    ctx.height[seam] -= 0.35
-    ctx.stains(amount=0.050, scale_px=56, streaks=0.15, seed=54)
+    ctx.height[seam] -= 0.45
+    ctx.stains(amount=0.055, scale_px=56, streaks=0.15, seed=54)
     _variant_weather(ctx, amount=0.022, cu=2, cv=2, seed=55)
     face = ~seam
     if np.any(face):
         cur_mean = ctx.rgb[face].mean(axis=0)
         ctx.rgb[face] += (base_mean - cur_mean) * 0.85
     ctx.rgb[...] = np.clip(ctx.rgb, 36.0, 120.0)
+    _vary_gloss(ctx, amp=0.050, micro_amp=0.020, scale_px=20, lo=0.10, hi=0.40, seed=254)
+    ctx.gloss[...] = np.clip(ctx.gloss - 0.10 * seam.astype(np.float32), 0.08, 0.40)
 
 
 def _paint_stair_stone(ctx):
     # 동측 외부 계단 · 데크 화강석 디딤판 (north_ne_oblique.png 기준: 웜 다크그레이 화강석 판석)
     base_mean = ctx.rgb.mean(axis=(0, 1)).copy()
-    d = ctx.joints(cols=4, rows=8, width_m=0.012, depth=0.58, stagger=0.5, darken=0.20, tone=3.0, seed=57)
-    ctx.grain(amp=4.4, scale_px=2, height=0.20, seed=58)
+    d = ctx.joints(cols=4, rows=8, width_m=0.014, depth=0.72, stagger=0.5, darken=0.20, tone=3.0, seed=57)
+    ctx.grain(amp=4.4, scale_px=2, height=0.24, seed=58)
     ctx.rgb += ctx.noise(scale_px=32, amp=2.2, octaves=3, seed=59)[..., None]
     ctx.stains(amount=0.055, scale_px=52, streaks=0.20, seed=60)
     face = d < 0.15
@@ -551,18 +582,22 @@ def _paint_stair_stone(ctx):
         cur_mean = ctx.rgb[face].mean(axis=0)
         ctx.rgb[face] += (base_mean - cur_mean)
     ctx.rgb[...] = np.clip(ctx.rgb, 78.0, 158.0)
+    _vary_gloss(ctx, amp=0.050, micro_amp=0.025, scale_px=20, lo=0.10, hi=0.40, seed=258)
+    ctx.gloss[...] = np.clip(ctx.gloss - 0.08 * d, 0.08, 0.40)
 
 
 def _paint_plaza_paving(ctx):
     # 지상 및 북동 광장 줄무늬 보도블록 (north_ne_oblique.png 기준: 밝은 은회색 화강석 + 연한 샌드크림 띠)
     _, my = ctx.meters()
     band = ((my % 2.0) < 0.55)
-    ctx.rgb[band] = np.array([206.0, 192.0, 172.0], np.float32)
-    ctx.joints(cols=8, rows=12, width_m=0.009, depth=0.45, stagger=0.5, darken=0.14, tone=2.8, seed=61)
-    ctx.grain(amp=3.8, scale_px=2, height=0.16, seed=62)
+    ctx.rgb[band] = np.array([190.0, 178.0, 160.0], np.float32)
+    d = ctx.joints(cols=8, rows=12, width_m=0.015, depth=0.82, stagger=0.5, darken=0.18, tone=3.2, seed=61)
+    ctx.grain(amp=4.2, scale_px=2, height=0.22, seed=62)
     ctx.rgb += ctx.noise(scale_px=36, amp=2.0, octaves=3, seed=63)[..., None]
-    ctx.stains(amount=0.032, scale_px=64, streaks=0.0, seed=64)
-    ctx.rgb[...] = np.clip(ctx.rgb, 148.0, 234.0)
+    ctx.stains(amount=0.045, scale_px=64, streaks=0.0, seed=64)
+    ctx.rgb[...] = np.clip(ctx.rgb, 134.0, 218.0)
+    _vary_gloss(ctx, amp=0.050, micro_amp=0.025, scale_px=20, lo=0.08, hi=0.38, seed=261)
+    ctx.gloss[...] = np.clip(ctx.gloss - 0.09 * d, 0.06, 0.38)
 
 
 def _paint_monolith_stone(ctx):
@@ -583,6 +618,10 @@ def _paint_monolith_stone(ctx):
     wire = wx | wy
     ctx.rgb[wire] = np.array([186.0, 190.0, 195.0], np.float32)
     ctx.height[wire] += 0.30
+    gn = ctx.noise(scale_px=14, amp=1.0, octaves=2, seed=274)
+    fn = ctx.noise(scale_px=3, amp=1.0, octaves=2, seed=275)
+    stone_gloss = np.clip(0.22 + 0.055 * stone + 0.030 * gn + 0.020 * fn - np.where(gap, 0.10, 0.0), 0.06, 0.42)
+    ctx.gloss[...] = np.where(wire, np.clip(0.56 + 0.045 * gn, 0.40, 0.72), stone_gloss)
 
 
 def _paint_green_planter(ctx):
@@ -597,6 +636,7 @@ def _paint_green_planter(ctx):
     ctx.stains(amount=0.060, scale_px=32, streaks=0.0, seed=68)
     _variant_weather(ctx, amount=0.05, cu=4, cv=4, seed=66)
     ctx.rgb[...] = np.clip(ctx.rgb, 30.0, 142.0)
+    _vary_gloss(ctx, amp=0.045, micro_amp=0.020, scale_px=12, lo=0.04, hi=0.28, seed=266)
 
 
 def _paint_solar_pv(ctx):
@@ -630,8 +670,11 @@ def _paint_louver_grille(ctx):
     ctx.rgb[border] = np.array([166, 172, 178], np.float32)
     ctx.rgb[shadow & ~border] = np.array([82, 88, 96], np.float32)
     ctx.rgb[face] = np.array([194, 199, 205], np.float32)
+    ctx.grain(amp=1.5, scale_px=2, height=0.10, seed=170)
     ctx.height[shadow & ~border] -= 0.50
     ctx.height[face] += 0.15
+    _vary_gloss(ctx, amp=0.050, micro_amp=0.025, scale_px=16, lo=0.20, hi=0.68, seed=270)
+    ctx.gloss[...] = np.where(shadow & ~border, np.clip(ctx.gloss - 0.20, 0.12, 0.45), ctx.gloss)
 
 
 def _paint_spandrel(ctx):
@@ -646,30 +689,9 @@ def _paint_spandrel(ctx):
 
 
 def _paint_teal_glass(ctx):
-    """남측 램프 하부 1층 다크 에메랄드-틸 Low-E 커튼월 유리 (south_se_close.png 기준: 짙은 청록 반사 + 야간 부분 점등)."""
-    u, v = ctx.u, ctx.v
-    cols, rows = 6, 2
-    cx = np.floor(u * cols).astype(np.int64)
-    cy = np.floor(v * rows).astype(np.int64)
-    fv = (v * rows) % 1.0
-    h = ((cx * 37 + cy * 53) % 100) / 100.0
-
-    # 상부(fv~1) 하늘 반사 + 하부(fv~0) 짙은 청록 실내 깊이감, 주간/야간 BaseColor 일관 유지
-    sky_grad = (fv - 0.40) * 18.0 + 4.0 * np.sin(2.0 * math.pi * (u * 1.5 + v * 0.5))
-    tint = (h - 0.5) * 6.0
-    base_rgb = np.array([46.0, 94.0, 98.0], np.float32) + (tint + sky_grad)[..., None]
-
-    # 야간 일부 베이(~33%) 은은한 실내 점등 + 외곽 밉맵 번짐 방지 가드
-    cid = cy * cols + cx
-    lit = np.isin(cid, (0, 3, 7, 10))
-    r = max(2, round(ctx.w * 0.016))
-    m = np.pad(lit, r, constant_values=False)
-    for ax in (0, 1):
-        m = np.logical_and.reduce([np.roll(m, k, ax) for k in range(-r, r + 1)])
-    lit = m[r:-r, r:-r]
-    glow = 0.26 + 0.10 * (1.0 - fv)
-    ctx.rgb[...] = np.clip(base_rgb, 30.0, 134.0)
-    ctx.emis[...] = np.where(lit, glow, 0.0)
+    """두 UV 구역에 같은 주간 청록을 쓰고 한쪽에만 야간 발광을 둔다."""
+    ctx.rgb[...] += ((ctx.v - 0.4) * 18.0)[..., None]
+    ctx.emis[...] = np.where(ctx.u >= 0.5, 0.32 + 0.10 * (1.0 - ctx.v), 0)
     ctx.gloss[...] = 0.92
 
 
@@ -677,22 +699,18 @@ def _paint_window_atlas(ctx):
     """5x5 REF_GRID 창문 아틀라스 (깊은 로이(Low-E) 청록-슬레이트 반사유리 + 약 32% 야간 점등, 1px 슬롯 비침범 가드)."""
     g = K.REF_GRID
     u, v = ctx.u, ctx.v
-    fu = (u * g) % 1.0
     fv = (v * g) % 1.0
     cx = np.floor(u * g).astype(np.int64)
     cy = np.floor(v * g).astype(np.int64)
     cid = cy * g + cx
     h = ((cx * 37 + cy * 71) % 100) / 100.0
 
-    # 상부(fv~1) 은은한 하늘 반사 광택 -> 하부(fv~0) 깊은 슬레이트-청록 로이유리 깊이감 + 미세 창틀 음영
-    sky_grad = (fv - 0.35) * 24.0 + 4.0 * np.sin(2.0 * math.pi * (u * 1.5 + v * 1.0))
-    tint = (h - 0.5) * 5.0
+    # 슬롯 경계 양쪽이 같은 색을 유지하도록 완만하고 연속적인 반사만 둔다.
+    sky_grad = 3.0 * np.sin(2.0 * math.pi * v)
     base_rgb = (
         np.array([74.0, 118.0, 150.0], np.float32)
-        + (tint + sky_grad)[..., None] * np.array([0.85, 0.95, 1.0], np.float32)
+        + sky_grad[..., None]
     )
-    edge = (np.minimum(fu, 1.0 - fu) < 0.03) | (np.minimum(fv, 1.0 - fv) < 0.03)
-    base_rgb[edge] *= 0.90
     ctx.rgb[...] = np.clip(base_rgb, 44.0, 182.0)
 
     # 연속 점등 블록 (cells 0..7 ~32% 점등), r=1px로 22px 창 슬롯 절반 절단 방지 + 패딩 내 밉맵 가드
@@ -725,21 +743,28 @@ def _paint_equipment(ctx):
     louv = (ctx.u > 0.14) & (ctx.u < 0.86) & (ctx.v > 0.22) & (ctx.v < 0.78) & (((ctx.v * 24.0) % 1.0) < 0.36)
     ctx.rgb[louv] *= 0.52
     ctx.height[louv] -= 0.45
-    ctx.grain(amp=1.6, scale_px=2, height=0.07, seed=72)
-    ctx.stains(amount=0.032, scale_px=36, streaks=0.25, seed=73)
+    ctx.grain(amp=1.8, scale_px=2, height=0.16, seed=72)
+    ctx.stains(amount=0.040, scale_px=36, streaks=0.25, seed=73)
+    _vary_gloss(ctx, amp=0.055, micro_amp=0.025, scale_px=18, lo=0.18, hi=0.62, seed=272)
+    ctx.gloss[...] = np.clip(
+        ctx.gloss - 0.14 * border.astype(np.float32) - 0.22 * louv.astype(np.float32),
+        0.10, 0.62,
+    )
 
 
 def _paint_louver_white(ctx):
     # 백색 도장 알루미늄 루버 핀 · #퍼골라 (미세 표면 결 부여해 플라스틱 평탄함 완화)
-    ctx.grain(amp=1.2, scale_px=2, height=0.04, seed=91)
-    ctx.rgb += ctx.noise(scale_px=24, amp=1.0, octaves=2, seed=92)[..., None]
-    ctx.rgb[...] = np.clip(ctx.rgb, 214.0, 242.0)
+    ctx.grain(amp=1.4, scale_px=2, height=0.18, seed=91)
+    ctx.rgb += ctx.noise(scale_px=24, amp=1.2, octaves=2, seed=92)[..., None]
+    ctx.rgb[...] = np.clip(ctx.rgb, 194.0, 225.0)
+    _vary_gloss(ctx, amp=0.055, micro_amp=0.025, scale_px=16, lo=0.28, hi=0.64, seed=291)
 
 
 def _paint_anodized_metal(ctx):
     # 아노다이징 금속 프레임 · 멀리언 · 스테인리스 난간 미세 브러시드 질감
-    ctx.grain(amp=1.5, scale_px=2, height=0.04, seed=94)
-    ctx.rgb += ctx.noise(scale_px=18, amp=1.2, octaves=2, seed=95)[..., None]
+    ctx.grain(amp=1.8, scale_px=2, height=0.16, seed=94)
+    ctx.rgb += ctx.noise(scale_px=18, amp=1.4, octaves=2, seed=95)[..., None]
+    _vary_gloss(ctx, amp=0.055, micro_amp=0.025, scale_px=16, lo=0.30, hi=0.88, seed=294)
 
 
 def _paint_lamp_strip(ctx):
@@ -799,27 +824,27 @@ def _paint_vestibule_mural(ctx):
 
 def make_atlas(size=4096):
     A = K.Atlas(size=size, pad=16)
-    A.add("white_panel",   color=(232, 234, 232), ctrl=(0, 0, 0), metal=0.14, gloss=0.42,
+    A.add("white_panel",   color=(210, 213, 212), ctrl=(0, 0, 0), metal=0.14, gloss=0.42,
           # 896 px(224 px/m): 1024 이면 storefront_glass 추가 시 4096 아틀라스 선반 배치가 넘친다
-          px=896, tile=(4.0, 4.0), variants=3, painter=_paint_white_panel, normal_strength=2.2)
-    A.add("white_grooved", color=(229, 231, 229), ctrl=(0, 0, 0), metal=0.15, gloss=0.42,
-          px=768, tile=(4.0, 4.0), variants=2, painter=_paint_white_grooved, normal_strength=2.6)
-    A.add("beige_stone",   color=(218, 204, 188), ctrl=(0, 0, 0), metal=0.0, gloss=0.26,
-          px=768, tile=(3.0, 3.0), variants=2, painter=_paint_beige_stone, normal_strength=2.4)
+          px=896, tile=(4.0, 4.0), variants=3, painter=_paint_white_panel, normal_strength=2.8)
+    A.add("white_grooved", color=(208, 211, 210), ctrl=(0, 0, 0), metal=0.15, gloss=0.42,
+          px=768, tile=(4.0, 4.0), variants=2, painter=_paint_white_grooved, normal_strength=3.0)
+    A.add("beige_stone",   color=(204, 192, 178), ctrl=(0, 0, 0), metal=0.0, gloss=0.26,
+          px=768, tile=(3.0, 3.0), variants=2, painter=_paint_beige_stone, normal_strength=2.7)
     A.add("brown_panel",   color=(94, 78, 72), ctrl=(0, 0, 0), metal=0.28, gloss=0.44,
-          px=768, tile=(4.0, 4.0), variants=2, painter=_paint_brown_panel, normal_strength=2.4)
-    A.add("roof_membrane", color=(220, 224, 224), ctrl=(0, 0, 0), metal=0.0, gloss=0.20,
-          px=512, tile=(3.2, 3.2), painter=_paint_roof_membrane, normal_strength=1.5)
+          px=768, tile=(4.0, 4.0), variants=2, painter=_paint_brown_panel, normal_strength=2.5)
+    A.add("roof_membrane", color=(202, 206, 206), ctrl=(0, 0, 0), metal=0.0, gloss=0.20,
+          px=512, tile=(3.2, 3.2), painter=_paint_roof_membrane, normal_strength=1.7)
     A.add("roof_concrete", color=(206, 202, 188), ctrl=(0, 0, 0), metal=0.0, gloss=0.18,
-          px=512, tile=(3.2, 3.2), painter=_paint_roof_concrete, normal_strength=1.5)
+          px=512, tile=(3.2, 3.2), painter=_paint_roof_concrete, normal_strength=1.7)
     A.add("roof_soffit",   color=(198, 202, 206), ctrl=(0, 0, 0), metal=0.12, gloss=0.26,
-          px=512, tile=(4.0, 4.0), painter=_paint_roof_soffit, normal_strength=1.6)
+          px=512, tile=(4.0, 4.0), painter=_paint_roof_soffit, normal_strength=1.8)
     A.add("terrace_deck",  color=(84, 68, 60), ctrl=(0, 0, 0), metal=0.0, gloss=0.24,
-          px=512, tile=(4.0, 4.0), painter=_paint_terrace_deck, normal_strength=2.2)
+          px=512, tile=(4.0, 4.0), painter=_paint_terrace_deck, normal_strength=2.3)
     A.add("stair_stone",   color=(124, 118, 112), ctrl=(0, 0, 0), metal=0.0, gloss=0.24,
-          px=512, tile=(4.0, 4.0), painter=_paint_stair_stone, normal_strength=2.2)
-    A.add("plaza_paving",  color=(216, 216, 214), ctrl=(0, 0, 0), metal=0.0, gloss=0.20,
-          px=512, tile=(4.0, 4.0), painter=_paint_plaza_paving, normal_strength=1.9)
+          px=512, tile=(4.0, 4.0), painter=_paint_stair_stone, normal_strength=2.3)
+    A.add("plaza_paving",  color=(196, 197, 195), ctrl=(0, 0, 0), metal=0.0, gloss=0.20,
+          px=512, tile=(4.0, 4.0), painter=_paint_plaza_paving, normal_strength=2.6)
     A.add("green_planter", color=(66, 98, 56), ctrl=(0, 0, 0), metal=0.0, gloss=0.12,
           px=256, tile=(3.0, 3.0), painter=_paint_green_planter, normal_strength=2.0)
     A.add("solar_pv",      color=(46, 66, 76), ctrl=(0, 0, 0), metal=0.38, gloss=0.86,
@@ -829,21 +854,21 @@ def make_atlas(size=4096):
     A.add("spandrel_dark", color=(36, 56, 72), ctrl=(0, 0, 0), metal=0.12, gloss=0.88,
           px=256, tile=(2.0, 2.0), painter=_paint_spandrel, normal_strength=1.2)
     A.add("teal_glass",    color=(46, 94, 98), ctrl=(0, 0, 0), metal=0.14, gloss=0.92,
-          emissive=(255, 228, 184), px=512, tile=(22.6 / 38.0 * 6.0, 4.0),
+          emissive=(255, 228, 184), px=512,
           painter=_paint_teal_glass, normal_strength=1.2)
     A.add("frame_metal",   color=(40, 44, 50), ctrl=(0, 0, 0), metal=0.55, gloss=0.52,
-          px=128, painter=_paint_anodized_metal, normal_strength=1.0)
+          px=128, painter=_paint_anodized_metal, normal_strength=1.6)
     A.add("curtain_frame", color=(48, 54, 62), ctrl=(0, 0, 0), metal=0.58, gloss=0.55,
-          px=128, painter=_paint_anodized_metal, normal_strength=1.0)
-    A.add("louver_white",  color=(234, 235, 233), ctrl=(0, 0, 0), metal=0.18, gloss=0.46,
-          px=128, painter=_paint_louver_white, normal_strength=1.2)
+          px=128, painter=_paint_anodized_metal, normal_strength=1.6)
+    A.add("louver_white",  color=(212, 214, 212), ctrl=(0, 0, 0), metal=0.18, gloss=0.46,
+          px=128, painter=_paint_louver_white, normal_strength=1.8)
     A.add("railing_steel", color=(192, 198, 204), ctrl=(0, 0, 0), metal=0.85, gloss=0.72,
-          px=128, painter=_paint_anodized_metal, normal_strength=1.0)
+          px=128, painter=_paint_anodized_metal, normal_strength=1.6)
     A.add("glass_rail",    color=(154, 182, 196), ctrl=(0, 0, 0), metal=0.0, gloss=0.92, px=128)
     A.add("door_entrance", color=(42, 62, 74), ctrl=(0, 0, 0), metal=0.20, gloss=0.84,
           emissive=(235, 224, 198), px=256, painter=_paint_entrance_door, normal_strength=1.8)
     A.add("equipment",     color=(194, 200, 206), ctrl=(0, 0, 0), metal=0.35, gloss=0.40,
-          px=256, painter=_paint_equipment, normal_strength=1.8)
+          px=256, painter=_paint_equipment, normal_strength=2.2)
     A.add("monolith_stone", color=(118, 120, 122), ctrl=(0, 0, 0), metal=0.0, gloss=0.20,
           px=256, tile=(2.0, 2.0), painter=_paint_monolith_stone, normal_strength=2.8)
     A.add("lamp_strip",    color=(252, 248, 232), ctrl=(0, 0, 0), metal=0.10, gloss=0.65,
@@ -851,11 +876,11 @@ def make_atlas(size=4096):
     A.add("window",        color=(74, 118, 150), ctrl=(0, 0, 0), metal=0.14, gloss=0.93,
           emissive=(255, 224, 166), px=768, painter=_paint_window_atlas)
     # 간판 4종 개별 고해상도 칸 (실사 가로세로 비율 정렬; 글자 획 발광만 남기고 밝기를 기존 대비 약 1/3로 축소)
-    A.add("sign_center_roof", color=(232, 234, 232), ctrl=(0, 0, 0), metal=0.14, gloss=0.42,
+    A.add("sign_center_roof", color=(210, 213, 212), ctrl=(0, 0, 0), metal=0.14, gloss=0.42,
           emissive=(68, 73, 78), px=256, variants=11, painter=_paint_sign_center_roof, normal_strength=2.6)
     A.add("sign_welfare_led", color=(18, 22, 28), ctrl=(0, 0, 0), metal=0.18, gloss=0.48,
           emissive=(78, 136, 148), px=160, variants=11, painter=_paint_sign_welfare_led, normal_strength=2.4)
-    A.add("sign_localfood",   color=(232, 234, 232), ctrl=(0, 0, 0), metal=0.14, gloss=0.42,
+    A.add("sign_localfood",   color=(210, 213, 212), ctrl=(0, 0, 0), metal=0.14, gloss=0.42,
           emissive=(124, 95, 64), px=144, variants=12, painter=_paint_sign_localfood, normal_strength=2.5)
     A.add("sign_monolith",    color=(84, 54, 42), ctrl=(0, 0, 0), metal=0.34, gloss=0.40,
           emissive=(255, 242, 216), px=288, variants=2, painter=_paint_sign_monolith, normal_strength=2.4)
@@ -945,18 +970,19 @@ def _pipe_railing_run(mb, axis, c, s, a0, a1, z_base, h=1.08, stage=0):
         K.axbox(mb, axis, c, s, ap - 0.025, ap + 0.025, 0.015, 0.065, z_base, top_z0, "railing_steel")
 
 
-def _add_window_bay(mb, wins, axis, c, s, a0, a1, z0, z1, floor, unit, stage=0, frame_t=0.055):
-    """프레임이 창을 가리지 않도록 창 영역을 프레임 안쪽으로 정확히 맞추어 WindowSet 등록."""
+def _add_window_bay(mb, wins, axis, c, s, a0, a1, z0, z1, floor, unit, trim, frame_t=0.055):
+    """개구부 유리를 외벽에서 0.18m 후퇴시키고 외측에 창대와 인방을 둔다."""
     fa0, fa1 = a0 + frame_t, a1 - frame_t
     fz0, fz1 = z0 + frame_t, z1 - frame_t
-    if fa1 <= fa0 + 0.08 or fz1 <= fz0 + 0.08:
-        return
-    wins.add_face(axis, c, s, fa0, fa1, fz0, fz1, floor=floor, unit=unit)
-    if stage == 0:
-        K.axbox(mb, axis, c, s, a0, a1, 0.0, 0.06, z0, fz0, "frame_metal")
-        K.axbox(mb, axis, c, s, a0, a1, 0.0, 0.06, fz1, z1, "frame_metal")
-        K.axbox(mb, axis, c, s, a0, fa0, 0.0, 0.06, fz0, fz1, "frame_metal")
-        K.axbox(mb, axis, c, s, fa1, a1, 0.0, 0.06, fz0, fz1, "frame_metal")
+    wins.add_face(axis, c - s * (0.18 + K.WIN_OFF), s, fa0, fa1, fz0, fz1, floor=floor, unit=unit)
+    wins.items[-1]["pts2"] = K.face_pts(axis, c + s * K.LOD2_WIN_OFF, s, fa0, fa1, fz0, fz1)
+    mb.rect(K.face_pts(axis, c - s * 0.22, s, a0, a1, z0, z1), "frame_metal")
+    for lo, hi in ((a0, fa0), (fa1, a1)):
+        K.axbox(mb, axis, c, s, lo, hi, -0.20, 0.0, fz0, fz1, "frame_metal")
+    for lo, hi in ((z0, fz0), (fz1, z1)):
+        K.axbox(mb, axis, c, s, a0, a1, -0.20, 0.0, lo, hi, "frame_metal")
+    K.axbox(mb, axis, c, s, a0 - 0.07, a1 + 0.07, 0.0, 0.10, z0 - 0.055, z0 + 0.025, trim)
+    K.axbox(mb, axis, c, s, a0 - 0.045, a1 + 0.045, 0.0, 0.045, z1 - 0.02, z1 + 0.07, trim)
 
 
 RAMP_X0, RAMP_X1 = -18.8, 24.8
@@ -1125,8 +1151,8 @@ def _curtain_wall_grid(mb, wins, axis, c, s, a0, a1, z0, z1, nx, nz, floor0, uni
             if is_spandrel:
                 K.paint(mb, axis, c, s, ga0, ga1, gz0, gz1, "spandrel_dark", layer=1)
             else:
-                fl = floor0 + (iz * 3) // max(1, nz)
-                wins.add_face(axis, c, s, ga0, ga1, gz0, gz1, floor=fl, unit=unit0 + ix)
+                # 같은 세로 열은 모든 유리 단에서 동일한 발광 셀을 사용한다.
+                wins.add_face(axis, c, s, ga0, ga1, gz0, gz1, floor=0, unit=unit0 + ix + floor0 * 5)
 
 
 def _rect_var(mb, pts, region, variant=0):
@@ -1163,7 +1189,7 @@ def _rect_var(mb, pts, region, variant=0):
         mb.rect(pts, region)
 
 
-def _box_var(mb, x0, x1, y0, y1, z0, z1, region, variant=0, skip=()):
+def _box_var(mb, x0, x1, y0, y1, z0, z1, region, variant=0, skip=(), window_wall=None):
     """MeshBuilder.box 와 동일한 기하를 유지하면서 조각별 변형(variant) 오프셋을 적용."""
     if x1 - x0 < 1e-5 or y1 - y0 < 1e-5 or z1 - z0 < 1e-5:
         return
@@ -1179,8 +1205,27 @@ def _box_var(mb, x0, x1, y0, y1, z0, z1, region, variant=0, skip=()):
         if face in skip:
             continue
         reg = region if isinstance(region, str) else region.get(face, region.get("default"))
-        if reg:
+        if not reg:
+            continue
+        if window_wall is None or face != window_wall[0]:
             _rect_var(mb, pts, reg, variant=variant + f_idx)
+            continue
+        _, wins, bays = window_wall
+        axis, c, side, start, end = {
+            "back": ("y", y1, 1, x0, x1),
+            "left": ("x", x0, -1, y0, y1),
+            "right": ("x", x1, 1, y0, y1),
+        }[face]
+        levels = sorted({z0, z1, *(z for bay in bays for z in bay[2:4])})
+        for low, high in zip(levels, levels[1:]):
+            spans = sorted((a, b) for a, b, sill, head, _, _ in bays if sill <= low and high <= head)
+            left = start
+            for a, b in spans + [(end, end)]:
+                _rect_var(mb, K.face_pts(axis, c, side, left, a, low, high), reg, variant + f_idx)
+                left = b
+        trim = "frame_metal" if reg == "brown_panel" else reg
+        for bay in bays:
+            _add_window_bay(mb, wins, axis, c, side, *bay, trim)
 
 
 def _segmented_ramp_slab(mb, x0, x1, yf0, yf1, y_back, dz, region, top_region, n_seg=11):
@@ -1796,7 +1841,13 @@ def build_north_wing(mb, A, wins, gls, stage):
         return
 
     # 1~2층 본체 (X in [-24.5, +13.5], Y in [50.4, 68.4]; 서측면은 회백색 패널, 북측 정면은 north_front_mid 근거 베이지 석재 유지)
-    _box_var(mb, -24.5, 13.5, 50.4, 68.4, 0.14, 9.10, {"left": "white_panel", "default": "beige_stone"}, variant=0, skip=("bottom",))
+    north_1f_xs = [-17.4, -15.6, -13.8, -11.4, -9.4, -7.4, -4.6, -2.6, 0.2, 2.2, 5.4, 7.6, 10.6, 12.2]
+    north_2f_xs = [-23.2, -21.2, -19.2, -17.2, -15.2, -13.2, -11.0, -8.8, -6.6, -4.2, -1.8, 0.6, 3.0, 5.6, 8.0, 10.8]
+    bays = [(-24.0, -21.8, 0.30, 3.60, 0, 10), (-21.6, -19.4, 0.30, 3.60, 0, 11)]
+    bays += [(x, x + 1.05, 2.05, 3.95, 0, 20 + i) for i, x in enumerate(north_1f_xs)]
+    bays += [(x, x + 1.05, 5.35, 8.20, 1, 40 + i) for i, x in enumerate(north_2f_xs)]
+    _box_var(mb, -24.5, 13.5, 50.4, 68.4, 0.14, 9.10, {"left": "white_panel", "default": "beige_stone"},
+             variant=0, skip=("bottom",), window_wall=("back", wins, bays))
     # 동북 커튼월 로비 후퇴부 (X in [13.5, 20.5], Y in [50.4, 65.4], 1~3층 Z in [0.14, 14.80])
     _box_var(mb, 13.5, 20.5, 50.4, 65.4, 0.14, 14.80, "white_panel", variant=0, skip=("bottom",))
     # 동북 코너 솔리드 계단/엘리베이터 타워 (X in [20.5, 24.8], Y in [64.0, 69.2], Z in [0.14, 18.55])
@@ -1808,16 +1859,9 @@ def build_north_wing(mb, A, wins, gls, stage):
     _box_var(mb, 23.9, 24.6, 51.0, 51.7, 0.14, 4.45, "white_panel", variant=1, skip=("bottom",))
 
     # 1~2층 북면 입면 디테일 (Y = 68.4, s = +1)
-    # 1층 NW 부설입구 유리문 (X in [-24.2, -19.2], Z in [0.14, 4.10])
-    _add_window_bay(mb, wins, "y", 68.4, 1, -24.0, -21.8, 0.30, 3.60, 0, 10, stage)
-    _add_window_bay(mb, wins, "y", 68.4, 1, -21.6, -19.4, 0.30, 3.60, 0, 11, stage)
     # 1층 하부 알루미늄 환기 루버 4개소 (north_front_mid.png 기준)
     for lx0, lx1 in ((-18.6, -15.2), (-10.0, -5.8), (-4.0, 0.5), (5.5, 9.8)):
         K.paint(mb, "y", 68.4, 1, lx0, lx1, 0.35, 1.70, "louver_grille", layer=1)
-    # 1층 세로형 창열 (north_front_mid.png 기준 12베이)
-    north_1f_xs = [-17.4, -15.6, -13.8, -11.4, -9.4, -7.4, -4.6, -2.6, 0.2, 2.2, 5.4, 7.6, 10.6, 12.2]
-    for idx, x0 in enumerate(north_1f_xs):
-        _add_window_bay(mb, wins, "y", 68.4, 1, x0, x0 + 1.05, 2.05, 3.95, 0, 20 + idx, stage)
 
     # 북측 2층 & 3층 캔틸레버 발코니 슬래브 (Y in [68.4, 70.2], 깊이 1.8m -> WIN_BLOCKED 1.5m 회피!)
     mb.box(-24.5, 20.5, 68.4, 70.2, 4.35, 4.78, "white_panel")
@@ -1838,11 +1882,6 @@ def build_north_wing(mb, A, wins, gls, stage):
     _glass_railing_run(mb, gls, "y", 70.20, 1, -24.99, -19.40, 9.28, h=1.08, stage=stage,
                        post_step=1.40, gls_a0=-24.955, gls_a1=-19.40)
 
-    # 북측 2층 세로형 창열 (Y = 68.4, Z in [5.25, 8.20]) — NW 코너까지 연속 배치 (north_nw_oblique.png 정합)
-    north_2f_xs = [-23.2, -21.2, -19.2, -17.2, -15.2, -13.2, -11.0, -8.8, -6.6, -4.2, -1.8, 0.6, 3.0, 5.6, 8.0, 10.8]
-    for idx, x0 in enumerate(north_2f_xs):
-        _add_window_bay(mb, wins, "y", 68.4, 1, x0, x0 + 1.05, 5.35, 8.20, 1, 40 + idx, stage)
-
     # 북동측 후퇴 커튼월 로비 (X in [13.5, 20.5], Y = 65.4, Z in [0.20, 14.40])
     _curtain_wall_grid(mb, wins, "y", 65.4, 1, 13.6, 20.4, 0.25, 4.35, nx=4, nz=2,
                        floor0=0, unit0=70, stage=stage, louver_step=0)
@@ -1858,11 +1897,11 @@ def build_north_wing(mb, A, wins, gls, stage):
                        mullion=(0.055, 0.085), transom=(0.055, 0.085), frame_region="curtain_frame")
 
     # 3층 다목적 체육관 복층 볼륨 (X in [-24.5, +13.5], Y in [51.0, 68.4], Z in [9.10, 18.55])
-    _box_var(mb, -24.5, 13.5, 51.0, 68.4, 9.10, 14.80, "brown_panel", variant=0)
+    bays = [(lo, hi, 10.35, 11.75, 2, 85 + i)
+            for i, (lo, hi) in enumerate(((-15.5, -10.5), (-6.8, -0.8), (2.5, 8.8)))]
+    _box_var(mb, -24.5, 13.5, 51.0, 68.4, 9.10, 14.80, "brown_panel",
+             variant=0, window_wall=("back", wins, bays))
     _box_var(mb, -24.5, 13.5, 51.0, 68.4, 14.80, 18.55, "white_grooved", variant=0)
-    # 3층 짙은 브라운 구간 수평 띠창 3개소 (north_front_mid.png 기준)
-    for idx, (wx0, wx1) in enumerate(((-15.5, -10.5), (-6.8, -0.8), (2.5, 8.8))):
-        _add_window_bay(mb, wins, "y", 68.4, 1, wx0, wx1, 10.35, 11.75, 2, 85 + idx, stage)
 
     # 동북 3층 옥상 나루마당 (X in [13.5, 24.8], Y in [50.4, 65.4], 바닥 Z=14.80, 두꺼운 백색 캔틸레버 지붕 Z=18.55..20.00)
     _box_var(mb, 23.85, 24.8, 50.4, 64.0, 14.80, 15.10, "white_panel", variant=0, skip=("bottom",))
@@ -1908,15 +1947,14 @@ def build_middle_courtyard_and_east(mb, wins, gls, stage):
         return
 
     # A. 서측 1~2층 그린테라스 하부 매스 (X in [-24.6, -6.0], Y in [35.2, 50.4], Z in [0.14, 9.10])
-    _box_var(mb, -24.6, -6.0, 35.2, 50.4, 0.14, 9.10, "white_panel", variant=1, skip=("bottom",))
+    bays = [(y, y + 1.05, sill, head, floor, unit + i)
+            for i in range(6) for y in (36.2 + i * 2.35,)
+            for sill, head, floor, unit in ((1.40, 3.85, 0, 100), (5.55, 8.20, 1, 110))]
+    _box_var(mb, -24.6, -6.0, 35.2, 50.4, 0.14, 9.10, "white_panel",
+             variant=1, skip=("bottom",), window_wall=("left", wins, bays))
     # 2층 서측 테라스 옥외 데크 바닥 (Z=9.10..9.24) + 조경 화단 + 유리 난간
     _box_var(mb, -25.0, -6.0, 35.2, 50.4, 9.10, 9.26, "terrace_deck", variant=0)
     if stage == 0:
-        # 서측 1~2층 연속 세로형 창 (west_nw_corner.png & north_nw_oblique.png 기준)
-        for i in range(6):
-            wy0 = 36.2 + i * 2.35
-            _add_window_bay(mb, wins, "x", -24.6, -1, wy0, wy0 + 1.05, 1.40, 3.85, 0, 100 + i, stage)
-            _add_window_bay(mb, wins, "x", -24.6, -1, wy0, wy0 + 1.05, 5.55, 8.20, 1, 110 + i, stage)
         # 2층 돌출 발코니 슬래브 (X=-25.60..-24.60 — 남/서/북측동과 일직선 정렬; 난간은 build_south_wings 에서 Y=6.53..68.40 일체 연결)
         _box_var(mb, -25.6, -24.6, 35.2, 50.4, 4.40, 4.82, "white_panel", variant=2)
     # 3층 레벨 서측 그린테라스 -> 북측동 3층 서측 발코니 연속 유리난간 (Y=35.27..68.40, Z=9.26)
@@ -1951,7 +1989,11 @@ def build_middle_courtyard_and_east(mb, wins, gls, stage):
 
     # C. 동측 연결동 (X in [+8.2, +24.8], Y in [35.2, 50.4], 1층 회랑 후퇴 X=22.0 + 2~3층 백색 벽 Z=4.45..14.80)
     _box_var(mb, 8.2, 22.0, 35.2, 50.4, 0.14, 4.45, "white_panel", variant=0, skip=("bottom",))
-    _box_var(mb, 8.2, 24.8, 35.2, 50.4, 4.45, 14.80, "white_panel", variant=1)
+    bays = [(y, y + 1.0, sill, head, floor, unit + i)
+            for i, y in enumerate((36.4, 38.6, 41.2, 43.2))
+            for sill, head, floor, unit in ((5.35, 8.15, 1, 175), (9.85, 13.05, 2, 180))]
+    _box_var(mb, 8.2, 24.8, 35.2, 50.4, 4.45, 14.80, "white_panel",
+             variant=1, window_wall=("right", wins, bays))
     mb.box(8.2, 24.8, 35.2, 50.4, 14.80, 14.95, "roof_concrete")
     # 동측 1층 회랑 백색 기둥 + 후퇴 창 (east_front_mid.png · east_ne_oblique.png 기준)
     for idx, cy in enumerate((40.2, 45.6)):
@@ -1966,9 +2008,6 @@ def build_middle_courtyard_and_east(mb, wins, gls, stage):
     if stage == 0:
         # 동측 외벽 창호 (east_ne_far.png & north_ne_oblique.png 기준: 2층 계단실 대형창 + 3층 세로창 열)
         _curtain_wall_grid(mb, wins, "x", 24.8, 1, 45.2, 49.6, 5.10, 13.90, nx=3, nz=5, floor0=1, unit0=170, stage=stage, louver_step=0)
-        for idx, y0 in enumerate((36.4, 38.6, 41.2, 43.2)):
-            _add_window_bay(mb, wins, "x", 24.8, 1, y0, y0 + 1.0, 5.35, 8.15, 1, 175 + idx, stage)
-            _add_window_bay(mb, wins, "x", 24.8, 1, y0, y0 + 1.0, 9.85, 13.05, 2, 180 + idx, stage)
         # 동측 연결동 옥상 공조 설비 · 배관 랙 (sat_vworld_z19 실측 r2c3/r1c3 배치 정합)
         for idx_u in range(4):
             yu = 38.60 + idx_u * 1.05
@@ -2012,7 +2051,9 @@ def build_south_wings(mb, A, wins, gls, stage):
             _box_var(mb, -18.2, -16.2, ry, ry + 0.55, 15.20, 16.30, "white_panel", variant=k)
 
     # 서측 1층 갤러리 포디엄(X in [-24.6, -18.8], Y in [10.2, 35.2], Z in [0.14, 4.82]) + 상부 2층 오픈 목재 테라스 & 2->3층 연결 계단
-    _box_var(mb, -24.6, -18.8, 10.2, 35.2, 0.14, 4.40, "white_panel", variant=0, skip=("bottom",))
+    bays = [(y, y + 1.05, 1.40, 3.85, 0, 200 + i) for i, y in enumerate(np.arange(11.5, 34.0, 2.50))]
+    _box_var(mb, -24.6, -18.8, 10.2, 35.2, 0.14, 4.40, "white_panel",
+             variant=0, skip=("bottom",), window_wall=("left", wins, bays))
     _box_var(mb, -25.6, -18.8, 10.19, 35.2, 4.40, 4.82, {"top": "terrace_deck", "default": "white_panel"}, variant=1)
     # 남서 모서리 -> 서측 2층 목재 테라스 -> 중정 -> 북서 모서리까지 일체 연속 유리난간 (Y=6.53..68.40)
     _glass_railing_run(mb, gls, "x", -25.51, -1, 6.53, 68.40, 4.82, h=1.05, stage=stage,
@@ -2107,9 +2148,6 @@ def build_south_wings(mb, A, wins, gls, stage):
             mb.box(-19.12, -18.915, ya, yb, 4.86, 9.35, "louver_white")
 
     if stage == 0:
-        for i in range(9):
-            wy0 = 11.5 + i * 2.50
-            _add_window_bay(mb, wins, "x", -24.6, -1, wy0, wy0 + 1.05, 1.40, 3.85, 0, 200 + i, stage)
         # 남서 매스 3층 수평 창 열 (south_sw_ramp.png 기준)
         _curtain_wall_grid(mb, wins, "x", -18.8, -1, 11.2, 22.8, 10.10, 14.60, nx=7, nz=3, floor0=2, unit0=225, stage=stage, louver_step=0)
         # 남서 모서리 상부 사인 (두꺼운 백색 파시아 서측면 -19.32, 외향 -X CCW 정방향)
@@ -2189,6 +2227,16 @@ def build_south_wings(mb, A, wins, gls, stage):
     _build_solar_array(mb, 3.8, 13.5, 29.0, 34.0, 15.10, 2, stage)
 
 
+def _teal_uv(atlas, lit=False, top_left=1.0, top_right=1.0):
+    u0, v0, u1, v1 = atlas._uvrect("teal_glass")
+    du, dv = u1 - u0, v1 - v0
+    left = u0 + du * (0.54 if lit else 0.04)
+    right = left + du * 0.42
+    bottom = v0 + dv * 0.01
+    return [(left, bottom), (right, bottom),
+            (right, bottom + dv * 0.98 * top_right), (left, bottom + dv * 0.98 * top_left)]
+
+
 def build_south_ramp_and_entrance(mb, A, wins, gls, stage):
     """5. 남측 사선 문화산책로 경사로 · 하부 수직 핀 유리 아트리움 · 1층 행정복지센터/로컬푸드 주출입구."""
     x_l, x_r = RAMP_X0, RAMP_X1
@@ -2206,7 +2254,7 @@ def build_south_ramp_and_entrance(mb, A, wins, gls, stage):
         mb.quad(
             [(-18.4, 10.19, 0.20), (4.2, 10.19, 0.20),
              (4.2, 10.19, ramp_zb(4.2)), (-18.4, 10.19, ramp_zb(-18.4))],
-            A.uv("teal_glass"), "teal_glass",
+            _teal_uv(A), "teal_glass",
         )
         return
 
@@ -2325,7 +2373,7 @@ def build_south_ramp_and_entrance(mb, A, wins, gls, stage):
         # 고창: LED 띠 위 ~ 경사로 소핏(ramp_zb) 사이 청록 유리 + 1.22 m 간격 멀리언
         zt = lambda x: ramp_zb(x) - 0.04
         mb.quad([(ex0, 10.185, z_led1), (ex1, 10.185, z_led1), (ex1, 10.185, zt(ex1)), (ex0, 10.185, zt(ex0))],
-                A.uv("teal_glass"), "teal_glass")
+                _teal_uv(A), "teal_glass")
         n_cl = 8
         for i in range(n_cl + 1):
             mx = ex0 + (ex1 - ex0) * i / n_cl
@@ -2394,33 +2442,15 @@ def build_south_ramp_and_entrance(mb, A, wins, gls, stage):
             0.09, "frame_metal", tiled=False,
         )
 
-    # 청록 유리 커튼월 배경 (Y = 10.187, 1층 직사각 타일링 + 상부 쐐기 연속 UV 정합)
-    K.paint(mb, "y", 10.197, -1, x_fin0, x_fin1, 0.28, 3.98, "teal_glass", layer=1)
-    tu0, tv0, tu1, tv1 = A._uvrect("teal_glass")
-    m_e = 0.5 / A.size
-    tu0 += m_e
-    tu1 -= m_e
-    tv0 += m_e
-    tv1 -= m_e
-    for k in range(n_bays // 2):
-        xa = x_fin0 + 2 * k * bw
-        xb = min(x_fin1, xa + 2 * bw)
+    # 핀 간격에 맞춘 한 장의 유리가 트랜섬 뒤로 이어진다. 방 단위로 묶어 점등한다.
+    for k in range(n_bays):
+        xa, xb = x_fin0 + k * bw, x_fin0 + (k + 1) * bw
         za = min(8.24, ramp_zb(xa))
         zb = min(8.24, ramp_zb(xb))
-        col_mod = k % 3
-        fu0, fu1 = col_mod / 3.0, (col_mod + 1.0) / 3.0
-        if xb - xa < 1.9 * bw:
-            fu1 = fu0 + ((xb - xa) / (6.0 * bw))
-        fva = min(1.0, max(0.02, (za - 4.24) / 4.0))
-        fvb = min(1.0, max(0.02, (zb - 4.24) / 4.0))
-        u_a = tu0 + (tu1 - tu0) * fu0
-        u_b = tu0 + (tu1 - tu0) * fu1
-        v_0 = tv0
-        v_a = tv0 + (tv1 - tv0) * fva
-        v_b = tv0 + (tv1 - tv0) * fvb
+        lit = 3 <= k < 8 or 14 <= k < 18 or 27 <= k < 34
         mb.quad(
-            [(xa, 10.187, 4.24), (xb, 10.187, 4.24), (xb, 10.187, zb), (xa, 10.187, za)],
-            [(u_a, v_0), (u_b, v_0), (u_b, v_b), (u_a, v_a)],
+            [(xa, 10.187, 0.28), (xb, 10.187, 0.28), (xb, 10.187, zb), (xa, 10.187, za)],
+            _teal_uv(A, lit, (za - 0.28) / 7.96, (zb - 0.28) / 7.96),
             "teal_glass",
         )
 

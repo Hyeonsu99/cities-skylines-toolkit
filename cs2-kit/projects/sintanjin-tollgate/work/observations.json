@@ -26,8 +26,8 @@
  "18d4dec4275535bae78e3151b5d89f941cd2f4c7e8c595975474dc5867944378": {
   "file": "photos\\east_near_look_w.png",
   "side": "back",
-  "note": "Lane 2 exposed sky-blue fascia and inner sensor arch with no east polycarb arch; E1 short arch over Lane 3 only with Red X; Orange gantry 3-part LED [화물|하이패스|통행권] above crossbeam",
-  "observed_at": "2026-11-16T10:51:16"
+  "note": "Lane 2 exposed sky-blue fascia and inner sensor arch with no east polycarb arch. E1 short arch over Lane 3 only with Red X. Orange gantry 3-part LED [화물|하이패스|통행권] above crossbeam. Silver LED board hangs below the portal header and both arrows sit above their respective assemblies.",
+  "observed_at": "2026-11-19T08:57:27"
  },
  "648df9ae6efd6f04570686a66705c0ca9d3b94961cd8a25590828598c704bc21": {
   "file": "photos\\west_close_look_ne.png",
@@ -80,13 +80,13 @@
  "6c36a11d80e96e1593508731997a698aea1d08cf09f5c9a59c4caa1fb3996694": {
   "file": "photos\\under_look_s.png",
   "side": "right",
-  "note": "Under canopy looking south: warm metallic taupe-brown E-W ribbed soffit, full-span double light bars, concrete pier capitals with cone lights, Booth 4 dark window frames",
-  "observed_at": "2026-11-16T14:18:05"
+  "note": "Under canopy looking south: warm metallic taupe-brown E-W ribbed soffit, full-span double light bars, concrete pier capitals with cone lights. Booth 4 shows metallic perimeter trim and a vertical mullion around dark glass beneath the orange fascia.",
+  "observed_at": "2026-11-19T08:57:27"
  },
  "74940a84b7e95d07f7f7eac5933a933c1fd0a3c399aa7226276abf3cc16a13af": {
   "file": "photos\\west_near_look_e.png",
   "side": "front",
-  "note": "West near Lane 2: compact navy sign 신탄진/Sintanjin on visible legs, Red X over Lane 3, Green down over Lane 4, Wing 0 flared upper wing over lower Lane 1 vault",
-  "observed_at": "2026-11-16T14:18:05"
+  "note": "West near Lane 2: compact navy sign 신탄진/Sintanjin on visible legs, Red X over Lane 3, Green down over Lane 4, Wing 0 flared upper wing over lower Lane 1 vault. The Red X and Green down sit visually at the front arc rim and overlap the blue fascia in projection.",
+  "observed_at": "2026-11-19T08:57:27"
  }
 }

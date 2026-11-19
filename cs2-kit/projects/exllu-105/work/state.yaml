@@ -176,14 +176,89 @@
     "key": null
    },
    "fbx": null
+  },
+  "window-depth": {
+   "at": "2026-11-19T08:57:12",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "window-depth",
+   "gate": "output/HighriseTower105_L1_5x6/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "a1eebaf8f1341e6432f0b0aaaa905979c1a71edfe7689820da428042b7b73eb8",
+   "preview": {
+    "path": "previews/HighriseTower105_L1_5x6.png",
+    "exists": true,
+    "sha256": "9897ad2b7b3b0e5b5ddd27c6233e4345b931e57b10cc770b1aa51b8e7a49490e",
+    "key": null
+   },
+   "fbx": null
+  },
+  "p0": {
+   "at": "2026-11-19T10:04:39",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "p0",
+   "gate": "output/HighriseTower105_L1_5x6/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "bb201a00823d3b8d57fc70b6db54892ae3be3a38d8c4b552464276e4f5c0312d",
+   "preview": {
+    "path": "previews/HighriseTower105_L1_5x6.png",
+    "exists": true,
+    "sha256": "19e8b770e6c9d09a2e7d7bd05fe08cdb81658ddb3b88cebcdc13020c432655ac",
+    "key": null
+   },
+   "fbx": null
+  },
+  "p1p2": {
+   "at": "2026-11-19T10:46:34",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "p1p2",
+   "gate": "output/HighriseTower105_L1_5x6/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "PASS",
+    "tiles": "PASS",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "0eefb6e285d32a0804147f3d2f92839dbf05c41484ebc4d8fa57987beff3161c",
+   "preview": {
+    "path": "previews/HighriseTower105_L1_5x6.png",
+    "exists": true,
+    "sha256": "21a565db0cd039e3b01e5dff41e76b411efa26d59438ae1848d1ef0b9ef6c8ed",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-18T22:40:28",
+ "updated_at": "2026-11-19T10:46:34",
  "current_stage": "final:INCOMPLETE",
  "generator": "exllu_105_cs2.py",
- "generator_hash": "2daf5d1e96ebb1959d4434d18a8a32f9994d08cd77653585badc93273af837ff",
+ "generator_hash": "0eefb6e285d32a0804147f3d2f92839dbf05c41484ebc4d8fa57987beff3161c",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "e4c937d5899ee608af1dfd5bb8480c447dc508656a4c2a221ffb14349bb13517",
+ "reviewed_preview_hash": "19e8b770e6c9d09a2e7d7bd05fe08cdb81658ddb3b88cebcdc13020c432655ac",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",

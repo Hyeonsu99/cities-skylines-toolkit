@@ -20,7 +20,7 @@ estimated:
   - centered office annex 18.0 x 4.6 x 7.4 m (align center, door_side center, upper 2F fascia signboard, parapet 0.46 m, 3 rooftop AC condensers) # estimated
   - shutter layout (2 front flanking office, 2 rear, 2 right side 4.5x4.9 m + rear steel exit door) # estimated
   - twin_varied roof skylights (3 outer cassettes u=0.30..0.45, 2 staggered upper-slope inner cassettes clear of central valley), staggered O750 ridge ventilators (5/4) + 2 upper-slope exhaust box fans, left cyclone stack + utility cage # estimated
-  - clerestory workshop glass (cells 0..3 wire/frosted cool white, 100% lit) vs office blinds (cells 4..24, ~36% room lit hash, 16px guard) # estimated
+  - 120 mm jambs, 200 mm sills and 160 mm heads from the wall; cool clerestory glass with three light levels and off bays; room-paired office panes # estimated
 metrics:
   tris_main: 5590
   tris_lod1: 298

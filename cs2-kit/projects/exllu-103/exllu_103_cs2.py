@@ -81,11 +81,19 @@ def granite(ctx, cols, rows, darken, speck, polish=0.0):
     ctx.gloss[d > 0.2] = 0.15
 
 
+def gloss_jitter(amp=0.05, scale_px=8, seed=37):
+    def _p(ctx):
+        n = ctx.noise(max(2, int(scale_px * ctx.w / 64.0)), 1.0, 2, seed=seed)
+        ctx.gloss[...] = np.clip(ctx.gloss + np.clip(amp * 0.5 * n, -amp, amp), 0.05, 0.95)
+    return _p
+
+
 def paving(ctx, n):
     """Honed stone paving / panels: n x n slabs per tile, fine grain, slightly darker joints."""
     ctx.joints(cols=n, rows=n, width_m=0.006, depth=1.0, darken=0.22, tone=3.0)
     ctx.grain(amp=3.0, scale_px=2, height=0.3, seed=4)
     ctx.rgb += ctx.noise(24, 3.0, 2, seed=6)[..., None]
+    gloss_jitter(0.05, 6, 27)(ctx)
 
 
 def roofing(ctx):
@@ -94,6 +102,7 @@ def roofing(ctx):
     ctx.grain(amp=4.0, scale_px=2, height=0.4, seed=7)
     ctx.rgb += ctx.noise(48, 7.0, 3, seed=8)[..., None]
     ctx.stains(amount=0.10, scale_px=96, streaks=0.0, seed=12)
+    gloss_jitter(0.05, 6, 28)(ctx)
 
 
 def shutter(ctx):
@@ -104,8 +113,9 @@ def shutter(ctx):
     ctx.rgb += (np.clip((sl - 0.7) / 0.3, 0, 1) * 8.0)[..., None]                # lit slat edge
     ctx.height += sl * 0.8
     fr = (mx < 0.035) | (mx > ctx.tile[0] - 0.035) | (mz < 0.05) | (mz > ctx.tile[1] - 0.05)
-    ctx.rgb[fr] = np.array([236, 237, 234], np.float32)
+    ctx.rgb[fr] = np.array([217, 218, 215], np.float32)
     ctx.height[fr] = 1.2
+    gloss_jitter(0.05, 6, 29)(ctx)
 
 
 def clerestory(ctx):
@@ -155,6 +165,7 @@ def soffit(ctx):
     d = np.hypot(mx - ctx.tile[0] / 2, mz - ctx.tile[1] / 2)
     ctx.emis[...] = 0.35 * np.clip(1.0 - (d / 0.075) ** 4, 0, 1) + 0.05 * np.exp(-(d / 0.35) ** 2)
     ctx.rgb[(d > 0.075) & (d < 0.10)] = np.array([120, 122, 122], np.float32)      # trim ring
+    gloss_jitter(0.05, 6, 34)(ctx)
 
 
 def window_glass(ctx):
@@ -169,7 +180,8 @@ def window_glass(ctx):
         count[k] = count.get(k, 0) + 1
     n = max(1, math.ceil(math.sqrt(max(list(count.values()) + [1]))))
     su, sv = ctx.u * g * n, ctx.v * g * n
-    sid = (np.floor(sv).astype(np.int64) * g * n + np.floor(su).astype(np.int64))
+    # Repeat the same daylight palette in lit and unlit blocks.
+    sid = (np.floor(sv).astype(np.int64) % n) * n + np.floor(su).astype(np.int64) % n
     fu, fv = su % 1.0, sv % 1.0
     h = (sid * 2654435761) % 1000 / 1000.0          # stable per-slot random
     h2, h3 = (h * 7) % 1.0, (h * 13) % 1.0
@@ -201,8 +213,9 @@ def window_glass(ctx):
     lit = m[r:-r, r:-r]
     level = 0.6 + 0.4 * ((h * 29) % 1.0)                              # rooms are not equally bright
     glow = level * (0.75 + 0.25 * fv) * np.where(cmask | blind, 0.55, 1.0)
-    ctx.emis[...] = np.where(lit, glow, 0.0)
-    ctx.gloss[...] = np.where(cmask | blind, 0.25, 0.42)
+    ctx.emis[...] = np.where(lit, 0.46 * glow, 0.0)
+    gvar = np.clip(0.015 * ctx.noise(max(8, int(28 * ctx.w / 2048.0)), 1.0, 2, seed=41), -0.03, 0.03)
+    ctx.gloss[...] = np.clip(np.where(cmask | blind, 0.80, 0.90) + gvar, 0.75, 0.95)
 
 
 def mesh_grid(ctx, n, w, col, alpha_cut=False):
@@ -211,6 +224,7 @@ def mesh_grid(ctx, n, w, col, alpha_cut=False):
     ctx.rgb[m] = np.array(col, np.float32)
     if alpha_cut:
         ctx.alpha[...] = np.where(m, 255.0, 0.0)
+    gloss_jitter(0.05, 6, 57)(ctx)
 
 
 def deck_glow(ctx):
@@ -218,6 +232,7 @@ def deck_glow(ctx):
     mx, mz = ctx.meters()
     d = np.hypot(mx - ctx.tile[0] / 2, mz - ctx.tile[1] / 2)
     ctx.rgb[d < 0.17] = np.array([96, 100, 100], np.float32)          # dark fixture base ring
+    gloss_jitter(0.05, 6, 58)(ctx)
 
 
 def flat_emis(v):
@@ -268,6 +283,7 @@ def foliage_tex(ctx):
     """Shrubbery foliage: deep evergreen base with leafy mottling."""
     ctx.grain(amp=12.0, scale_px=2, height=0.6, seed=21)
     ctx.rgb += ctx.noise(16, 10.0, 2, seed=23)[..., None]
+    gloss_jitter(0.05, 6, 56)(ctx)
 
 
 _GLYPHS = {
@@ -387,11 +403,18 @@ def paint_pier_course(ctx):
     ctx.joints(cols=1, rows=10, width_m=0.009, depth=1.5, stagger=0.0, darken=0.22, tone=7.0)
     ctx.grain(amp=6.0, scale_px=2, height=0.6, seed=13)
     ctx.rgb += ctx.noise(12, 4.0, 2, seed=17)[..., None]
+    gloss_jitter(0.05, 6, 30)(ctx)
+
+
+def paint_core_glow(ctx):
+    ctx.emis[...] = (0.35 * (1.0 - 0.55 * ctx.v)).astype(np.float32)
+    gloss_jitter(0.05, 6, 67)(ctx)
 
 
 TEX = {  # tile = one 2.4 m x one storey, so joints line up with floors
     "foliage": dict(tile=(1.2, 1.2), px=64, painter=foliage_tex),
     "stone": dict(tile=(2.4, FH), px=1024, painter=lambda c: granite(c, 2, 4, 0.25, 6.5, 0.12)),
+    "stone_trim": dict(px=64, painter=gloss_jitter(0.05, 8, 51)),
     "pale": dict(tile=(2.4, FH), px=1024, painter=lambda c: granite(c, 2, 3, 0.08, 2.2)),
     "grey_stone": dict(tile=(2.4, FH), px=1024, painter=lambda c: granite(c, 2, 4, 0.15, 3.8)),
     "window": dict(px=2048, painter=window_glass, emissive=(255, 205, 150)),
@@ -406,6 +429,18 @@ TEX = {  # tile = one 2.4 m x one storey, so joints line up with floors
     "roof": dict(tile=(4.0, 4.0), px=512, painter=roofing),
     "canopy": dict(tile=(1.2, 1.2), px=256, painter=lambda c: paving(c, 2)),
     "louver": dict(tile=(0.6, 2.05), px=256, painter=shutter),
+    "louver_back": dict(px=64, painter=gloss_jitter(0.05, 8, 60)),
+    "crown_white": dict(px=64, painter=gloss_jitter(0.05, 8, 54)),
+    "deck_under": dict(px=64, painter=gloss_jitter(0.05, 8, 59)),
+    "railing": dict(px=64, painter=gloss_jitter(0.05, 8, 52)),
+    "frame": dict(px=64, painter=gloss_jitter(0.05, 8, 53)),
+    "deck": dict(px=64, painter=gloss_jitter(0.05, 8, 61)),
+    "heli_green": dict(px=64, painter=gloss_jitter(0.05, 8, 62)),
+    "heli_white": dict(px=64, painter=gloss_jitter(0.05, 8, 63)),
+    "glass": dict(px=64, painter=gloss_jitter(0.05, 8, 64)),
+    "pale_trim": dict(px=64, painter=gloss_jitter(0.05, 8, 65)),
+    "grey_trim": dict(px=64, painter=gloss_jitter(0.05, 8, 66)),
+    "soil": dict(px=64, painter=gloss_jitter(0.05, 8, 55)),
     "clerestory": dict(tile=(0.85, 0.64), px=128, painter=clerestory, emissive=(255, 232, 196)),
     "vestibule": dict(px=1024, painter=vestibule, emissive=(255, 226, 184)),
     "soffit": dict(tile=(1.2, 1.2), px=256, painter=soffit, emissive=(255, 226, 184)),
@@ -418,8 +453,7 @@ TEX = {  # tile = one 2.4 m x one storey, so joints line up with floors
     "heli_light_y": dict(px=32, painter=flat_emis(0.35), emissive=(255, 214, 90)),
     "obst_light": dict(px=32, painter=flat_emis(0.6), emissive=(255, 58, 40)),
     "under_light": dict(px=32, painter=flat_emis(0.45), emissive=(255, 218, 155)),
-    "core_glow": dict(px=32, painter=lambda c: c.emis.__setitem__(Ellipsis, (0.35 * (1.0 - 0.55 * c.v)).astype(np.float32)),
-                      emissive=(255, 214, 145)),
+    "core_glow": dict(px=32, painter=paint_core_glow, emissive=(255, 214, 145)),
 }
 
 A = K.Atlas(size=4096, pad=16)
@@ -427,20 +461,20 @@ for name, color, metal, gloss, px in (
         ("stone", (101, 101, 111), 0.0, 0.29, 128),     # cool charcoal granite (user-02/03)
         ("stone_trim", (91, 92, 101), 0.0, 0.31, 64),     # granite trim / podium ledges
         ("pale", (233, 232, 226), 0.0, 0.28, 128),       # sunlit warm cream limestone (fixes gate COLOR_OFF)
-        ("crown_white", (236, 237, 234), 0.15, 0.42, 64), # helipad rim / core / bridge frame
-        ("core_glow", (236, 232, 222), 0.1, 0.4, 32),    # illuminated helipad central core
+        ("crown_white", (216, 217, 214), 0.15, 0.42, 64), # helipad rim / core / bridge frame
+        ("core_glow", (216, 213, 206), 0.1, 0.4, 32),    # illuminated helipad central core
         ("deck_under", (90, 94, 100), 0.35, 0.4, 64),    # slim underside deck plate
         ("crown_glass", (111, 157, 147), 0.32, 0.86, 128), # light green reflective observatory glass (roof.jpg)
         ("obs_roof", (64, 84, 100), 0.6, 0.92, 128),     # dark blue-grey skylight glass
         ("railing", (195, 199, 202), 0.65, 0.50, 64),    # galvanized / brushed steel open rails
         ("se_glass", (124, 160, 174), 0.30, 0.86, 128),  # SE top 4-floor curtain wall (user-12-se / site.jpg)
-        ("frame", (236, 237, 235), 0.3, 0.5, 64),        # white window frames
-        ("louver", (232, 233, 230), 0.2, 0.4, 64),       # AC louver panels
+        ("frame", (216, 218, 216), 0.3, 0.5, 64),        # white window frames
+        ("louver", (217, 218, 216), 0.2, 0.4, 64),       # AC louver panels
         ("louver_back", (68, 70, 74), 0.0, 0.3, 64),
         ("roof", (132, 134, 134), 0.0, 0.3, 64),
         ("deck", (156, 158, 156), 0.0, 0.3, 64),
         ("heli_green", (74, 142, 104), 0.0, 0.25, 64),
-        ("heli_white", (234, 236, 228), 0.0, 0.25, 64),
+        ("heli_white", (215, 217, 211), 0.0, 0.25, 64),
         ("pier_pink", (176, 150, 148), 0.0, 0.34, 128),
         ("pier_course", (183, 160, 157), 0.0, 0.32, 256),
         ("pier_num", (176, 150, 148), 0.0, 0.34, 512),
@@ -473,32 +507,66 @@ WS = K.WindowSet()
 LIT_CELLS = 7                # of the 5 x 5 window-texture cells are lit at night (28 % of the windows)
 
 
+def window_frame(mb, axis, c, s, a0, a1, z0, z1, jambs):
+    left, right = (0.10 if jamb else 0.0 for jamb in jambs)
+    base = K.face_pts(axis, c, s, a0, a1, z0, z1)
+    glass = K.face_pts(axis, c + s * K.WIN_OFF, s, a0, a1, z0, z1)
+    wall = K.face_pts(axis, c, s, a0 - left, a1 + right, z0 - 0.12, z1 + 0.10)
+    depth_axis = 1 if axis == "y" else 0
+
+    def front(loop):
+        # One plane even on the jambs: the sill projects farther than the head.
+        return [tuple(v + s * (0.25 - 0.06 * (p[2] - z0) / (z1 - z0)) if k == depth_axis else v
+                      for k, v in enumerate(p)) for p in loop]
+
+    inner, outer = front(base), front(wall)
+    sides = jambs if base[0][1 - depth_axis] < base[1][1 - depth_axis] else jambs[::-1]
+    for i, enabled in enumerate((True, sides[1], True, sides[0])):
+        j = (i + 1) % 4
+        if not enabled:
+            # At the corner post, close the ends of the sill and lintel without another jamb.
+            mb.rect([wall[i], base[i], inner[i], outer[i]], "frame")
+            mb.rect([wall[j], outer[j], inner[j], base[j]], "frame")
+            continue
+        mb.rect([inner[i], inner[j], glass[j], glass[i]], "frame")
+        mb.rect([outer[i], outer[j], inner[j], inner[i]], "frame")
+        mb.rect([wall[i], wall[j], outer[j], outer[i]], "frame")
+
+
+def sash_bar(mb, axis, c, s, a0, a1, z0, z1, *, vertical):
+    base = K.face_pts(axis, c + s * K.WIN_OFF, s, a0, a1, z0, z1)
+    # Two bevels share a raised ridge, keeping the profile visible within the mesh budget.
+    lift = c + s * (0.054 if vertical else 0.070)
+    if vertical:
+        mid = (a0 + a1) / 2
+        ridge = K.face_pts(axis, lift, s, mid, mid, z0, z1)
+        mb.rect([base[0], ridge[0], ridge[3], base[3]], "frame")
+        mb.rect([ridge[1], base[1], base[2], ridge[2]], "frame")
+    else:
+        mid = (z0 + z1) / 2
+        ridge = K.face_pts(axis, lift, s, a0, a1, mid, mid)
+        mb.rect([base[0], base[1], ridge[1], ridge[0]], "frame")
+        mb.rect([ridge[3], ridge[2], base[2], base[3]], "frame")
+
+
 def window(mb, stage, axis, c, s, a0, a1, z0, z1, floor, unit, mull=(0.38,), jambs=(True, True)):
-    """_Win quad + (main only) projecting white frame, sill and painted mullions/transom.
-    jambs=(False, ..) drops the jamb at that end (corner window meeting a corner post).
-    On the refuge floor every opening is a louver instead (Naver VR tour: window-less band at mid height)."""
+    """Residential glazing, with open jamb ends at the wraparound corner post."""
     if floor == REF_F:
         louver(mb, stage, axis, c, s, a0, a1, z0 - 0.35, z1)
         return
-    if stage == 0:
-        # the kit puts a window in grid cell ((floor * units + unit) * 7) % 25; with units = 25 that is 7 * unit % 25,
-        # so unit = 18 * cell % 25 (18 = 1/7 mod 25) sends it to a pseudo-random cell chosen here
-        cell = (((floor * 7919 + unit * 104729 + 12345) * 2654435761 & 0xFFFFFFFF) >> 16) % 25
-        WS.add_face(axis, c, s, a0, a1, z0, z1, floor=floor, unit=cell * 18 % 25)
-        if jambs[0]:
-            K.axbox(mb, axis, c, s, a0 - 0.1, a0, 0, 0.12, z0, z1, "frame", skip=("top", "bottom"))
-        if jambs[1]:
-            K.axbox(mb, axis, c, s, a1, a1 + 0.1, 0, 0.12, z0, z1, "frame", skip=("top", "bottom"))
-        e0, e1 = (0.1 if jambs[0] else 0.0), (0.1 if jambs[1] else 0.0)
-        K.axbox(mb, axis, c, s, a0 - e0, a1 + e1, 0, 0.12, z1, z1 + 0.1, "frame")
-        K.axbox(mb, axis, c, s, a0 - (0.15 if jambs[0] else 0.0), a1 + (0.15 if jambs[1] else 0.0),
-                0, 0.18, z0 - 0.1, z0, "frame")
-        lm = 3
-        for u in mull:  # never at u=0.5 so the window centre stays unblocked
-            a = a0 + (a1 - a0) * u
-            K.paint(mb, axis, c, s, a - 0.03, a + 0.03, z0, z1, "frame", layer=lm)
-        zt = z0 + 0.55 * (z1 - z0)
-        K.paint(mb, axis, c, s, a0, a1, zt, zt + 0.05, "frame", layer=lm + 1)
+    if stage != 0:
+        return
+    # Keep the chosen texture block stable per opening, with a different pattern on each tower.
+    key = int(DONG) * 0x9E3779B1 ^ (floor << 8) ^ unit
+    key = ((key ^ (key >> 16)) * 0x45D9F3B) & 0xFFFFFFFF
+    cell = (key ^ (key >> 16)) % (K.REF_GRID ** 2)
+    WS.add_face(axis, c, s, a0, a1, z0, z1, floor=floor, unit=cell * 18 % 25)
+    window_frame(mb, axis, c, s, a0, a1, z0, z1, jambs)
+    for u in mull:
+        a = a0 + (a1 - a0) * u
+        sash_bar(mb, axis, c, s, a - 0.03, a + 0.03, z0, z1, vertical=True)
+    zt = z0 + 0.55 * (z1 - z0)
+    sash_bar(mb, axis, c, s, a0, a1, zt, zt + 0.05, vertical=False)
 
 
 def louver(mb, stage, axis, c, s, a0, a1, z0, z1):
