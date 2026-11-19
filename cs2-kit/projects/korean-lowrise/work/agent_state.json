@@ -3,7 +3,7 @@
  "current_stage": "review:PASS",
  "generator": "house_90s_cs2.py",
  "generator_hash": "ca3e32a7503004bb1805d517752a48b06a60f13e17fbcc02eb897c4d9cfb2329",
- "current_preview_hash": "afe3ff6f738fb485051c5471327b7937ff1fd48942bc763c473449b955dd7960",
+ "current_preview_hash": "c1248011af73953caf1fd5ed87e8ae3c4a46a8c72d4a22a7d18a3f72c5d56e5d",
  "last_gate": {
   "status": "PASS",
   "project": "korean-lowrise",
@@ -29,8 +29,8 @@
    "report": "output\\KoreanHouseA90s01_L1_2x2\\_check\\report.json"
   },
   "asset": "KoreanHouseA90s01_L1_2x2",
-  "label": "balcony-address",
-  "time": "2026-11-19 13:51:31",
+  "label": "shop-sign",
+  "time": "2026-11-19 13:56:23",
   "build": {
    "asset": "KoreanHouseA90s01_L1_2x2",
    "fbx": true,
@@ -86,7 +86,7 @@
      "LOD2_Emissive": "512x512 RGB"
     },
     "texel_px_per_m": {
-     "p10": 90.8,
+     "p10": 95.3,
      "median": 319.4,
      "p90": 319.4
     },
@@ -148,13 +148,13 @@
   "reason": "all requested checks passed"
  },
  "project": "korean-lowrise",
- "updated_at": "2026-11-19T13:52:12",
- "visual_review_note": "확장 발코니 옆 난간벽·샷시 가로살·옆면 유리, 건물번호판 판재·전체 칸 UV 근접 렌더 확인",
+ "updated_at": "2026-11-19T13:56:38",
+ "visual_review_note": "상가 간판 10:1 판·칸 전체 UV·주야간 근접 렌더 확인",
  "visual_review_artifacts": [
   {
    "file": "previews/KoreanHouseA90s01_L1_2x2.png",
-   "sha256": "afe3ff6f738fb485051c5471327b7937ff1fd48942bc763c473449b955dd7960"
+   "sha256": "c1248011af73953caf1fd5ed87e8ae3c4a46a8c72d4a22a7d18a3f72c5d56e5d"
   }
  ],
- "reviewed_preview_hash": "afe3ff6f738fb485051c5471327b7937ff1fd48942bc763c473449b955dd7960"
+ "reviewed_preview_hash": "c1248011af73953caf1fd5ed87e8ae3c4a46a8c72d4a22a7d18a3f72c5d56e5d"
 }

@@ -168,6 +168,20 @@ def ax_bevel(mb, axis, c, s, a0, a1, o0, o1, z0, z1, region, bevel=0.025, edge_r
         bevel_box(mb, lo, hi, a0, a1, z0, z1, region, bevel, edge_region, bottom=True)
 
 
+def uv_cell(atlas, name, fu0, fv0, fu1, fv1, margin=0.5):
+    """칸 전체(변형 여러 개를 이어 붙인 넓은 칸 포함) 안의 비율 영역 UV.
+    간판·번호판처럼 칸을 통째로 한 그림으로 쓸 때. A.uv() 는 칸 가운데 절반만, uv_sub 는 변형 하나만 쓴다.
+    painter 는 ctx.u 0~1 (칸 전체 너비) 기준으로 그린다."""
+    atlas.layout()
+    x, y, w, h = atlas.cells[name]["rect"]
+    S, e = float(atlas.size), margin / atlas.size
+    u0, u1 = x / S + e, (x + w) / S - e
+    v0, v1 = 1.0 - (y + h) / S + e, 1.0 - y / S - e
+    U = lambda f: u0 + (u1 - u0) * f
+    V = lambda f: v0 + (v1 - v0) * f
+    return [(U(fu0), V(fv0)), (U(fu1), V(fv0)), (U(fu1), V(fv1)), (U(fu0), V(fv1))]
+
+
 # ---------------------------------------------------------------------------
 # 3. 개구부 옆면(측벽·인방 밑·창대 위) 재질 — 벽 타일이 옆면에 늘어져 보이는 것을 덮는다
 # ---------------------------------------------------------------------------

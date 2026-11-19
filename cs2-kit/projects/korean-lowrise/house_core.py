@@ -222,26 +222,6 @@ def _make_weather_band_painter(mode, seed):
     return _painter
 
 
-def text_label(ctx, text, key):
-    cache = HERE / "work" / "_sign_cache" / f"{key}_{ctx.w}x{ctx.h}.npz"
-    try:
-        from PIL import Image, ImageDraw, ImageFont
-        im = Image.new("RGB", (ctx.w, ctx.h), (33, 64, 98))
-        draw = ImageDraw.Draw(im)
-        size = int(min(ctx.h*0.65, ctx.w*1.3/len(text)))
-        font = ImageFont.truetype("C:/Windows/Fonts/arialbd.ttf", max(12, size))
-        bb = draw.textbbox((0, 0), text, font=font)
-        draw.text(((ctx.w-bb[2])/2, (ctx.h-bb[3])/2), text, font=font, fill=(246, 244, 227))
-        rgb = np.asarray(im)
-        cache.parent.mkdir(parents=True, exist_ok=True)
-        np.savez(cache, rgb=rgb)
-    except ImportError:
-        rgb = np.load(cache)["rgb"]
-    ctx.rgb[...] = rgb
-    ctx.grain(amp=1.5, scale_px=2, height=0.03, seed=39)
-    ctx.gloss = np.clip(0.42 + 0.04 * _var(ctx, scale_px=8, seed=40), 0.36, 0.48)
-
-
 def address(ctx):
     """도로명 건물번호판(남색 바탕·흰 테두리·흰 글씨, 도로명 + 번호 두 줄). 칸 가운데 2:1 띠(v 0.25~0.75)에 그리고
     판 앞면은 uv_sub 로 그 띠만 쓴다. 도로명은 가상 이름."""
@@ -273,8 +253,42 @@ def address(ctx):
     ctx.gloss = np.clip(0.46 + 0.03 * _var(ctx, scale_px=8, seed=40), 0.40, 0.52)
 
 
+SIGN_BAND = (0.30, 0.70)   # 간판 칸(1024x256)에서 쓰는 띠 = 10:1
+
+
 def sign(ctx):
-    text_label(ctx, "DAON SHOP", "sign")
+    """1990년대 상가 아크릴 간판(10:1): 청색 바탕, 흰 굵은 상호(가상 '다온상회'), 노란 업종, 은색 테두리, 내부 조명."""
+    cache = HERE / "work" / "_sign_cache" / f"sign2_{ctx.w}x{ctx.h}.npz"
+    blue = (28, 72, 146)
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+        S = 4
+        W, H = ctx.w * S, ctx.h * S
+        im = Image.new("RGB", (W, H), blue)
+        mk = Image.new("L", (W, H), 0)                     # 글자 = 발광 강조
+        d, dm = ImageDraw.Draw(im), ImageDraw.Draw(mk)
+        top, bot = int(H * (1 - SIGN_BAND[1])), int(H * (1 - SIGN_BAND[0]))
+        ph = bot - top
+        b = max(3, int(ph * 0.05))
+        d.rectangle([b, top + b, W - 1 - b, bot - 1 - b], outline=(206, 210, 214), width=b)
+        f1 = ImageFont.truetype("C:/Windows/Fonts/malgunbd.ttf", int(ph * 0.62))
+        f2 = ImageFont.truetype("C:/Windows/Fonts/malgunbd.ttf", int(ph * 0.30))
+        for text, font, x_c, col in (("다온상회", f1, 0.40, (248, 248, 244)), ("생활용품 · 잡화", f2, 0.80, (250, 214, 64))):
+            bb = d.textbbox((0, 0), text, font=font)
+            pos = (W * x_c - (bb[2] - bb[0]) / 2 - bb[0], top + ph * 0.5 - (bb[3] - bb[1]) / 2 - bb[1])
+            d.text(pos, text, font=font, fill=col)
+            dm.text(pos, text, font=font, fill=255)
+        rgb = np.asarray(im.resize((ctx.w, ctx.h), Image.LANCZOS))
+        txt = np.asarray(mk.resize((ctx.w, ctx.h), Image.LANCZOS)).astype(np.float32) / 255
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        np.savez(cache, rgb=rgb, txt=txt)
+    except (ImportError, OSError):
+        z = np.load(cache)
+        rgb, txt = z["rgb"], z["txt"]
+    ctx.rgb[...] = rgb
+    ctx.grain(amp=1.0, scale_px=2, height=0.02, seed=41)
+    ctx.gloss = np.clip(0.58 + 0.03 * _var(ctx, scale_px=8, seed=42), 0.52, 0.64)   # 아크릴 광택
+    ctx.emis[...] = 0.06 + 0.86 * txt   # 바탕은 약하게(청색 유지), 글자만 밝게
 
 
 def _make_brick_painter(seed, mortar_rgb, stain_amt, tone_mul):
@@ -453,7 +467,7 @@ def atlas(spec):
     a.add("weather_top", color=(72, 69, 60), px=128, variants=2, gloss=0.16,
           painter=_make_weather_band_painter("top", sv))
     a.add("address", px=256, gloss=0.46, painter=address)
-    a.add("sign", px=256, gloss=0.42, painter=sign)
+    a.add("sign", px=256, variants=4, gloss=0.58, emissive=(255, 244, 222), painter=sign)   # 1024x256 칸 통째로
     # 콘크리트 차양·코핑·계단 등은 1 m 넘는 면이 많아 실제 크기 타일 재질로 (단색 칸은 면 크기와 무관하게 늘어남)
     a.add("cement", color=(163, 166, 158), px=256, tile=(2.4, 2.4), gloss=0.24, painter=KX.stone_trim(sv))
     KX.add_grime_cells(a, seed=sv)
@@ -887,7 +901,11 @@ def living_details(mb, spec, stage):
     else:
         slope_box(mb, (-w * 0.44, w * 0.44, -1.15, -0.02, 2.51, 2.57), "awning", 1, 0.36)
         mb.box(-w * 0.44, w * 0.44, -1.18, -1.15, 2.32, 2.57, "awning")
-        mb.box(-w * 0.35, w * 0.35, -0.08, -0.015, 2.93, 3.20, {"front": "sign", "default": "steel"})
+        # 간판: 10:1 아크릴 판 (높이 = 폭/10). 가스관(벽 앞 5.5~11 cm)보다 앞으로 내고 앞면은 간판 칸 띠 통째로.
+        sh = w * 0.07
+        mb.box(-w * 0.35, w * 0.35, -0.16, -0.015, 2.93, 2.93 + sh, "steel", skip=("front",))
+        mb.quad(K.face_pts("y", -0.16, -1, -w * 0.35, w * 0.35, 2.93, 2.93 + sh),
+                KX.uv_cell(mb.atlas, "sign", 0.0, SIGN_BAND[0], 1.0, SIGN_BAND[1]), "sign")
 
 
 def build_stage(spec, a, stage):
