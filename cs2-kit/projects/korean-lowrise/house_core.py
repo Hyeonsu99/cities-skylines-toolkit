@@ -10,6 +10,7 @@ import numpy as np
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1]))
 import cs2kit as K
+from local import kitext as KX  # 로컬 확장 (원본 키트 무수정)
 
 
 @dataclass(frozen=True)
@@ -426,8 +427,10 @@ def atlas(spec):
           painter=_make_weather_band_painter("top", sv))
     a.add("address", px=128, gloss=0.42, painter=address)
     a.add("sign", px=256, gloss=0.42, painter=sign)
-    for name, color, px in [("cement", (163, 166, 158), 128),
-                            ("frame", {"70s": (157, 145, 118), "80s": (180, 184, 179), "90s": (215, 217, 207)}[spec.era], 128),
+    # 콘크리트 차양·코핑·계단 등은 1 m 넘는 면이 많아 실제 크기 타일 재질로 (단색 칸은 면 크기와 무관하게 늘어남)
+    a.add("cement", color=(163, 166, 158), px=256, tile=(2.4, 2.4), gloss=0.24, painter=KX.stone_trim(sv))
+    KX.add_grime_cells(a, seed=sv)
+    for name, color, px in [("frame", {"70s": (157, 145, 118), "80s": (180, 184, 179), "90s": (215, 217, 207)}[spec.era], 128),
                             ("steel", (31, 39, 38), 128),
                             ("door", (89, 75, 60), 128),
                             ("roof_equipment", (175, 181, 167), 128),
@@ -546,13 +549,22 @@ def facade(mb, wins, spec, axis, c, side, stage, lo=None, hi=None):
                 K.paint(mb, axis, c, side, a0+0.08, a1-0.08, max(0.65, z0-0.50), z0-0.08, "drip")
         if stage < 2:
             for b0, b1, lip in ((z0 - 0.07, z0 + 0.03, 0.12), (z1 - 0.03, z1 + 0.09, 0.05)):
-                K.axbox(mb, axis, c, side, a0 - 0.08, a1 + 0.08, -0.23, lip, b0, b1, "stone")
+                if stage == 0:
+                    KX.ax_bevel(mb, axis, c, side, a0 - 0.08, a1 + 0.08, -0.23, lip, b0, b1, "stone", bevel=0.015)
+                else:
+                    K.axbox(mb, axis, c, side, a0 - 0.08, a1 + 0.08, -0.23, lip, b0, b1, "stone")
+        if stage == 0:
+            # 개구부 옆면(창틀 앞 0.12 m)을 콘크리트로 — 벽 타일이 옆면에 늘어져 보이던 것 정리
+            KX.paint_reveal(mb, axis, c, side, a0, a1, z0 + 0.03, z1 - 0.03, 0.12, "cement", sill=False, head=False)
         if stage == 0 and kind == "window":
             for bx in (a0 + 0.12, a1 - 0.12):
                 K.axbox(mb, axis, c, side, bx - 0.04, bx + 0.04, 0.0, 0.09, z0 - 0.15, z0 - 0.07, "stone", skip=("top",))
         if stage < 2 and kind == "window":
             # 창 위 콘크리트 차양 (0.30 m 내밀기) + 하부 물끊기 + 까치발 2개
-            K.axbox(mb, axis, c, side, a0 - 0.14, a1 + 0.14, 0.0, 0.30, z1 + 0.13, z1 + 0.21, "cement")
+            if stage == 0:
+                KX.ax_bevel(mb, axis, c, side, a0 - 0.14, a1 + 0.14, 0.0, 0.30, z1 + 0.13, z1 + 0.21, "cement", bevel=0.02)
+            else:
+                K.axbox(mb, axis, c, side, a0 - 0.14, a1 + 0.14, 0.0, 0.30, z1 + 0.13, z1 + 0.21, "cement")
             if stage == 0:
                 K.axbox(mb, axis, c, side, a0 - 0.14, a1 + 0.14, 0.25, 0.30, z1 + 0.10, z1 + 0.13, "cement", skip=("top",))
                 for bx in (a0 - 0.06, a1 + 0.06):
@@ -1086,6 +1098,8 @@ def build_stage(spec, a, stage):
         fh = spec.floor_h
         if spec.balcony != "enclosed" or stage < 2:
             mb.box(-bw, bw, -0.95, -0.001, fh - 0.14, fh, "cement")
+            if stage == 0:
+                KX.under_shadow(mb, "y", 0, -1, -bw, bw, fh - 0.19, depth=0.40, layer=3)
             if stage < 2:
                 # 발코니 슬래브 하부 턱/물끊기
                 mb.box(-bw, bw, -0.96, -0.87, fh - 0.19, fh - 0.14, "cement", skip=("top",))
@@ -1197,7 +1211,7 @@ def self_check():
             main, wins = meshes[0]
             counts = [m.tri_count for m, _ in meshes]
             min_m, max_m = min(min_m, counts[0]), max(max_m, counts[0])
-            assert 7400 <= counts[0] <= 11400, (era, seed, counts)  # P1 재배분 후 목표 8~11k, 계단·물탱크 없는 조합 하한 7.4k
+            assert 8500 <= counts[0] <= 13800, (era, seed, counts)  # kitext 베벨·옆면·콘크리트 타일 후 8.9~13.3k (위키 저밀도 권장 최대 15k 이내)
             assert counts[1] < counts[0]*0.5, (era, seed, counts)
             assert counts[2] + len(wins.items)*2 <= 500, (era, seed, counts, len(wins.items))
             assert not any("plant" in tag or "soil" in tag for tag in main.tags)

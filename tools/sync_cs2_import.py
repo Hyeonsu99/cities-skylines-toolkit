@@ -41,3 +41,6 @@ if __name__ == "__main__":
         if d.name != "NoiseWallClear_L1_1x1":
             assert not any("_Gls" in f.name for f in files), f"_Gls left in {d}"
         print(f"{d.relative_to(ROOT)}  ({len(files)} files)")
+    # 로컬 확장 검사: 알베도 상한 경고 (실패시키지 않음)
+    import albedo_check
+    albedo_check.run(sys.argv[1] if len(sys.argv) > 1 else "")

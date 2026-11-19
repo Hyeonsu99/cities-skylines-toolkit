@@ -3,7 +3,7 @@
  "current_stage": "review:PASS",
  "generator": "house_90s_cs2.py",
  "generator_hash": "ca3e32a7503004bb1805d517752a48b06a60f13e17fbcc02eb897c4d9cfb2329",
- "current_preview_hash": "44a43c81017962ea25aa94642d361df3177c0957bfcc5963d9c5ada7f9e0bf93",
+ "current_preview_hash": "25e85205dfde07780e8a5f7f46924d00bd3939420502f6289ceb1b93e0071188",
  "last_gate": {
   "status": "PASS",
   "project": "korean-lowrise",
@@ -29,8 +29,8 @@
    "report": "output\\KoreanHouseA90s01_L1_2x2\\_check\\report.json"
   },
   "asset": "KoreanHouseA90s01_L1_2x2",
-  "label": "p1-coplanar-fix",
-  "time": "2026-11-19 11:23:15",
+  "label": "kitext",
+  "time": "2026-11-19 13:36:17",
   "build": {
    "asset": "KoreanHouseA90s01_L1_2x2",
    "fbx": true,
@@ -52,7 +52,7 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 8830,
+     "main": 10652,
      "win": 48,
      "lod1": 1600,
      "lod1_win": 48,
@@ -60,7 +60,7 @@
      "lod2_win": 48
     },
     "verts": {
-     "main": 18416,
+     "main": 22564,
      "win": 96,
      "lod1": 3222,
      "lod1_win": 96,
@@ -86,7 +86,7 @@
      "LOD2_Emissive": "512x512 RGB"
     },
     "texel_px_per_m": {
-     "p10": 40.2,
+     "p10": 90.8,
      "median": 319.4,
      "p90": 319.4
     },
@@ -128,7 +128,7 @@
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 18416,
+    "LOD0": 22564,
     "LOD1": 3222,
     "LOD2": 640
    },
@@ -147,13 +147,13 @@
   "reason": "all requested checks passed"
  },
  "project": "korean-lowrise",
- "updated_at": "2026-11-19T11:23:30",
- "visual_review_note": "P1 겹침면 수정·창 차양 추가 후 4뷰 확인: 차양·선홈통·옥상 소품 정상, 깨진 면 없음",
+ "updated_at": "2026-11-19T13:36:45",
+ "visual_review_note": "kitext 적용(옆면·베벨·콘크리트 타일·발코니 그늘) 후 미리보기·근접 렌더 확인",
  "visual_review_artifacts": [
   {
    "file": "previews/KoreanHouseA90s01_L1_2x2.png",
-   "sha256": "44a43c81017962ea25aa94642d361df3177c0957bfcc5963d9c5ada7f9e0bf93"
+   "sha256": "25e85205dfde07780e8a5f7f46924d00bd3939420502f6289ceb1b93e0071188"
   }
  ],
- "reviewed_preview_hash": "44a43c81017962ea25aa94642d361df3177c0957bfcc5963d9c5ada7f9e0bf93"
+ "reviewed_preview_hash": "25e85205dfde07780e8a5f7f46924d00bd3939420502f6289ceb1b93e0071188"
 }
