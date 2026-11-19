@@ -580,6 +580,27 @@ def openings(spec, axis, side):
     return sorted(result)
 
 
+def _protruding_grille(mb, axis, c, side, a0, a1, z0, z1, depth=0.24):
+    """한국 단독주택 돌출 방범창: 벽에서 depth 만큼 나온 상자형 철창 (앞면 세로살 3 + 가로살 2, 옆면 레일).
+    살 위치는 창 두 짝의 가운데·모서리를 피한다(창 가림 검사)."""
+    t = 0.025
+    L0, L1 = a0 - 0.055, a1 + 0.055                 # 모서리 기둥 바깥
+    zb, zt = z0 + 0.03, z1 + 0.025                  # 창대 위 ~ 인방 안
+    D = depth
+    for rz0, rz1 in ((zb, zb + t), (zt - t, zt)):   # 앞 위·아래 레일 + 옆 위·아래 레일(벽까지)
+        K.axbox(mb, axis, c, side, L0, L1, D - t, D, rz0, rz1, "steel")
+        for e0, e1 in ((L0, L0 + t), (L1 - t, L1)):
+            K.axbox(mb, axis, c, side, e0, e1, 0.0, D - t, rz0, rz1, "steel")
+    for e0, e1 in ((L0, L0 + t), (L1 - t, L1)):     # 앞 모서리 기둥
+        K.axbox(mb, axis, c, side, e0, e1, D - t, D, zb + t, zt - t, "steel")
+    for f in (0.28, 0.72):                          # 앞 가운데 가로살
+        zz = z0 + (z1 - z0) * f
+        K.axbox(mb, axis, c, side, L0 + t, L1 - t, D - 0.026, D - 0.006, zz - 0.012, zz + 0.012, "steel")
+    for u in (0.18, 0.50, 0.82):                    # 앞 세로살
+        x = a0 + (a1 - a0) * u
+        K.axbox(mb, axis, c, side, x - 0.012, x + 0.012, D - 0.022, D - 0.003, zb + t, zt - t, "steel")
+
+
 def _paint_band_clipped(mb, axis, c, side, lo, hi, z0, z1, region, blocked_spans, layer=1, variant=0):
     """개구부/부착물 구간을 제외한 벽 전체 폭에 비타일 오염 밴드를 칠한다."""
     spans = [(lo, hi)]
@@ -654,12 +675,7 @@ def facade(mb, wins, spec, axis, c, side, stage, lo=None, hi=None):
                     K.axbox(mb, axis, c, side, a0, a1, -0.22, -0.10, bz0, bz1, "frame")
                 K.axbox(mb, axis, c, side, mid - 0.025, mid + 0.025, -0.22, -0.12, z0+0.05, z1-0.05, "frame")
                 if floor == 0 or spec.grille_up:
-                    # 방범창 막대를 수직 3개 + 수평 2개로 절감(기존 8개 -> 5개)
-                    for u in (0.18, 0.50, 0.82):
-                        x = a0+(a1-a0)*u
-                        K.axbox(mb, axis, c, side, x-0.014, x+0.014, 0.10, 0.13, z0+0.08, z1-0.08, "steel")
-                    for z in (z0+(z1-z0)*0.28, z0+(z1-z0)*0.72):
-                        K.axbox(mb, axis, c, side, a0+0.05, a1-0.05, 0.13, 0.15, z-0.014, z+0.014, "steel")
+                    _protruding_grille(mb, axis, c, side, a0, a1, z0, z1)
                 mb.quad(K.face_pts(axis, c + side * K.PAINT_OFF, side, a0 + 0.08, a1 - 0.08, max(0.65, z0 - 0.50), z0 - 0.08),
                         mb.atlas.uv_full("drip"), "drip")   # 칸 전체 (K.paint 는 칸 가운데 절반만 늘여 덩어리졌음)
         if stage < 2:
@@ -1095,10 +1111,21 @@ def build_stage(spec, a, stage):
         # 옥상 내측 배수 드레인 스커퍼 4개소
         for sx_c, sy_c in ((x0 + 0.32, 0.32), (x1 - 0.32, 0.32), (x1 - 0.32, d - 0.32)):
             mb.box(sx_c - 0.12, sx_c + 0.12, sy_c - 0.12, sy_c + 0.12, h + 0.08, h + 0.14, "steel", skip=("bottom",))
-        # 1~2층 층간 돌출 띠(Belt course, 발코니·계단 구간 회피)
-        bz0, bz1 = spec.floor_h - 0.09, spec.floor_h + 0.01
-        K.axbox(mb, "x", x0, -1, 0.50, (d - 2.6 - 0.50) if spec.notch else (d - 0.50), 0.0, 0.045, bz0, bz1, "cement")
-        K.axbox(mb, "y", d, 1, (x0 + 2.85) if spec.notch else (x0 + 0.50), x1 - 0.50, 0.0, 0.045, bz0, bz1, "cement")
+        # 1~2층 층간 슬래브 띠 (한국 벽돌 주택의 드러난 흰·회색 슬래브 끝, 0.28 m). 모자이크 집은 장식 타일 띠가 대신함.
+        if spec.floors == 2 and spec.finish != "mosaic":
+            bz0, bz1 = spec.floor_h - 0.24, spec.floor_h + 0.04
+            K.axbox(mb, "x", x0, -1, 0.50, (d - 2.6 - 0.50) if spec.notch else (d - 0.50), 0.0, 0.04, bz0, bz1, "cement")
+            K.axbox(mb, "y", d, 1, (x0 + 2.85) if spec.notch else (x0 + 0.50), x1 - 0.50, 0.0, 0.04, bz0, bz1, "cement")
+            if not spec.stairs:
+                K.axbox(mb, "x", x1, 1, 0.50, d - 0.50, 0.0, 0.04, bz0, bz1, "cement")
+            if not spec.shop:
+                spans = [(x0 + 0.50, x1 - 0.50)]
+                if spec.balcony != "none":
+                    bwb = w * 0.34 + 0.12
+                    spans = [(x0 + 0.50, -bwb), (bwb, x1 - 0.50)]
+                for f0, f1 in spans:
+                    if f1 - f0 > 0.3:
+                        K.axbox(mb, "y", 0, -1, f0, f1, 0.0, 0.04, bz0, bz1, "cement")
 
     hx = 0.3 if spec.notch else -2.7
     if stage == 2:
@@ -1148,44 +1175,33 @@ def build_stage(spec, a, stage):
             for rz in (h + 0.40, h + 0.75, h + 1.10, z + 1.05):
                 mb.box(cx - 0.16, cx + 0.16, cy - 0.735, cy - 0.705, rz - 0.015, rz + 0.015, "steel")
     if spec.stairs and spec.floors == 2:
+        # 한국 단독주택 외부 계단: 콘크리트 디딤 + 벽 마감재 사선 난간벽 + 콘크리트 갓돌 (철골 살 난간이 아님)
+        fh = spec.floor_h
         sx0, sx1 = w / 2 + 0.08, w / 2 + 1.25
-        count = 17 if stage == 0 else (6 if stage == 1 else 1)
+        pw = 0.14                                          # 난간벽 두께
+        rise = fh - 0.10
         if stage == 2:
-            slope_box(mb, (sx0, sx1, 0.25, 5.10, 0.02, 0.10), "steel", 1, spec.floor_h - 0.10)
+            slope_box(mb, (sx1 - pw, sx1, 0.25, 5.10, 0.02, 1.00), spec.finish, 1, rise)   # 원거리: 난간벽 덩어리만
+            mb.box(w / 2, sx1, 5.10, 6.2, fh - 0.14, fh, "cement")
         else:
-            for i in range(count):
-                y0, y1 = 0.25 + i * 4.85 / count, 0.25 + (i + 1) * 4.85 / count
-                z = (i + 1) * spec.floor_h / count
-                mb.box(sx0 + 0.06, sx1 - 0.06, y0, y1, max(0, z - 0.13), z, "steel")  # 측판 사이
-            # 계단 좌우 경사 측판(스트링거 빔)
-            for bx0, bx1 in ((sx0, sx0 + 0.06), (sx1 - 0.06, sx1)):
-                slope_box(mb, (bx0, bx1, 0.25, 5.10, 0.0, 0.16), "steel", 1, spec.floor_h - 0.10)
-        mb.box(w / 2, sx1, 5.10, 6.2, spec.floor_h - 0.14, spec.floor_h, "steel")
-        for xx in (sx0 + 0.04, sx1 - 0.04):
-            if stage < 2:
-                for dz in (0.48, 0.96):
-                    beam = K.MeshBuilder(a)
-                    beam.box(xx - 0.026, xx + 0.026, 0.25, 5.1, dz, dz + 0.055, "steel")
-                    beam.verts = [(x, y, z + (y - 0.25) * spec.floor_h / 4.85) for x, y, z in beam.verts]
-                    mb.merge(beam)
+            count = 17 if stage == 0 else 6
+            for k in range(count):
+                y0, y1 = 0.25 + k * 4.85 / count, 0.25 + (k + 1) * 4.85 / count
+                z = (k + 1) * fh / count
+                mb.box(sx0, sx1 - pw, y0, y1, max(0, z - 0.13), z, "cement")
+            # 바깥 사선 난간벽 + 갓돌
+            slope_box(mb, (sx1 - pw, sx1, 0.25, 5.10, 0.0, 1.00), spec.finish, 1, rise)
             if stage == 0:
-                for i in range(9):
-                    y = 0.25 + i * 4.85 / 8
-                    z = i * spec.floor_h / 8
-                    mb.box(xx - 0.03, xx + 0.03, y - 0.03, y + 0.03, z + 0.02, z + 0.99, "steel")
-        if stage < 2:
-            # 2층 계단 참 안전 난간 (외측·후면·전면) + 하부 지지 기둥/가새
-            mb.box(sx1 - 0.06, sx1, 5.1, 6.2, spec.floor_h + 0.94, spec.floor_h + 1.02, "steel")
-            mb.box(w / 2, sx1 - 0.06, 6.14, 6.2, spec.floor_h + 0.94, spec.floor_h + 1.02, "steel")
+                slope_box(mb, (sx1 - pw - 0.03, sx1 + 0.03, 0.25, 5.10, 1.00, 1.05), "cement", 1, rise)
+            # 계단참 슬래브 + 난간벽(바깥·뒤) + 갓돌 + 받침 기둥
+            mb.box(w / 2, sx1, 5.10, 6.2, fh - 0.14, fh, "cement")
+            mb.box(sx1 - pw, sx1, 5.10, 6.2, fh, fh + 1.0, spec.finish)
+            mb.box(w / 2, sx1 - pw, 6.2 - pw, 6.2, fh, fh + 1.0, spec.finish)
             if stage == 0:
-                mb.box(sx1 - 0.05, sx1, 5.1, 6.2, spec.floor_h + 0.48, spec.floor_h + 0.53, "steel")
-                mb.box(w / 2, sx1 - 0.05, 6.15, 6.2, spec.floor_h + 0.48, spec.floor_h + 0.53, "steel")
-                for py in (5.135, 5.65, 6.17):
-                    mb.box(sx1 - 0.055, sx1 - 0.005, py - 0.025, py + 0.025, spec.floor_h, spec.floor_h + 0.94, "steel")
-                mb.box(w / 2 + 0.4, w / 2 + 0.46, 6.145, 6.195, spec.floor_h, spec.floor_h + 0.94, "steel")
-                mb.box(sx1 - 0.16, sx1 - 0.08, 5.2, 6.1, spec.floor_h * 0.48, spec.floor_h * 0.52, "steel")
-            for yy in (5.2, 6.1):
-                mb.box(sx1 - 0.18, sx1 - 0.06, yy - 0.06, yy + 0.06, 0.0, spec.floor_h - 0.14, "steel", skip=("bottom",))
+                mb.box(sx1 - pw - 0.03, sx1 + 0.03, 5.10, 6.23, fh + 1.0, fh + 1.05, "cement")
+                mb.box(w / 2, sx1 - pw - 0.03, 6.2 - pw - 0.03, 6.23, fh + 1.0, fh + 1.05, "cement")
+            for py0, py1 in ((5.12, 5.37), (5.85, 6.10)):
+                mb.box(sx1 - 0.25, sx1, py0, py1, 0.0, fh - 0.14, spec.finish, skip=("bottom",))
     # 담장·대문은 구조물. 조경·화분·화단 틀·흙면은 메시 금지.
     if spec.fence:
         half = w / 2 + 2
@@ -1364,7 +1380,7 @@ def self_check():
             main, wins = meshes[0]
             counts = [m.tri_count for m, _ in meshes]
             min_m, max_m = min(min_m, counts[0]), max(max_m, counts[0])
-            assert 8500 <= counts[0] <= 13800, (era, seed, counts)  # kitext 베벨·옆면·콘크리트 타일 후 8.9~13.3k (위키 저밀도 권장 최대 15k 이내)
+            assert 9000 <= counts[0] <= 14500, (era, seed, counts)  # 한국형 계단·슬래브 띠·돌출 방범창 후 9.6~14.3k (위키 저밀도 권장 최대 15k 이내)
             assert counts[1] < counts[0]*0.5, (era, seed, counts)
             assert counts[2] + len(wins.items)*2 <= 500, (era, seed, counts, len(wins.items))
             assert not any("plant" in tag or "soil" in tag for tag in main.tags)
