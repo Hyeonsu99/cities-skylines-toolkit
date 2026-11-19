@@ -154,7 +154,7 @@ async function loadAsset(file, files){
   try{
    const map=await new T.TextureLoader().loadAsync(url);
    map.colorSpace=T.SRGBColorSpace;
-   const material=new T.MeshStandardMaterial({map});
+   const material=new T.MeshStandardMaterial({map, alphaTest:0.5});   // BaseColor 알파 = 컷아웃(오염·빗물 칠 면). check.py 와 같은 50% 기준
    const mask=files.get((stem+'_MaskMap.png').toLowerCase());
    if(mask){
     const bitmap=await createImageBitmap(mask,{premultiplyAlpha:'none',colorSpaceConversion:'none'});

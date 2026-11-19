@@ -3,7 +3,7 @@
  "current_stage": "review:PASS",
  "generator": "house_90s_cs2.py",
  "generator_hash": "ca3e32a7503004bb1805d517752a48b06a60f13e17fbcc02eb897c4d9cfb2329",
- "current_preview_hash": "c1248011af73953caf1fd5ed87e8ae3c4a46a8c72d4a22a7d18a3f72c5d56e5d",
+ "current_preview_hash": "bb3c8fa9b06a1db8375954c44c2e4d95b60d85ede8e0ab392e4ea415978e7942",
  "last_gate": {
   "status": "PASS",
   "project": "korean-lowrise",
@@ -29,8 +29,8 @@
    "report": "output\\KoreanHouseA90s01_L1_2x2\\_check\\report.json"
   },
   "asset": "KoreanHouseA90s01_L1_2x2",
-  "label": "shop-sign",
-  "time": "2026-11-19 13:56:23",
+  "label": "sign-drip",
+  "time": "2026-11-19 14:06:31",
   "build": {
    "asset": "KoreanHouseA90s01_L1_2x2",
    "fbx": true,
@@ -52,17 +52,17 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 10660,
+     "main": 10720,
      "win": 48,
-     "lod1": 1608,
+     "lod1": 1656,
      "lod1_win": 48,
      "lod2": 316,
      "lod2_win": 48
     },
     "verts": {
-     "main": 22580,
+     "main": 22700,
      "win": 96,
-     "lod1": 3238,
+     "lod1": 3334,
      "lod1_win": 96,
      "lod2": 640,
      "lod2_win": 96
@@ -86,7 +86,7 @@
      "LOD2_Emissive": "512x512 RGB"
     },
     "texel_px_per_m": {
-     "p10": 95.3,
+     "p10": 83.4,
      "median": 319.4,
      "p90": 319.4
     },
@@ -97,7 +97,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 0.3
+    "time_s": 0.2
    },
    "report": "output\\KoreanHouseA90s01_L1_2x2\\_check\\report.json"
   },
@@ -123,14 +123,15 @@
    "line": "LODCHECK PASS main max 0.031% (az 292, el +5) bad_views 0/64 | lod1 max 0.011% (az 68, el +50) bad_views 0/64 | lod2 max 0.007% (az 158, el +50) bad_views 0/64 marginal=1  -> previews\\lod_check\\KoreanHouseA90s01_L1_2x2",
    "notes": [
     "LOD margin is close to the 0.05% limit",
+    "LOD margin is close to the 0.05% limit",
     "LOD margin is close to the 0.05% limit"
    ]
   },
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 22580,
-    "LOD1": 3238,
+    "LOD0": 22700,
+    "LOD1": 3334,
     "LOD2": 640
    },
    "action_tags": [],
@@ -148,13 +149,13 @@
   "reason": "all requested checks passed"
  },
  "project": "korean-lowrise",
- "updated_at": "2026-11-19T13:56:38",
- "visual_review_note": "상가 간판 10:1 판·칸 전체 UV·주야간 근접 렌더 확인",
+ "updated_at": "2026-11-19T14:06:46",
+ "visual_review_note": "간판 입체 테두리·아크릴 상세·이니셜 로고, 창대 아래 가는 빗물 줄 근접 렌더 확인",
  "visual_review_artifacts": [
   {
    "file": "previews/KoreanHouseA90s01_L1_2x2.png",
-   "sha256": "c1248011af73953caf1fd5ed87e8ae3c4a46a8c72d4a22a7d18a3f72c5d56e5d"
+   "sha256": "bb3c8fa9b06a1db8375954c44c2e4d95b60d85ede8e0ab392e4ea415978e7942"
   }
  ],
- "reviewed_preview_hash": "c1248011af73953caf1fd5ed87e8ae3c4a46a8c72d4a22a7d18a3f72c5d56e5d"
+ "reviewed_preview_hash": "bb3c8fa9b06a1db8375954c44c2e4d95b60d85ede8e0ab392e4ea415978e7942"
 }

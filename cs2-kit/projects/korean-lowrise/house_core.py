@@ -190,14 +190,21 @@ def louver(ctx):
 
 
 def streak(ctx):
-    # 투명 컷아웃 얼룩. 창 아래·실외기 아래에만 작은 면으로 배치한다.
-    n = ctx.noise(scale_px=7, amp=1, octaves=2, seed=35)
-    stripes = (np.sin(ctx.u*73)+np.sin(ctx.u*117+2))*0.25+0.5
-    mask = stripes * (0.25+0.75*ctx.v) + n*0.15 > 0.58
-    ctx.alpha[...] = np.where(mask, 255, 0)
-    ctx.grain(amp=4.0, scale_px=3, height=0.06, seed=36)
-    v = _var(ctx, scale_px=6, seed=37)
-    ctx.gloss = np.clip(0.17 + 0.035 * v, 0.12, 0.22)
+    """창대·실외기 아래 흘러내린 자국(투명 컷아웃): 바로 아래 얼룩 띠 + 길이가 제각각인 가는 세로 줄.
+    칸 전체(uv_full)를 면 하나에 쓰므로 위 = 창대/실외기 바로 아래."""
+    rng = np.random.default_rng(35)
+    ncol = max(8, ctx.w // 3)                              # 약 3 px 폭 줄
+    col = np.minimum((ctx.u * ncol).astype(int), ncol - 1)
+    length = rng.uniform(0.18, 1.0, ncol) ** 1.6 * (rng.random(ncol) < 0.5)
+    thin = ((ctx.u * ncol) % 1.0) < 0.55
+    down = 1.0 - ctx.v                                     # 위 0 -> 아래 1
+    n = ctx.noise(scale_px=5, amp=1.0, octaves=2, seed=36)
+    lines = thin & (down < length[col] + 0.04 * n)
+    band = down < 0.07 + 0.035 * n
+    ctx.alpha[...] = np.where(lines | band, 255, 0)
+    ctx.rgb *= (0.78 + 0.30 * np.clip(down, 0, 1))[..., None]   # 위가 진하고 아래로 옅어짐
+    ctx.grain(amp=3.0, scale_px=2, height=0.04, seed=37)
+    ctx.gloss = np.clip(0.15 + 0.03 * _var(ctx, scale_px=6, seed=38), 0.11, 0.20)
 
 
 def _make_weather_band_painter(mode, seed):
@@ -257,28 +264,53 @@ SIGN_BAND = (0.30, 0.70)   # 간판 칸(1024x256)에서 쓰는 띠 = 10:1
 
 
 def sign(ctx):
-    """1990년대 상가 아크릴 간판(10:1): 청색 바탕, 흰 굵은 상호(가상 '다온상회'), 노란 업종, 은색 테두리, 내부 조명."""
-    cache = HERE / "work" / "_sign_cache" / f"sign2_{ctx.w}x{ctx.h}.npz"
-    blue = (28, 72, 146)
+    """1990년대 상가 아크릴 내부조명 간판(10:1). 알루미늄 테두리는 메시라 그림에는 넣지 않는다.
+    청색 아크릴(이음선 4줄, 형광등 3열 밝기 차, 위 가장자리 때) + 노란 원형 이니셜 로고 + 외곽선 있는 흰 상호(가상 '다온상회')
+    + 노란 업종 + 아래 빨강 띠."""
+    cache = HERE / "work" / "_sign_cache" / f"sign4_{ctx.w}x{ctx.h}.npz"
     try:
-        from PIL import Image, ImageDraw, ImageFont
+        from PIL import Image, ImageDraw, ImageFont, ImageFilter
         S = 4
         W, H = ctx.w * S, ctx.h * S
-        im = Image.new("RGB", (W, H), blue)
-        mk = Image.new("L", (W, H), 0)                     # 글자 = 발광 강조
-        d, dm = ImageDraw.Draw(im), ImageDraw.Draw(mk)
         top, bot = int(H * (1 - SIGN_BAND[1])), int(H * (1 - SIGN_BAND[0]))
         ph = bot - top
-        b = max(3, int(ph * 0.05))
-        d.rectangle([b, top + b, W - 1 - b, bot - 1 - b], outline=(206, 210, 214), width=b)
-        f1 = ImageFont.truetype("C:/Windows/Fonts/malgunbd.ttf", int(ph * 0.62))
-        f2 = ImageFont.truetype("C:/Windows/Fonts/malgunbd.ttf", int(ph * 0.30))
-        for text, font, x_c, col in (("다온상회", f1, 0.40, (248, 248, 244)), ("생활용품 · 잡화", f2, 0.80, (250, 214, 64))):
-            bb = d.textbbox((0, 0), text, font=font)
-            pos = (W * x_c - (bb[2] - bb[0]) / 2 - bb[0], top + ph * 0.5 - (bb[3] - bb[1]) / 2 - bb[1])
-            d.text(pos, text, font=font, fill=col)
+        yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
+        fy = np.clip((yy - top) / ph, 0, 1)
+        fx = xx / W
+        # 형광등 3열 밝기 차 + 위아래 가장자리 어두움 (아크릴 내부조명)
+        glow = sum(np.exp(-((fx - c) / 0.16) ** 2) for c in (0.17, 0.5, 0.83)) * 0.10
+        shade = 0.86 + glow - 0.20 * np.abs(fy - 0.45) ** 1.5
+        base = np.array((40, 76, 136), np.float32)
+        img = np.clip(base[None, None, :] * shade[..., None], 0, 255)
+        for k in range(1, 5):                                   # 아크릴 판 이음선
+            x = int(W * k / 5)
+            img[top:bot, x - 2:x + 2] *= 0.72
+        sb0 = top + int(ph * 0.84)                              # 아래 빨강 띠 + 흰 선
+        img[sb0:bot] = (176, 40, 38)
+        img[sb0 - max(2, ph // 60):sb0] = (232, 232, 226)
+        im = Image.fromarray(img.astype(np.uint8))
+        mk = Image.new("L", (W, H), 0)
+        d, dm = ImageDraw.Draw(im), ImageDraw.Draw(mk)
+        cy = top + ph * 0.43
+        r = ph * 0.30                                           # 원형 로고: 노란 원 + 흰 테 + 남색 이니셜 '다'
+        lx = W * 0.075
+        d.ellipse([lx - r, cy - r, lx + r, cy + r], fill=(246, 204, 58), outline=(240, 240, 236), width=max(3, int(r * 0.10)))
+        fl = ImageFont.truetype("C:/Windows/Fonts/malgunbd.ttf", int(r * 1.15))
+        bb = d.textbbox((0, 0), "다", font=fl)
+        d.text((lx - (bb[2] - bb[0]) / 2 - bb[0], cy - (bb[3] - bb[1]) / 2 - bb[1]), "다", font=fl, fill=(24, 46, 96))
+        dm.ellipse([lx - r, cy - r, lx + r, cy + r], fill=110)
+        f1 = ImageFont.truetype("C:/Windows/Fonts/malgunbd.ttf", int(ph * 0.56))
+        f2 = ImageFont.truetype("C:/Windows/Fonts/malgunbd.ttf", int(ph * 0.25))
+        for text, font, x_c, col, stroke in (("다온상회", f1, 0.40, (250, 250, 246), max(4, int(ph * 0.025))),
+                                             ("생활용품 · 잡화", f2, 0.80, (252, 218, 72), max(3, int(ph * 0.015)))):
+            bb = d.textbbox((0, 0), text, font=font, stroke_width=stroke)
+            pos = (W * x_c - (bb[2] - bb[0]) / 2 - bb[0], cy - (bb[3] - bb[1]) / 2 - bb[1])
+            shadow = Image.new("L", (W, H), 0)                   # 글자 그림자
+            ImageDraw.Draw(shadow).text((pos[0] + ph * 0.025, pos[1] + ph * 0.03), text, font=font, fill=150)
+            im.paste((14, 28, 60), mask=shadow.filter(ImageFilter.GaussianBlur(ph * 0.012)))
+            d.text(pos, text, font=font, fill=col, stroke_width=stroke, stroke_fill=(18, 34, 74))
             dm.text(pos, text, font=font, fill=255)
-        rgb = np.asarray(im.resize((ctx.w, ctx.h), Image.LANCZOS))
+        rgb = np.asarray(im.resize((ctx.w, ctx.h), Image.LANCZOS)).astype(np.float32)
         txt = np.asarray(mk.resize((ctx.w, ctx.h), Image.LANCZOS)).astype(np.float32) / 255
         cache.parent.mkdir(parents=True, exist_ok=True)
         np.savez(cache, rgb=rgb, txt=txt)
@@ -286,9 +318,12 @@ def sign(ctx):
         z = np.load(cache)
         rgb, txt = z["rgb"], z["txt"]
     ctx.rgb[...] = rgb
-    ctx.grain(amp=1.0, scale_px=2, height=0.02, seed=41)
-    ctx.gloss = np.clip(0.58 + 0.03 * _var(ctx, scale_px=8, seed=42), 0.52, 0.64)   # 아크릴 광택
-    ctx.emis[...] = 0.06 + 0.86 * txt   # 바탕은 약하게(청색 유지), 글자만 밝게
+    band_v = (ctx.v - SIGN_BAND[0]) / (SIGN_BAND[1] - SIGN_BAND[0])
+    dirt = np.clip((band_v - 0.82) / 0.18, 0, 1) * (0.5 + 0.5 * ctx.noise(scale_px=6, seed=43))
+    ctx.rgb *= (1.0 - 0.22 * dirt)[..., None]                  # 위 가장자리 먼지·빗물
+    ctx.grain(amp=1.2, scale_px=2, height=0.02, seed=41)
+    ctx.gloss = np.clip(0.60 + 0.04 * _var(ctx, scale_px=10, seed=42) - 0.12 * dirt, 0.44, 0.68)   # 아크릴 광택
+    ctx.emis[...] = 0.06 + 0.86 * txt
 
 
 def _make_brick_painter(seed, mortar_rgb, stain_amt, tone_mul):
@@ -460,8 +495,8 @@ def atlas(spec):
     a.add("orange", color=(154, 109, 86), px=128, tile=(2, 2), gloss=0.46, painter=corrugated)
     a.add("shutter", color=(134, 139, 132), ctrl=(0, 0, 255), px=256, gloss=0.43, painter=louver)
     a.add("equipment_face", color=(169, 177, 168), px=128, gloss=0.43, painter=louver)
-    a.add("drip", color=(95, 89, 68), px=128, gloss=0.17, painter=streak)
-    a.add("rust", color=(132, 74, 40), px=128, gloss=0.17, painter=streak)
+    a.add("drip", color=(88, 84, 70), px=256, gloss=0.17, painter=streak)
+    a.add("rust", color=(122, 76, 48), px=256, gloss=0.17, painter=streak)
     a.add("weather_bot", color=(78, 73, 62), px=128, variants=2, gloss=0.15,
           painter=_make_weather_band_painter("bot", sv))
     a.add("weather_top", color=(72, 69, 60), px=128, variants=2, gloss=0.16,
@@ -587,7 +622,8 @@ def facade(mb, wins, spec, axis, c, side, stage, lo=None, hi=None):
                         K.axbox(mb, axis, c, side, x-0.014, x+0.014, 0.10, 0.13, z0+0.08, z1-0.08, "steel")
                     for z in (z0+(z1-z0)*0.28, z0+(z1-z0)*0.72):
                         K.axbox(mb, axis, c, side, a0+0.05, a1-0.05, 0.13, 0.15, z-0.014, z+0.014, "steel")
-                K.paint(mb, axis, c, side, a0+0.08, a1-0.08, max(0.65, z0-0.50), z0-0.08, "drip")
+                mb.quad(K.face_pts(axis, c + side * K.PAINT_OFF, side, a0 + 0.08, a1 - 0.08, max(0.65, z0 - 0.50), z0 - 0.08),
+                        mb.atlas.uv_full("drip"), "drip")   # 칸 전체 (K.paint 는 칸 가운데 절반만 늘여 덩어리졌음)
         if stage < 2:
             for b0, b1, lip in ((z0 - 0.07, z0 + 0.03, 0.12), (z1 - 0.03, z1 + 0.09, 0.05)):
                 if stage == 0:
@@ -852,7 +888,8 @@ def _add_ac_unit(mb, axis, c, side, pos, z0, stage, duct_to_z=None):
         for pp in (pos - 0.34, pos + 0.34):
             K.axbox(mb, axis, c, side, pp - 0.025, pp + 0.025, 0.02, 0.48, z0 - 0.06, z0 - 0.01, "steel")
             K.axbox(mb, axis, c, side, pp - 0.025, pp + 0.025, 0.01, 0.06, z0 - 0.32, z0 - 0.06, "steel")
-        K.paint(mb, axis, c, side, pos - 0.38, pos + 0.38, max(0.76, z0 - 0.72), z0 - 0.08, "rust")
+        mb.quad(K.face_pts(axis, c + side * K.PAINT_OFF, side, pos - 0.38, pos + 0.38, max(0.76, z0 - 0.72), z0 - 0.08),
+                mb.atlas.uv_full("rust"), "rust")
         # 냉매 배관 + 외벽 덕트 커버
         dz_top = duct_to_z if duct_to_z is not None else (z0 + 0.85)
         K.axbox(mb, axis, c, side, pos + 0.46, pos + 0.56, 0.01, 0.09, min(z0 + 0.18, dz_top), max(z0 + 0.45, dz_top), "frame")
@@ -901,11 +938,21 @@ def living_details(mb, spec, stage):
     else:
         slope_box(mb, (-w * 0.44, w * 0.44, -1.15, -0.02, 2.51, 2.57), "awning", 1, 0.36)
         mb.box(-w * 0.44, w * 0.44, -1.18, -1.15, 2.32, 2.57, "awning")
-        # 간판: 10:1 아크릴 판 (높이 = 폭/10). 가스관(벽 앞 5.5~11 cm)보다 앞으로 내고 앞면은 간판 칸 띠 통째로.
-        sh = w * 0.07
-        mb.box(-w * 0.35, w * 0.35, -0.16, -0.015, 2.93, 2.93 + sh, "steel", skip=("front",))
-        mb.quad(K.face_pts("y", -0.16, -1, -w * 0.35, w * 0.35, 2.93, 2.93 + sh),
+        # 간판: 10:1 아크릴 면(높이 = 폭/10) + 알루미늄 테두리(앞으로 3 cm, 폭 5 cm) + 위 덮개.
+        # 가스관(벽 앞 5.5~11 cm)보다 앞으로 내고 앞면은 간판 칸 띠 통째로.
+        sh, sx_ = w * 0.07, w * 0.35
+        z0s, z1s = 2.93, 2.93 + sh
+        mb.box(-sx_, sx_, -0.16, -0.015, z0s, z1s, "steel", skip=("front",))
+        mb.quad(K.face_pts("y", -0.16, -1, -sx_, sx_, z0s, z1s),
                 KX.uv_cell(mb.atlas, "sign", 0.0, SIGN_BAND[0], 1.0, SIGN_BAND[1]), "sign")
+        if stage < 2:
+            fr = 0.05
+            mb.box(-sx_ - 0.01, sx_ + 0.01, -0.19, -0.16, z1s - fr, z1s + 0.01, "frame")      # 위
+            mb.box(-sx_ - 0.01, sx_ + 0.01, -0.19, -0.16, z0s - 0.01, z0s + fr, "frame")      # 아래
+            for e0, e1 in ((-sx_ - 0.01, -sx_ + fr), (sx_ - fr, sx_ + 0.01)):                   # 양옆
+                mb.box(e0, e1, -0.19, -0.16, z0s + fr, z1s - fr, "frame")
+            if stage == 0:
+                mb.box(-sx_ - 0.03, sx_ + 0.03, -0.21, -0.015, z1s + 0.01, z1s + 0.04, "frame")  # 빗물 덮개
 
 
 def build_stage(spec, a, stage):
