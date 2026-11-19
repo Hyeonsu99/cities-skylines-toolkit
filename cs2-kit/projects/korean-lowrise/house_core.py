@@ -704,15 +704,7 @@ def facade(mb, wins, spec, axis, c, side, stage, lo=None, hi=None):
     K.paint(mb, axis, c, side, plo, phi, 0.16, 0.62, "plinth")
     if spec.finish == "mosaic":
         K.paint(mb, axis, c, side, plo, phi, spec.floor_h-0.42, spec.floor_h-0.12, "pattern")
-    if stage < 2 and spec.eaves:
-        # 파라펫 아래 띠는 처마 없는 집(A01·80s·90s)에서 사용자 요청으로 뺌, 기와 처마 아래(70s)만 유지 (2026-11-19)
-        face_v = (1 if side > 0 else 0)
-        top_blocked = []
-        if axis == "y" and side == -1 and spec.balcony == "enclosed":
-            bw = spec.width * 0.34 + 0.05
-            top_blocked.append((-bw, bw))
-        _paint_band_clipped(mb, axis, c, side, plo, phi, top - 0.35, top, "weather_top",
-                            top_blocked, layer=1, variant=face_v ^ 1)
+    # 파라펫·처마 아래 빗물 띠는 모든 집에서 사용자 요청으로 뺌 (2026-11-19)
 
 
 def slope_box(mb, bounds, region, axis, rise):
@@ -844,7 +836,7 @@ def _draw_single_roof_prop(mb, kind, x, y, z, stage, scale=1.0):
         mb.box(x - 0.45 * sc, x + 0.45 * sc, y - 0.35 * sc, y + 0.35 * sc, z, z + 0.09, "cement", skip=("bottom",))
         mb.box(x - 0.04, x + 0.04, y - 0.04, y + 0.04, z + 0.09, z + 0.92 * sc, "steel")
         if stage == 0:
-            mb.box(x - 0.22 * sc, x + 0.22 * sc, y - 0.22 * sc, y + 0.22 * sc, z + 0.09, z + 0.14, "steel")
+            mb.box(x - 0.22 * sc, x + 0.22 * sc, y - 0.22 * sc, y + 0.22 * sc, z + 0.095, z + 0.14, "steel")  # 기둥 밑면과 같은 높이 방지
         ring = [(x + 0.52 * sc * np.cos(t * np.pi / 6), y + 0.52 * sc * np.sin(t * np.pi / 6)) for t in range(12)]
         part = K.MeshBuilder(mb.atlas)
         K.volume_prism(mb.atlas, ring, 0.055, wall="tank", roof="tank", mb=part)
@@ -1071,14 +1063,19 @@ def build_stage(spec, a, stage):
         if spec.eaves:
             part = K.MeshBuilder(a, split_tiles=stage == 0)
             is_notch_y = spec.notch and axis == "y" and abs(c - (d - 2.6)) < 1e-6
+            is_notch_x = spec.notch and axis == "x" and abs(c - (x0 + 2.6)) < 1e-6
             if axis == "y":
                 ea, eb = (lo - 0.48, hi - 0.48) if is_notch_y else (lo - 0.48, hi + 0.48)
+                eo, lo0, lo1 = 0.48, 0.42, 0.48   # 물끊기 턱 바깥면 = 처마 끝면 (윗면 열린 1 cm 틈 방지)
             else:
-                ea, eb = lo + 0.48, hi - 0.48
-            K.axbox(part, axis, c, side, ea, eb, 0.01, 0.48, h - 0.08, h + 0.03, "clay")
+                # 옆벽 처마도 모서리 밖까지 (앞·뒤 처마와 모서리에서 만남). ㄱ자 안쪽 모서리(아래 끝)는 맞대기.
+                # 내밀기를 앞·뒤(0.48/0.49)와 다르게 해 모서리에서 같은 평면 겹침 방지.
+                ea, eb = (lo, hi + 0.465) if is_notch_x else (lo - 0.465, hi + 0.465)
+                eo, lo0, lo1 = 0.465, 0.405, 0.465
+            K.axbox(part, axis, c, side, ea, eb, 0.01, eo, h - 0.08, h + 0.03, "clay")
             if stage < 2:
                 # 기와 처마 하부 물끊기 턱 (막새 림)
-                K.axbox(part, axis, c, side, ea, eb, 0.42, 0.49, h - 0.12, h - 0.08, "clay", skip=("top",))
+                K.axbox(part, axis, c, side, ea, eb, lo0, lo1, h - 0.12, h - 0.08, "clay", skip=("top",))
             if stage == 0:
                 # 목재 서까래 + 벽측 처마 도리
                 n_raf = max(4, int(round((eb - ea) / 0.52)))
