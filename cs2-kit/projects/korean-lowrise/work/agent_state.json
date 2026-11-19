@@ -3,7 +3,7 @@
  "current_stage": "review:PASS",
  "generator": "house_90s_cs2.py",
  "generator_hash": "ca3e32a7503004bb1805d517752a48b06a60f13e17fbcc02eb897c4d9cfb2329",
- "current_preview_hash": "25e85205dfde07780e8a5f7f46924d00bd3939420502f6289ceb1b93e0071188",
+ "current_preview_hash": "afe3ff6f738fb485051c5471327b7937ff1fd48942bc763c473449b955dd7960",
  "last_gate": {
   "status": "PASS",
   "project": "korean-lowrise",
@@ -29,8 +29,8 @@
    "report": "output\\KoreanHouseA90s01_L1_2x2\\_check\\report.json"
   },
   "asset": "KoreanHouseA90s01_L1_2x2",
-  "label": "kitext",
-  "time": "2026-11-19 13:36:17",
+  "label": "balcony-address",
+  "time": "2026-11-19 13:51:31",
   "build": {
    "asset": "KoreanHouseA90s01_L1_2x2",
    "fbx": true,
@@ -52,17 +52,17 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 10652,
+     "main": 10660,
      "win": 48,
-     "lod1": 1600,
+     "lod1": 1608,
      "lod1_win": 48,
      "lod2": 316,
      "lod2_win": 48
     },
     "verts": {
-     "main": 22564,
+     "main": 22580,
      "win": 96,
-     "lod1": 3222,
+     "lod1": 3238,
      "lod1_win": 96,
      "lod2": 640,
      "lod2_win": 96
@@ -97,7 +97,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 0.2
+    "time_s": 0.3
    },
    "report": "output\\KoreanHouseA90s01_L1_2x2\\_check\\report.json"
   },
@@ -122,14 +122,15 @@
    "status": "PASS",
    "line": "LODCHECK PASS main max 0.031% (az 292, el +5) bad_views 0/64 | lod1 max 0.011% (az 68, el +50) bad_views 0/64 | lod2 max 0.007% (az 158, el +50) bad_views 0/64 marginal=1  -> previews\\lod_check\\KoreanHouseA90s01_L1_2x2",
    "notes": [
+    "LOD margin is close to the 0.05% limit",
     "LOD margin is close to the 0.05% limit"
    ]
   },
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 22564,
-    "LOD1": 3222,
+    "LOD0": 22580,
+    "LOD1": 3238,
     "LOD2": 640
    },
    "action_tags": [],
@@ -147,13 +148,13 @@
   "reason": "all requested checks passed"
  },
  "project": "korean-lowrise",
- "updated_at": "2026-11-19T13:36:45",
- "visual_review_note": "kitext 적용(옆면·베벨·콘크리트 타일·발코니 그늘) 후 미리보기·근접 렌더 확인",
+ "updated_at": "2026-11-19T13:52:12",
+ "visual_review_note": "확장 발코니 옆 난간벽·샷시 가로살·옆면 유리, 건물번호판 판재·전체 칸 UV 근접 렌더 확인",
  "visual_review_artifacts": [
   {
    "file": "previews/KoreanHouseA90s01_L1_2x2.png",
-   "sha256": "25e85205dfde07780e8a5f7f46924d00bd3939420502f6289ceb1b93e0071188"
+   "sha256": "afe3ff6f738fb485051c5471327b7937ff1fd48942bc763c473449b955dd7960"
   }
  ],
- "reviewed_preview_hash": "25e85205dfde07780e8a5f7f46924d00bd3939420502f6289ceb1b93e0071188"
+ "reviewed_preview_hash": "afe3ff6f738fb485051c5471327b7937ff1fd48942bc763c473449b955dd7960"
 }

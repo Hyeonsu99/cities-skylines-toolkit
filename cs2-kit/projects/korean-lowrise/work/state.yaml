@@ -396,14 +396,39 @@
     "key": null
    },
    "fbx": null
+  },
+  "balcony-address": {
+   "at": "2026-11-19T13:51:31",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "balcony-address",
+   "gate": "output/KoreanHouseA90s01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "ca3e32a7503004bb1805d517752a48b06a60f13e17fbcc02eb897c4d9cfb2329",
+   "preview": {
+    "path": "previews/KoreanHouseA90s01_L1_2x2.png",
+    "exists": true,
+    "sha256": "afe3ff6f738fb485051c5471327b7937ff1fd48942bc763c473449b955dd7960",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-19T13:36:17",
+ "updated_at": "2026-11-19T13:51:31",
  "current_stage": "final:INCOMPLETE",
  "generator": "house_90s_cs2.py",
  "generator_hash": "ca3e32a7503004bb1805d517752a48b06a60f13e17fbcc02eb897c4d9cfb2329",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "44a43c81017962ea25aa94642d361df3177c0957bfcc5963d9c5ada7f9e0bf93",
+ "reviewed_preview_hash": "25e85205dfde07780e8a5f7f46924d00bd3939420502f6289ceb1b93e0071188",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",

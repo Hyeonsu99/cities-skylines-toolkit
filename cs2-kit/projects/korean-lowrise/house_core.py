@@ -243,7 +243,34 @@ def text_label(ctx, text, key):
 
 
 def address(ctx):
-    text_label(ctx, "17-8", "address")
+    """도로명 건물번호판(남색 바탕·흰 테두리·흰 글씨, 도로명 + 번호 두 줄). 칸 가운데 2:1 띠(v 0.25~0.75)에 그리고
+    판 앞면은 uv_sub 로 그 띠만 쓴다. 도로명은 가상 이름."""
+    cache = HERE / "work" / "_sign_cache" / f"address2_{ctx.w}x{ctx.h}.npz"
+    navy = (30, 58, 112)
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+        S = 4
+        W, H = ctx.w * S, ctx.h * S
+        im = Image.new("RGB", (W, H), navy)
+        d = ImageDraw.Draw(im)
+        top, bot = int(H * 0.25), int(H * 0.75)
+        ph = bot - top
+        m = int(ph * 0.08)
+        d.rectangle([m, top + m, W - 1 - m, bot - 1 - m], outline=(238, 240, 244), width=max(2, int(ph * 0.035)))
+        lines = (("다온길", "C:/Windows/Fonts/malgunbd.ttf", 0.24, 0.33), ("17-8", "C:/Windows/Fonts/arialbd.ttf", 0.42, 0.66))
+        for text, font_path, size, cy in lines:
+            font = ImageFont.truetype(font_path, int(ph * size))
+            bb = d.textbbox((0, 0), text, font=font)
+            d.text(((W - (bb[2] - bb[0])) / 2 - bb[0], top + ph * cy - (bb[3] - bb[1]) / 2 - bb[1]), text,
+                   font=font, fill=(244, 245, 247))
+        rgb = np.asarray(im.resize((ctx.w, ctx.h), Image.LANCZOS))
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        np.savez(cache, rgb=rgb)
+    except (ImportError, OSError):
+        rgb = np.load(cache)["rgb"]
+    ctx.rgb[...] = rgb
+    ctx.grain(amp=1.2, scale_px=2, height=0.02, seed=39)
+    ctx.gloss = np.clip(0.46 + 0.03 * _var(ctx, scale_px=8, seed=40), 0.40, 0.52)
 
 
 def sign(ctx):
@@ -425,7 +452,7 @@ def atlas(spec):
           painter=_make_weather_band_painter("bot", sv))
     a.add("weather_top", color=(72, 69, 60), px=128, variants=2, gloss=0.16,
           painter=_make_weather_band_painter("top", sv))
-    a.add("address", px=128, gloss=0.42, painter=address)
+    a.add("address", px=256, gloss=0.46, painter=address)
     a.add("sign", px=256, gloss=0.42, painter=sign)
     # 콘크리트 차양·코핑·계단 등은 1 m 넘는 면이 많아 실제 크기 타일 재질로 (단색 칸은 면 크기와 무관하게 늘어남)
     a.add("cement", color=(163, 166, 158), px=256, tile=(2.4, 2.4), gloss=0.24, painter=KX.stone_trim(sv))
@@ -1083,7 +1110,9 @@ def build_stage(spec, a, stage):
             if stage < 2:
                 mb.box(px - 0.09, px + 0.09, -2.50, -2.32, 1.73, 1.88, "lamp")
         if stage < 2:
-            K.paint(mb, "y", -2.61, -1, -1.29, -0.98, 1.22, 1.45, "address")
+            # 건물번호판: 1.2 cm 두께 판 + 앞면은 칸의 2:1 띠 전체 (K.paint 는 칸 가운데 절반만 잘라 써서 글자가 잘렸음)
+            mb.box(-1.28, -0.98, -2.612, -2.60, 1.24, 1.39, "steel", skip=("front", "back"))
+            mb.quad(K.face_pts("y", -2.612, -1, -1.28, -0.98, 1.24, 1.39), mb.atlas.uv_sub("address", 0.0, 0.25, 1.0, 0.75), "address")
             mb.box(1.40, 1.75, -2.65, -2.51, 0.85, 1.12, "steel")
     mb.box(-0.8, 0.8, -0.65, -0.001, 0, 0.16, "stone", skip=("bottom",))
     if stage == 0:
@@ -1126,12 +1155,26 @@ def build_stage(spec, a, stage):
                 mb.box(-bw, bw, -0.95, -0.001, fh - 0.14, fh + 0.76, spec.finish)
             else:
                 mb.box(-bw, bw, -0.95, -0.80, fh, fh + 0.76, spec.finish)
-            for sx in (-bw, bw - 0.08):
+                # 옆 난간벽 (앞 난간벽 뒤에 맞댐) — 비어 있어 뒤 벽돌이 보이던 곳
+                mb.box(-bw, -bw + 0.12, -0.80, -0.001, fh, fh + 0.76, spec.finish)
+                mb.box(bw - 0.12, bw, -0.80, -0.001, fh, fh + 0.76, spec.finish)
+            room = 50 if spec.seed % 5 == 1 else 55
+            zl0, zl1, zu0, zu1 = fh + 0.83, fh + 1.86, fh + 1.92, fh + 2.36   # 하부 미서기 / 상부 고정창
+            for sgn in (-1, 1):
+                xo = sgn * bw
+                fx0, fx1 = (xo, xo + 0.08) if sgn < 0 else (xo - 0.08, xo)
                 if stage == 2:
-                    side = -1 if sx < 0 else 1
-                    mb.rect(K.face_pts("x", -bw if side < 0 else bw, side, -0.95, -0.001, fh + 0.76, fh + 2.42), "frame")
-                else:
-                    mb.box(sx, sx + 0.08, -0.95, -0.001, fh + 0.76, fh + 2.42, "frame")
+                    mb.rect(K.face_pts("x", xo, sgn, -0.95, -0.001, fh + 0.76, fh + 2.42), "frame")
+                    continue
+                # 옆면 샷시: 모서리 기둥 2 + 상·하 레일 + 가로살, 사이에 유리
+                mb.box(fx0, fx1, -0.95, -0.87, fh + 0.76, fh + 2.42, "frame")
+                mb.box(fx0, fx1, -0.08, -0.001, fh + 0.76, fh + 2.42, "frame")
+                for rz0, rz1 in ((fh + 0.76, zl0), (zl1, zu0), (zu1, fh + 2.42)):
+                    mb.box(fx0, fx1, -0.87, -0.08, rz0, rz1, "frame")
+                if stage == 0:
+                    # 창 면은 한 장(가로살은 유리 2 cm 앞 창틀) — 창 칸 해상도·LOD2 창 예산 유지
+                    wins.add_face("x", xo - sgn * 0.04, sgn, -0.87, -0.08, zl0, zu1, 0, room)
+                    wins.items[-1]["pts2"] = K.face_pts("x", xo + sgn * 0.02, sgn, -0.87, -0.08, zl0, zu1)
             if stage < 2:
                 mb.box(-bw - 0.08, bw + 0.08, -1.03, -0.001, fh + 2.42, fh + 2.51, "cement")
                 mb.box(-bw - 0.08, bw + 0.08, -1.03, -0.96, fh + 2.38, fh + 2.42, "cement", skip=("top",))
@@ -1141,17 +1184,19 @@ def build_stage(spec, a, stage):
                 mb.rect(K.face_pts("y", -0.951, -1, -bw, bw, fh + 0.76, fh + 2.42), "window_backing")
             else:
                 mb.box(-bw + 0.01, bw - 0.01, -0.99, -0.79, fh + 0.75, fh + 0.80, "cement")
-                for bz0, bz1 in ((fh + 0.80, fh + 0.83), (fh + 2.36, fh + 2.42)):
+                for bz0, bz1 in ((fh + 0.80, zl0), (zu1, fh + 2.42)):   # 하·상 레일
                     mb.box(-bw + 0.08, bw - 0.08, -0.94, -0.85, bz0, bz1, "frame")
-            room = 50 if spec.seed % 5 == 1 else 55
+                # 상부 고정창 / 하부 미서기 가로살 (유리 앞, 세로살보다 얇게 해 면 겹침 방지)
+                mb.box(-bw + 0.08, bw - 0.08, -0.93, -0.855, zl1, zu0, "frame")
             for i in range(6):
                 ba = -bw + 0.08 + i * (2 * bw - 0.16) / 6
                 bb = -bw + 0.08 + (i + 1) * (2 * bw - 0.16) / 6
                 ga, gb = ba + (0.025 if i else 0), bb - (0.025 if i < 5 else 0)
-                wins.add_face("y", -0.84, -1, ga, gb, fh + 0.83, fh + 2.36, 0, room)
-                wins.items[-1]["pts2"] = K.face_pts("y", -0.97, -1, ga, gb, fh + 0.83, fh + 2.36)
+                if stage == 0:
+                    wins.add_face("y", -0.84, -1, ga, gb, zl0, zu1, 0, room)
+                    wins.items[-1]["pts2"] = K.face_pts("y", -0.97, -1, ga, gb, zl0, zu1)
                 if stage < 2 and i:
-                    mb.box(ba - 0.025, ba + 0.025, -0.94, -0.85, fh + 0.83, fh + 2.36, "frame")
+                    mb.box(ba - 0.025, ba + 0.025, -0.94, -0.85, zl0, zu1, "frame")
     if stage == 0:
         mb.box(0.68, 0.84, -0.12, -0.04, 2.1, 2.23, "lamp")
     return mb, wins
