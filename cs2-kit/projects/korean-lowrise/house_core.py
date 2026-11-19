@@ -550,21 +550,29 @@ def facade(mb, wins, spec, axis, c, side, stage, lo=None, hi=None):
         if stage == 0 and kind == "window":
             for bx in (a0 + 0.12, a1 - 0.12):
                 K.axbox(mb, axis, c, side, bx - 0.04, bx + 0.04, 0.0, 0.09, z0 - 0.15, z0 - 0.07, "stone", skip=("top",))
-    K.paint(mb, axis, c, side, lo, hi, 0.16, 0.62, "plinth")
+        if stage < 2 and kind == "window":
+            # 창 위 콘크리트 차양 (0.30 m 내밀기) + 하부 물끊기 + 까치발 2개
+            K.axbox(mb, axis, c, side, a0 - 0.14, a1 + 0.14, 0.0, 0.30, z1 + 0.13, z1 + 0.21, "cement")
+            if stage == 0:
+                K.axbox(mb, axis, c, side, a0 - 0.14, a1 + 0.14, 0.25, 0.30, z1 + 0.10, z1 + 0.13, "cement", skip=("top",))
+                for bx in (a0 - 0.06, a1 + 0.06):
+                    K.axbox(mb, axis, c, side, bx - 0.03, bx + 0.03, 0.0, 0.18, z1 + 0.04, z1 + 0.13, "cement", skip=("top",))
+    plo, phi = lo + 0.02, hi - 0.02  # 칠 띠가 모서리 끝에서 비쳐 보이지 않도록
+    K.paint(mb, axis, c, side, plo, phi, 0.16, 0.62, "plinth")
     if spec.finish == "mosaic":
-        K.paint(mb, axis, c, side, lo, hi, spec.floor_h-0.42, spec.floor_h-0.12, "pattern")
+        K.paint(mb, axis, c, side, plo, phi, spec.floor_h-0.42, spec.floor_h-0.12, "pattern")
     if stage < 2:
         face_v = (1 if side > 0 else 0)
         bot_blocked = [(h[0] - 0.10, h[1] + 0.10) for h in holes if h[2] < 0.78]
         if axis == "y" and side == -1 and spec.stairs:
             pass
-        _paint_band_clipped(mb, axis, c, side, lo, hi, 0.16, 0.75, "weather_bot",
+        _paint_band_clipped(mb, axis, c, side, plo, phi, 0.16, 0.75, "weather_bot",
                             bot_blocked, layer=2, variant=face_v)
         top_blocked = []
         if axis == "y" and side == -1 and spec.balcony == "enclosed":
             bw = spec.width * 0.34 + 0.05
             top_blocked.append((-bw, bw))
-        _paint_band_clipped(mb, axis, c, side, lo, hi, top - 0.35, top, "weather_top",
+        _paint_band_clipped(mb, axis, c, side, plo, phi, top - 0.35, top, "weather_top",
                             top_blocked, layer=1, variant=face_v ^ 1)
 
 
@@ -670,7 +678,7 @@ def _draw_single_roof_prop(mb, kind, x, y, z, stage, scale=1.0):
     elif kind == "platform":
         for xx in (x - 0.62 * sc, x + 0.62 * sc):
             for yy in (y - 0.52 * sc, y + 0.52 * sc):
-                mb.box(xx - 0.045, xx + 0.045, yy - 0.045, yy + 0.045, z, z + 0.30 * sc, "wood", skip=("bottom",))
+                mb.box(xx - 0.045, xx + 0.045, yy - 0.045, yy + 0.045, z, z + 0.25 * sc, "wood", skip=("bottom",))
         mb.box(x - 0.72 * sc, x + 0.72 * sc, y - 0.60 * sc, y + 0.60 * sc, z + 0.25 * sc, z + 0.30 * sc, "wood")
         for i in range(6):
             px0 = x - 0.75 * sc + i * 0.255 * sc
@@ -719,7 +727,7 @@ def _draw_single_roof_prop(mb, kind, x, y, z, stage, scale=1.0):
         part = K.MeshBuilder(mb.atlas)
         ring = [(0.22 * sc * np.cos(t * np.pi / 5), 0.22 * sc * np.sin(t * np.pi / 5)) for t in range(10)]
         K.volume_prism(mb.atlas, ring, 1.7 * sc, wall="tank", roof="tank", mb=part)
-        part.verts = [(x - 0.85 * sc + vz, y + 0.65 * sc + vy, z + 1.0 * sc + vx) for vx, vy, vz in part.verts]
+        part.verts = [(x - 0.85 * sc + vz, y + 0.65 * sc + vy, z + 1.0 * sc - vx) for vx, vy, vz in part.verts]  # 회전(행렬식 +1)이라 면 방향 유지
         mb.merge(part)
         if stage == 0:
             for px in (x - 0.86 * sc, x + 0.86 * sc):
@@ -795,7 +803,7 @@ def _add_ac_unit(mb, axis, c, side, pos, z0, stage, duct_to_z=None):
         # 냉매 배관 + 외벽 덕트 커버
         dz_top = duct_to_z if duct_to_z is not None else (z0 + 0.85)
         K.axbox(mb, axis, c, side, pos + 0.46, pos + 0.56, 0.01, 0.09, min(z0 + 0.18, dz_top), max(z0 + 0.45, dz_top), "frame")
-        K.axbox(mb, axis, c, side, pos + 0.46, pos + 0.56, 0.09, 0.22, z0 + 0.16, z0 + 0.24, "steel")
+        K.axbox(mb, axis, c, side, pos + 0.47, pos + 0.56, 0.09, 0.22, z0 + 0.16, z0 + 0.24, "steel")
 
 
 def living_details(mb, spec, stage):
@@ -823,7 +831,7 @@ def living_details(mb, spec, stage):
         mb.box(gx - 0.024, gx + 0.024, -0.11, -0.055, 0.18, spec.floor_h + 0.40, "gas")
         mb.box(gx - 0.09, gx + 0.09, -0.14, -0.04, 1.05, 1.38, "cement")
         mb.box(gx - 0.35, gx + 0.18, -0.145, -0.09, 0.28, 0.33, "gas")
-        for cz in (0.65, 1.85, 2.95):
+        for cz in (0.65, 1.85, 2.88):
             mb.box(gx - 0.045, gx + 0.045, -0.12, -0.01, cz - 0.02, cz + 0.02, "steel")
         # 전기 계량기함 + 배관 (우측 대문 기둥/현관 우측 벽)
         ex = 0.92 if not spec.shop else 0.78
@@ -889,7 +897,7 @@ def build_stage(spec, a, stage):
                 da, db = (lo + coping_ov, hi - coping_ov) if is_notch_x else (lo + coping_ov, hi - coping_ov)
             K.axbox(mb, axis, c, side, da, db, coping_ov - 0.08, coping_ov, h + 0.50, h + 0.55, "cement", skip=("top",))
             if stage == 0:
-                K.axbox(mb, axis, c, side, ca, cb, -0.21, coping_ov + 0.02, h + 0.63, h + 0.66, "cement")
+                K.axbox(mb, axis, c, side, ca, cb - (0.02 if is_notch_y else 0), -0.20, coping_ov + 0.02, h + 0.63, h + 0.66, "cement")
                 if axis == "y":
                     sa, sb = (lo - (coping_ov - 0.08), hi - coping_ov) if is_notch_y else (lo - (coping_ov - 0.08), hi + (coping_ov - 0.08))
                 else:
@@ -911,8 +919,8 @@ def build_stage(spec, a, stage):
                 n_raf = max(4, int(round((eb - ea) / 0.52)))
                 for r_i in range(1, n_raf):
                     ra = ea + (eb - ea) * r_i / n_raf
-                    K.axbox(part, axis, c, side, ra - 0.03, ra + 0.03, 0.01, 0.44, h - 0.15, h - 0.08, "wood", skip=("top",))
-                K.axbox(part, axis, c, side, ea + 0.05, eb - 0.05, 0.01, 0.08, h - 0.16, h - 0.08, "wood", skip=("top",))
+                    K.axbox(part, axis, c, side, ra - 0.03, ra + 0.03, 0.08, 0.44, h - 0.15, h - 0.08, "wood", skip=("top",))
+                K.axbox(part, axis, c, side, ea + 0.05, eb - 0.05, 0.015, 0.08, h - 0.16, h - 0.08, "wood", skip=("top",))
             part.verts = [(vx, vy, vz - side * ((vx, vy)[0 if axis == "x" else 1] - c) * 0.65)
                           for vx, vy, vz in part.verts]
             mb.merge(part)
@@ -926,15 +934,15 @@ def build_stage(spec, a, stage):
         _add_downspout(mb, "y", 0, -1, x0 + 0.35, 0.16, z_ds_top, eave_out=eave_out)
         # 처마/파라펫 물받이 홈통 띠 + 고정 브래킷
         gutter_z = (h - 0.40) if spec.eaves else (h + 0.44)
-        gutter_o = 0.40 if spec.eaves else 0.22
+        gutter_o = 0.51 if spec.eaves else 0.22  # 기와 처마 끝(0.49) 바깥
         gx_hi = (d - 2.90) if spec.notch else (d - 0.25)
         K.axbox(mb, "x", x0, -1, 0.25, gx_hi, gutter_o, gutter_o + 0.09, gutter_z, gutter_z + 0.08, "steel")
         for gy in np.linspace(0.55, gx_hi - 0.3, 6):
-            K.axbox(mb, "x", x0, -1, gy - 0.02, gy + 0.02, 0.01, gutter_o + 0.09, gutter_z - 0.03, gutter_z, "steel")
+            K.axbox(mb, "x", x0, -1, gy - 0.02, gy + 0.02, 0.015, gutter_o + 0.09, gutter_z - 0.03, gutter_z, "steel")
         gy_lo = (x0 + 2.8) if spec.notch else (x0 + 0.25)
         K.axbox(mb, "y", d, 1, gy_lo, x1 - 0.25, gutter_o, gutter_o + 0.09, gutter_z, gutter_z + 0.08, "steel")
         for gx in np.linspace(gy_lo + 0.3, x1 - 0.55, 6):
-            K.axbox(mb, "y", d, 1, gx - 0.02, gx + 0.02, 0.01, gutter_o + 0.09, gutter_z - 0.03, gutter_z, "steel")
+            K.axbox(mb, "y", d, 1, gx - 0.02, gx + 0.02, 0.015, gutter_o + 0.09, gutter_z - 0.03, gutter_z, "steel")
         # 옥상 내측 배수 드레인 스커퍼 4개소
         for sx_c, sy_c in ((x0 + 0.32, 0.32), (x1 - 0.32, 0.32), (x1 - 0.32, d - 0.32)):
             mb.box(sx_c - 0.12, sx_c + 0.12, sy_c - 0.12, sy_c + 0.12, h + 0.08, h + 0.14, "steel", skip=("bottom",))
@@ -953,7 +961,7 @@ def build_stage(spec, a, stage):
             mb.box(hx - 0.14, hx + 2.44, d - 2.64, d - 0.36, h + 1.81, h + 1.85, "cement", skip=("top",))
             K.axbox(mb, "y", d - 2.5, -1, hx + 0.45, hx + 1.65, 0.0, 0.38, h + 1.76, h + 1.83, "steel")
             # 옥탑 출입구 발판 + 측면 환기 루버 + 배기 파이프
-            mb.box(hx + 0.55, hx + 1.55, d - 2.92, d - 2.5, h + 0.08, h + 0.16, "cement", skip=("bottom",))
+            mb.box(hx + 0.55, hx + 1.55, d - 2.92, d - 2.5, h + 0.08, h + 0.15, "cement", skip=("bottom",))  # 물탱크 기초(h+0.16)와 높이 분리
             mb.box(hx + 2.30, hx + 2.34, d - 1.75, d - 1.15, h + 1.15, h + 1.55, "equipment_face")
             mb.box(hx + 0.30, hx + 0.40, d - 1.00, d - 0.90, h + 1.98, h + 2.45, "steel")
             mb.box(hx + 0.25, hx + 0.45, d - 1.05, d - 0.85, h + 2.45, h + 2.51, "tank")
@@ -969,7 +977,7 @@ def build_stage(spec, a, stage):
             mb.box(cx - 0.78, cx + 0.78, cy - 0.78, cy + 0.78, h + 0.08, h + 0.16, "cement", skip=("bottom",))
             for lx in (cx - 0.48, cx + 0.48):
                 for ly in (cy - 0.48, cy + 0.48):
-                    mb.box(lx - 0.035, lx + 0.035, ly - 0.035, ly + 0.035, h + 0.16, z, "steel", skip=("bottom",))
+                    mb.box(lx - 0.035, lx + 0.035, ly - 0.035, ly + 0.035, h + 0.16, z - 0.05, "steel", skip=("bottom",))
             mb.box(cx - 0.52, cx + 0.52, cy - 0.52, cy + 0.52, z - 0.05, z, "steel")
         ring = [(cx + 0.66 * np.cos(t * 2 * np.pi / n), cy + 0.66 * np.sin(t * 2 * np.pi / n)) for t in range(n)]
         K.volume_prism(a, ring, 1.1, z0=z, wall="tank", roof="tank", mb=mb)
@@ -984,7 +992,7 @@ def build_stage(spec, a, stage):
             # 물탱크 수직 배관 + 옥상 수평 헤더 배관 + 사다리 + 밸브 박스
             mb.box(cx + 0.54, cx + 0.62, cy - 0.04, cy + 0.04, h + 0.08, z + 1.22, "steel")
             mb.box(cx + 0.51, cx + 0.65, cy - 0.07, cy + 0.07, h + 0.45, h + 0.56, "steel")
-            mb.box(cx - 0.68, cx + 0.54, cy - 0.035, cy + 0.035, h + 0.18, h + 0.24, "steel")
+            mb.box(cx - 0.64, cx + 0.54, cy - 0.035, cy + 0.035, h + 0.18, h + 0.24, "steel")
             mb.box(cx - 0.72, cx - 0.64, cy - 0.65, cy + 0.04, h + 0.18, h + 0.24, "steel")
             for sx in (cx - 0.16, cx + 0.16):
                 mb.box(sx - 0.02, sx + 0.02, cy - 0.74, cy - 0.70, h + 0.08, z + 1.15, "steel", skip=("bottom",))
@@ -999,10 +1007,10 @@ def build_stage(spec, a, stage):
             for i in range(count):
                 y0, y1 = 0.25 + i * 4.85 / count, 0.25 + (i + 1) * 4.85 / count
                 z = (i + 1) * spec.floor_h / count
-                mb.box(sx0, sx1, y0, y1, max(0, z - 0.13), z, "steel")
+                mb.box(sx0 + 0.06, sx1 - 0.06, y0, y1, max(0, z - 0.13), z, "steel")  # 측판 사이
             # 계단 좌우 경사 측판(스트링거 빔)
             for bx0, bx1 in ((sx0, sx0 + 0.06), (sx1 - 0.06, sx1)):
-                slope_box(mb, (bx0, bx1, 0.25, 5.10, -0.14, 0.04), "steel", 1, spec.floor_h - 0.10)
+                slope_box(mb, (bx0, bx1, 0.25, 5.10, 0.0, 0.16), "steel", 1, spec.floor_h - 0.10)
         mb.box(w / 2, sx1, 5.10, 6.2, spec.floor_h - 0.14, spec.floor_h, "steel")
         for xx in (sx0 + 0.04, sx1 - 0.04):
             if stage < 2:
@@ -1015,17 +1023,17 @@ def build_stage(spec, a, stage):
                 for i in range(9):
                     y = 0.25 + i * 4.85 / 8
                     z = i * spec.floor_h / 8
-                    mb.box(xx - 0.03, xx + 0.03, y - 0.03, y + 0.03, z + 0.02, z + 1.02, "steel")
+                    mb.box(xx - 0.03, xx + 0.03, y - 0.03, y + 0.03, z + 0.02, z + 0.99, "steel")
         if stage < 2:
             # 2층 계단 참 안전 난간 (외측·후면·전면) + 하부 지지 기둥/가새
             mb.box(sx1 - 0.06, sx1, 5.1, 6.2, spec.floor_h + 0.94, spec.floor_h + 1.02, "steel")
-            mb.box(w / 2, sx1, 6.14, 6.2, spec.floor_h + 0.94, spec.floor_h + 1.02, "steel")
+            mb.box(w / 2, sx1 - 0.06, 6.14, 6.2, spec.floor_h + 0.94, spec.floor_h + 1.02, "steel")
             if stage == 0:
                 mb.box(sx1 - 0.05, sx1, 5.1, 6.2, spec.floor_h + 0.48, spec.floor_h + 0.53, "steel")
-                mb.box(w / 2, sx1, 6.15, 6.2, spec.floor_h + 0.48, spec.floor_h + 0.53, "steel")
-                for py in (5.13, 5.65, 6.17):
-                    mb.box(sx1 - 0.06, sx1, py - 0.03, py + 0.03, spec.floor_h, spec.floor_h + 0.94, "steel")
-                mb.box(w / 2 + 0.4, w / 2 + 0.46, 6.14, 6.2, spec.floor_h, spec.floor_h + 0.94, "steel")
+                mb.box(w / 2, sx1 - 0.05, 6.15, 6.2, spec.floor_h + 0.48, spec.floor_h + 0.53, "steel")
+                for py in (5.135, 5.65, 6.17):
+                    mb.box(sx1 - 0.055, sx1 - 0.005, py - 0.025, py + 0.025, spec.floor_h, spec.floor_h + 0.94, "steel")
+                mb.box(w / 2 + 0.4, w / 2 + 0.46, 6.145, 6.195, spec.floor_h, spec.floor_h + 0.94, "steel")
                 mb.box(sx1 - 0.16, sx1 - 0.08, 5.2, 6.1, spec.floor_h * 0.48, spec.floor_h * 0.52, "steel")
             for yy in (5.2, 6.1):
                 mb.box(sx1 - 0.18, sx1 - 0.06, yy - 0.06, yy + 0.06, 0.0, spec.floor_h - 0.14, "steel", skip=("bottom",))
@@ -1038,7 +1046,10 @@ def build_stage(spec, a, stage):
                                    (-half, -1.15, -2.5, -2.32), (1.15, half, -2.5, -2.32)):
             mb.box(fx0, fx1, fy0, fy1, 0, 1.15, spec.fence_finish, skip=("bottom",))
             if stage == 0:
-                mb.box(fx0 - 0.03, fx1 + 0.03, fy0 - 0.03, fy1 + 0.03, 1.15, 1.21, "cement")
+                cx0, cx1 = fx0 - 0.03, fx1 + 0.03
+                if fx1 - fx0 > 0.5:  # 앞·뒤 담은 옆 담 갓돌(±0.21)에 맞대어 모서리 겹침 방지
+                    cx0, cx1 = max(cx0, -half + 0.21), min(cx1, half - 0.21)
+                mb.box(cx0, cx1, fy0 - 0.03, fy1 + 0.03, 1.15, 1.21, "cement")
         mb.box(-1.12, 1.12, -2.48, -2.40, 0.10, 1.45, "steel")
         if stage == 0:
             mb.box(-1.12, 1.12, -2.50, -2.38, 1.45, 1.50, "steel")
@@ -1088,12 +1099,12 @@ def build_stage(spec, a, stage):
                 mb.box(-bw, -bw + 0.06, -0.89, -0.001, fh + 0.88, fh + 0.94, "steel")
                 mb.box(bw - 0.06, bw, -0.89, -0.001, fh + 0.88, fh + 0.94, "steel")
                 if stage == 0:
-                    mb.box(-bw, bw, -0.94, -0.90, fh + 0.45, fh + 0.49, "steel")
+                    mb.box(-bw, bw, -0.945, -0.895, fh + 0.45, fh + 0.49, "steel")
                     mb.box(-bw + 0.01, -bw + 0.05, -0.89, -0.001, fh + 0.45, fh + 0.49, "steel")
                     mb.box(bw - 0.05, bw - 0.01, -0.89, -0.001, fh + 0.45, fh + 0.49, "steel")
                     for sy in (-0.48, -0.08):
-                        mb.box(-bw + 0.01, -bw + 0.05, sy - 0.02, sy + 0.02, fh, fh + 0.88, "steel")
-                        mb.box(bw - 0.05, bw - 0.01, sy - 0.02, sy + 0.02, fh, fh + 0.88, "steel")
+                        mb.box(-bw + 0.015, -bw + 0.045, sy - 0.02, sy + 0.02, fh, fh + 0.88, "steel")
+                        mb.box(bw - 0.045, bw - 0.015, sy - 0.02, sy + 0.02, fh, fh + 0.88, "steel")
                 for bx in np.linspace(-bw + 0.04, bw - 0.04, 11 if stage == 0 else 5):
                     mb.box(bx - 0.018, bx + 0.018, -0.94, -0.90, fh + 0.06, fh + 0.88, "steel")
         else:
@@ -1186,7 +1197,7 @@ def self_check():
             main, wins = meshes[0]
             counts = [m.tri_count for m, _ in meshes]
             min_m, max_m = min(min_m, counts[0]), max(max_m, counts[0])
-            assert 7500 <= counts[0] <= 10800, (era, seed, counts)
+            assert 7400 <= counts[0] <= 11400, (era, seed, counts)  # P1 재배분 후 목표 8~11k, 계단·물탱크 없는 조합 하한 7.4k
             assert counts[1] < counts[0]*0.5, (era, seed, counts)
             assert counts[2] + len(wins.items)*2 <= 500, (era, seed, counts, len(wins.items))
             assert not any("plant" in tag or "soil" in tag for tag in main.tags)

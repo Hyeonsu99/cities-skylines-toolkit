@@ -591,7 +591,7 @@ def _paint_plaza_paving(ctx):
     _, my = ctx.meters()
     band = ((my % 2.0) < 0.55)
     ctx.rgb[band] = np.array([190.0, 178.0, 160.0], np.float32)
-    d = ctx.joints(cols=8, rows=12, width_m=0.015, depth=0.82, stagger=0.5, darken=0.18, tone=3.2, seed=61)
+    d = ctx.joints(cols=8, rows=12, width_m=0.015, depth=1.0, stagger=0.5, darken=0.18, tone=3.2, seed=61)  # P1 줄눈 깊이 강화
     ctx.grain(amp=4.2, scale_px=2, height=0.22, seed=62)
     ctx.rgb += ctx.noise(scale_px=36, amp=2.0, octaves=3, seed=63)[..., None]
     ctx.stains(amount=0.045, scale_px=64, streaks=0.0, seed=64)
@@ -844,7 +844,7 @@ def make_atlas(size=4096):
     A.add("stair_stone",   color=(124, 118, 112), ctrl=(0, 0, 0), metal=0.0, gloss=0.24,
           px=512, tile=(4.0, 4.0), painter=_paint_stair_stone, normal_strength=2.3)
     A.add("plaza_paving",  color=(196, 197, 195), ctrl=(0, 0, 0), metal=0.0, gloss=0.20,
-          px=512, tile=(4.0, 4.0), painter=_paint_plaza_paving, normal_strength=2.6)
+          px=512, tile=(4.0, 4.0), painter=_paint_plaza_paving, normal_strength=3.4)
     A.add("green_planter", color=(66, 98, 56), ctrl=(0, 0, 0), metal=0.0, gloss=0.12,
           px=256, tile=(3.0, 3.0), painter=_paint_green_planter, normal_strength=2.0)
     A.add("solar_pv",      color=(46, 66, 76), ctrl=(0, 0, 0), metal=0.38, gloss=0.86,
@@ -1567,28 +1567,47 @@ def _build_solar_array(mb, sx0, sx1, sy0, sy1, z_roof, n_rows, stage):
             mb.quad([b2, b3, t3, t2], uv_rim, "railing_steel")
             mb.quad([b3, b0, t0, t3], uv_rim, "railing_steel")
 
-            # 하부 알루미늄·강재 경사 거치대 (바닥 베이스 레일 + 전/후 수직 지주 + 경사 서까래 보)
-            y_leg_f, y_leg_b = ry0 + 0.18, ry1 - 0.22
+            # 하부 거치대: 게임 시점에서 보이는 뒤쪽(높은 쪽) 지주만 둔다. 베이스 레일·서까래 보·앞 지주는
+            # 패널 그림자 아래라 보이지 않아 P1 예산 재배분으로 제거(테이블당 88 -> 28 tris).
+            y_leg_b = ry1 - 0.22
             for xl in (xa + 0.26, xb - 0.26):
-                mb.box(xl - 0.024, xl + 0.024, ry0 + 0.12, ry1 - 0.14,
-                       z_roof, z_roof + 0.042, "frame_metal", skip=("bottom",))
-                zf_top = _z_bot(xl, y_leg_f) - 0.004
                 zb_top = _z_bot(xl, y_leg_b) - 0.004
-                if zf_top > z_roof + 0.05:
-                    mb.box(xl - 0.020, xl + 0.020, y_leg_f - 0.022, y_leg_f + 0.022,
-                           z_roof + 0.042, zf_top, "railing_steel", skip=("bottom", "top"))
                 if zb_top > z_roof + 0.05:
                     mb.box(xl - 0.020, xl + 0.020, y_leg_b - 0.022, y_leg_b + 0.022,
-                           z_roof + 0.042, zb_top, "railing_steel", skip=("bottom", "top"))
-                # 경사 거치대 서까래 보 (패널 하부 4cm 높이)
-                _closed_quad_prism(
-                    mb,
-                    (xl - 0.018, y_leg_f - 0.04, zf_top - 0.038),
-                    (xl + 0.018, y_leg_f - 0.04, zf_top - 0.038),
-                    (xl + 0.018, y_leg_b + 0.04, zb_top - 0.038),
-                    (xl - 0.018, y_leg_b + 0.04, zb_top - 0.038),
-                    0.034, "frame_metal", tiled=False,
-                )
+                           z_roof, zb_top, "railing_steel", skip=("bottom", "top"))
+
+
+def _oct_prism(mb, cx, cy, z0, z1, r, region, top=True):
+    """수직 8각 기둥(바닥 없음, 윗면 선택)."""
+    ring = [(cx + r * math.cos((k + 0.5) * math.pi / 4), cy + r * math.sin((k + 0.5) * math.pi / 4)) for k in range(8)]
+    uv = mb.atlas.uv(region)
+    for k in range(8):
+        (ax, ay), (bx, by) = ring[k], ring[(k + 1) % 8]
+        mb.quad([(ax, ay, z0), (bx, by, z0), (bx, by, z1), (ax, ay, z1)], uv, region)
+    if top:
+        for k in range(1, 7):
+            mb.tri([(ring[0][0], ring[0][1], z1), (ring[k][0], ring[k][1], z1), (ring[k + 1][0], ring[k + 1][1], z1)], uv[:3], region)
+
+
+def _roof_unit(mb, x0, x1, y0, y1, z0, z1, fans=True, pad_h=0.12, pad_m=0.08):
+    """옥상 공조 설비 디테일: 콘크리트 기초 패드 + 상부 팬 슈라우드·보호망 링 + 측면 점검 패널 띠."""
+    mb.box(x0 - pad_m, x1 + pad_m, y0 - pad_m, y1 + pad_m, z0, z0 + pad_h, "roof_concrete", skip=("bottom",))
+    mb.box(x0 - 0.015, x1 + 0.015, y0 - 0.015, y1 + 0.015, z1 - 0.07, z1 - 0.03, "frame_metal", skip=("top", "bottom"))
+    if not fans:
+        return
+    w, d = x1 - x0, y1 - y0
+    r = min(w, d) * 0.30
+    if r < 0.18:
+        return
+    along_x = w >= d
+    n = max(1, int((w if along_x else d) / (2.4 * r)))
+    for i in range(n):
+        t = (i + 0.5) / n
+        cx = x0 + w * t if along_x else 0.5 * (x0 + x1)
+        cy = 0.5 * (y0 + y1) if along_x else y0 + d * t
+        _oct_prism(mb, cx, cy, z1, z1 + 0.22, r, "equipment", top=False)
+        _oct_prism(mb, cx, cy, z1 + 0.22, z1 + 0.26, r + 0.03, "frame_metal")
+        mb.box(cx - 0.06, cx + 0.06, cy - 0.06, cy + 0.06, z1 + 0.26, z1 + 0.30, "railing_steel", skip=("bottom",))
 
 
 def build_east_stair_and_terrace(mb, stage):
@@ -1918,6 +1937,11 @@ def build_north_wing(mb, A, wins, gls, stage):
         mb.box(14.35, 20.5, 65.10, 65.30, 14.80, 16.30, "louver_grille")
         for hx in (15.5, 17.5, 19.5):
             mb.box(hx, hx + 1.2, 53.0, 54.0, 14.80, 16.05, "equipment", skip=("bottom",))
+            _roof_unit(mb, hx, hx + 1.2, 53.0, 54.0, 14.80, 16.05)
+        # 설비 3대를 잇는 냉매 배관 덕트 + 지지대
+        mb.box(15.4, 20.8, 54.25, 54.45, 14.98, 15.14, "frame_metal")
+        for px in (15.9, 17.9, 19.9):
+            mb.box(px - 0.04, px + 0.04, 54.20, 54.50, 14.80, 14.98, "railing_steel", skip=("bottom",))
 
     # 북측 체육관·나루마당 통합 수평 캔틸레버 백색 지붕 슬래브 (Z=18.55..20.00, 서 2.5m·동 2.2m·북 3.0m/타워 2.2m 돌출 + 하부 soffit)
     _box_var(mb, rx0, rx1, ry0, ry1, 18.55, 20.00, roof_mat, variant=1)
@@ -1929,6 +1953,31 @@ def build_north_wing(mb, A, wins, gls, stage):
     _box_var(mb, rx0, rx0 + parapet_t, ry0 + 0.7, ry1 - parapet_t, 20.00, 20.32, "white_panel", variant=0)
     # 중앙 옥탑 계단실 박스 + 입체 경사 거치대 태양광 어레이 (sat_vworld_z19.png 위성 줄 수·범위 정합 유지)
     _box_var(mb, 7.5, 13.5, 50.6, 56.0, 20.00, 21.15, "white_panel", variant=1)
+    if stage == 0:
+        # P1: 파라펫 백색 금속 코핑(양쪽 3 cm 내밀기) — 지붕 외곽선 하이라이트
+        ct = parapet_t + 0.06
+        for cx0, cx1, cy0, cy1 in ((rx1 - ct + 0.03, rx1 + 0.03, ry0 - 0.03, ry1 + 0.03),
+                                   (rx0 - 0.03, rx1 - ct + 0.03, ry1 - ct + 0.03, ry1 + 0.03),
+                                   (rx0 - 0.03, rx1 - ct + 0.03, ry0 - 0.03, ry0 + 0.73),
+                                   (rx0 - 0.03, rx0 + ct - 0.03, ry0 + 0.73, ry1 - ct + 0.03)):
+            mb.box(cx0, cx1, cy0, cy1, 20.32, 20.36, "louver_white")
+        # P1: 캔틸레버 지붕 하단 물끊기 띠(외곽 0.25 m 링, 6 cm 내밀고 5 cm 아래로) — 두꺼운 파시아에 단차
+        dm = {"bottom": "roof_soffit", "default": "white_panel"}
+        for dx0, dx1, dy0, dy1 in ((rx0 - 0.06, rx1 + 0.06, ry0 - 0.06, ry0 + 0.19),
+                                   (rx0 - 0.06, rx1 + 0.06, ry1 - 0.19, ry1 + 0.06),
+                                   (rx0 - 0.06, rx0 + 0.19, ry0 + 0.19, ry1 - 0.19),
+                                   (rx1 - 0.19, rx1 + 0.06, ry0 + 0.19, ry1 - 0.19)):
+            mb.box(dx0, dx1, dy0, dy1, 18.50, 18.68, dm, skip=("top",))
+        # P1: 옥탑 계단실 — 지붕 코핑, 동측 점검 사다리, 환기 후드 2개, 출입문 캐노피
+        mb.box(7.46, 13.54, 50.56, 56.04, 21.15, 21.20, "louver_white")
+        for ly in (53.0, 53.5):
+            mb.box(13.54, 13.60, ly - 0.025, ly + 0.025, 20.00, 21.70, "railing_steel")
+        for lz in np.arange(20.30, 21.60, 0.30):
+            mb.box(13.565, 13.595, 53.025, 53.475, lz - 0.015, lz + 0.015, "railing_steel")  # 레일 사이 디딤대
+        for vx in (8.6, 11.8):
+            mb.box(vx - 0.25, vx + 0.25, 54.6, 55.1, 21.20, 21.55, "equipment", skip=("bottom",))
+            mb.box(vx - 0.32, vx + 0.32, 54.53, 55.17, 21.55, 21.62, "frame_metal")
+        mb.box(9.2, 11.8, 56.04, 56.90, 20.95, 21.03, "frame_metal")
     for sx0, sx1, sy0, sy1, n_rows in (
         (-21.0, 7.0, 51.6, 68.8, 6),
         (7.2, 23.6, 56.6, 68.8, 4),
@@ -2023,6 +2072,19 @@ def build_middle_courtyard_and_east(mb, wins, gls, stage):
         mb.box(20.65, 22.40, 45.60, 46.20, 14.95, 15.85, "roof_concrete", skip=("bottom",))
         mb.box(22.10, 22.70, 46.80, 49.40, 14.95, 15.85, "equipment", skip=("bottom",))
         mb.box(22.75, 24.00, 48.80, 49.40, 14.95, 15.85, "equipment", skip=("bottom",))
+        # P1: 공조 설비 기초 패드·팬 슈라우드 + 설비 사이 배관 랙
+        for ux0, ux1, uy0, uy1, uz1 in ([(11.45, 12.65, 38.60 + i * 1.05, 39.40 + i * 1.05, 16.05) for i in range(4)]
+                                        + [(16.90, 18.80, 36.40, 40.90, 16.25), (19.60, 21.80, 39.20, 40.60, 15.95),
+                                           (20.60, 22.00, 36.40, 38.40, 15.75), (23.70, 24.25, 35.50, 37.80, 15.85),
+                                           (22.10, 22.70, 46.80, 49.40, 15.85), (22.75, 24.00, 48.80, 49.40, 15.85)]):
+            _roof_unit(mb, ux0, ux1, uy0, uy1, 14.95, uz1, pad_h=0.10 if ux0 == 22.75 else 0.12, pad_m=0.06 if ux0 == 22.75 else 0.08)  # 붙은 패드 높이 분리
+        for rx_ in (13.2, 15.9):
+            for ry_ in (37.0, 39.4, 41.8):
+                mb.box(rx_ - 0.04, rx_ + 0.04, ry_ - 0.04, ry_ + 0.04, 14.95, 15.55, "railing_steel", skip=("bottom",))
+        for ry_ in (37.0, 39.4, 41.8):
+            mb.box(13.10, 16.00, ry_ - 0.05, ry_ + 0.05, 15.55, 15.63, "railing_steel")
+        for py_ in (37.15, 37.45, 37.75):
+            mb.box(12.70, 16.90, py_ - 0.06, py_ + 0.06, 15.63, 15.75, "frame_metal")
 
 
 def build_south_wings(mb, A, wins, gls, stage):

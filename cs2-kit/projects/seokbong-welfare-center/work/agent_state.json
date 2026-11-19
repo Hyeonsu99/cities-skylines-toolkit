@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "seokbong_welfare_center_cs2.py",
- "generator_hash": "b31b8ffd89408a10a90d448d940245d2f816b00658572f14a822e6083ff52cca",
- "current_preview_hash": "ced2631c648288982dee33f4c12c774879cb33b3793c25118393ed80df8260fa",
+ "generator_hash": "7cd2d5c69cda7c8884d02e78c7e81386a308c13a9bc6fb10ebcb4cac900c6f82",
+ "current_preview_hash": "44988f2aa87bb91c3f8e97fc2a6f3b13959b698ae44996980b237acf740052e5",
  "last_gate": {
   "status": "PASS",
   "project": "seokbong-welfare-center",
@@ -29,8 +29,8 @@
    "report": "output\\SeokbongWelfareCenter_L1_7x9\\_check\\report.json"
   },
   "asset": "SeokbongWelfareCenter_L1_7x9",
-  "label": "p0",
-  "time": "2026-11-19 10:05:14",
+  "label": "p1-budget",
+  "time": "2026-11-19 11:29:09",
   "build": {
    "asset": "SeokbongWelfareCenter_L1_7x9",
    "fbx": true,
@@ -45,9 +45,9 @@
    ],
    "info": {
     "size": [
-     54.0,
-     71.4,
-     21.15
+     54.12,
+     71.46,
+     21.7
     ],
     "pivot_offset": [
      0.0,
@@ -56,7 +56,7 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 48661,
+     "main": 39883,
      "win": 1364,
      "lod1": 14997,
      "lod1_win": 1364,
@@ -64,7 +64,7 @@
      "lod2_win": 1364
     },
     "verts": {
-     "main": 97325,
+     "main": 79883,
      "win": 2728,
      "lod1": 29997,
      "lod1_win": 2728,
@@ -90,7 +90,7 @@
      "LOD2_Emissive": "1024x1024 RGB"
     },
     "texel_px_per_m": {
-     "p10": 48.1,
+     "p10": 45.3,
      "median": 223.7,
      "p90": 223.8
     },
@@ -101,7 +101,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 1.7
+    "time_s": 1.0
    },
    "report": "output\\SeokbongWelfareCenter_L1_7x9\\_check\\report.json"
   },
@@ -110,9 +110,9 @@
    "mismatch": 0,
    "lines": [
     "MATCH    satellite width/depth ratio: photo 0.73 / model 0.76 (+3%)",
-    "MATCH    satellite width: photo 51.17 m / model 54.00 m (+6%)",
-    "MATCH    satellite depth: photo 69.77 m / model 71.40 m (+2%)",
-    "INFO     satellite outline/edge agreement 65% (higher = roof layout lines up)"
+    "MATCH    satellite width: photo 51.17 m / model 54.12 m (+6%)",
+    "MATCH    satellite depth: photo 69.77 m / model 71.46 m (+2%)",
+    "INFO     satellite outline/edge agreement 64% (higher = roof layout lines up)"
    ],
    "status": "PASS"
   },
@@ -120,32 +120,30 @@
    "checked": true,
    "status": "PASS",
    "simplified": [
-    "TILE satellite r2c1 x[14,27]m y[29,43]m recall 17% precision 36%  SIMPLIFIED",
-    "TILE satellite r3c3 x[40,54]m y[14,29]m recall 19% precision 10%  SIMPLIFIED",
-    "TILE satellite r3c0 x[0,14]m y[14,29]m recall 25% precision 39%  SIMPLIFIED"
+    "TILE satellite r2c1 x[14,27]m y[29,43]m recall 19% precision 40%  SIMPLIFIED",
+    "TILE satellite r3c0 x[0,14]m y[14,29]m recall 22% precision 36%  SIMPLIFIED",
+    "TILE satellite r3c3 x[41,54]m y[14,29]m recall 23% precision 10%  SIMPLIFIED"
    ],
    "detail": [
-    "DETAIL satellite recall 41% precision 51% worst r2c1 (17%) simplified_tiles 14/19"
+    "DETAIL satellite recall 40% precision 49% worst r2c1 (19%) simplified_tiles 15/19"
    ],
    "detail_color": [
-    "DETAIL_COLOR satellite tiles_off 1/7 (dE>14; trusted tiles only)"
+    "DETAIL_COLOR satellite tiles_off 0/7 (dE>14; trusted tiles only)"
    ],
-   "color_off": [
-    "COLOR satellite r0c3 x[40,54]m photo #37484e model #5b6c78 dE 16  COLOR_OFF confidence=trusted"
-   ],
-   "tiles_off": 1,
+   "color_off": [],
+   "tiles_off": 0,
    "tiles_total": 7
   },
   "lod": {
    "checked": true,
    "status": "PASS",
-   "line": "LODCHECK PASS main max 0.001% (az 225, el +25) bad_views 0/64 | lod1 max 0.002% (az 22, el +5) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\SeokbongWelfareCenter_L1_7x9",
+   "line": "LODCHECK PASS main max 0.005% (az 112, el +50) bad_views 0/64 | lod1 max 0.001% (az 338, el +25) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\SeokbongWelfareCenter_L1_7x9",
    "notes": []
   },
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 97325,
+    "LOD0": 79883,
     "LOD1": 29997,
     "LOD2": 516
    },
@@ -164,21 +162,21 @@
   "reason": "all requested checks passed"
  },
  "project": "seokbong-welfare-center",
- "updated_at": "2026-11-19T10:05:29",
- "visual_review_note": "P0-2 albedo/gloss/normal calibration reviewed: white panels, roof membrane, stone, paving toned down without blowout; panel joints and signage integration verified",
+ "updated_at": "2026-11-19T11:29:24",
+ "visual_review_note": "P1 예산 재배분 후 미리보기·위성 오버레이(64%, 외곽 MATCH)·타일 확인: 옥상 배치 유지, r2c3 29->27%는 설비 패드 추가 영향",
  "visual_review_artifacts": [
   {
    "file": "previews/SeokbongWelfareCenter_L1_7x9.png",
-   "sha256": "ced2631c648288982dee33f4c12c774879cb33b3793c25118393ed80df8260fa"
+   "sha256": "44988f2aa87bb91c3f8e97fc2a6f3b13959b698ae44996980b237acf740052e5"
   },
   {
    "file": "previews/photo_check/satellite.png",
-   "sha256": "477adca34b79aa968893a3000fa6bf35afebc0634a49fa2420c9108b21d12671"
+   "sha256": "29f7e09970adbbe7323503668d289e41f8f900b4187baa745103cd17ba6fdf1e"
   },
   {
    "file": "previews/tiles/satellite_map.png",
-   "sha256": "6876fe9bf0030de9aeac4a62398eabde0a4b515484478e6bcd809e55bb18ce7b"
+   "sha256": "b24f95e3a0529128a48324dc699a14536b4f86ad9dc827ec0eba1873572de3c2"
   }
  ],
- "reviewed_preview_hash": "ced2631c648288982dee33f4c12c774879cb33b3793c25118393ed80df8260fa"
+ "reviewed_preview_hash": "44988f2aa87bb91c3f8e97fc2a6f3b13959b698ae44996980b237acf740052e5"
 }
