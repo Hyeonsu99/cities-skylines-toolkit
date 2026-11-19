@@ -34,6 +34,7 @@ def find_kit():
 
 sys.path.insert(0, find_kit())
 import cs2kit as K  # noqa: E402
+from local import kitext as KX
 
 
 # ---------------------------------------------------------------------------
@@ -970,7 +971,7 @@ def _pipe_railing_run(mb, axis, c, s, a0, a1, z_base, h=1.08, stage=0):
         K.axbox(mb, axis, c, s, ap - 0.025, ap + 0.025, 0.015, 0.065, z_base, top_z0, "railing_steel")
 
 
-def _add_window_bay(mb, wins, axis, c, s, a0, a1, z0, z1, floor, unit, trim, frame_t=0.055):
+def _add_window_bay(mb, wins, axis, c, s, a0, a1, z0, z1, floor, unit, trim, stage, frame_t=0.055):
     """개구부 유리를 외벽에서 0.18m 후퇴시키고 외측에 창대와 인방을 둔다."""
     fa0, fa1 = a0 + frame_t, a1 - frame_t
     fz0, fz1 = z0 + frame_t, z1 - frame_t
@@ -981,8 +982,11 @@ def _add_window_bay(mb, wins, axis, c, s, a0, a1, z0, z1, floor, unit, trim, fra
         K.axbox(mb, axis, c, s, lo, hi, -0.20, 0.0, fz0, fz1, "frame_metal")
     for lo, hi in ((z0, fz0), (fz1, z1)):
         K.axbox(mb, axis, c, s, a0, a1, -0.20, 0.0, lo, hi, "frame_metal")
-    K.axbox(mb, axis, c, s, a0 - 0.07, a1 + 0.07, 0.0, 0.10, z0 - 0.055, z0 + 0.025, trim)
-    K.axbox(mb, axis, c, s, a0 - 0.045, a1 + 0.045, 0.0, 0.045, z1 - 0.02, z1 + 0.07, trim)
+    # 창대와 인방의 노출 모서리를 모따기하고 뒤쪽은 벽에 물린다.
+    trim_box = KX.ax_bevel if stage == 0 else K.axbox
+    back = -0.004 if stage == 0 else 0.0
+    trim_box(mb, axis, c, s, a0 - 0.07, a1 + 0.07, back, 0.10, z0 - 0.055, z0 + 0.025, trim)
+    trim_box(mb, axis, c, s, a0 - 0.045, a1 + 0.045, back, 0.045, z1 - 0.02, z1 + 0.07, trim)
 
 
 RAMP_X0, RAMP_X1 = -18.8, 24.8
@@ -1210,7 +1214,7 @@ def _box_var(mb, x0, x1, y0, y1, z0, z1, region, variant=0, skip=(), window_wall
         if window_wall is None or face != window_wall[0]:
             _rect_var(mb, pts, reg, variant=variant + f_idx)
             continue
-        _, wins, bays = window_wall
+        _, wins, bays, stage = window_wall
         axis, c, side, start, end = {
             "back": ("y", y1, 1, x0, x1),
             "left": ("x", x0, -1, y0, y1),
@@ -1225,7 +1229,7 @@ def _box_var(mb, x0, x1, y0, y1, z0, z1, region, variant=0, skip=(), window_wall
                 left = b
         trim = "frame_metal" if reg == "brown_panel" else reg
         for bay in bays:
-            _add_window_bay(mb, wins, axis, c, side, *bay, trim)
+            _add_window_bay(mb, wins, axis, c, side, *bay, trim, stage)
 
 
 def _segmented_ramp_slab(mb, x0, x1, yf0, yf1, y_back, dz, region, top_region, n_seg=11):
@@ -1866,7 +1870,7 @@ def build_north_wing(mb, A, wins, gls, stage):
     bays += [(x, x + 1.05, 2.05, 3.95, 0, 20 + i) for i, x in enumerate(north_1f_xs)]
     bays += [(x, x + 1.05, 5.35, 8.20, 1, 40 + i) for i, x in enumerate(north_2f_xs)]
     _box_var(mb, -24.5, 13.5, 50.4, 68.4, 0.14, 9.10, {"left": "white_panel", "default": "beige_stone"},
-             variant=0, skip=("bottom",), window_wall=("back", wins, bays))
+             variant=0, skip=("bottom",), window_wall=("back", wins, bays, stage))
     # 동북 커튼월 로비 후퇴부 (X in [13.5, 20.5], Y in [50.4, 65.4], 1~3층 Z in [0.14, 14.80])
     _box_var(mb, 13.5, 20.5, 50.4, 65.4, 0.14, 14.80, "white_panel", variant=0, skip=("bottom",))
     # 동북 코너 솔리드 계단/엘리베이터 타워 (X in [20.5, 24.8], Y in [64.0, 69.2], Z in [0.14, 18.55])
@@ -1919,7 +1923,7 @@ def build_north_wing(mb, A, wins, gls, stage):
     bays = [(lo, hi, 10.35, 11.75, 2, 85 + i)
             for i, (lo, hi) in enumerate(((-15.5, -10.5), (-6.8, -0.8), (2.5, 8.8)))]
     _box_var(mb, -24.5, 13.5, 51.0, 68.4, 9.10, 14.80, "brown_panel",
-             variant=0, window_wall=("back", wins, bays))
+             variant=0, window_wall=("back", wins, bays, stage))
     _box_var(mb, -24.5, 13.5, 51.0, 68.4, 14.80, 18.55, "white_grooved", variant=0)
 
     # 동북 3층 옥상 나루마당 (X in [13.5, 24.8], Y in [50.4, 65.4], 바닥 Z=14.80, 두꺼운 백색 캔틸레버 지붕 Z=18.55..20.00)
@@ -1969,7 +1973,8 @@ def build_north_wing(mb, A, wins, gls, stage):
                                    (rx1 - 0.19, rx1 + 0.06, ry0 + 0.19, ry1 - 0.19)):
             mb.box(dx0, dx1, dy0, dy1, 18.50, 18.68, dm, skip=("top",))
         # P1: 옥탑 계단실 — 지붕 코핑, 동측 점검 사다리, 환기 후드 2개, 출입문 캐노피
-        mb.box(7.46, 13.54, 50.56, 56.04, 21.15, 21.20, "louver_white")
+        # 옥탑의 단일 코핑은 이음부 없이 외곽 전체를 모따기한다.
+        KX.bevel_box(mb, 7.46, 13.54, 50.56, 56.04, 21.147, 21.20, "louver_white", bevel=0.012, bottom=True)
         for ly in (53.0, 53.5):
             mb.box(13.54, 13.60, ly - 0.025, ly + 0.025, 20.00, 21.70, "railing_steel")
         for lz in np.arange(20.30, 21.60, 0.30):
@@ -2000,7 +2005,7 @@ def build_middle_courtyard_and_east(mb, wins, gls, stage):
             for i in range(6) for y in (36.2 + i * 2.35,)
             for sill, head, floor, unit in ((1.40, 3.85, 0, 100), (5.55, 8.20, 1, 110))]
     _box_var(mb, -24.6, -6.0, 35.2, 50.4, 0.14, 9.10, "white_panel",
-             variant=1, skip=("bottom",), window_wall=("left", wins, bays))
+             variant=1, skip=("bottom",), window_wall=("left", wins, bays, stage))
     # 2층 서측 테라스 옥외 데크 바닥 (Z=9.10..9.24) + 조경 화단 + 유리 난간
     _box_var(mb, -25.0, -6.0, 35.2, 50.4, 9.10, 9.26, "terrace_deck", variant=0)
     if stage == 0:
@@ -2042,7 +2047,7 @@ def build_middle_courtyard_and_east(mb, wins, gls, stage):
             for i, y in enumerate((36.4, 38.6, 41.2, 43.2))
             for sill, head, floor, unit in ((5.35, 8.15, 1, 175), (9.85, 13.05, 2, 180))]
     _box_var(mb, 8.2, 24.8, 35.2, 50.4, 4.45, 14.80, "white_panel",
-             variant=1, window_wall=("right", wins, bays))
+             variant=1, window_wall=("right", wins, bays, stage))
     mb.box(8.2, 24.8, 35.2, 50.4, 14.80, 14.95, "roof_concrete")
     # 동측 1층 회랑 백색 기둥 + 후퇴 창 (east_front_mid.png · east_ne_oblique.png 기준)
     for idx, cy in enumerate((40.2, 45.6)):
@@ -2115,7 +2120,7 @@ def build_south_wings(mb, A, wins, gls, stage):
     # 서측 1층 갤러리 포디엄(X in [-24.6, -18.8], Y in [10.2, 35.2], Z in [0.14, 4.82]) + 상부 2층 오픈 목재 테라스 & 2->3층 연결 계단
     bays = [(y, y + 1.05, 1.40, 3.85, 0, 200 + i) for i, y in enumerate(np.arange(11.5, 34.0, 2.50))]
     _box_var(mb, -24.6, -18.8, 10.2, 35.2, 0.14, 4.40, "white_panel",
-             variant=0, skip=("bottom",), window_wall=("left", wins, bays))
+             variant=0, skip=("bottom",), window_wall=("left", wins, bays, stage))
     _box_var(mb, -25.6, -18.8, 10.19, 35.2, 4.40, 4.82, {"top": "terrace_deck", "default": "white_panel"}, variant=1)
     # 남서 모서리 -> 서측 2층 목재 테라스 -> 중정 -> 북서 모서리까지 일체 연속 유리난간 (Y=6.53..68.40)
     _glass_railing_run(mb, gls, "x", -25.51, -1, 6.53, 68.40, 4.82, h=1.05, stage=stage,

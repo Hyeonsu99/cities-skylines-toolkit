@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "seokbong_welfare_center_cs2.py",
- "generator_hash": "7cd2d5c69cda7c8884d02e78c7e81386a308c13a9bc6fb10ebcb4cac900c6f82",
- "current_preview_hash": "44988f2aa87bb91c3f8e97fc2a6f3b13959b698ae44996980b237acf740052e5",
+ "generator_hash": "e588f2bac1e4d810fa1d520a3b1cf77bb440b990a85f5f256a5854e4fd9ae1cc",
+ "current_preview_hash": "44c9de3eee07c2d926947f7823105dbc37466e2826c12cda94e51c5dffdcb078",
  "last_gate": {
   "status": "PASS",
   "project": "seokbong-welfare-center",
@@ -29,8 +29,8 @@
    "report": "output\\SeokbongWelfareCenter_L1_7x9\\_check\\report.json"
   },
   "asset": "SeokbongWelfareCenter_L1_7x9",
-  "label": "p1-budget",
-  "time": "2026-11-19 11:29:09",
+  "label": "xreview",
+  "time": "2026-11-19 15:30:51",
   "build": {
    "asset": "SeokbongWelfareCenter_L1_7x9",
    "fbx": true,
@@ -56,7 +56,7 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 39883,
+     "main": 44267,
      "win": 1364,
      "lod1": 14997,
      "lod1_win": 1364,
@@ -64,7 +64,7 @@
      "lod2_win": 1364
     },
     "verts": {
-     "main": 79883,
+     "main": 90199,
      "win": 2728,
      "lod1": 29997,
      "lod1_win": 2728,
@@ -101,7 +101,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 1.0
+    "time_s": 1.4
    },
    "report": "output\\SeokbongWelfareCenter_L1_7x9\\_check\\report.json"
   },
@@ -143,7 +143,7 @@
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 79883,
+    "LOD0": 90199,
     "LOD1": 29997,
     "LOD2": 516
    },
@@ -162,21 +162,21 @@
   "reason": "all requested checks passed"
  },
  "project": "seokbong-welfare-center",
- "updated_at": "2026-11-19T11:29:24",
- "visual_review_note": "P1 예산 재배분 후 미리보기·위성 오버레이(64%, 외곽 MATCH)·타일 확인: 옥상 배치 유지, r2c3 29->27%는 설비 패드 추가 영향",
+ "updated_at": "2026-11-19T15:30:58",
+ "visual_review_note": "교차검토(총괄): 창대·인방 ax_bevel, 옥탑 코핑 bevel_box. main 39.9k->44.3k(+11%), diff 소규모·LF 유지·범위 밖 0, final 재실행 PASS(사진·타일 PASS 유지), 근접 렌더 확인",
  "visual_review_artifacts": [
   {
    "file": "previews/SeokbongWelfareCenter_L1_7x9.png",
-   "sha256": "44988f2aa87bb91c3f8e97fc2a6f3b13959b698ae44996980b237acf740052e5"
+   "sha256": "44c9de3eee07c2d926947f7823105dbc37466e2826c12cda94e51c5dffdcb078"
   },
   {
    "file": "previews/photo_check/satellite.png",
-   "sha256": "29f7e09970adbbe7323503668d289e41f8f900b4187baa745103cd17ba6fdf1e"
+   "sha256": "f080e7d9ad3e2dbe11f6cdb5d5b6bc52319a25f14dc381901313cb59594b8afa"
   },
   {
    "file": "previews/tiles/satellite_map.png",
    "sha256": "b24f95e3a0529128a48324dc699a14536b4f86ad9dc827ec0eba1873572de3c2"
   }
  ],
- "reviewed_preview_hash": "44988f2aa87bb91c3f8e97fc2a6f3b13959b698ae44996980b237acf740052e5"
+ "reviewed_preview_hash": "44c9de3eee07c2d926947f7823105dbc37466e2826c12cda94e51c5dffdcb078"
 }

@@ -26,6 +26,7 @@ def find_kit():
 
 sys.path.insert(0, find_kit())
 import cs2kit as K  # noqa: E402
+from local import kitext as KX
 
 
 # ---------------------------------------------------------------------------
@@ -1136,7 +1137,8 @@ def build_stage(A, stage):
     if stage < 2:
         for cx, cy, zt in steel_cols:
             if stage == 0:
-                mb.box(cx - 0.24, cx + 0.24, cy - 0.24, cy + 0.24, z_isl, z_isl + 0.14, "concrete", skip=("bottom",))
+                # 기둥 받침과 머리의 노출된 모서리를 다듬는다.
+                KX.bevel_box(mb, cx - 0.24, cx + 0.24, cy - 0.24, cy + 0.24, z_isl, z_isl + 0.14, "concrete", bevel=0.018)
                 # 강재 베이스플레이트 + 4개 앵커볼트 + 팔각 기둥 + 상단 거셋 새들 + 중단 브레이싱 접합 칼라
                 mb.box(cx - 0.19, cx + 0.19, cy - 0.19, cy + 0.19, z_isl + 0.14, z_isl + 0.175, "dark_steel", skip=("bottom",))
                 for adx in (-0.14, 0.14):
@@ -1144,7 +1146,7 @@ def build_stage(A, stage):
                         mb.box(cx + adx - 0.018, cx + adx + 0.018, cy + ady - 0.018, cy + ady + 0.018,
                                z_isl + 0.175, z_isl + 0.21, "dark_steel", skip=("bottom",))
                 build_octagonal_prism(mb, A, cx, cy, z_isl + 0.175, zt - 0.08, 0.14, "trim_white", skip_bottom=True)
-                mb.box(cx - 0.17, cx + 0.17, cy - 0.17, cy + 0.17, zt - 0.08, zt - 0.005, "dark_steel")
+                KX.bevel_box(mb, cx - 0.17, cx + 0.17, cy - 0.17, cy + 0.17, zt - 0.08, zt - 0.005, "dark_steel", bevel=0.009, bottom=True)
                 build_octagonal_prism(mb, A, cx, cy, 3.00, 3.36, 0.172, "dark_steel", skip_bottom=False)
             else:
                 mb.box(cx - 0.13, cx + 0.13, cy - 0.13, cy + 0.13, z_isl, zt - 0.005, "trim_white", skip=("bottom",))
@@ -1303,7 +1305,7 @@ def build_stage(A, stage):
                 # 부스 지붕 상부 환기팬 유닛 + 통신 정션박스 + 지붕 파라펫 트림 림
                 mb.box(bx - 0.30, bx + 0.30, -0.88, -0.28, 3.10, 3.20, "dark_steel", skip=("bottom",))
                 mb.box(bx - 0.24, bx + 0.24, -0.82, -0.34, 3.20, 3.34, "booth_silver", skip=("bottom",))
-                mb.box(bx - 0.34, bx + 0.34, -0.92, -0.24, 3.34, 3.41, "trim_white")
+                KX.bevel_box(mb, bx - 0.34, bx + 0.34, -0.92, -0.24, 3.34, 3.41, "trim_white", bevel=0.012, bottom=True)
                 mb.box(bx - 0.22, bx + 0.22, 0.42, 0.88, 3.10, 3.26, "dark_steel", skip=("bottom",))
                 mb.box(bx - 0.24, bx + 0.24, 0.40, 0.90, 3.26, 3.30, "booth_silver")
                 for py_lip in (by0_b - 0.06, by1_b + 0.02):
@@ -1319,7 +1321,8 @@ def build_stage(A, stage):
             )
             for axis, wall, side, a0, a1, z0, panes in booth_faces:
                 z1 = 2.48
-                K.axbox(mb, axis, wall, side, a0 - 0.08, a1 + 0.08, 0, 0.145, z0 - 0.055, z0, "booth_silver")
+                # 창대를 벽 안으로 4 mm 물려 뒤쪽 모따기에 틈이 생기지 않게 한다.
+                KX.ax_bevel(mb, axis, wall, side, a0 - 0.08, a1 + 0.08, -0.004, 0.145, z0 - 0.055, z0, "booth_silver", bevel=0.004)
                 K.axbox(mb, axis, wall, side, a0 - 0.07, a1 + 0.07, 0, 0.105, z1, z1 + 0.055, "booth_silver")
                 for lo, hi in ((a0 - 0.05, a0), (a1, a1 + 0.05)):
                     K.axbox(mb, axis, wall, side, lo, hi, 0, 0.085, z0, z1, "booth_silver")

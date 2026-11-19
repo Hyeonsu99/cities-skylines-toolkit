@@ -91,11 +91,11 @@
    "fbx": null
   },
   "fix": {
-   "at": "2026-11-16T14:19:16",
+   "at": "2026-11-19T15:31:09",
    "mode": "final",
    "status": "INCOMPLETE",
    "label": "fix",
-   "gate": "output/BlueFactoryMid_L1_4x6/_check/gate.json",
+   "gate": "output/BlueFactorySmall_L1_3x4/_check/gate.json",
    "checks": {
     "build": "PASS",
     "geometry": "PASS",
@@ -106,11 +106,11 @@
     "fbx": "PASS",
     "visual_review": "NOT_CHECKED"
    },
-   "generator_hash": "eb4620e254ed2e3eef83db7dbd9bc985c8fafe032989e03384a22a2ac4c3bf13",
+   "generator_hash": "434ee076dbad5e00c43bed8239f4c53476a9f4db832725021f358a7db804c633",
    "preview": {
-    "path": "previews/BlueFactoryMid_L1_4x6.png",
+    "path": "previews/BlueFactorySmall_L1_3x4.png",
     "exists": true,
-    "sha256": "10464b7e5243bb00679b901d340e1c1a02297cda5bb00ad8343ea0e32b01b8b3",
+    "sha256": "10580b1bf7997e819acc6ed63c92346d83d3507853aa3bd88f534f58eed2aeda",
     "key": null
    },
    "fbx": null
@@ -364,14 +364,64 @@
     "key": null
    },
    "fbx": null
+  },
+  "kitext": {
+   "at": "2026-11-19T15:31:02",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "kitext",
+   "gate": "output/BlueFactoryMid_L1_4x6/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "eb4620e254ed2e3eef83db7dbd9bc985c8fafe032989e03384a22a2ac4c3bf13",
+   "preview": {
+    "path": "previews/BlueFactoryMid_L1_4x6.png",
+    "exists": true,
+    "sha256": "a409a69a48ef30dad5ece20564f8a02e4c13d8c4e17ba1279aa6364643cbcb36",
+    "key": null
+   },
+   "fbx": null
+  },
+  "xreview": {
+   "at": "2026-11-19T15:31:49",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "xreview",
+   "gate": "output/BlueRailDepot_L1_4x8/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "31cba983e9bcce6f6fd186c7180eaa07e70b7539e53b3b7dac7d07e48aa6489b",
+   "preview": {
+    "path": "previews/BlueRailDepot_L1_4x8.png",
+    "exists": true,
+    "sha256": "1ae6eb38a792a7d961f1545ce65ab9eca257d272a8af2412abc292bc11041aab",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-19T10:46:33",
+ "updated_at": "2026-11-19T15:31:49",
  "current_stage": "final:INCOMPLETE",
  "generator": "blue_rail_depot_cs2.py",
  "generator_hash": "31cba983e9bcce6f6fd186c7180eaa07e70b7539e53b3b7dac7d07e48aa6489b",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "25bd388530a3c9a926cb4acef8d64e26164ff7a44cb9f51e417046f5874b85bf",
+ "reviewed_preview_hash": "10580b1bf7997e819acc6ed63c92346d83d3507853aa3bd88f534f58eed2aeda",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",

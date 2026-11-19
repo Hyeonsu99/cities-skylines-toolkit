@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "exllu_107_cs2.py",
- "generator_hash": "15b0c34d2956fd905c5016ccb6bb8fc12e4c8d874dbe053a979e312f17d30d68",
- "current_preview_hash": "e0c1eac7a2c13aaac01f1f8983be2231afa7b5d6171963cbc26d729868b19369",
+ "generator_hash": "c7227412c3df56d19c8ef7794de11aad1d04c71ef8cede4152fc7536af849225",
+ "current_preview_hash": "7b628b4d5c6984b85e71dfe64e9c52852ea6d7111df0cf75bdef0116d96662d4",
  "last_gate": {
   "status": "PASS",
   "project": "exllu-107",
@@ -29,8 +29,8 @@
    "report": "output\\HighriseTower107_L1_5x6\\_check\\report.json"
   },
   "asset": "HighriseTower107_L1_5x6",
-  "label": "p0",
-  "time": "2026-11-19 10:07:20",
+  "label": "kitext",
+  "time": "2026-11-19 15:44:58",
   "build": {
    "asset": "HighriseTower107_L1_5x6",
    "fbx": true,
@@ -52,17 +52,17 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 92660,
+     "main": 71494,
      "win": 2908,
-     "lod1": 17768,
+     "lod1": 17860,
      "lod1_win": 2908,
      "lod2": 392,
      "lod2_win": 2908
     },
     "verts": {
-     "main": 185320,
+     "main": 143000,
      "win": 5816,
-     "lod1": 35536,
+     "lod1": 35720,
      "lod1_win": 5816,
      "lod2": 784,
      "lod2_win": 5816
@@ -97,7 +97,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 5.5
+    "time_s": 2.9
    },
    "report": "output\\HighriseTower107_L1_5x6\\_check\\report.json"
   },
@@ -106,8 +106,8 @@
    "mismatch": 0,
    "lines": [
     "INFO     front floor pitch: photo 2.50 m / model 2.05 m (-18%)  -> photo shows ~1 floor bands over the wall height, model ~2 (model needs FEWER floors or taller floors) (low-confidence photo evidence - do not auto-change floors)",
-    "INFO     front window bay pitch: photo 1.95 m / model 2.40 m (+23%)  (bays differ - check window columns)",
-    "INFO     front edge agreement 62%"
+    "INFO     front window bay pitch: photo 1.95 m / model 2.50 m (+28%)  (bays differ - check window columns)",
+    "INFO     front edge agreement 63%"
    ],
    "status": "PASS"
   },
@@ -116,7 +116,7 @@
    "status": "PASS",
    "simplified": [],
    "detail": [
-    "DETAIL front recall 60% precision 59% worst r0c0 (60%) simplified_tiles 0/1"
+    "DETAIL front recall 59% precision 60% worst r0c0 (59%) simplified_tiles 0/1"
    ],
    "detail_color": [
     "DETAIL_COLOR front tiles_off 0/1 (dE>14; trusted tiles only)"
@@ -128,14 +128,14 @@
   "lod": {
    "checked": true,
    "status": "PASS",
-   "line": "LODCHECK PASS main max 0.008% (az 202, el -10) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\HighriseTower107_L1_5x6",
+   "line": "LODCHECK PASS main max 0.015% (az 0, el +5) bad_views 0/64 | lod1 max 0.003% (az 45, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\HighriseTower107_L1_5x6",
    "notes": []
   },
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 185320,
-    "LOD1": 35536,
+    "LOD0": 143000,
+    "LOD1": 35720,
     "LOD2": 784
    },
    "action_tags": [],
@@ -153,21 +153,21 @@
   "reason": "all requested checks passed"
  },
  "project": "exllu-107",
- "updated_at": "2026-11-19T10:07:46",
- "visual_review_note": "reviewed current artifacts",
+ "updated_at": "2026-11-19T15:45:00",
+ "visual_review_note": "총괄: 재빌드+출입구 베벨, final PASS",
  "visual_review_artifacts": [
   {
    "file": "previews/HighriseTower107_L1_5x6.png",
-   "sha256": "e0c1eac7a2c13aaac01f1f8983be2231afa7b5d6171963cbc26d729868b19369"
+   "sha256": "7b628b4d5c6984b85e71dfe64e9c52852ea6d7111df0cf75bdef0116d96662d4"
   },
   {
    "file": "previews/photo_check/facade_front.png",
-   "sha256": "b5db57886c75014e4bc169586c70e80a73da01caf674b2d44091fdf38261a896"
+   "sha256": "c5a9e83c3b2a96a994b60eaf53fb3e6b3850e86217d22430940ae3d12050932d"
   },
   {
    "file": "previews/tiles/front_map.png",
-   "sha256": "594b7cde240ab40b58b3300109b554c5d9a767c7dc621ac5ea754fe8dfac3d6a"
+   "sha256": "2c09113f803cba4060267e5b0b4416a4035928aa4e56752d6de32ac272c72e1b"
   }
  ],
- "reviewed_preview_hash": "e0c1eac7a2c13aaac01f1f8983be2231afa7b5d6171963cbc26d729868b19369"
+ "reviewed_preview_hash": "7b628b4d5c6984b85e71dfe64e9c52852ea6d7111df0cf75bdef0116d96662d4"
 }

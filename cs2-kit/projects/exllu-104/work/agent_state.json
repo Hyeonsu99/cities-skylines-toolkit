@@ -1,11 +1,11 @@
 {
- "visual_review": "NOT_CHECKED",
- "current_stage": "final:INCOMPLETE",
+ "visual_review": "PASS",
+ "current_stage": "review:PASS",
  "generator": "exllu_104_cs2.py",
- "generator_hash": "eab1ba3db14d133fc36291ef27dfd2590f2b5317370de097b8b95cfff257dcb8",
- "current_preview_hash": "fa391075b05ceaa32539c06314e1e962ba18366c5cb225a8e921c259480c1610",
+ "generator_hash": "93cafc1b07d6ad7a8756831e1338130ae11d6bd8246913107c5ec11ac16a9def",
+ "current_preview_hash": "8bbe81ff008c96f08420457f83bf8ebbd4fa9719c1d014d7fb8bf2b45179b2bc",
  "last_gate": {
-  "status": "INCOMPLETE",
+  "status": "PASS",
   "project": "exllu-104",
   "generator": "exllu_104_cs2.py",
   "mode": "final",
@@ -17,7 +17,7 @@
    "tiles": "PASS",
    "lod": "PASS",
    "fbx": "PASS",
-   "visual_review": "NOT_CHECKED"
+   "visual_review": "PASS"
   },
   "errors": [],
   "next_action": {
@@ -29,8 +29,8 @@
    "report": "output\\HighriseTower104_L1_5x4\\_check\\report.json"
   },
   "asset": "HighriseTower104_L1_5x4",
-  "label": "p1p2",
-  "time": "2026-11-19 10:47:13",
+  "label": "xreview",
+  "time": "2026-11-19 15:40:25",
   "build": {
    "asset": "HighriseTower104_L1_5x4",
    "fbx": true,
@@ -52,7 +52,7 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 54968,
+     "main": 55052,
      "win": 1720,
      "lod1": 9628,
      "lod1_win": 1720,
@@ -60,7 +60,7 @@
      "lod2_win": 1720
     },
     "verts": {
-     "main": 110338,
+     "main": 110524,
      "win": 3440,
      "lod1": 19258,
      "lod1_win": 3440,
@@ -97,7 +97,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 2.6
+    "time_s": 1.3
    },
    "report": "output\\HighriseTower104_L1_5x4\\_check\\report.json"
   },
@@ -134,7 +134,7 @@
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 110338,
+    "LOD0": 110524,
     "LOD1": 19258,
     "LOD2": 916
    },
@@ -144,32 +144,30 @@
   "gate": {
    "status": "PASS",
    "reasons": [],
-   "incomplete": [
-    "visual_review=NOT_CHECKED"
-   ]
+   "incomplete": []
   }
  },
  "mismatch_attempts": {},
  "next_action": {
-  "command": "python tools/agent.py review --project exllu-104 --status PASS --note \"reviewed current artifacts\" --artifact \"previews/HighriseTower104_L1_5x4.png\" --artifact \"previews/photo_check/facade_front.png\" --artifact \"previews/tiles/front_map.png\"",
-  "reason": "inspect the listed current artifacts, then record the review"
+  "command": null,
+  "reason": "all requested checks passed"
  },
  "project": "exllu-104",
- "updated_at": "2026-11-19T10:47:13",
- "visual_review_note": "reviewed current artifacts",
+ "updated_at": "2026-11-19T15:42:05",
+ "visual_review_note": "교차검토(총괄): 출입구 베벨, final 재실행 PASS, 사진·타일 지표 전후 동일, 근접 렌더 확인",
  "visual_review_artifacts": [
   {
    "file": "previews/HighriseTower104_L1_5x4.png",
-   "sha256": "0d72482f83b8fad53dccce594c824dd5fc64d620db1320b0e8ddaae6f726c251"
+   "sha256": "8bbe81ff008c96f08420457f83bf8ebbd4fa9719c1d014d7fb8bf2b45179b2bc"
   },
   {
    "file": "previews/photo_check/facade_front.png",
-   "sha256": "f5bd51cbad4bac5714241766c993f9374a34312ec3f5192c59f312ac153db680"
+   "sha256": "0f653aee7dd2ebd8c803c1a20acadbe944bd93dc5884b400f78e89505347b1f5"
   },
   {
    "file": "previews/tiles/front_map.png",
-   "sha256": "d31cde29cf5b9f0cb4d8b1f56edaef580cd2f06033e730122057ee560a768331"
+   "sha256": "582b81cc39f24cafa9dad1538bed1eda84b574c14afe41132bec2b41e3405102"
   }
  ],
- "reviewed_preview_hash": "0d72482f83b8fad53dccce594c824dd5fc64d620db1320b0e8ddaae6f726c251"
+ "reviewed_preview_hash": "8bbe81ff008c96f08420457f83bf8ebbd4fa9719c1d014d7fb8bf2b45179b2bc"
 }

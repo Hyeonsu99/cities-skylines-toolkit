@@ -26,6 +26,7 @@ def find_kit():
 
 sys.path.insert(0, find_kit())
 import cs2kit as K  # noqa: E402
+from local import kitext as KX
 
 # No _Gls glass mesh: avoids night z-fighting flicker verified in tower 103 tests.
 DONG = "106"
@@ -1239,7 +1240,8 @@ def entrance(stage):
         mb.box(PORTICO_X0 - 0.13, x_l + 0.03, EY - 0.18, EY + 1.09, 5.02, 5.10, "dark_paint")
         mb.box(PORTICO_X0 - 0.14, x_l + 0.05, EY - 0.19, EY + 1.09, 5.10, EZC, "stone_trim", skip=("top", "bottom"))
         # Right pier plinth base & capital collar
-        mb.box(PIER_X0 - 0.06, PORTICO_X1 + 0.26, EY - 0.22, EY + 1.79, 0.0, 0.36, "stone_trim", skip=("bottom",))
+        # 기둥과 안내판 받침의 노출된 석재 모서리만 모따기한다.
+        KX.bevel_box(mb, PIER_X0 - 0.06, PORTICO_X1 + 0.26, EY - 0.22, EY + 1.79, 0.0, 0.36, "stone_trim", bevel=0.018)
         mb.box(PIER_X0 - 0.04, PORTICO_X1 + 0.24, EY - 0.19, EY + 1.79, 5.18, EZC, "stone_trim", skip=("top",))
     # Side-portal soffits & outer clerestory bands behind the left column and right pier
     mb.box(PORTICO_X0, x_l, EY + 1.1, 0.0, EZ0, EZC,
@@ -1412,7 +1414,8 @@ def entrance(stage):
             mb.box(bx - 0.06, bx + 0.06, by - 0.06, by + 0.06, 0.78, 0.85, "dark_paint", skip=("bottom",))
         # Wayfinding directory monolith beside right entrance plaza
         sx0, sx1, sy0, sy1 = 17.70, 18.70, 9.25, 9.58
-        mb.box(sx0 - 0.06, sx1 + 0.06, sy0 - 0.05, sy1 + 0.05, 0.0, 0.22, "stone_trim", skip=("bottom",))
+        # 기둥과 안내판 받침의 노출된 석재 모서리만 모따기한다.
+        KX.bevel_box(mb, sx0 - 0.06, sx1 + 0.06, sy0 - 0.05, sy1 + 0.05, 0.0, 0.22, "stone_trim", bevel=0.018)
         mb.box(sx0, sx1, sy0, sy1, 0.22, 1.88, "dark_paint", skip=("bottom", "top"))
         mb.box(sx0 - 0.04, sx0, sy0 - 0.01, sy1 + 0.01, 0.22, 1.88, "stainless", skip=("bottom", "top"))
         mb.box(sx1, sx1 + 0.04, sy0 - 0.01, sy1 + 0.01, 0.22, 1.88, "stainless", skip=("bottom", "top"))

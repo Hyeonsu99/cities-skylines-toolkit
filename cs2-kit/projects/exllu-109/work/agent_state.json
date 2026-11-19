@@ -1,11 +1,11 @@
 {
- "visual_review": "NOT_CHECKED",
- "current_stage": "final:INCOMPLETE",
+ "visual_review": "PASS",
+ "current_stage": "review:PASS",
  "generator": "exllu_109_cs2.py",
- "generator_hash": "b36dc29360db998e12d5ff56db2dc880e0d8accb9433ef854086687b5080e45f",
- "current_preview_hash": "c449998c49d33295a338ae8e7c7b6b2ed851477d14d325ffac3a24e123ae5b3e",
+ "generator_hash": "c6f934a6d043da472ed3f9a3e36dee1b1de8b3e9ca6405711e0326f4ce679b3a",
+ "current_preview_hash": "7643db52ac6f14ae740c529df60ff0c89a3b1fb9224195e46d0c1f1e02ff62b0",
  "last_gate": {
-  "status": "INCOMPLETE",
+  "status": "PASS",
   "project": "exllu-109",
   "generator": "exllu_109_cs2.py",
   "mode": "final",
@@ -17,7 +17,7 @@
    "tiles": "NOT_APPLICABLE",
    "lod": "PASS",
    "fbx": "PASS",
-   "visual_review": "NOT_CHECKED"
+   "visual_review": "PASS"
   },
   "errors": [],
   "next_action": {
@@ -29,8 +29,8 @@
    "report": "output\\HighriseTower109_L1_5x4\\_check\\report.json"
   },
   "asset": "HighriseTower109_L1_5x4",
-  "label": "p1p2",
-  "time": "2026-11-19 10:47:21",
+  "label": "xreview",
+  "time": "2026-11-19 15:41:08",
   "build": {
    "asset": "HighriseTower109_L1_5x4",
    "fbx": true,
@@ -52,7 +52,7 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 54968,
+     "main": 55052,
      "win": 1720,
      "lod1": 9628,
      "lod1_win": 1720,
@@ -60,7 +60,7 @@
      "lod2_win": 1720
     },
     "verts": {
-     "main": 110338,
+     "main": 110524,
      "win": 3440,
      "lod1": 19258,
      "lod1_win": 3440,
@@ -97,7 +97,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 1.7
+    "time_s": 1.4
    },
    "report": "output\\HighriseTower109_L1_5x4\\_check\\report.json"
   },
@@ -126,7 +126,7 @@
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 110338,
+    "LOD0": 110524,
     "LOD1": 19258,
     "LOD2": 916
    },
@@ -136,24 +136,22 @@
   "gate": {
    "status": "PASS",
    "reasons": [],
-   "incomplete": [
-    "visual_review=NOT_CHECKED"
-   ]
+   "incomplete": []
   }
  },
  "mismatch_attempts": {},
  "next_action": {
-  "command": "python tools/agent.py review --project exllu-109 --status PASS --note \"reviewed current artifacts\" --artifact \"previews/HighriseTower109_L1_5x4.png\"",
-  "reason": "inspect the listed current artifacts, then record the review"
+  "command": null,
+  "reason": "all requested checks passed"
  },
  "project": "exllu-109",
- "updated_at": "2026-11-19T10:47:21",
- "visual_review_note": "reviewed current artifacts",
+ "updated_at": "2026-11-19T15:42:08",
+ "visual_review_note": "교차검토(총괄): 출입구 석재 받침 18 mm 모따기(·102/103/110/111 전실 옆면 석재), main +56~84 tris, LOD 동일, final 재실행 PASS, 근접 렌더 확인",
  "visual_review_artifacts": [
   {
    "file": "previews/HighriseTower109_L1_5x4.png",
-   "sha256": "9ca977d253d60aa4ac4eea804de848219dd293def9a08a7a1957aef84f4be308"
+   "sha256": "7643db52ac6f14ae740c529df60ff0c89a3b1fb9224195e46d0c1f1e02ff62b0"
   }
  ],
- "reviewed_preview_hash": "9ca977d253d60aa4ac4eea804de848219dd293def9a08a7a1957aef84f4be308"
+ "reviewed_preview_hash": "7643db52ac6f14ae740c529df60ff0c89a3b1fb9224195e46d0c1f1e02ff62b0"
 }

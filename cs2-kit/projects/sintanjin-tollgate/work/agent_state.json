@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "sintanjin_tollgate_cs2.py",
- "generator_hash": "f8d86b4158f5cf4269e5e22ea505ec88b678556dc9973fb283477a673cb7585d",
- "current_preview_hash": "5e1fc42fb7b607d48b9559550f6afb683656a63942779589a9a1b255bf46b6b6",
+ "generator_hash": "9ce5f6603cec9a22fcc345c436eb330ec60654b2b622e35d213934ed07f16219",
+ "current_preview_hash": "69cc35e97777eebf505e7a13327459446a510e616e526062714557d49d017e16",
  "last_gate": {
   "status": "PASS",
   "project": "sintanjin-tollgate",
@@ -29,8 +29,8 @@
    "report": "output\\SintanjinTollgate_L1_6x4\\_check\\report.json"
   },
   "asset": "SintanjinTollgate_L1_6x4",
-  "label": "drain-coplanar-fix",
-  "time": "2026-11-19 11:10:59",
+  "label": "xreview",
+  "time": "2026-11-19 15:30:24",
   "build": {
    "asset": "SintanjinTollgate_L1_6x4",
    "fbx": true,
@@ -52,7 +52,7 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 18716,
+     "main": 20272,
      "win": 48,
      "lod1": 3484,
      "lod1_win": 48,
@@ -60,7 +60,7 @@
      "lod2_win": 48
     },
     "verts": {
-     "main": 37432,
+     "main": 41054,
      "win": 96,
      "lod1": 6968,
      "lod1_win": 96,
@@ -126,7 +126,7 @@
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 37432,
+    "LOD0": 41054,
     "LOD1": 6968,
     "LOD2": 964
    },
@@ -145,13 +145,13 @@
   "reason": "all requested checks passed"
  },
  "project": "sintanjin-tollgate",
- "updated_at": "2026-11-19T11:11:04",
- "visual_review_note": "드레인 호퍼·외곽 드레인 상단 겹침 수정 후 4뷰 확인: 형태·신호 배치 변화 없음",
+ "updated_at": "2026-11-19T15:30:31",
+ "visual_review_note": "교차검토(총괄): kitext 베벨(기둥 받침·머리, 부스 지붕 캡·창대), diff 11줄·LF 유지·범위 밖 변경 0, final 재실행 PASS, 전후 비교 확인",
  "visual_review_artifacts": [
   {
    "file": "previews/SintanjinTollgate_L1_6x4.png",
-   "sha256": "5e1fc42fb7b607d48b9559550f6afb683656a63942779589a9a1b255bf46b6b6"
+   "sha256": "69cc35e97777eebf505e7a13327459446a510e616e526062714557d49d017e16"
   }
  ],
- "reviewed_preview_hash": "5e1fc42fb7b607d48b9559550f6afb683656a63942779589a9a1b255bf46b6b6"
+ "reviewed_preview_hash": "69cc35e97777eebf505e7a13327459446a510e616e526062714557d49d017e16"
 }

@@ -1,11 +1,11 @@
 {
- "visual_review": "NOT_CHECKED",
- "current_stage": "final:INCOMPLETE",
+ "visual_review": "PASS",
+ "current_stage": "review:PASS",
  "generator": "blue_rail_depot_cs2.py",
  "generator_hash": "31cba983e9bcce6f6fd186c7180eaa07e70b7539e53b3b7dac7d07e48aa6489b",
- "current_preview_hash": "445434f4686697cb3ac14b5f30b5498de5a4bb10b2a4b8e3500af2d882ab4134",
+ "current_preview_hash": "1ae6eb38a792a7d961f1545ce65ab9eca257d272a8af2412abc292bc11041aab",
  "last_gate": {
-  "status": "INCOMPLETE",
+  "status": "PASS",
   "project": "blue-factory",
   "generator": "blue_rail_depot_cs2.py",
   "mode": "final",
@@ -17,7 +17,7 @@
    "tiles": "NOT_APPLICABLE",
    "lod": "PASS",
    "fbx": "PASS",
-   "visual_review": "NOT_CHECKED"
+   "visual_review": "PASS"
   },
   "errors": [],
   "next_action": {
@@ -29,13 +29,12 @@
    "report": "output\\BlueRailDepot_L1_4x8\\_check\\report.json"
   },
   "asset": "BlueRailDepot_L1_4x8",
-  "label": "p1",
-  "time": "2026-11-19 10:46:33",
+  "label": "xreview",
+  "time": "2026-11-19 15:31:49",
   "build": {
    "asset": "BlueRailDepot_L1_4x8",
    "fbx": true,
    "warnings": [
-    "[cs2kit][WARN] lot 4x8 > 6x6 -> register as signature building",
     "[cs2kit][WARN] lot 4x8 > 6x6 -> register as signature building"
    ]
   },
@@ -57,7 +56,7 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 15768,
+     "main": 16604,
      "win": 64,
      "lod1": 244,
      "lod1_win": 64,
@@ -65,7 +64,7 @@
      "lod2_win": 64
     },
     "verts": {
-     "main": 33608,
+     "main": 35694,
      "win": 128,
      "lod1": 496,
      "lod1_win": 128,
@@ -102,7 +101,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 0.5
+    "time_s": 0.6
    },
    "report": "output\\BlueRailDepot_L1_4x8\\_check\\report.json"
   },
@@ -131,7 +130,7 @@
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 33608,
+    "LOD0": 35694,
     "LOD1": 496,
     "LOD2": 176
    },
@@ -141,24 +140,22 @@
   "gate": {
    "status": "PASS",
    "reasons": [],
-   "incomplete": [
-    "visual_review=NOT_CHECKED"
-   ]
+   "incomplete": []
   }
  },
  "mismatch_attempts": {},
  "next_action": {
-  "command": "python tools/agent.py review --project blue-factory --status PASS --note \"reviewed current artifacts\" --artifact \"previews/BlueRailDepot_L1_4x8.png\"",
-  "reason": "inspect the listed current artifacts, then record the review"
+  "command": null,
+  "reason": "all requested checks passed"
  },
  "project": "blue-factory",
- "updated_at": "2026-11-19T10:46:33",
- "visual_review_note": "P0-2 BlueRailDepot color/gloss/normal calibration verified",
+ "updated_at": "2026-11-19T15:31:59",
+ "visual_review_note": "교차검토(총괄): 창대·인방 ax_bevel 10 mm(뒤 1.2 cm 벽 물림), 하역 에이프런 bevel_box 8 mm(높이 6 cm 유지). 4종 final 재실행 PASS, main +7~10%, LOD 동일, diff 소규모·LF 유지·범위 밖 0, 전후 비교 확인",
  "visual_review_artifacts": [
   {
    "file": "previews/BlueRailDepot_L1_4x8.png",
-   "sha256": "25bd388530a3c9a926cb4acef8d64e26164ff7a44cb9f51e417046f5874b85bf"
+   "sha256": "1ae6eb38a792a7d961f1545ce65ab9eca257d272a8af2412abc292bc11041aab"
   }
  ],
- "reviewed_preview_hash": "25bd388530a3c9a926cb4acef8d64e26164ff7a44cb9f51e417046f5874b85bf"
+ "reviewed_preview_hash": "1ae6eb38a792a7d961f1545ce65ab9eca257d272a8af2412abc292bc11041aab"
 }

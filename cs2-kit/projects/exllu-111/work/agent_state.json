@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "exllu_111_cs2.py",
- "generator_hash": "2b8d0890f60ee4737f35dc0c5ad684e3c3c5b068cd7423a6fc6c887cf6a77df0",
- "current_preview_hash": "acf97bd44dbef6d94e5f714a491bc8fad6d3749f4b286ffe54465bce0f5eccab",
+ "generator_hash": "465f507f59b51704db903ceff2beff3fba986965f2fba77b8663eebd86a41e22",
+ "current_preview_hash": "62a18a8ff900fc01d04310d30527812ff6f9c859ae412f84b5aa913efac70e47",
  "last_gate": {
   "status": "PASS",
   "project": "exllu-111",
@@ -29,8 +29,8 @@
    "report": "output\\HighriseTower111_L1_5x4\\_check\\report.json"
   },
   "asset": "HighriseTower111_L1_5x4",
-  "label": "p0",
-  "time": "2026-11-19 10:07:51",
+  "label": "xreview",
+  "time": "2026-11-19 15:41:37",
   "build": {
    "asset": "HighriseTower111_L1_5x4",
    "fbx": true,
@@ -54,7 +54,7 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 76652,
+     "main": 76708,
      "win": 2970,
      "lod1": 11978,
      "lod1_win": 2970,
@@ -62,7 +62,7 @@
      "lod2_win": 2970
     },
     "verts": {
-     "main": 153304,
+     "main": 153428,
      "win": 5940,
      "lod1": 23956,
      "lod1_win": 5940,
@@ -99,7 +99,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 3.4
+    "time_s": 2.7
    },
    "report": "output\\HighriseTower111_L1_5x4\\_check\\report.json"
   },
@@ -165,7 +165,7 @@
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 153304,
+    "LOD0": 153428,
     "LOD1": 23956,
     "LOD2": 532
    },
@@ -184,12 +184,12 @@
   "reason": "all requested checks passed"
  },
  "project": "exllu-111",
- "updated_at": "2026-11-19T10:08:49",
- "visual_review_note": "reviewed current artifacts",
+ "updated_at": "2026-11-19T15:42:11",
+ "visual_review_note": "교차검토(총괄): 출입구 베벨, final 재실행 PASS, 사진·타일 지표 전후 동일, 근접 렌더 확인",
  "visual_review_artifacts": [
   {
    "file": "previews/HighriseTower111_L1_5x4.png",
-   "sha256": "acf97bd44dbef6d94e5f714a491bc8fad6d3749f4b286ffe54465bce0f5eccab"
+   "sha256": "62a18a8ff900fc01d04310d30527812ff6f9c859ae412f84b5aa913efac70e47"
   },
   {
    "file": "previews/photo_check/facade_front.png",
@@ -216,5 +216,5 @@
    "sha256": "3f5756eefebebeebf618714f78d174b0166f32e368a8c59ca011196af82f80cd"
   }
  ],
- "reviewed_preview_hash": "acf97bd44dbef6d94e5f714a491bc8fad6d3749f4b286ffe54465bce0f5eccab"
+ "reviewed_preview_hash": "62a18a8ff900fc01d04310d30527812ff6f9c859ae412f84b5aa913efac70e47"
 }

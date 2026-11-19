@@ -23,6 +23,7 @@ def find_kit():
 
 sys.path.insert(0, find_kit())
 import cs2kit as K  # noqa: E402
+from local import kitext as KX
 
 # No _Gls glass mesh: avoids night z-fighting flicker verified in tower 103 tests.
 
@@ -1315,7 +1316,11 @@ def entrance(mb, stage):
         return
 
     # Left dark granite pier (base plinth + shaft, cleanly meeting canopy without overlap)
-    mb.box(PORTICO_X0 - 0.10, PORTICO_X0 + LP + 0.05, EY - 0.10, EY + 1.20, 0, 0.16, "stone_trim", skip=("bottom",))
+    # 기둥과 안내판 받침의 노출된 석재 모서리만 모따기한다.
+    if stage == 0:
+        KX.bevel_box(mb, PORTICO_X0 - 0.10, PORTICO_X0 + LP + 0.05, EY - 0.10, EY + 1.20, 0, 0.16, "stone_trim", bevel=0.018)
+    else:
+        mb.box(PORTICO_X0 - 0.10, PORTICO_X0 + LP + 0.05, EY - 0.10, EY + 1.20, 0, 0.16, "stone_trim", skip=("bottom",))
     mb.box(PORTICO_X0 - 0.05, PORTICO_X0 + LP, EY - 0.05, EY + 1.15, 0.16, EZC, "stone_trim", skip=("bottom", "top"))
     # Rear beam behind left pier sealing into set-back outer bay at y = OUTER_Y0
     mb.box(PORTICO_X0, PORTICO_X0 + LP, EY + 1.15, OUTER_Y0, EZ0, EZC,
@@ -1333,7 +1338,11 @@ def entrance(mb, stage):
            skip=("back", "top", "left"))
 
     # Right rose-marble pier: smooth inner bay (gold DONG numerals + sconce) + split-face outer course + slim dark border
-    mb.box(PIER_X0 - 0.05, PORTICO_X1 + 0.10, EY - 0.20, EY + 1.95, 0, 0.16, "stone_trim", skip=("bottom",))
+    # 기둥과 안내판 받침의 노출된 석재 모서리만 모따기한다.
+    if stage == 0:
+        KX.bevel_box(mb, PIER_X0 - 0.05, PORTICO_X1 + 0.10, EY - 0.20, EY + 1.95, 0, 0.16, "stone_trim", bevel=0.018)
+    else:
+        mb.box(PIER_X0 - 0.05, PORTICO_X1 + 0.10, EY - 0.20, EY + 1.95, 0, 0.16, "stone_trim", skip=("bottom",))
     px_mid = PIER_X0 + 1.40
     mb.box(PIER_X0, px_mid, EY - 0.15, EY + 1.65, 0.16, EZC, "pier_pink",
            skip=("bottom", "top", "back", "front", "right"))
@@ -1477,7 +1486,8 @@ def entrance(mb, stage):
             _cyl_z(mb, bx, by, 0.082, 0.82, 0.87, 8, "stainless", cap_top=True)
         # Tower directory monolith signboard beside portico approach
         sx0, sx1, sy0, sy1 = -11.95, -11.20, -4.55, -4.25
-        mb.box(sx0 - 0.04, sx1 + 0.04, sy0 - 0.04, sy1 + 0.04, 0.0, 0.24, "stone_trim", skip=("bottom",))
+        # 기둥과 안내판 받침의 노출된 석재 모서리만 모따기한다.
+        KX.bevel_box(mb, sx0 - 0.04, sx1 + 0.04, sy0 - 0.04, sy1 + 0.04, 0.0, 0.24, "stone_trim", bevel=0.018)
         mb.box(sx0, sx1, sy0, sy1, 0.24, 1.90, dict(front="stone", back="stone", default="stainless"), skip=("bottom", "top"))
         mb.box(sx0 + 0.05, sx1 - 0.05, sy0 - 0.02, sy1 + 0.02, 1.74, 1.82, "ent_light")
         mb.box(sx0 - 0.02, sx1 + 0.02, sy0 - 0.02, sy1 + 0.02, 1.90, 1.98, "stainless")

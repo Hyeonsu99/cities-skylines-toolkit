@@ -21,6 +21,7 @@ def find_kit():
 
 sys.path.insert(0, find_kit())
 import cs2kit as K  # noqa: E402
+from local import kitext as KX
 
 # No _Gls glass mesh: the pane in front of the _Win quads flickered at night in game (user test 2026-11-11).
 
@@ -997,7 +998,11 @@ def entrance(mb, stage):
         return
 
     # Left dark granite pier (base plinth + shaft) & rear canopy wing back to tower wall
-    mb.box(5.26, 6.54, EY - 0.14, EY + 1.19, 0.0, 0.16, "stone_trim", skip=("bottom",))
+    # 기둥과 안내판 받침의 노출된 석재 모서리만 모따기한다.
+    if stage == 0:
+        KX.bevel_box(mb, 5.26, 6.54, EY - 0.14, EY + 1.19, 0.0, 0.16, "stone_trim", bevel=0.018)
+    else:
+        mb.box(5.26, 6.54, EY - 0.14, EY + 1.19, 0.0, 0.16, "stone_trim", skip=("bottom",))
     mb.box(5.30, 6.50, EY - 0.10, EY + 1.15, 0.16, ZS, "stone_trim", skip=("bottom", "top"))
     mb.box(5.40, 6.50, EY + 1.15, 0.0, EZ0, ZS,
            dict(left="pale", bottom="soffit", default="pale"), skip=("back", "top", "front", "right"))
@@ -1012,7 +1017,11 @@ def entrance(mb, stage):
            dict(right="pale", bottom="soffit", default="pale"), skip=("back", "top", "front", "left"))
 
     # Right corner pier: base plinth + front pink marble (smooth DONG plaque + split-face outer course) + rear dark granite
-    mb.box(11.56, 13.64, EY - 0.24, EY + 1.84, 0.0, 0.16, "stone_trim", skip=("bottom",))
+    # 기둥과 안내판 받침의 노출된 석재 모서리만 모따기한다.
+    if stage == 0:
+        KX.bevel_box(mb, 11.56, 13.64, EY - 0.24, EY + 1.84, 0.0, 0.16, "stone_trim", bevel=0.018)
+    else:
+        mb.box(11.56, 13.64, EY - 0.24, EY + 1.84, 0.0, 0.16, "stone_trim", skip=("bottom",))
     px_mid = 13.00
     mb.box(11.60, px_mid, EY - 0.20, EY + 0.30, 0.16, ZS,
            dict(left="stone_trim", default="pier_pink"), skip=("bottom", "top", "back", "front", "right"))
@@ -1073,7 +1082,8 @@ def entrance(mb, stage):
     mb.box(6.50, 11.60, -0.06, 0.0, zl, EZ0, dict(front="vestibule", default="stone_trim"),
            skip=("bottom", "top", "back", "left", "right"))
     mb.box(7.75, 9.55, -0.52, -0.06, zl, zl + 2.32,
-           dict(front="vestibule", left="vestibule", right="vestibule", default="stone_trim"),
+           dict(front="vestibule", left="stone_trim" if stage == 0 else "vestibule",
+                right="stone_trim" if stage == 0 else "vestibule", default="stone_trim"),
            skip=("bottom", "top", "back"))
     mb.box(7.65, 9.65, -0.56, -0.06, zl + 2.32, zl + 2.58, "stone_trim", skip=("back",))
     mb.box(9.85, 11.35, -0.22, -0.06, zl, zl + 2.45,

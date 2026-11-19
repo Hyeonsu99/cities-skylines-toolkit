@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "exllu_105_cs2.py",
- "generator_hash": "0eefb6e285d32a0804147f3d2f92839dbf05c41484ebc4d8fa57987beff3161c",
- "current_preview_hash": "21a565db0cd039e3b01e5dff41e76b411efa26d59438ae1848d1ef0b9ef6c8ed",
+ "generator_hash": "adcaa289e50308385473768a284afc2f43040778862af9a6aa4aaeca8331ee71",
+ "current_preview_hash": "48c7bc27c12292385ae936da0aa70f42b50d46818c5cbb169ffed20605d73085",
  "last_gate": {
   "status": "PASS",
   "project": "exllu-105",
@@ -29,8 +29,8 @@
    "report": "output\\HighriseTower105_L1_5x6\\_check\\report.json"
   },
   "asset": "HighriseTower105_L1_5x6",
-  "label": "p1p2",
-  "time": "2026-11-19 10:46:34",
+  "label": "xreview",
+  "time": "2026-11-19 15:40:39",
   "build": {
    "asset": "HighriseTower105_L1_5x6",
    "fbx": true,
@@ -52,7 +52,7 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 71438,
+     "main": 71494,
      "win": 2908,
      "lod1": 17860,
      "lod1_win": 2908,
@@ -60,7 +60,7 @@
      "lod2_win": 2908
     },
     "verts": {
-     "main": 142876,
+     "main": 143000,
      "win": 5816,
      "lod1": 35720,
      "lod1_win": 5816,
@@ -97,7 +97,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 4.5
+    "time_s": 2.4
    },
    "report": "output\\HighriseTower105_L1_5x6\\_check\\report.json"
   },
@@ -136,7 +136,7 @@
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 142876,
+    "LOD0": 143000,
     "LOD1": 35720,
     "LOD2": 784
    },
@@ -155,12 +155,12 @@
   "reason": "all requested checks passed"
  },
  "project": "exllu-105",
- "updated_at": "2026-11-19T10:47:09",
- "visual_review_note": "P1 polygon reallocation (92660->71438 tris), portico & rooftop details, stone gloss/rain stains, and P2 interior window depth verified visually",
+ "updated_at": "2026-11-19T15:42:06",
+ "visual_review_note": "교차검토(총괄): 출입구 베벨, final 재실행 PASS, 사진·타일 지표 전후 동일, 근접 렌더 확인",
  "visual_review_artifacts": [
   {
    "file": "previews/HighriseTower105_L1_5x6.png",
-   "sha256": "21a565db0cd039e3b01e5dff41e76b411efa26d59438ae1848d1ef0b9ef6c8ed"
+   "sha256": "48c7bc27c12292385ae936da0aa70f42b50d46818c5cbb169ffed20605d73085"
   },
   {
    "file": "previews/photo_check/facade_front.png",
@@ -171,5 +171,5 @@
    "sha256": "64e041c6e8076584fccbf581258b4f7f38221cd720d970147968186038d39a0b"
   }
  ],
- "reviewed_preview_hash": "21a565db0cd039e3b01e5dff41e76b411efa26d59438ae1848d1ef0b9ef6c8ed"
+ "reviewed_preview_hash": "48c7bc27c12292385ae936da0aa70f42b50d46818c5cbb169ffed20605d73085"
 }

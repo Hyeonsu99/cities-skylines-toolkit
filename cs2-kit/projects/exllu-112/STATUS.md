@@ -1,16 +1,16 @@
 # STATUS.md - agent handoff
 
 ## Current stage
-final:INCOMPLETE
+review:PASS
 
 ## Generator
 exllu_112_cs2.py
 
 ## Last verification
-INCOMPLETE
+PASS
 
 ## Next action
-python tools/agent.py review --project exllu-112 --status PASS --note "reviewed current artifacts" --artifact "previews/HighriseTower112_L1_5x4.png"
+all requested checks passed
 
 ## Notes
 Machine state: work/agent_state.json. Photo observations: work/observations.json.

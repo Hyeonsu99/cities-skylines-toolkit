@@ -22,6 +22,7 @@ def _find_kit():
 
 sys.path.insert(0, _find_kit())
 import cs2kit as K  # noqa: E402
+from local import kitext as KX
 
 
 @dataclass
@@ -1224,8 +1225,9 @@ def _add_framed_window(mb, wins, axis, c, s, a0, a1, z0, z1, unit_seq):
     """Keep glass at the wall while the jambs, sill and head project in front."""
     m = 0.06
     mw = 0.03
-    K.axbox(mb, axis, c, s, a0 - 0.10, a1 + 0.10, 0.0, 0.20, z0 - 0.07, z0, "trim_silver")
-    K.axbox(mb, axis, c, s, a0 - 0.09, a1 + 0.09, 0.0, 0.16, z1, z1 + m, "trim_silver")
+    # 뒤쪽 모따기는 벽에 묻고 창대와 인방의 노출 끝을 다듬는다.
+    KX.ax_bevel(mb, axis, c, s, a0 - 0.10, a1 + 0.10, -0.012, 0.20, z0 - 0.07, z0, "trim_silver", bevel=0.01)
+    KX.ax_bevel(mb, axis, c, s, a0 - 0.09, a1 + 0.09, -0.012, 0.16, z1, z1 + m, "trim_silver", bevel=0.01)
     K.axbox(mb, axis, c, s, a0 - m, a0, 0.0, 0.12, z0, z1, "frame")
     K.axbox(mb, axis, c, s, a1, a1 + m, 0.0, 0.12, z0, z1, "frame")
     bay_w = (a1 - a0) / len(unit_seq)
@@ -1300,7 +1302,11 @@ def _add_shutter(mb, stage, axis, c, s, center_a, w, h, z0=0.0, is_freight=True,
     if stage == 0:
         # Concrete threshold apron >= 0.05m (0.06m, plus steel track rail stubs for RailDepot)
         apron_d = 1.25 if is_track else 0.75
-        K.axbox(mb, axis, c, s, a0 - 0.35, a1 + 0.35, 0.0, apron_d, 0.0, 0.06, "plinth", skip=("bottom",))
+        # 노출 끝은 5 cm 이상 남기고 지면에 닿는 밑면은 생략한다.
+        outward = sorted((c - s * 0.012, c + s * apron_d))
+        along = (a0 - 0.35, a1 + 0.35)
+        xs, ys = (along, outward) if axis == "y" else (outward, along)
+        KX.bevel_box(mb, *xs, *ys, 0.0, 0.06, "plinth", bevel=0.008)
         if is_track:
             for rx in (center_a - 0.72, center_a + 0.72):
                 K.axbox(mb, axis, c, s, rx - 0.05, rx + 0.05, 0.0, apron_d - 0.05, 0.06, 0.12, "trim_silver", skip=("bottom",))

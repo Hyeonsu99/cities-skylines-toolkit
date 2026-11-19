@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "exllu_101_cs2.py",
- "generator_hash": "856d1808a9f313f539f140cfc7f3edb95fe4486c3d8a4395117c6bf9cd3897e0",
- "current_preview_hash": "e832d385b873fb4fc6316bd566a3e16f7346c570666a648567a8027093ec93c7",
+ "generator_hash": "777dce8e0bd5a869db7269f309bebb1dd4741f40bd75c70f331c2bfba6c3c542",
+ "current_preview_hash": "3847fba5d21fadffdb79b44036ccf63ad2a047eca8513dce50a376f612a3fe1d",
  "last_gate": {
   "status": "PASS",
   "project": "exllu-101",
@@ -29,8 +29,8 @@
    "report": "output\\HighriseTower101_L1_5x4\\_check\\report.json"
   },
   "asset": "HighriseTower101_L1_5x4",
-  "label": "p1p2",
-  "time": "2026-11-19 10:46:06",
+  "label": "xreview",
+  "time": "2026-11-19 15:39:44",
   "build": {
    "asset": "HighriseTower101_L1_5x4",
    "fbx": true,
@@ -52,7 +52,7 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 54968,
+     "main": 55052,
      "win": 1720,
      "lod1": 9628,
      "lod1_win": 1720,
@@ -60,7 +60,7 @@
      "lod2_win": 1720
     },
     "verts": {
-     "main": 110338,
+     "main": 110524,
      "win": 3440,
      "lod1": 19258,
      "lod1_win": 3440,
@@ -97,7 +97,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 2.1
+    "time_s": 1.3
    },
    "report": "output\\HighriseTower101_L1_5x4\\_check\\report.json"
   },
@@ -126,7 +126,7 @@
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 110338,
+    "LOD0": 110524,
     "LOD1": 19258,
     "LOD2": 916
    },
@@ -145,13 +145,13 @@
   "reason": "all requested checks passed"
  },
  "project": "exllu-101",
- "updated_at": "2026-11-19T10:46:21",
- "visual_review_note": "reviewed HighriseTower101_L1_5x4.png: clean mid-rise window frame simplification, enriched podium/entrance/roof details, stone gloss & drip weathering, 3D window interior depth",
+ "updated_at": "2026-11-19T15:42:01",
+ "visual_review_note": "교차검토(총괄): 출입구 석재 받침 18 mm 모따기(·102/103/110/111 전실 옆면 석재), main +56~84 tris, LOD 동일, final 재실행 PASS, 근접 렌더 확인",
  "visual_review_artifacts": [
   {
    "file": "previews/HighriseTower101_L1_5x4.png",
-   "sha256": "e832d385b873fb4fc6316bd566a3e16f7346c570666a648567a8027093ec93c7"
+   "sha256": "3847fba5d21fadffdb79b44036ccf63ad2a047eca8513dce50a376f612a3fe1d"
   }
  ],
- "reviewed_preview_hash": "e832d385b873fb4fc6316bd566a3e16f7346c570666a648567a8027093ec93c7"
+ "reviewed_preview_hash": "3847fba5d21fadffdb79b44036ccf63ad2a047eca8513dce50a376f612a3fe1d"
 }
