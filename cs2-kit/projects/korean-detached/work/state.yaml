@@ -1,0 +1,105 @@
+{
+ "version": 1,
+ "project": "korean-detached",
+ "stages": {
+  "mass": {
+   "at": "2026-11-19T16:06:21",
+   "mode": "quick",
+   "status": "PASS",
+   "label": "mass",
+   "gate": "output/SintanjinHouse01_L1_2x3/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "519ff8b881b278b0a0c252b6295b5c74322d902a51ad3cfdd55e5638b899c3a6",
+   "preview": null,
+   "fbx": null
+  },
+  "facade": {
+   "at": "2026-11-19T16:06:35",
+   "mode": "visual",
+   "status": "INCOMPLETE",
+   "label": "facade",
+   "gate": "output/SintanjinHouse01_L1_2x3/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "519ff8b881b278b0a0c252b6295b5c74322d902a51ad3cfdd55e5638b899c3a6",
+   "preview": {
+    "path": "previews/SintanjinHouse01_L1_2x3.png",
+    "exists": true,
+    "sha256": "be875cb81796e64801956205c1d7bca411afc37fe933295dcd840275b717ffb3",
+    "key": null
+   },
+   "fbx": null
+  },
+  "polish": {
+   "at": "2026-11-19T16:10:02",
+   "mode": "quick",
+   "status": "PASS",
+   "label": "polish",
+   "gate": "output/SintanjinHouse01_L1_2x3/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "519ff8b881b278b0a0c252b6295b5c74322d902a51ad3cfdd55e5638b899c3a6",
+   "preview": null,
+   "fbx": null
+  },
+  "final": {
+   "at": "2026-11-19T16:15:56",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "",
+   "gate": "output/SintanjinHouse01_L1_2x3/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "519ff8b881b278b0a0c252b6295b5c74322d902a51ad3cfdd55e5638b899c3a6",
+   "preview": {
+    "path": "previews/SintanjinHouse01_L1_2x3.png",
+    "exists": true,
+    "sha256": "991ecb79a547442024db2116aae442313a7e3d4112f2820c7fb27e936b906cd8",
+    "key": null
+   },
+   "fbx": null
+  }
+ },
+ "updated_at": "2026-11-19T16:15:56",
+ "current_stage": "final:INCOMPLETE",
+ "generator": "sintanjin_house_01_cs2.py",
+ "generator_hash": "519ff8b881b278b0a0c252b6295b5c74322d902a51ad3cfdd55e5638b899c3a6",
+ "visual_review": "NOT_CHECKED",
+ "reviewed_preview_hash": "8501b5577d2ac5ebf364168e12cf142424d644b0dfb33c96680f7c3a885aef7b",
+ "last_gate": {
+  "mode": "final",
+  "status": "INCOMPLETE",
+  "path": "output/SintanjinHouse01_L1_2x3/_check/gate.json"
+ }
+}

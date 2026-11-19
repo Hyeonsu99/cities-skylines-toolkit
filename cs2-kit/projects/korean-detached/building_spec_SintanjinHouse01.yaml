@@ -1,0 +1,32 @@
+name: SintanjinHouse01
+lot: {width: 2, depth: 3}  # estimated; 게임 저밀도 주거 구역 등록 기준
+dimensions:
+  width_m: 13.06  # 1층 본체 13.0 m + 기단/두겁 돌출 포함
+  depth_m: 13.63  # 1층 본체 9.2 m + 뒷마당 담장 4.4 m
+  height_m: 7.66  # 기단 0.62 + 1층 2.94 + 2층 2.70 + 처마 0.24 + 모임지붕 1.12 + 용마루
+floors: 2
+style: sintanjin_2000s_detached_brown_brick_terrace
+zone: ResidentialLow  # candidate
+signature: false
+archetype: front_terrace
+seed: 1
+evidence:
+  brief: STYLE_BRIEF.md
+  sources: work/roadview_extra/SOURCES.md
+  notes: shape_notes.md
+  primary_photos:
+    - work/roadview_extra/user_ref_detached_brown_brick.png
+    - work/roadview_extra/h07_front.png
+    - work/roadview_extra/h07_det_terrace.png
+    - work/roadview_extra/h07_det_roof.png
+    - work/roadview_extra/h08_front.png
+    - work/roadview_extra/h12_det_roof.png
+estimated:
+  - 1층 전체 폭 13.0 m, 깊이 9.2 m, 뒷마당 담장 4.4 m (2x3 로트 정합) # estimated
+  - 2층 본체 8.5x8.0 m 후퇴, 좌측 옥상 테라스 4.5x9.2 m # estimated
+  - 처마 돌출 0.46 m, 모임지붕 경사 약 16~18도(용마루 높이 1.12 m) # estimated
+  - 테라스 난간 살 간격 0.16 m, 폴리카보네이트 차양 아치 높이 0.20 m # estimated
+  - 도로명 건물번호판 '한밭길 14' (규칙 20 가상 도로명) # estimated
+photo_mismatch_notes:
+  - 신탄진형 T2 대표 합성 에셋(user_ref_detached_brown_brick.png 주 기준 + h07/h08/h12 모임지붕·처마·테라스 보강)이며 단일 번지 복제가 아니므로 photo_refs 자동 픽셀 매칭은 NOT_APPLICABLE.
+  - 실제 골목 도로 경사(user_ref 좌측 0.70 m -> 우측 0.25 m)는 CS2 평지 로트 제약으로 평탄화하고 대표 기단 높이 0.62 m로 통일.

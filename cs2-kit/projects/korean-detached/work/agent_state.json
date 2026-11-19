@@ -1,0 +1,157 @@
+{
+ "visual_review": "PASS",
+ "current_stage": "review:PASS",
+ "generator": "sintanjin_house_01_cs2.py",
+ "generator_hash": "519ff8b881b278b0a0c252b6295b5c74322d902a51ad3cfdd55e5638b899c3a6",
+ "current_preview_hash": "991ecb79a547442024db2116aae442313a7e3d4112f2820c7fb27e936b906cd8",
+ "last_gate": {
+  "status": "PASS",
+  "project": "korean-detached",
+  "generator": "sintanjin_house_01_cs2.py",
+  "mode": "final",
+  "checks": {
+   "build": "PASS",
+   "geometry": "PASS",
+   "preview": "PASS",
+   "photo": "NOT_APPLICABLE",
+   "tiles": "NOT_APPLICABLE",
+   "lod": "PASS",
+   "fbx": "PASS",
+   "visual_review": "PASS"
+  },
+  "errors": [],
+  "next_action": {
+   "command": null,
+   "reason": "no fix needed"
+  },
+  "artifacts": {
+   "preview": "previews\\SintanjinHouse01_L1_2x3.png",
+   "report": "output\\SintanjinHouse01_L1_2x3\\_check\\report.json"
+  },
+  "asset": "SintanjinHouse01_L1_2x3",
+  "label": "",
+  "time": "2026-11-19 16:15:56",
+  "build": {
+   "asset": "SintanjinHouse01_L1_2x3",
+   "fbx": true,
+   "warnings": []
+  },
+  "check": {
+   "errors": [],
+   "warnings": [],
+   "info": {
+    "size": [
+     13.61,
+     13.86,
+     7.73
+    ],
+    "pivot_offset": [
+     0.0,
+     0.0
+    ],
+    "zmin": 0.0,
+    "coords": "generator coordinates (before pivot move)",
+    "tris": {
+     "main": 12022,
+     "win": 78,
+     "lod1": 4040,
+     "lod1_win": 78,
+     "lod2": 152,
+     "lod2_win": 78
+    },
+    "verts": {
+     "main": 24338,
+     "win": 156,
+     "lod1": 8134,
+     "lod1_win": 156,
+     "lod2": 306,
+     "lod2_win": 156
+    },
+    "coplanar": {
+     "main": 0,
+     "lod1": 0,
+     "lod2": 0,
+     "win": 0
+    },
+    "textures": {
+     "BaseColor": "2048x2048 RGBA",
+     "ControlMask": "2048x2048 RGBA",
+     "MaskMap": "2048x2048 RGBA",
+     "Normal": "2048x2048 RGB",
+     "Emissive": "2048x2048 RGB",
+     "LOD2_BaseColor": "512x512 RGBA",
+     "LOD2_ControlMask": "512x512 RGBA",
+     "LOD2_MaskMap": "512x512 RGBA",
+     "LOD2_Normal": "512x512 RGB",
+     "LOD2_Emissive": "512x512 RGB"
+    },
+    "texel_px_per_m": {
+     "p10": 106.3,
+     "median": 217.5,
+     "p90": 217.5
+    },
+    "windows": 39,
+    "win_dropped": 0,
+    "win_blocked": {
+     "win": 0,
+     "lod1_win": 0,
+     "lod2_win": 0
+    },
+    "time_s": 0.2
+   },
+   "report": "output\\SintanjinHouse01_L1_2x3\\_check\\report.json"
+  },
+  "photo": {
+   "checked": false,
+   "mismatch": null,
+   "lines": [],
+   "status": "NOT_APPLICABLE"
+  },
+  "tiles": {
+   "checked": false,
+   "status": "NOT_APPLICABLE",
+   "simplified": [],
+   "detail": [],
+   "detail_color": [],
+   "color_off": [],
+   "tiles_off": 0,
+   "tiles_total": 0
+  },
+  "lod": {
+   "checked": true,
+   "status": "PASS",
+   "line": "LODCHECK PASS main max 0.012% (az 292, el +5) bad_views 0/64 | lod1 max 0.008% (az 112, el +25) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\SintanjinHouse01_L1_2x3",
+   "notes": []
+  },
+  "agent": {
+   "status": "PASS",
+   "verts": {
+    "LOD0": 24338,
+    "LOD1": 8134,
+    "LOD2": 306
+   },
+   "action_tags": [],
+   "exact_fix_instruction": "no fix needed"
+  },
+  "gate": {
+   "status": "PASS",
+   "reasons": [],
+   "incomplete": []
+  }
+ },
+ "mismatch_attempts": {},
+ "next_action": {
+  "command": null,
+  "reason": "all requested checks passed"
+ },
+ "project": "korean-detached",
+ "updated_at": "2026-11-19T16:29:16",
+ "visual_review_note": "01 approved after close-up and reference comparison; coplanar zero.",
+ "visual_review_artifacts": [
+  {
+   "file": "previews/SintanjinHouse01_L1_2x3.png",
+   "sha256": "991ecb79a547442024db2116aae442313a7e3d4112f2820c7fb27e936b906cd8"
+  }
+ ],
+ "reviewed_preview_hash": "991ecb79a547442024db2116aae442313a7e3d4112f2820c7fb27e936b906cd8"
+}
