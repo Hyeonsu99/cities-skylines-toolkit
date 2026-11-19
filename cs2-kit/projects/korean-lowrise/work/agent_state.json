@@ -1,11 +1,11 @@
 {
- "visual_review": "NOT_CHECKED",
- "current_stage": "final:INCOMPLETE",
+ "visual_review": "PASS",
+ "current_stage": "review:PASS",
  "generator": "house_80s_cs2.py",
  "generator_hash": "18a9e9f213f8a0a6579d3343fea340978d6cab138c02d6d9a1a80db95260bd10",
- "current_preview_hash": "40a8b8f11a13ed2818e49cf32c7ed509f8614d3429e7adf7d10ff64ca29e5228",
+ "current_preview_hash": "812cda9fb504af36620e72b4167b2deb489be7452b9cffec885f1f0df60cd61e",
  "last_gate": {
-  "status": "INCOMPLETE",
+  "status": "PASS",
   "project": "korean-lowrise",
   "generator": "house_80s_cs2.py",
   "mode": "final",
@@ -17,7 +17,7 @@
    "tiles": "NOT_APPLICABLE",
    "lod": "PASS",
    "fbx": "PASS",
-   "visual_review": "NOT_CHECKED"
+   "visual_review": "PASS"
   },
   "errors": [],
   "next_action": {
@@ -29,8 +29,8 @@
    "report": "output\\KoreanHouseA80s01_L1_2x2\\_check\\report.json"
   },
   "asset": "KoreanHouseA80s01_L1_2x2",
-  "label": "sign-font",
-  "time": "2026-11-19 14:12:11",
+  "label": "weather-band-fix",
+  "time": "2026-11-19 14:22:21",
   "build": {
    "asset": "KoreanHouseA80s01_L1_2x2",
    "fbx": true,
@@ -54,17 +54,17 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 9616,
+     "main": 9696,
      "win": 48,
-     "lod1": 1948,
+     "lod1": 2020,
      "lod1_win": 48,
      "lod2": 362,
      "lod2_win": 48
     },
     "verts": {
-     "main": 20274,
+     "main": 20434,
      "win": 96,
-     "lod1": 3912,
+     "lod1": 4056,
      "lod1_win": 96,
      "lod2": 736,
      "lod2_win": 96
@@ -99,7 +99,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 0.2
+    "time_s": 0.3
    },
    "report": "output\\KoreanHouseA80s01_L1_2x2\\_check\\report.json"
   },
@@ -128,8 +128,8 @@
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 20274,
-    "LOD1": 3912,
+    "LOD0": 20434,
+    "LOD1": 4056,
     "LOD2": 736
    },
    "action_tags": [],
@@ -138,24 +138,22 @@
   "gate": {
    "status": "PASS",
    "reasons": [],
-   "incomplete": [
-    "visual_review=NOT_CHECKED"
-   ]
+   "incomplete": []
   }
  },
  "mismatch_attempts": {},
  "next_action": {
-  "command": "python tools/agent.py review --project korean-lowrise --status PASS --note \"reviewed current artifacts\" --artifact \"previews/KoreanHouseA80s01_L1_2x2.png\"",
-  "reason": "inspect the listed current artifacts, then record the review"
+  "command": null,
+  "reason": "all requested checks passed"
  },
  "project": "korean-lowrise",
- "updated_at": "2026-11-19T14:12:11",
- "visual_review_note": "fix: 간판 글꼴 휴먼둥근헤드라인(입체 그림자)·휴먼매직체·HY견고딕, 돌출 간판 담배 띠. 메시 변화 0, 텍스처 변경은 간판 칸 안만, 근접 렌더 확인",
+ "updated_at": "2026-11-19T14:22:21",
+ "visual_review_note": "같은 오염 띠 수정으로 재빌드, 미리보기 확인",
  "visual_review_artifacts": [
   {
-   "file": "previews/KoreanHouseA90s01_L1_2x2.png",
-   "sha256": "7d5bd89cfa1c065c6eed1429d25293533ea7eda69ad019b35d643b3b42ab1127"
+   "file": "previews/KoreanHouseA80s01_L1_2x2.png",
+   "sha256": "812cda9fb504af36620e72b4167b2deb489be7452b9cffec885f1f0df60cd61e"
   }
  ],
- "reviewed_preview_hash": "7d5bd89cfa1c065c6eed1429d25293533ea7eda69ad019b35d643b3b42ab1127"
+ "reviewed_preview_hash": "812cda9fb504af36620e72b4167b2deb489be7452b9cffec885f1f0df60cd61e"
 }

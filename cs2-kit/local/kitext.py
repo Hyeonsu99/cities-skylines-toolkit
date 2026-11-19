@@ -71,7 +71,7 @@ def add_grime_cells(atlas, color=(66, 62, 54), seed=0, px=128):
                   painter=_grime_painter(mode, seed))
 
 
-def grime_band(mb, axis, c, s, a0, a1, z0, z1, mode="bot", blocked=(), layer=2, variant=0, end_trim=0.02):
+def grime_band(mb, axis, c, s, a0, a1, z0, z1, mode="bot", blocked=(), layer=2, variant=0, end_trim=0.02, seg=1.2):
     """벽 앞 오염 띠. blocked = [(a0, a1), ...] 개구부·부착물 구간은 비운다. 끝은 모서리에서 end_trim 만큼 줄인다."""
     spans = [(a0 + end_trim, a1 - end_trim)]
     for b0, b1 in blocked:
@@ -85,10 +85,17 @@ def grime_band(mb, axis, c, s, a0, a1, z0, z1, mode="bot", blocked=(), layer=2, 
             if b1 < s1 - 0.08:
                 nxt.append((b1, s1))
         spans = nxt
-    uv = mb.atlas.uv_full(f"kx_grime_{mode}", variant=variant)
+    # 칸 하나를 긴 띠에 늘이면 무늬가 가로로 늘어나 줄처럼 보인다 -> seg(약 1.2 m) 조각, 변형 번갈아
+    k = 0
     for s0, s1 in spans:
-        if s1 - s0 > 0.12:
-            mb.quad(K.face_pts(axis, c + s * K.PAINT_OFF * layer, s, s0, s1, z0, z1), uv, f"kx_grime_{mode}")
+        if s1 - s0 <= 0.12:
+            continue
+        n = max(1, round((s1 - s0) / seg))
+        for i in range(n):
+            a0, a1 = s0 + (s1 - s0) * i / n, s0 + (s1 - s0) * (i + 1) / n
+            mb.quad(K.face_pts(axis, c + s * K.PAINT_OFF * layer, s, a0, a1, z0, z1),
+                    mb.atlas.uv_full(f"kx_grime_{mode}", variant=variant + k), f"kx_grime_{mode}")
+            k += 1
 
 
 def under_shadow(mb, axis, c, s, a0, a1, z_top, depth=0.35, layer=2, variant=1):

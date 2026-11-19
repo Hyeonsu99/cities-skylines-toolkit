@@ -498,7 +498,7 @@
    "fbx": null
   },
   "fix": {
-   "at": "2026-11-19T14:11:38",
+   "at": "2026-11-19T14:21:40",
    "mode": "final",
    "status": "INCOMPLETE",
    "label": "fix",
@@ -517,7 +517,7 @@
    "preview": {
     "path": "previews/KoreanHouseA90s01_L1_2x2.png",
     "exists": true,
-    "sha256": "7d5bd89cfa1c065c6eed1429d25293533ea7eda69ad019b35d643b3b42ab1127",
+    "sha256": "55aaffa2b0a09ab2e8f78a048afd2e78974bab287bbdd5504d14ad7e81424920",
     "key": null
    },
    "fbx": null
@@ -546,14 +546,64 @@
     "key": null
    },
    "fbx": null
+  },
+  "pre-band-fix": {
+   "at": "2026-11-19T14:20:09",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "pre-band-fix",
+   "gate": "output/KoreanHouseA90s01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "ca3e32a7503004bb1805d517752a48b06a60f13e17fbcc02eb897c4d9cfb2329",
+   "preview": {
+    "path": "previews/KoreanHouseA90s01_L1_2x2.png",
+    "exists": true,
+    "sha256": "f975a181baa594e3562542b01293039224c122fb5dc5b9e4c80368baa58931f8",
+    "key": null
+   },
+   "fbx": null
+  },
+  "weather-band-fix": {
+   "at": "2026-11-19T14:22:21",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "weather-band-fix",
+   "gate": "output/KoreanHouseA80s01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "18a9e9f213f8a0a6579d3343fea340978d6cab138c02d6d9a1a80db95260bd10",
+   "preview": {
+    "path": "previews/KoreanHouseA80s01_L1_2x2.png",
+    "exists": true,
+    "sha256": "812cda9fb504af36620e72b4167b2deb489be7452b9cffec885f1f0df60cd61e",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-19T14:12:11",
+ "updated_at": "2026-11-19T14:22:21",
  "current_stage": "final:INCOMPLETE",
  "generator": "house_80s_cs2.py",
  "generator_hash": "18a9e9f213f8a0a6579d3343fea340978d6cab138c02d6d9a1a80db95260bd10",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "7d5bd89cfa1c065c6eed1429d25293533ea7eda69ad019b35d643b3b42ab1127",
+ "reviewed_preview_hash": "55aaffa2b0a09ab2e8f78a048afd2e78974bab287bbdd5504d14ad7e81424920",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",

@@ -195,7 +195,7 @@ def streak(ctx):
     rng = np.random.default_rng(35)
     ncol = max(8, ctx.w // 3)                              # 약 3 px 폭 줄
     col = np.minimum((ctx.u * ncol).astype(int), ncol - 1)
-    length = rng.uniform(0.18, 1.0, ncol) ** 1.6 * (rng.random(ncol) < 0.5)
+    length = rng.uniform(0.18, 1.0, ncol) ** 1.6 * (rng.random(ncol) < 0.35)
     thin = ((ctx.u * ncol) % 1.0) < 0.55
     down = 1.0 - ctx.v                                     # 위 0 -> 아래 1
     n = ctx.noise(scale_px=5, amp=1.0, octaves=2, seed=36)
@@ -218,9 +218,14 @@ def _make_weather_band_painter(mode, seed):
             stripes = 0.5 + 0.5 * np.sin(ctx.u * 41.0 + seed)
             mask = (density * 0.72 + 0.14 * stripes + 0.22 * n1 + 0.16 * n2) > 0.62
         else:
-            col_n = ctx.noise(scale_px=5, amp=1.0, octaves=2, seed=401 + seed * 5).mean(axis=0, keepdims=True)
-            density = np.clip((ctx.v - 0.10) / 0.90, 0.0, 1.0)
-            mask = (density * 0.70 + 0.24 * col_n + 0.20 * n1 + 0.15 * n2) > 0.62
+            # 파라펫·처마 아래 빗물 자국: 바로 아래 얼룩 + 길이가 제각각인 가는 세로 줄 (가로 줄은 전선처럼 보임)
+            rng = np.random.default_rng(401 + seed * 5)
+            ncol = max(8, ctx.w // 3)
+            col = np.minimum((ctx.u * ncol).astype(int), ncol - 1)
+            length = rng.uniform(0.15, 0.95, ncol) ** 1.4 * (rng.random(ncol) < 0.45)
+            thin = ((ctx.u * ncol) % 1.0) < 0.5
+            down = 1.0 - ctx.v
+            mask = (thin & (down < length[col] + 0.05 * n2)) | (down < 0.10 + 0.05 * n1)
         ctx.alpha[...] = np.where(mask, 255, 0)
         ctx.rgb[...] = base_col * (0.88 + 0.14 * n1[..., None] + 0.08 * n2[..., None])
         ctx.height[...] = 0.06 * n2
@@ -524,8 +529,8 @@ def atlas(spec):
     a.add("orange", color=(154, 109, 86), px=128, tile=(2, 2), gloss=0.46, painter=corrugated)
     a.add("shutter", color=(134, 139, 132), ctrl=(0, 0, 255), px=256, gloss=0.43, painter=louver)
     a.add("equipment_face", color=(169, 177, 168), px=128, gloss=0.43, painter=louver)
-    a.add("drip", color=(88, 84, 70), px=256, gloss=0.17, painter=streak)
-    a.add("rust", color=(122, 76, 48), px=256, gloss=0.17, painter=streak)
+    a.add("drip", color=(98, 94, 82), px=256, gloss=0.17, painter=streak)
+    a.add("rust", color=(128, 102, 76), px=256, gloss=0.17, painter=streak)
     a.add("weather_bot", color=(78, 73, 62), px=128, variants=2, gloss=0.15,
           painter=_make_weather_band_painter("bot", sv))
     a.add("weather_top", color=(72, 69, 60), px=128, variants=2, gloss=0.16,
@@ -592,10 +597,17 @@ def _paint_band_clipped(mb, axis, c, side, lo, hi, z0, z1, region, blocked_spans
                 if b1 < s1 - 0.08:
                     nxt.append((b1, s1))
         spans = nxt
-    uv = mb.atlas.uv_full(region, variant=variant)
+    # 칸 하나를 벽 전체 폭에 늘이면 무늬가 가로로 수십 배 늘어나 줄(전선)처럼 보인다 -> 약 1.2 m 조각, 변형 번갈아
+    k = 0
     for s0, s1 in spans:
-        if s1 - s0 > 0.12:
-            mb.quad(K.face_pts(axis, c + side * K.PAINT_OFF * layer, side, s0, s1, z0, z1), uv, region)
+        if s1 - s0 <= 0.12:
+            continue
+        n = max(1, round((s1 - s0) / 1.2))
+        for i in range(n):
+            a0, a1 = s0 + (s1 - s0) * i / n, s0 + (s1 - s0) * (i + 1) / n
+            mb.quad(K.face_pts(axis, c + side * K.PAINT_OFF * layer, side, a0, a1, z0, z1),
+                    mb.atlas.uv_full(region, variant=variant + k), region)
+            k += 1
 
 
 def facade(mb, wins, spec, axis, c, side, stage, lo=None, hi=None):
