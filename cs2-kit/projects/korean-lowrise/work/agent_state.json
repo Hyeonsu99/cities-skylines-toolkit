@@ -1,13 +1,13 @@
 {
  "visual_review": "PASS",
  "current_stage": "review:PASS",
- "generator": "house_80s_cs2.py",
- "generator_hash": "18a9e9f213f8a0a6579d3343fea340978d6cab138c02d6d9a1a80db95260bd10",
- "current_preview_hash": "812cda9fb504af36620e72b4167b2deb489be7452b9cffec885f1f0df60cd61e",
+ "generator": "house_90s_cs2.py",
+ "generator_hash": "ca3e32a7503004bb1805d517752a48b06a60f13e17fbcc02eb897c4d9cfb2329",
+ "current_preview_hash": "4f10d4a3f091050da28b61e117aa321759cf1ac283d1da3afa211740b1b63ecc",
  "last_gate": {
   "status": "PASS",
   "project": "korean-lowrise",
-  "generator": "house_80s_cs2.py",
+  "generator": "house_90s_cs2.py",
   "mode": "final",
   "checks": {
    "build": "PASS",
@@ -25,27 +25,25 @@
    "reason": "no fix needed"
   },
   "artifacts": {
-   "preview": "previews\\KoreanHouseA80s01_L1_2x2.png",
-   "report": "output\\KoreanHouseA80s01_L1_2x2\\_check\\report.json"
+   "preview": "previews\\KoreanHouseA90s01_L1_2x2.png",
+   "report": "output\\KoreanHouseA90s01_L1_2x2\\_check\\report.json"
   },
-  "asset": "KoreanHouseA80s01_L1_2x2",
-  "label": "weather-band-fix",
-  "time": "2026-11-19 14:22:21",
+  "asset": "KoreanHouseA90s01_L1_2x2",
+  "label": "no-grime-band",
+  "time": "2026-11-19 14:33:36",
   "build": {
-   "asset": "KoreanHouseA80s01_L1_2x2",
+   "asset": "KoreanHouseA90s01_L1_2x2",
    "fbx": true,
    "warnings": []
   },
   "check": {
    "errors": [],
-   "warnings": [
-    "2 windows have no wall within 1 m behind (flipped or floating?)"
-   ],
+   "warnings": [],
    "info": {
     "size": [
-     12.46,
-     13.3,
-     9.35
+     13.66,
+     12.7,
+     9.55
     ],
     "pivot_offset": [
      0.0,
@@ -54,19 +52,19 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 9696,
+     "main": 10794,
      "win": 48,
-     "lod1": 2020,
+     "lod1": 1730,
      "lod1_win": 48,
-     "lod2": 362,
+     "lod2": 316,
      "lod2_win": 48
     },
     "verts": {
-     "main": 20434,
+     "main": 22848,
      "win": 96,
-     "lod1": 4056,
+     "lod1": 3482,
      "lod1_win": 96,
-     "lod2": 736,
+     "lod2": 640,
      "lod2_win": 96
     },
     "coplanar": {
@@ -88,9 +86,9 @@
      "LOD2_Emissive": "512x512 RGB"
     },
     "texel_px_per_m": {
-     "p10": 63.5,
-     "median": 212.9,
-     "p90": 212.9
+     "p10": 106.2,
+     "median": 319.4,
+     "p90": 319.4
     },
     "windows": 24,
     "win_dropped": 0,
@@ -99,9 +97,9 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 0.3
+    "time_s": 0.2
    },
-   "report": "output\\KoreanHouseA80s01_L1_2x2\\_check\\report.json"
+   "report": "output\\KoreanHouseA90s01_L1_2x2\\_check\\report.json"
   },
   "photo": {
    "checked": false,
@@ -122,15 +120,18 @@
   "lod": {
    "checked": true,
    "status": "PASS",
-   "line": "LODCHECK PASS main max 0.025% (az 202, el +5) bad_views 0/64 | lod1 max 0.011% (az 248, el +50) bad_views 0/64 | lod2 max 0.008% (az 248, el +25) bad_views 0/64  -> previews\\lod_check\\KoreanHouseA80s01_L1_2x2",
-   "notes": []
+   "line": "LODCHECK PASS main max 0.031% (az 292, el +5) bad_views 0/64 | lod1 max 0.001% (az 292, el +25) bad_views 0/64 | lod2 max 0.007% (az 158, el +50) bad_views 0/64 marginal=1  -> previews\\lod_check\\KoreanHouseA90s01_L1_2x2",
+   "notes": [
+    "LOD margin is close to the 0.05% limit",
+    "LOD margin is close to the 0.05% limit"
+   ]
   },
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 20434,
-    "LOD1": 4056,
-    "LOD2": 736
+    "LOD0": 22848,
+    "LOD1": 3482,
+    "LOD2": 640
    },
    "action_tags": [],
    "exact_fix_instruction": "no fix needed"
@@ -147,13 +148,13 @@
   "reason": "all requested checks passed"
  },
  "project": "korean-lowrise",
- "updated_at": "2026-11-19T14:22:21",
- "visual_review_note": "같은 오염 띠 수정으로 재빌드, 미리보기 확인",
+ "updated_at": "2026-11-19T14:33:44",
+ "visual_review_note": "오염 띠(벽 하단·발코니 그늘) 제거, 빗물 자국 유지 확인",
  "visual_review_artifacts": [
   {
-   "file": "previews/KoreanHouseA80s01_L1_2x2.png",
-   "sha256": "812cda9fb504af36620e72b4167b2deb489be7452b9cffec885f1f0df60cd61e"
+   "file": "previews/KoreanHouseA90s01_L1_2x2.png",
+   "sha256": "4f10d4a3f091050da28b61e117aa321759cf1ac283d1da3afa211740b1b63ecc"
   }
  ],
- "reviewed_preview_hash": "812cda9fb504af36620e72b4167b2deb489be7452b9cffec885f1f0df60cd61e"
+ "reviewed_preview_hash": "4f10d4a3f091050da28b61e117aa321759cf1ac283d1da3afa211740b1b63ecc"
 }

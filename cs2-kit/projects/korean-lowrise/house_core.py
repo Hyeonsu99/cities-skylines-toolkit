@@ -531,15 +531,12 @@ def atlas(spec):
     a.add("equipment_face", color=(169, 177, 168), px=128, gloss=0.43, painter=louver)
     a.add("drip", color=(98, 94, 82), px=256, gloss=0.17, painter=streak)
     a.add("rust", color=(128, 102, 76), px=256, gloss=0.17, painter=streak)
-    a.add("weather_bot", color=(78, 73, 62), px=128, variants=2, gloss=0.15,
-          painter=_make_weather_band_painter("bot", sv))
     a.add("weather_top", color=(72, 69, 60), px=128, variants=2, gloss=0.16,
           painter=_make_weather_band_painter("top", sv))
     a.add("address", px=256, gloss=0.46, painter=address)
     a.add("sign", px=256, variants=4, gloss=0.58, emissive=(255, 244, 222), painter=sign)   # 1024x256 칸 통째로
     # 콘크리트 차양·코핑·계단 등은 1 m 넘는 면이 많아 실제 크기 타일 재질로 (단색 칸은 면 크기와 무관하게 늘어남)
     a.add("cement", color=(163, 166, 158), px=256, tile=(2.4, 2.4), gloss=0.24, painter=KX.stone_trim(sv))
-    KX.add_grime_cells(a, seed=sv)
     for name, color, px in [("frame", {"70s": (157, 145, 118), "80s": (180, 184, 179), "90s": (215, 217, 207)}[spec.era], 128),
                             ("steel", (31, 39, 38), 128),
                             ("door", (89, 75, 60), 128),
@@ -693,11 +690,7 @@ def facade(mb, wins, spec, axis, c, side, stage, lo=None, hi=None):
         K.paint(mb, axis, c, side, plo, phi, spec.floor_h-0.42, spec.floor_h-0.12, "pattern")
     if stage < 2:
         face_v = (1 if side > 0 else 0)
-        bot_blocked = [(h[0] - 0.10, h[1] + 0.10) for h in holes if h[2] < 0.78]
-        if axis == "y" and side == -1 and spec.stairs:
-            pass
-        _paint_band_clipped(mb, axis, c, side, plo, phi, 0.16, 0.75, "weather_bot",
-                            bot_blocked, layer=2, variant=face_v)
+        # 벽 하단 오염 띠는 사용자 요청으로 뺌 (빗물 자국만 유지, 2026-11-19)
         top_blocked = []
         if axis == "y" and side == -1 and spec.balcony == "enclosed":
             bw = spec.width * 0.34 + 0.05
@@ -1244,8 +1237,6 @@ def build_stage(spec, a, stage):
         fh = spec.floor_h
         if spec.balcony != "enclosed" or stage < 2:
             mb.box(-bw, bw, -0.95, -0.001, fh - 0.14, fh, "cement")
-            if stage == 0:
-                KX.under_shadow(mb, "y", 0, -1, -bw, bw, fh - 0.19, depth=0.40, layer=3)
             if stage < 2:
                 # 발코니 슬래브 하부 턱/물끊기
                 mb.box(-bw, bw, -0.96, -0.87, fh - 0.19, fh - 0.14, "cement", skip=("top",))

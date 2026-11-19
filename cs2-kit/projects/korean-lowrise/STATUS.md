@@ -4,7 +4,7 @@
 review:PASS
 
 ## Generator
-house_80s_cs2.py
+house_90s_cs2.py
 
 ## Last verification
 PASS

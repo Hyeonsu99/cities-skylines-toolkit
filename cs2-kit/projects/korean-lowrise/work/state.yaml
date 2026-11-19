@@ -498,7 +498,7 @@
    "fbx": null
   },
   "fix": {
-   "at": "2026-11-19T14:21:40",
+   "at": "2026-11-19T14:32:56",
    "mode": "final",
    "status": "INCOMPLETE",
    "label": "fix",
@@ -517,7 +517,7 @@
    "preview": {
     "path": "previews/KoreanHouseA90s01_L1_2x2.png",
     "exists": true,
-    "sha256": "55aaffa2b0a09ab2e8f78a048afd2e78974bab287bbdd5504d14ad7e81424920",
+    "sha256": "1e2a951418b5c4d3605684c39e423ca4b62df66c039c3d2a8e185bfb51191376",
     "key": null
    },
    "fbx": null
@@ -596,17 +596,42 @@
     "key": null
    },
    "fbx": null
+  },
+  "no-grime-band": {
+   "at": "2026-11-19T14:33:37",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "no-grime-band",
+   "gate": "output/KoreanHouseA90s01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "ca3e32a7503004bb1805d517752a48b06a60f13e17fbcc02eb897c4d9cfb2329",
+   "preview": {
+    "path": "previews/KoreanHouseA90s01_L1_2x2.png",
+    "exists": true,
+    "sha256": "4f10d4a3f091050da28b61e117aa321759cf1ac283d1da3afa211740b1b63ecc",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-19T14:22:21",
+ "updated_at": "2026-11-19T14:33:37",
  "current_stage": "final:INCOMPLETE",
- "generator": "house_80s_cs2.py",
- "generator_hash": "18a9e9f213f8a0a6579d3343fea340978d6cab138c02d6d9a1a80db95260bd10",
+ "generator": "house_90s_cs2.py",
+ "generator_hash": "ca3e32a7503004bb1805d517752a48b06a60f13e17fbcc02eb897c4d9cfb2329",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "55aaffa2b0a09ab2e8f78a048afd2e78974bab287bbdd5504d14ad7e81424920",
+ "reviewed_preview_hash": "812cda9fb504af36620e72b4167b2deb489be7452b9cffec885f1f0df60cd61e",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",
-  "path": "output/KoreanHouseA80s01_L1_2x2/_check/gate.json"
+  "path": "output/KoreanHouseA90s01_L1_2x2/_check/gate.json"
  }
 }
