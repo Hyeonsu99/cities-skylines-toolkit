@@ -3,7 +3,7 @@
  "current_stage": "review:PASS",
  "generator": "house_80s_cs2.py",
  "generator_hash": "18a9e9f213f8a0a6579d3343fea340978d6cab138c02d6d9a1a80db95260bd10",
- "current_preview_hash": "9af00f8dc953b553a44917c5b320885140f524207c4fe52ba258b59fdc513995",
+ "current_preview_hash": "d53afe6db351a106dff529bc9c08576d5ce7dc7fe9f5c483245d41f0c8741c63",
  "last_gate": {
   "status": "PASS",
   "project": "korean-lowrise",
@@ -29,8 +29,8 @@
    "report": "output\\KoreanHouseA80s01_L1_2x2\\_check\\report.json"
   },
   "asset": "KoreanHouseA80s01_L1_2x2",
-  "label": "korean-alley",
-  "time": "2026-11-19 14:40:08",
+  "label": "band-fence-fix",
+  "time": "2026-11-19 14:45:57",
   "build": {
    "asset": "KoreanHouseA80s01_L1_2x2",
    "fbx": true,
@@ -54,17 +54,17 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 9816,
+     "main": 9770,
      "win": 48,
-     "lod1": 1906,
+     "lod1": 1860,
      "lod1_win": 48,
      "lod2": 362,
      "lod2_win": 48
     },
     "verts": {
-     "main": 20674,
+     "main": 20582,
      "win": 96,
-     "lod1": 3828,
+     "lod1": 3736,
      "lod1_win": 96,
      "lod2": 736,
      "lod2_win": 96
@@ -128,8 +128,8 @@
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 20674,
-    "LOD1": 3828,
+    "LOD0": 20582,
+    "LOD1": 3736,
     "LOD2": 736
    },
    "action_tags": [],
@@ -147,13 +147,13 @@
   "reason": "all requested checks passed"
  },
  "project": "korean-lowrise",
- "updated_at": "2026-11-19T14:40:34",
- "visual_review_note": "한국 골목 참고 반영: 막힌 난간벽 콘크리트 계단·층간 슬래브 띠·돌출 방범창, 미리보기·근접 렌더 확인",
+ "updated_at": "2026-11-19T14:46:24",
+ "visual_review_note": "처마 없는 집 파라펫 아래 띠 제거, 담장 모서리 갓돌 연속 확인(근접 렌더)",
  "visual_review_artifacts": [
   {
    "file": "previews/KoreanHouseA80s01_L1_2x2.png",
-   "sha256": "9af00f8dc953b553a44917c5b320885140f524207c4fe52ba258b59fdc513995"
+   "sha256": "d53afe6db351a106dff529bc9c08576d5ce7dc7fe9f5c483245d41f0c8741c63"
   }
  ],
- "reviewed_preview_hash": "9af00f8dc953b553a44917c5b320885140f524207c4fe52ba258b59fdc513995"
+ "reviewed_preview_hash": "d53afe6db351a106dff529bc9c08576d5ce7dc7fe9f5c483245d41f0c8741c63"
 }

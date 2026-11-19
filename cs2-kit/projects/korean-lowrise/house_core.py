@@ -704,9 +704,9 @@ def facade(mb, wins, spec, axis, c, side, stage, lo=None, hi=None):
     K.paint(mb, axis, c, side, plo, phi, 0.16, 0.62, "plinth")
     if spec.finish == "mosaic":
         K.paint(mb, axis, c, side, plo, phi, spec.floor_h-0.42, spec.floor_h-0.12, "pattern")
-    if stage < 2:
+    if stage < 2 and spec.eaves:
+        # 파라펫 아래 띠는 처마 없는 집(A01·80s·90s)에서 사용자 요청으로 뺌, 기와 처마 아래(70s)만 유지 (2026-11-19)
         face_v = (1 if side > 0 else 0)
-        # 벽 하단 오염 띠는 사용자 요청으로 뺌 (빗물 자국만 유지, 2026-11-19)
         top_blocked = []
         if axis == "y" and side == -1 and spec.balcony == "enclosed":
             bw = spec.width * 0.34 + 0.05
@@ -1212,9 +1212,12 @@ def build_stage(spec, a, stage):
             mb.box(fx0, fx1, fy0, fy1, 0, 1.15, spec.fence_finish, skip=("bottom",))
             if stage == 0:
                 cx0, cx1 = fx0 - 0.03, fx1 + 0.03
+                cy0, cy1 = fy0 - 0.03, fy1 + 0.03
                 if fx1 - fx0 > 0.5:  # 앞·뒤 담은 옆 담 갓돌(±0.21)에 맞대어 모서리 겹침 방지
                     cx0, cx1 = max(cx0, -half + 0.21), min(cx1, half - 0.21)
-                mb.box(cx0, cx1, fy0 - 0.03, fy1 + 0.03, 1.15, 1.21, "cement")
+                else:                # 옆 담 갓돌이 앞·뒤 담 두께까지 덮어 모서리 끊김 방지
+                    cy0, cy1 = -2.53, d + 1.63
+                mb.box(cx0, cx1, cy0, cy1, 1.15, 1.21, "cement")
         mb.box(-1.12, 1.12, -2.48, -2.40, 0.10, 1.45, "steel")
         if stage == 0:
             mb.box(-1.12, 1.12, -2.50, -2.38, 1.45, 1.50, "steel")

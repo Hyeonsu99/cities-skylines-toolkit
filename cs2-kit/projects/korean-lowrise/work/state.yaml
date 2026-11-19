@@ -498,7 +498,7 @@
    "fbx": null
   },
   "fix": {
-   "at": "2026-11-19T14:39:43",
+   "at": "2026-11-19T14:45:31",
    "mode": "final",
    "status": "INCOMPLETE",
    "label": "fix",
@@ -517,7 +517,7 @@
    "preview": {
     "path": "previews/KoreanHouseA90s01_L1_2x2.png",
     "exists": true,
-    "sha256": "b10571605dd46d0170379afa1e1a08ff71cad456760a3a310e5cfcbcbf3f6f28",
+    "sha256": "5585f8a5647327245cb0c24dee5424f715d3c1f8a1338f642526fded041c2c99",
     "key": null
    },
    "fbx": null
@@ -667,7 +667,7 @@
    "fbx": null
   },
   "x": {
-   "at": "2026-11-19T14:39:33",
+   "at": "2026-11-19T14:45:03",
    "mode": "quick",
    "status": "PASS",
    "label": "x",
@@ -684,14 +684,39 @@
    "generator_hash": "ca3e32a7503004bb1805d517752a48b06a60f13e17fbcc02eb897c4d9cfb2329",
    "preview": null,
    "fbx": null
+  },
+  "band-fence-fix": {
+   "at": "2026-11-19T14:45:57",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "band-fence-fix",
+   "gate": "output/KoreanHouseA80s01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "18a9e9f213f8a0a6579d3343fea340978d6cab138c02d6d9a1a80db95260bd10",
+   "preview": {
+    "path": "previews/KoreanHouseA80s01_L1_2x2.png",
+    "exists": true,
+    "sha256": "d53afe6db351a106dff529bc9c08576d5ce7dc7fe9f5c483245d41f0c8741c63",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-19T14:40:08",
+ "updated_at": "2026-11-19T14:45:57",
  "current_stage": "final:INCOMPLETE",
  "generator": "house_80s_cs2.py",
  "generator_hash": "18a9e9f213f8a0a6579d3343fea340978d6cab138c02d6d9a1a80db95260bd10",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "4f10d4a3f091050da28b61e117aa321759cf1ac283d1da3afa211740b1b63ecc",
+ "reviewed_preview_hash": "9af00f8dc953b553a44917c5b320885140f524207c4fe52ba258b59fdc513995",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",
