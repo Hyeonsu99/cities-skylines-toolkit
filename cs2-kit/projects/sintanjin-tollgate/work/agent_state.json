@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "sintanjin_tollgate_cs2.py",
- "generator_hash": "9ce5f6603cec9a22fcc345c436eb330ec60654b2b622e35d213934ed07f16219",
- "current_preview_hash": "69cc35e97777eebf505e7a13327459446a510e616e526062714557d49d017e16",
+ "generator_hash": "c658fb3627ffb4efcf766701f54e2e8e190f84841a1f8b86fb331300b3985a13",
+ "current_preview_hash": "b08c46c04bfa1e7bd54668632fe0e93a7b3ffafda8206eed78274305ca31fbce",
  "last_gate": {
   "status": "PASS",
   "project": "sintanjin-tollgate",
@@ -29,8 +29,8 @@
    "report": "output\\SintanjinTollgate_L1_6x4\\_check\\report.json"
   },
   "asset": "SintanjinTollgate_L1_6x4",
-  "label": "xreview",
-  "time": "2026-11-19 15:30:24",
+  "label": "albedo",
+  "time": "2026-11-20 23:42:53",
   "build": {
    "asset": "SintanjinTollgate_L1_6x4",
    "fbx": true,
@@ -145,13 +145,13 @@
   "reason": "all requested checks passed"
  },
  "project": "sintanjin-tollgate",
- "updated_at": "2026-11-19T15:30:31",
- "visual_review_note": "교차검토(총괄): kitext 베벨(기둥 받침·머리, 부스 지붕 캡·창대), diff 11줄·LF 유지·범위 밖 변경 0, final 재실행 PASS, 전후 비교 확인",
+ "updated_at": "2026-11-20T23:43:11",
+ "visual_review_note": "알베도 상한 적용: 형상 동일, 원색 도장 채도·순백 명도만 하향, 간판·신호 원색 유지",
  "visual_review_artifacts": [
   {
    "file": "previews/SintanjinTollgate_L1_6x4.png",
-   "sha256": "69cc35e97777eebf505e7a13327459446a510e616e526062714557d49d017e16"
+   "sha256": "b08c46c04bfa1e7bd54668632fe0e93a7b3ffafda8206eed78274305ca31fbce"
   }
  ],
- "reviewed_preview_hash": "69cc35e97777eebf505e7a13327459446a510e616e526062714557d49d017e16"
+ "reviewed_preview_hash": "b08c46c04bfa1e7bd54668632fe0e93a7b3ffafda8206eed78274305ca31fbce"
 }
