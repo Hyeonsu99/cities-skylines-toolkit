@@ -543,24 +543,25 @@ def make_atlas(size=4096):
         if emissive is None and kw.get("metal", 0.0) <= 0.30 and not name.startswith("sign"):
             color = _tame(color)
         A.add(name, color=color, emissive=emissive, **kw)
+    # 발광 강도: 석봉센터·엑슬루103 승인값 수준(간판 30~100, 창 70~100, 조명 60~115, 신호 ~150)에 맞춤 (2026-11-21, 이전 값의 0.40~0.68배)
     # 1024x1024 히어로 타일 및 다중 배너 팩킹 (4K 아틀라스 공간 효율 극대화)
     add("polycarb", color=(156, 214, 218), metal=0.05, gloss=0.88, px=1024, tile=(4.0, 2.5), painter=_paint_polycarb, normal_strength=1.4)
     add("blue_fascia", color=(46, 140, 202), metal=0.22, gloss=0.54, px=1024, tile=(6.0, 1.50), painter=_paint_blue_fascia, normal_strength=2.2)
-    add("signs_sjt", color=(22, 52, 92), gloss=0.44, emissive=(225, 240, 255), px=1024, painter=_paint_signs_sjt)
-    add("led_banners", color=(14, 46, 86), gloss=0.48, emissive=(255, 226, 130), px=1024, painter=_paint_led_banners)
+    add("signs_sjt", color=(22, 52, 92), gloss=0.44, emissive=(90, 96, 102), px=1024, painter=_paint_signs_sjt)
+    add("led_banners", color=(14, 46, 86), gloss=0.48, emissive=(115, 102, 58), px=1024, painter=_paint_led_banners)
     add("concrete", color=(206, 208, 202), metal=0.0, gloss=0.20, px=1024, tile=(3.0, 3.0), painter=_paint_concrete, normal_strength=2.6)
     add("soffit", color=(114, 96, 78), metal=0.30, gloss=0.42, px=1024, tile=(3.0, 3.0), painter=_paint_soffit, normal_strength=3.2)
     add("teal_roof", color=(48, 116, 144), metal=0.34, gloss=0.44, px=768, tile=(3.0, 3.0), painter=_paint_teal_roof, normal_strength=2.6)
 
     # 512x512 주요 구조재 및 신호/원형·현수 표지
-    add("window", color=(58, 96, 112), ctrl=(0, 0, 0), metal=0.0, gloss=0.90, emissive=(255, 232, 190), px=512, tile=(1.5, 1.5), painter=_paint_window)
+    add("window", color=(58, 96, 112), ctrl=(0, 0, 0), metal=0.0, gloss=0.90, emissive=(148, 135, 110), px=512, tile=(1.5, 1.5), painter=_paint_window)
     add("blue_curb", color=(28, 86, 168), metal=0.0, gloss=0.35, px=512, tile=(2.0, 0.5), painter=_paint_blue_curb, normal_strength=2.2)
     add("booth_orange", color=(230, 108, 30), metal=0.18, gloss=0.52, px=512, tile=(2.0, 1.5), painter=_paint_booth_metal, normal_strength=2.4)
     add("booth_silver", color=(204, 210, 216), metal=0.42, gloss=0.56, px=512, tile=(2.0, 1.5), painter=_paint_booth_metal, normal_strength=2.2)
     add("trim_white", color=(236, 240, 244), metal=0.18, gloss=0.48, px=512, tile=(6.0, 6.0), painter=_paint_trim_white, normal_strength=1.8)
     add("green_dome", color=(34, 126, 78), metal=0.14, gloss=0.48, px=512, tile=(2.0, 2.0), painter=_paint_green_dome, normal_strength=2.4)
-    add("sig_green_down", color=(16, 20, 22), gloss=0.58, emissive=(50, 255, 114), px=512, painter=_paint_sig_green_down)
-    add("sig_red_x", color=(16, 20, 22), gloss=0.58, emissive=(255, 56, 44), px=512, painter=_paint_sig_red_x)
+    add("sig_green_down", color=(16, 20, 22), gloss=0.58, emissive=(34, 173, 78), px=512, painter=_paint_sig_green_down)
+    add("sig_red_x", color=(16, 20, 22), gloss=0.58, emissive=(173, 38, 30), px=512, painter=_paint_sig_red_x)
     add("sign_30", color=(244, 246, 248), gloss=0.48, px=512, painter=_paint_sign_30)
     add("sign_notruck", color=(244, 246, 248), gloss=0.48, px=512, painter=_paint_sign_notruck)
     add("sign_30_panel", color=(242, 244, 246), gloss=0.46, px=512, painter=_paint_sign_30_panel)
@@ -575,7 +576,7 @@ def make_atlas(size=4096):
     add("rail_blue", color=(28, 102, 184), metal=0.28, gloss=0.52, px=256, painter=_paint_painted_steel)
     add("terminal_blue", color=(26, 84, 162), metal=0.24, gloss=0.48, px=256, painter=_paint_painted_steel)
     add("safety_yellow", color=(240, 192, 28), metal=0.16, gloss=0.48, px=256, painter=_paint_painted_steel)
-    add("lamp_strip", color=(248, 250, 240), metal=0.0, gloss=0.82, emissive=(255, 242, 215), px=256, painter=_paint_lamp_strip)
+    add("lamp_strip", color=(248, 250, 240), metal=0.0, gloss=0.82, emissive=(148, 140, 125), px=256, painter=_paint_lamp_strip)
     return A
 
 
