@@ -8,6 +8,7 @@
 - 전후 3개 포털 갠트리 (서측 라임그린 2차선, 동측 실버 1차선, 동측 오렌지 화물 1차선)
 """
 
+import colorsys
 import math
 import os
 import sys
@@ -506,10 +507,20 @@ def _paint_sign_30_panel(ctx):
     ctx.gloss[...] = 0.46
 
 
+ALBEDO_S_MAX = 0.52   # tools/albedo_check.py 채도 상한 0.55 아래 (공장 보정값 0.48~0.52와 같은 기준)
+ALBEDO_V_MAX = 218    # 같은 검사 밝기 상한 225 아래 (석봉 백색 패널 208~214와 같은 기준)
+
+
+def _tame(rgb, s_max=ALBEDO_S_MAX, v_max=ALBEDO_V_MAX):
+    """비발광 도장 색을 게임 조명용 알베도 상한 안으로 (색상 유지, 채도·명도만 상한)."""
+    h, s, v = colorsys.rgb_to_hsv(*(c / 255.0 for c in rgb))
+    return tuple(int(round(c * 255)) for c in colorsys.hsv_to_rgb(h, min(s, s_max), min(v, v_max / 255.0)))
+
+
 def _paint_barrier_arm(ctx):
     band = ((ctx.u * 6.0) % 1.0) < 0.5
-    red = np.array((214, 38, 36), dtype=np.float32)
-    white = np.array((244, 246, 248), dtype=np.float32)
+    red = np.array(_tame((214, 38, 36), s_max=0.78), dtype=np.float32)  # 줄무늬 평균 채도는 백색과 섞여 상한 안
+    white = np.array(_tame((244, 246, 248)), dtype=np.float32)
     ctx.rgb = np.where(band[..., None], red, white)
     ctx.grain(amp=1.8, scale_px=2, height=0.06, seed=91)
     ctx.gloss[...] = 0.56
@@ -518,7 +529,7 @@ def _paint_barrier_arm(ctx):
 def _paint_bollard_stripe(ctx):
     u, v = ctx.u, ctx.v
     band = ((u * 2.0 + v * 2.0) % 1.0) < 0.5
-    yellow = np.array((244, 186, 22), dtype=np.float32)
+    yellow = np.array(_tame((244, 186, 22)), dtype=np.float32)
     black = np.array((26, 28, 32), dtype=np.float32)
     ctx.rgb = np.where(band[..., None], yellow, black)
     ctx.grain(amp=2.0, scale_px=2, height=0.10, seed=92)
@@ -527,39 +538,44 @@ def _paint_bollard_stripe(ctx):
 
 def make_atlas(size=4096):
     A = K.Atlas(size=size, pad=16)
+    def add(name, color, emissive=None, **kw):
+        # 발광 칸(간판·신호·창·조명)·금속 칸·표지판 바탕은 그대로, 나머지 도장 칸은 알베도 상한 적용 (albedo_check와 같은 범위)
+        if emissive is None and kw.get("metal", 0.0) <= 0.30 and not name.startswith("sign"):
+            color = _tame(color)
+        A.add(name, color=color, emissive=emissive, **kw)
     # 1024x1024 히어로 타일 및 다중 배너 팩킹 (4K 아틀라스 공간 효율 극대화)
-    A.add("polycarb", color=(156, 214, 218), metal=0.05, gloss=0.88, px=1024, tile=(4.0, 2.5), painter=_paint_polycarb, normal_strength=1.4)
-    A.add("blue_fascia", color=(46, 140, 202), metal=0.22, gloss=0.54, px=1024, tile=(6.0, 1.50), painter=_paint_blue_fascia, normal_strength=2.2)
-    A.add("signs_sjt", color=(22, 52, 92), gloss=0.44, emissive=(225, 240, 255), px=1024, painter=_paint_signs_sjt)
-    A.add("led_banners", color=(14, 46, 86), gloss=0.48, emissive=(255, 226, 130), px=1024, painter=_paint_led_banners)
-    A.add("concrete", color=(206, 208, 202), metal=0.0, gloss=0.20, px=1024, tile=(3.0, 3.0), painter=_paint_concrete, normal_strength=2.6)
-    A.add("soffit", color=(114, 96, 78), metal=0.30, gloss=0.42, px=1024, tile=(3.0, 3.0), painter=_paint_soffit, normal_strength=3.2)
-    A.add("teal_roof", color=(48, 116, 144), metal=0.34, gloss=0.44, px=768, tile=(3.0, 3.0), painter=_paint_teal_roof, normal_strength=2.6)
+    add("polycarb", color=(156, 214, 218), metal=0.05, gloss=0.88, px=1024, tile=(4.0, 2.5), painter=_paint_polycarb, normal_strength=1.4)
+    add("blue_fascia", color=(46, 140, 202), metal=0.22, gloss=0.54, px=1024, tile=(6.0, 1.50), painter=_paint_blue_fascia, normal_strength=2.2)
+    add("signs_sjt", color=(22, 52, 92), gloss=0.44, emissive=(225, 240, 255), px=1024, painter=_paint_signs_sjt)
+    add("led_banners", color=(14, 46, 86), gloss=0.48, emissive=(255, 226, 130), px=1024, painter=_paint_led_banners)
+    add("concrete", color=(206, 208, 202), metal=0.0, gloss=0.20, px=1024, tile=(3.0, 3.0), painter=_paint_concrete, normal_strength=2.6)
+    add("soffit", color=(114, 96, 78), metal=0.30, gloss=0.42, px=1024, tile=(3.0, 3.0), painter=_paint_soffit, normal_strength=3.2)
+    add("teal_roof", color=(48, 116, 144), metal=0.34, gloss=0.44, px=768, tile=(3.0, 3.0), painter=_paint_teal_roof, normal_strength=2.6)
 
     # 512x512 주요 구조재 및 신호/원형·현수 표지
-    A.add("window", color=(58, 96, 112), ctrl=(0, 0, 0), metal=0.0, gloss=0.90, emissive=(255, 232, 190), px=512, tile=(1.5, 1.5), painter=_paint_window)
-    A.add("blue_curb", color=(28, 86, 168), metal=0.0, gloss=0.35, px=512, tile=(2.0, 0.5), painter=_paint_blue_curb, normal_strength=2.2)
-    A.add("booth_orange", color=(230, 108, 30), metal=0.18, gloss=0.52, px=512, tile=(2.0, 1.5), painter=_paint_booth_metal, normal_strength=2.4)
-    A.add("booth_silver", color=(204, 210, 216), metal=0.42, gloss=0.56, px=512, tile=(2.0, 1.5), painter=_paint_booth_metal, normal_strength=2.2)
-    A.add("trim_white", color=(236, 240, 244), metal=0.18, gloss=0.48, px=512, tile=(6.0, 6.0), painter=_paint_trim_white, normal_strength=1.8)
-    A.add("green_dome", color=(34, 126, 78), metal=0.14, gloss=0.48, px=512, tile=(2.0, 2.0), painter=_paint_green_dome, normal_strength=2.4)
-    A.add("sig_green_down", color=(16, 20, 22), gloss=0.58, emissive=(50, 255, 114), px=512, painter=_paint_sig_green_down)
-    A.add("sig_red_x", color=(16, 20, 22), gloss=0.58, emissive=(255, 56, 44), px=512, painter=_paint_sig_red_x)
-    A.add("sign_30", color=(244, 246, 248), gloss=0.48, px=512, painter=_paint_sign_30)
-    A.add("sign_notruck", color=(244, 246, 248), gloss=0.48, px=512, painter=_paint_sign_notruck)
-    A.add("sign_30_panel", color=(242, 244, 246), gloss=0.46, px=512, painter=_paint_sign_30_panel)
+    add("window", color=(58, 96, 112), ctrl=(0, 0, 0), metal=0.0, gloss=0.90, emissive=(255, 232, 190), px=512, tile=(1.5, 1.5), painter=_paint_window)
+    add("blue_curb", color=(28, 86, 168), metal=0.0, gloss=0.35, px=512, tile=(2.0, 0.5), painter=_paint_blue_curb, normal_strength=2.2)
+    add("booth_orange", color=(230, 108, 30), metal=0.18, gloss=0.52, px=512, tile=(2.0, 1.5), painter=_paint_booth_metal, normal_strength=2.4)
+    add("booth_silver", color=(204, 210, 216), metal=0.42, gloss=0.56, px=512, tile=(2.0, 1.5), painter=_paint_booth_metal, normal_strength=2.2)
+    add("trim_white", color=(236, 240, 244), metal=0.18, gloss=0.48, px=512, tile=(6.0, 6.0), painter=_paint_trim_white, normal_strength=1.8)
+    add("green_dome", color=(34, 126, 78), metal=0.14, gloss=0.48, px=512, tile=(2.0, 2.0), painter=_paint_green_dome, normal_strength=2.4)
+    add("sig_green_down", color=(16, 20, 22), gloss=0.58, emissive=(50, 255, 114), px=512, painter=_paint_sig_green_down)
+    add("sig_red_x", color=(16, 20, 22), gloss=0.58, emissive=(255, 56, 44), px=512, painter=_paint_sig_red_x)
+    add("sign_30", color=(244, 246, 248), gloss=0.48, px=512, painter=_paint_sign_30)
+    add("sign_notruck", color=(244, 246, 248), gloss=0.48, px=512, painter=_paint_sign_notruck)
+    add("sign_30_panel", color=(242, 244, 246), gloss=0.46, px=512, painter=_paint_sign_30_panel)
 
     # 256x256 소형 디테일·프레임
-    A.add("bollard_stripe", color=(244, 186, 22), gloss=0.45, px=256, tile=(0.3, 0.9), painter=_paint_bollard_stripe)
-    A.add("barrier_arm", color=(214, 38, 36), gloss=0.56, px=256, painter=_paint_barrier_arm)
-    A.add("dark_steel", color=(44, 50, 56), metal=0.48, gloss=0.44, px=256, painter=_paint_painted_steel)
-    A.add("gantry_lime", color=(190, 218, 38), metal=0.22, gloss=0.50, px=256, painter=_paint_painted_steel)
-    A.add("gantry_orange", color=(230, 102, 28), metal=0.22, gloss=0.50, px=256, painter=_paint_painted_steel)
-    A.add("gantry_grey", color=(190, 194, 198), metal=0.40, gloss=0.50, px=256, painter=_paint_painted_steel)
-    A.add("rail_blue", color=(28, 102, 184), metal=0.28, gloss=0.52, px=256, painter=_paint_painted_steel)
-    A.add("terminal_blue", color=(26, 84, 162), metal=0.24, gloss=0.48, px=256, painter=_paint_painted_steel)
-    A.add("safety_yellow", color=(240, 192, 28), metal=0.16, gloss=0.48, px=256, painter=_paint_painted_steel)
-    A.add("lamp_strip", color=(248, 250, 240), metal=0.0, gloss=0.82, emissive=(255, 242, 215), px=256, painter=_paint_lamp_strip)
+    add("bollard_stripe", color=(244, 186, 22), gloss=0.45, px=256, tile=(0.3, 0.9), painter=_paint_bollard_stripe)
+    add("barrier_arm", color=(214, 38, 36), gloss=0.56, px=256, painter=_paint_barrier_arm)
+    add("dark_steel", color=(44, 50, 56), metal=0.48, gloss=0.44, px=256, painter=_paint_painted_steel)
+    add("gantry_lime", color=(190, 218, 38), metal=0.22, gloss=0.50, px=256, painter=_paint_painted_steel)
+    add("gantry_orange", color=(230, 102, 28), metal=0.22, gloss=0.50, px=256, painter=_paint_painted_steel)
+    add("gantry_grey", color=(190, 194, 198), metal=0.40, gloss=0.50, px=256, painter=_paint_painted_steel)
+    add("rail_blue", color=(28, 102, 184), metal=0.28, gloss=0.52, px=256, painter=_paint_painted_steel)
+    add("terminal_blue", color=(26, 84, 162), metal=0.24, gloss=0.48, px=256, painter=_paint_painted_steel)
+    add("safety_yellow", color=(240, 192, 28), metal=0.16, gloss=0.48, px=256, painter=_paint_painted_steel)
+    add("lamp_strip", color=(248, 250, 240), metal=0.0, gloss=0.82, emissive=(255, 242, 215), px=256, painter=_paint_lamp_strip)
     return A
 
 
