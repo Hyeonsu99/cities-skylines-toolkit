@@ -40,7 +40,7 @@
 3. 차종(화물·버스)별 요금·처리시간 차등, 1차로/5차로 화물 겸용 반영.
 
 ### 4단계 — CS2 본게임 (B, 모드)
-1. 에셋 배치: `SintanjinTollgate_L1_6x4`는 도로를 덮는 캐노피일 뿐이다. 7차로 도로 프리팹을 캐노피 아래로 깔고 차로 x 범위를 `toll_lanes.json`과 맞춘다.
+1. 에셋 배치: `SintanjinTollgate_L1_6x4`는 도로를 덮는 캐노피일 뿐이다. HandOff 3절대로 `Building` 프리셋 + Anarchy로 도로 위에 겹쳐 놓는다(미확인). 7차로 도로 프리팹을 캐노피 아래로 깔고 차로 x 범위를 `toll_lanes.json`과 맞춘다. 가져오기는 `cs2-import/SintanjinTollgate_L1_6x4` 폴더 하나만 고른다.
 2. 감속/정지: 새 `GameSystemBase`(예: `TollPlazaSystem`)가 톨 영역 `Game.Net.Edge`의 차로를 표시해 두고, 그 위 차량(`Game.Vehicles.CarCurrentLane`)의 목표 속도를 낮춘다. 일반 차로는 신호 노드(CS2 기본 신호등)를 부스 처리시간 주기로 돌려 정지를 흉내 낸다 — 경로 계산은 건드리지 않는다.
 3. 요금 징수: 통과 차량 수 × 요금을 도시 수입에 더한다(`Game.Simulation.CitySystem`/`PlayerMoney`, 정확한 API는 모드 개발 시 확인 — 미확인).
 4. 하이패스·차로 선택: 하이패스 차로는 속도 제한만, 일반 차로는 신호 정지. 차량별 하이패스 구분은 CS2에 없으므로 차로 단위로만 나눈다(차량 비율은 CS2 기본 차로 선택에 맡김).
