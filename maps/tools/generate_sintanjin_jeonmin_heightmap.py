@@ -26,6 +26,7 @@ REAL_SIDE_M = CS2_SIDE_M / SCALE_FACTOR  # 9886.8965 m
 
 WORLD_MULTIPLIER = 4  # CS2 WorldMap = 4x Playable width (57,344 m)
 WATER_SEA_LEVEL_M = 24.0
+START_AQUIFER = ("지하수: 시작 지역 신탄진·석봉동", 36.4510, 127.4235, 620.0, 520.0, 1.0)
 
 M_PER_DEG_LAT = 111132.95
 M_PER_DEG_LON = (
@@ -911,6 +912,11 @@ def generate_resources(
     ore = ore_field * ridge_fac * (0.58 + 0.60 * n_r)
     ore = np.where(dry, np.clip((ore - 0.09) / 0.62, 0.0, 1.0), 0.0)
 
+    # Keep extraction belts and agricultural plains distinct, with soft edges.
+    oil *= np.clip(1.0 - ore * 2.0, 0.0, 1.0)
+    extraction = np.maximum(oil, ore)
+    fertile *= np.clip(1.0 - extraction * 2.0, 0.0, 1.0)
+
     # 4. Groundwater aquifers along Geumgang, Gapcheon, Gwanpyeong, Jeonmin/Munji & Seokbong
     gw_specs = [
         ("지하수: 금강 드론공원·불무 연안", 36.4545, 127.3995, 880.0, 540.0, 0.96),
@@ -923,12 +929,18 @@ def generate_resources(
     gw = (gw_field * 0.80 + river_near * 0.34) * (0.68 + 0.44 * n_g)
     gw *= np.clip((0.09 - slope) / 0.06, 0.0, 1.0) * np.clip((64.0 - el_w) / 20.0, 0.0, 1.0)
     gw = np.where(dry, np.clip((gw - 0.16) / 0.64, 0.0, 1.0), 0.0)
+    start_gw, start_pts = _geo_blob_field([START_AQUIFER], lat_n, lat_s, lon_w, lon_e, work)
+    # A usable starting reserve must survive the slope/elevation heuristics.
+    start_ok = dry & (hwy < 0.25) & (slope < 0.12) & (el_w < 85.0)
+    gw = np.maximum(gw, np.where(start_ok, start_gw * 0.95, 0.0))
+    gw *= np.clip(1.0 - extraction * 2.0, 0.0, 1.0)
 
     # 5. Forest / wood: hillsides > 50m & mapped woods, strictly excluding urban pads, highways & farmland
     elev_wood = np.clip((el_w - 50.0) / 38.0, 0.0, 1.0)
     forest_raw = np.maximum(for_mask * 0.9, elev_wood) * (0.48 + 0.72 * n_w)
     forest = forest_raw * (1.0 - 0.92 * urb) * (1.0 - 0.90 * hwy) * np.clip(1.0 - fertile * 1.4, 0.0, 1.0)
     forest = np.where(dry, np.clip((forest - 0.22) / 0.62, 0.0, 1.0), 0.0)
+    forest *= np.clip(1.0 - extraction * 2.0, 0.0, 1.0)
 
     res_work = {
         "resource_fertile": fertile,
@@ -950,6 +962,7 @@ def generate_resources(
         + [(lbl, (235, 70, 95), lat, lon) for lbl, lat, lon in o_pts]
         + [(lbl, (245, 130, 45), lat, lon) for lbl, lat, lon in r_pts]
         + [(lbl, (55, 165, 255), lat, lon) for lbl, lat, lon in g_pts]
+        + [(lbl, (55, 165, 255), lat, lon) for lbl, lat, lon in start_pts]
     )
 
     # Export CS2-ready 256x256x5 uint16 resource binary (row-flipped South->North for CellMapSystem)
@@ -966,7 +979,7 @@ def generate_resources(
         fish_grid,
         _to_cs2_grid(gw, 10000),
     ], axis=-1)
-    bin_arr.tofile(os.path.join(out_dir, "sintanjin_resources_256.bin"))
+    bin_arr.astype("<u2").tofile(os.path.join(out_dir, "sintanjin_resources_256.bin"))
     return res_work, labels
 
 
@@ -1030,6 +1043,9 @@ def generate_realistic_trees(
     farm_damp = np.clip(1.0 - fert_g * 1.15, 0.08, 1.0)
     urb_damp = np.where(el_g > 72.0, 1.0 - 0.85 * urb_g, np.where(sat_canopy > 0.38, 1.0 - 0.48 * urb_g, 1.0 - 0.92 * urb_g))
     density = raw_density * cliff_ok * farm_damp * urb_damp * (0.55 + 0.65 * n_macro)
+    extraction = np.maximum(res_work["resource_oil"], res_work["resource_ore"])
+    extraction_g = np.array(Image.fromarray(extraction).resize((grid, grid), Image.BILINEAR))
+    density *= np.clip(1.0 - extraction_g * 2.0, 0.0, 1.0)
 
     blocked = wat_g | hwy_g | rail_g | (el_g < WATER_SEA_LEVEL_M + 0.6)
     density = np.where(blocked, 0.0, np.clip(density, 0.0, 1.0))
@@ -2605,6 +2621,8 @@ def main():
     default_out = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "sintanjin_jeonmin")
     parser.add_argument("--out-dir", default=default_out)
     parser.add_argument("--cache-dir", default=os.path.join(default_out, "_cache"))
+    parser.add_argument("--resources-only", action="store_true",
+                        help="Reuse saved 1024m heightmap and satellite; rebuild resources, trees and resource previews only")
     args = parser.parse_args()
 
     out_dir = args.out_dir
@@ -2613,6 +2631,19 @@ def main():
     os.makedirs(cache_dir, exist_ok=True)
 
     lat_n, lat_s, lon_w, lon_e = compute_bounds(CENTER_LAT, CENTER_LON, REAL_SIDE_M)
+    if args.resources_only:
+        # Read both inputs before generating anything; never re-engineer the saved terrain.
+        elev = np.array(Image.open(os.path.join(out_dir, "heightmap_cs2_4096_1024m.png")), dtype=np.float32) * (1024.0 / 65535.0)
+        sat_img = Image.open(os.path.join(out_dir, "satellite_overlay_4096.png")).convert("RGB")
+        if elev.shape != (4096, 4096) or sat_img.size != (4096, 4096):
+            raise ValueError("Resources require matching 4096x4096 heightmap and satellite inputs")
+        osm = fetch_osm_features(lat_n, lat_s, lon_w, lon_e, os.path.join(cache_dir, "osm_area.json"))
+        masks = rasterize_osm_masks(osm, lat_n, lat_s, lon_w, lon_e, size=elev.shape[0])
+        water_mask = elev < WATER_SEA_LEVEL_M
+        res_work, labels = generate_resources(elev, water_mask, masks, lat_n, lat_s, lon_w, lon_e, out_dir)
+        generate_realistic_trees(elev, water_mask, masks, sat_img, res_work, out_dir)
+        build_resource_visuals(elev, water_mask, sat_img, res_work, labels, lat_n, lat_s, lon_w, lon_e, out_dir)
+        return
     print(f"Playable bounds ({REAL_SIDE_M:.1f}m -> {CS2_SIDE_M:.0f}m @ {SCALE_FACTOR}x):")
     print(f"  N={lat_n:.5f}, S={lat_s:.5f}, W={lon_w:.5f}, E={lon_e:.5f}")
 

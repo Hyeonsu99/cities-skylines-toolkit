@@ -6,6 +6,7 @@ screenshots/
 CS2_NewTown_Layout.json
 *.blend1
 maps/**/_imagery_cache/
+maps/**/_cache/
 
 # asset-viewer: installed packages, build output, local preview copies
 asset-viewer/node_modules/
