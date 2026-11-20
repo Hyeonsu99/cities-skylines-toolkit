@@ -1,0 +1,30 @@
+{
+  "asset": "SintanjinTollgate_L1_6x4",
+  "generator": "sintanjin_tollgate_cs2.py",
+  "note": "차로 x 범위와 lane_centers는 생성기(sintanjin_tollgate_cs2.py)·shape_notes.md 2절과 같다. 근거·출처는 lane_research.md. 'estimated': true 항목은 추정값.",
+  "axis": {
+    "x": "북(-) → 남(+), 차로 가로 방향",
+    "y": "서(-Y, 경부고속도로 본선측) ↔ 동(+Y, 덕암로 시내측), 차량 진행 방향"
+  },
+  "mainline": {
+    "road": "경부고속도로 남청주IC~회덕JCT 구간",
+    "lanes_total": 8,
+    "lanes_per_direction": { "seoul": 4, "busan": 4 }
+  },
+  "plaza": {
+    "lanes_total": 7,
+    "entry_lanes": 2,
+    "exit_lanes": 5,
+    "booths": 4,
+    "speed_limit_kmh": 30
+  },
+  "lanes": [
+    { "lane": 1, "x": [-19.30, -15.50], "center_x": -17.40, "dir": "entry", "travel": "+Y→-Y", "type": "cargo_mixed",  "accepts": ["hipass", "ticket"], "booth": 1, "signal": "green", "estimated": false },
+    { "lane": 2, "x": [-13.50, -10.00], "center_x": -11.75, "dir": "entry", "travel": "+Y→-Y", "type": "hipass",       "accepts": ["hipass"],           "booth": null, "signal": "green", "estimated": false },
+    { "lane": 3, "x": [-7.20, -3.80],   "center_x": -5.50,  "dir": "exit",  "travel": "-Y→+Y", "type": "tcs",          "accepts": ["cash", "card"],     "booth": 2, "signal": "red_x", "estimated": false },
+    { "lane": 4, "x": [-1.60, 1.80],    "center_x": 0.10,   "dir": "exit",  "travel": "-Y→+Y", "type": "tcs",          "accepts": ["cash", "card"],     "booth": 3, "signal": "green", "estimated": false },
+    { "lane": 5, "x": [4.00, 7.70],     "center_x": 5.85,   "dir": "exit",  "travel": "-Y→+Y", "type": "tcs_cargo",    "accepts": ["cash", "card"],     "booth": 4, "signal": "green", "estimated": true },
+    { "lane": 6, "x": [9.90, 13.40],    "center_x": 11.65,  "dir": "exit",  "travel": "-Y→+Y", "type": "hipass",       "accepts": ["hipass"],           "booth": null, "signal": "green", "estimated": false },
+    { "lane": 7, "x": [15.40, 18.90],   "center_x": 17.15,  "dir": "exit",  "travel": "-Y→+Y", "type": "hipass",       "accepts": ["hipass"],           "booth": null, "signal": "green", "estimated": false }
+  ]
+}
