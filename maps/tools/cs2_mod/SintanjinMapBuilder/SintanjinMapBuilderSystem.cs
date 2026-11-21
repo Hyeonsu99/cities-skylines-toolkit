@@ -31,17 +31,6 @@ namespace SintanjinMapBuilder
         public byte Var;
     }
 
-    internal struct RoadRecord
-    {
-        public byte Kind;
-        public byte Flags;
-        public float P0x, P0y, P0z;
-        public float P1x, P1y, P1z;
-        public float P2x, P2y, P2z;
-        public float P3x, P3y, P3z;
-        public float Elev0, Elev1;
-    }
-
     public partial class SintanjinMapBuilderSystem : GameSystemBase
     {
         private TerrainSystem m_TerrainSystem;
@@ -49,13 +38,10 @@ namespace SintanjinMapBuilder
         private NaturalResourceSystem m_NaturalResourceSystem;
         private GroundWaterSystem m_GroundWaterSystem;
         private PrefabSystem m_PrefabSystem;
+        private WindSimulationSystem m_WindSystem;
 
         private EntityQuery m_TreePrefabQuery;
         private EntityQuery m_WildTreeQuery;
-        private EntityQuery m_RoadPrefabQuery;
-        private EntityQuery m_TrackPrefabQuery;
-        private EntityQuery m_NetNodeQuery;
-        private EntityQuery m_NetEdgeQuery;
 
         private readonly List<Entity> m_ConiferPrefabs = new List<Entity>();
         private readonly List<Entity> m_BroadleafPrefabs = new List<Entity>();
@@ -63,24 +49,12 @@ namespace SintanjinMapBuilder
         private readonly List<Entity> m_ShrubPrefabs = new List<Entity>();
         private readonly List<Entity> m_AllValidTrees = new List<Entity>();
         private readonly HashSet<Entity> m_PrefabsWithSeed = new HashSet<Entity>();
-        private readonly Entity[] m_NetPrefabs = new Entity[6];
-        private bool m_HasNetPrefabs;
-        private bool m_LoggedNetPrefabs;
 
         private List<TreeRecord> m_PendingTrees;
         private int m_PendingCursor;
         private int m_SpawnedThisRun;
         private int m_SkippedWaterThisRun;
         private bool m_LoggedPrefabs;
-
-        private List<RoadRecord> m_PendingRoads;
-        private int m_PendingRoadCursor;
-        private int m_SpawnedRoadsThisRun;
-        private int m_SkippedRoadsThisRun;
-        private int m_SnappedNodesThisRun;
-        private readonly List<Entity> m_CreatedRoadDefs = new List<Entity>();
-        private readonly Dictionary<long, List<(Entity entity, float3 pos, float elevMid)>> m_NodeGrid =
-            new Dictionary<long, List<(Entity, float3, float)>>();
 
         private static string BaseDataDir =>
             Path.Combine(Application.persistentDataPath, "Sintanjin_Jeonmin_Pack");
@@ -99,6 +73,7 @@ namespace SintanjinMapBuilder
             m_NaturalResourceSystem = World.GetOrCreateSystemManaged<NaturalResourceSystem>();
             m_GroundWaterSystem = World.GetOrCreateSystemManaged<GroundWaterSystem>();
             m_PrefabSystem = World.GetOrCreateSystemManaged<PrefabSystem>();
+            m_WindSystem = World.GetOrCreateSystemManaged<WindSimulationSystem>();
 
             m_TreePrefabQuery = GetEntityQuery(
                 ComponentType.ReadOnly<TreeData>(),
@@ -114,35 +89,7 @@ namespace SintanjinMapBuilder
                 ComponentType.Exclude<Game.Tools.Temp>()
             );
 
-            m_RoadPrefabQuery = GetEntityQuery(
-                ComponentType.ReadOnly<RoadData>(),
-                ComponentType.ReadOnly<NetGeometryData>(),
-                ComponentType.ReadOnly<PlaceableNetData>(),
-                ComponentType.ReadOnly<PrefabData>()
-            );
-
-            m_TrackPrefabQuery = GetEntityQuery(
-                ComponentType.ReadOnly<TrackData>(),
-                ComponentType.ReadOnly<NetGeometryData>(),
-                ComponentType.ReadOnly<PlaceableNetData>(),
-                ComponentType.ReadOnly<PrefabData>()
-            );
-
-            m_NetNodeQuery = GetEntityQuery(
-                ComponentType.ReadOnly<Game.Net.Node>(),
-                ComponentType.Exclude<Owner>(),
-                ComponentType.Exclude<Deleted>(),
-                ComponentType.Exclude<Game.Tools.Temp>()
-            );
-
-            m_NetEdgeQuery = GetEntityQuery(
-                ComponentType.ReadOnly<Game.Net.Edge>(),
-                ComponentType.Exclude<Owner>(),
-                ComponentType.Exclude<Deleted>(),
-                ComponentType.Exclude<Game.Tools.Temp>()
-            );
-
-            WriteStatus("SintanjinMapBuilderSystem initialized (Modification1). Hotkeys: F6=ALL(Resources+Trees+Roads), Ctrl+Shift+H=BackboneRoads, Ctrl+Shift+K=ClearRoads, Ctrl+Shift+R=Resources, Ctrl+Shift+T=Trees, Ctrl+Shift+X=ClearWildTrees.");
+            WriteStatus("SintanjinMapBuilderSystem initialized (Modification1). Hotkeys: F6=ALL(Resources+Trees), Ctrl+Shift+R=Resources, Ctrl+Shift+T=Trees, Ctrl+Shift+X=ClearWildTrees, Ctrl+Shift+W=Wind(NNW->SSE).");
         }
 
         private static void WriteStatus(string msg)
@@ -172,19 +119,10 @@ namespace SintanjinMapBuilder
             if (!IsMapReady())
                 return;
 
-            CleanupRoadDefinitions();
-
             // Process batched tree planting cleanly without freezing the frame
             if (m_PendingTrees != null)
             {
                 ProcessTreeBatch(2200);
-                return;
-            }
-
-            // Process batched backbone road/rail creation definitions right before GenerateNodesSystem (Modification1)
-            if (m_PendingRoads != null)
-            {
-                ProcessRoadBatch(250);
                 return;
             }
 
@@ -197,10 +135,9 @@ namespace SintanjinMapBuilder
 
                 if (!ctrl && !shift && kb.f6Key.wasPressedThisFrame)
                 {
-                    WriteStatus("Hotkey F6 -> Full Pipeline (Resources + Realistic Forest Trees + Backbone Roads & Rail)");
+                    WriteStatus("Hotkey F6 -> Full Pipeline (Resources + Realistic Forest Trees)");
                     ApplyNaturalResources();
                     StartTreeSpawn();
-                    StartRoadSpawn();
                     return;
                 }
                 if (ctrl && shift && kb.rKey.wasPressedThisFrame)
@@ -215,16 +152,10 @@ namespace SintanjinMapBuilder
                     StartTreeSpawn();
                     return;
                 }
-                if (ctrl && shift && kb.hKey.wasPressedThisFrame)
+                if (ctrl && shift && kb.wKey.wasPressedThisFrame)
                 {
-                    WriteStatus("Hotkey Ctrl+Shift+H -> Building Method A Backbone Roads & Rail (Mainlines/Bridges/Tunnels)");
-                    StartRoadSpawn();
-                    return;
-                }
-                if (ctrl && shift && kb.kKey.wasPressedThisFrame)
-                {
-                    WriteStatus("Hotkey Ctrl+Shift+K -> Clearing Existing Roads & Tracks");
-                    ClearRoadsAndTracks();
+                    WriteStatus("Hotkey Ctrl+Shift+W -> Setting Wind NNW->SSE");
+                    ApplyWind();
                     return;
                 }
                 if (ctrl && shift && kb.xKey.wasPressedThisFrame)
@@ -243,16 +174,14 @@ namespace SintanjinMapBuilder
                     string cmd = File.ReadAllText(CommandFilePath).Trim().ToUpperInvariant();
                     File.Delete(CommandFilePath);
                     WriteStatus($"Executing command file: {cmd}");
-                    if (cmd.Contains("CLEARNET") || cmd.Contains("CLEARROAD"))
-                        ClearRoadsAndTracks();
-                    else if (cmd.Contains("CLEAR"))
+                    if (cmd.Contains("CLEAR"))
                         ClearWildTrees();
                     if (cmd.Contains("ALL") || cmd.Contains("RESOURCE"))
                         ApplyNaturalResources();
                     if (cmd.Contains("ALL") || cmd.Contains("TREE"))
                         StartTreeSpawn();
-                    if (cmd.Contains("ALL") || cmd.Contains("ROAD") || cmd.Contains("RAIL") || cmd.Contains("HIGHWAY"))
-                        StartRoadSpawn();
+                    if (cmd.Contains("WIND"))
+                        ApplyWind();
                 }
                 catch (Exception ex)
                 {
@@ -323,6 +252,26 @@ namespace SintanjinMapBuilder
             catch (Exception ex)
             {
                 WriteStatus($"ERROR in ApplyNaturalResources: {ex}");
+            }
+        }
+
+        // docs/wind_direction_plan.md: wind blows FROM 337.5 deg (NNW) TOWARD SSE.
+        // Vector = downwind direction (AirPollutionMoveJob samples cellCenter - speed*wind), x=east, z=north
+        // (generator row 0 = +z = north). Magnitude 0.389 = vanilla default |(0.275,0.275)|; pressure 40 = vanilla.
+        private static readonly float2 kSintanjinWind = new float2(0.149f, -0.359f);
+
+        private void ApplyWind()
+        {
+            try
+            {
+                float2 before = m_WindSystem.constantWind;
+                m_WindSystem.SetWind(kSintanjinWind, 40f);
+                float2 now = m_WindSystem.constantWind;
+                WriteStatus($"SUCCESS: Wind set (before=({before.x:F3},{before.y:F3}), now=({now.x:F3},{now.y:F3}), x=east z=north, NNW->SSE).");
+            }
+            catch (Exception ex)
+            {
+                WriteStatus($"ERROR in ApplyWind: {ex}");
             }
         }
 
@@ -550,443 +499,6 @@ namespace SintanjinMapBuilder
             {
                 WriteStatus($"ERROR in ProcessTreeBatch: {ex}");
                 m_PendingTrees = null;
-            }
-        }
-
-        private void CleanupRoadDefinitions()
-        {
-            if (m_CreatedRoadDefs.Count == 0)
-                return;
-
-            for (int i = 0; i < m_CreatedRoadDefs.Count; i++)
-            {
-                Entity e = m_CreatedRoadDefs[i];
-                if (EntityManager.Exists(e))
-                    EntityManager.DestroyEntity(e);
-            }
-            m_CreatedRoadDefs.Clear();
-        }
-
-        private void DiscoverNetPrefabs()
-        {
-            for (int i = 0; i < m_NetPrefabs.Length; i++)
-                m_NetPrefabs[i] = Entity.Null;
-
-            float[] bestScore = new float[6];
-            for (int i = 0; i < 6; i++)
-                bestScore[i] = float.MaxValue;
-
-            var loggedCandidates = new List<string>();
-
-            using (var roadEntities = m_RoadPrefabQuery.ToEntityArray(Allocator.Temp))
-            {
-                for (int i = 0; i < roadEntities.Length; i++)
-                {
-                    Entity p = roadEntities[i];
-                    RoadData rd = EntityManager.GetComponentData<RoadData>(p);
-                    NetGeometryData ngd = EntityManager.GetComponentData<NetGeometryData>(p);
-                    if ((ngd.m_Flags & Game.Net.GeometryFlags.Marker) != 0)
-                        continue;
-
-                    string name;
-                    try { name = m_PrefabSystem.GetPrefabName(p) ?? ""; }
-                    catch { name = ""; }
-                    string low = name.ToLowerInvariant();
-
-                    if (low.Contains("gravel") || low.Contains("alley") || low.Contains("pedestrian") ||
-                        low.Contains("tram") || low.Contains("bus") || low.Contains("quay") ||
-                        low.Contains("bridge") || low.Contains("dam") || low.Contains("airport") ||
-                        low.Contains("harbor") || low.Contains("parking") || low.Contains("invisible") ||
-                        low.Contains("connection"))
-                        continue;
-
-                    bool isHwy = (rd.m_Flags & Game.Prefabs.RoadFlags.UseHighwayRules) != 0;
-                    bool isSep = (rd.m_Flags & Game.Prefabs.RoadFlags.SeparatedCarriageways) != 0;
-                    bool isFwd = (rd.m_Flags & Game.Prefabs.RoadFlags.DefaultIsForward) != 0;
-                    bool isBwd = (rd.m_Flags & Game.Prefabs.RoadFlags.DefaultIsBackward) != 0;
-                    float w = ngd.m_DefaultWidth;
-
-                    loggedCandidates.Add($"{name}(w={w:F1},f={(int)rd.m_Flags})");
-
-                    if (isHwy && isFwd && !isBwd && !isSep)
-                    {
-                        float s3 = Math.Abs(w - 14.0f) - (low.Contains("3") || low.Contains("three") ? 4.0f : 0f);
-                        if (s3 < bestScore[0]) { bestScore[0] = s3; m_NetPrefabs[0] = p; }
-
-                        float s2 = Math.Abs(w - 11.0f) - (low.Contains("2") || low.Contains("two") ? 4.0f : 0f);
-                        if (s2 < bestScore[1]) { bestScore[1] = s2; m_NetPrefabs[1] = p; }
-                    }
-                    else if (!isHwy && !low.Contains("highway"))
-                    {
-                        // Kind 2: 4L Divided Twoway Arterial
-                        if (!isFwd && !isBwd)
-                        {
-                            float s4d = Math.Abs(w - 24.0f)
-                                - (isSep ? 8.0f : 0f)
-                                - (low.Contains("divided") || low.Contains("median") ? 4.0f : 0f)
-                                - (low.Contains("four") || low.Contains("4") ? 3.0f : 0f);
-                            if (s4d < bestScore[2]) { bestScore[2] = s4d; m_NetPrefabs[2] = p; }
-                        }
-
-                        // Kind 3: 2L Twoway Street/Road
-                        if (!isFwd && !isBwd && !isSep)
-                        {
-                            float s2tw = Math.Abs(w - 16.0f)
-                                - (low.Contains("two") || low.Contains("2") || low.Contains("medium") ? 3.0f : 0f)
-                                + (w < 10.0f ? 20.0f : 0f);
-                            if (s2tw < bestScore[3]) { bestScore[3] = s2tw; m_NetPrefabs[3] = p; }
-                        }
-
-                        // Kind 4: 2L Oneway Street
-                        if (isFwd && !isBwd && !isSep)
-                        {
-                            float s2ow = Math.Abs(w - 16.0f) - (low.Contains("two") || low.Contains("2") ? 3.0f : 0f);
-                            if (s2ow < bestScore[4]) { bestScore[4] = s2ow; m_NetPrefabs[4] = p; }
-                        }
-                    }
-                }
-            }
-
-            using (var trackEntities = m_TrackPrefabQuery.ToEntityArray(Allocator.Temp))
-            {
-                for (int i = 0; i < trackEntities.Length; i++)
-                {
-                    Entity p = trackEntities[i];
-                    TrackData td = EntityManager.GetComponentData<TrackData>(p);
-                    NetGeometryData ngd = EntityManager.GetComponentData<NetGeometryData>(p);
-                    if ((ngd.m_Flags & Game.Net.GeometryFlags.Marker) != 0)
-                        continue;
-                    if ((td.m_TrackType & TrackTypes.Train) == 0 ||
-                        (td.m_TrackType & (TrackTypes.Tram | TrackTypes.Subway)) != 0)
-                        continue;
-
-                    string name;
-                    try { name = m_PrefabSystem.GetPrefabName(p) ?? ""; }
-                    catch { name = ""; }
-                    string low = name.ToLowerInvariant();
-                    if (low.Contains("station") || low.Contains("cargo") || low.Contains("bridge") || low.Contains("quay"))
-                        continue;
-
-                    float w = ngd.m_DefaultWidth;
-                    loggedCandidates.Add($"{name}(Track w={w:F1},t={(int)td.m_TrackType})");
-
-                    bool isOneWay = low.Contains("oneway") || low.Contains("single");
-                    float sr = Math.Abs(w - 16.0f)
-                        + (isOneWay ? 30.0f : 0f)
-                        - (low.Contains("double") || low.Contains("twoway") ? 5.0f : 0f);
-                    if (sr < bestScore[5]) { bestScore[5] = sr; m_NetPrefabs[5] = p; }
-                }
-            }
-
-            // Reasonable internal fallbacks among discovered prefabs
-            if (m_NetPrefabs[0] == Entity.Null) m_NetPrefabs[0] = m_NetPrefabs[1];
-            if (m_NetPrefabs[1] == Entity.Null) m_NetPrefabs[1] = m_NetPrefabs[0];
-            if (m_NetPrefabs[2] == Entity.Null) m_NetPrefabs[2] = m_NetPrefabs[3];
-            if (m_NetPrefabs[4] == Entity.Null) m_NetPrefabs[4] = m_NetPrefabs[3];
-
-            m_HasNetPrefabs = true;
-            for (int i = 0; i < 6; i++)
-                if (m_NetPrefabs[i] == Entity.Null) m_HasNetPrefabs = false;
-
-            if (!m_LoggedNetPrefabs)
-            {
-                m_LoggedNetPrefabs = true;
-                string GetName(Entity e) => e == Entity.Null ? "<NULL>" : (m_PrefabSystem.GetPrefabName(e) ?? e.ToString());
-                WriteStatus(
-                    $"Selected Backbone Prefabs: " +
-                    $"[0:3L_Hwy={GetName(m_NetPrefabs[0])}, " +
-                    $"1:2L_Hwy={GetName(m_NetPrefabs[1])}, " +
-                    $"2:4L_Div={GetName(m_NetPrefabs[2])}, " +
-                    $"3:2L_Road={GetName(m_NetPrefabs[3])}, " +
-                    $"4:2L_OW={GetName(m_NetPrefabs[4])}, " +
-                    $"5:DblRail={GetName(m_NetPrefabs[5])}]"
-                );
-                WriteStatus($"All {loggedCandidates.Count} road/track prefabs seen: {string.Join(", ", loggedCandidates)}");
-            }
-        }
-
-        private void StartRoadSpawn()
-        {
-            try
-            {
-                string binPath = Path.Combine(BaseDataDir, "sintanjin_roads.bin");
-                if (!File.Exists(binPath))
-                {
-                    WriteStatus($"ERROR: Road backbone pack not found at {binPath}");
-                    return;
-                }
-
-                DiscoverNetPrefabs();
-                if (!m_HasNetPrefabs)
-                {
-                    WriteStatus("ERROR: Failed to resolve all required road/train prefabs (check Sintanjin_Status.log).");
-                    return;
-                }
-
-                using var fs = File.OpenRead(binPath);
-                using var br = new BinaryReader(fs);
-                byte[] magic = br.ReadBytes(4);
-                if (magic.Length != 4 || magic[0] != 'S' || magic[1] != 'J' || magic[2] != 'R' || magic[3] != '1')
-                {
-                    WriteStatus("ERROR: Invalid magic header in sintanjin_roads.bin");
-                    return;
-                }
-
-                uint count = br.ReadUInt32();
-                var list = new List<RoadRecord>((int)count);
-                for (uint i = 0; i < count; i++)
-                {
-                    byte kind = br.ReadByte();
-                    byte flags = br.ReadByte();
-                    br.ReadUInt16(); // pad
-                    RoadRecord rec = new RoadRecord
-                    {
-                        Kind = kind,
-                        Flags = flags,
-                        P0x = br.ReadSingle(), P0y = br.ReadSingle(), P0z = br.ReadSingle(),
-                        P1x = br.ReadSingle(), P1y = br.ReadSingle(), P1z = br.ReadSingle(),
-                        P2x = br.ReadSingle(), P2y = br.ReadSingle(), P2z = br.ReadSingle(),
-                        P3x = br.ReadSingle(), P3y = br.ReadSingle(), P3z = br.ReadSingle(),
-                        Elev0 = br.ReadSingle(), Elev1 = br.ReadSingle(),
-                    };
-                    list.Add(rec);
-                }
-
-                m_PendingRoads = list;
-                m_PendingRoadCursor = 0;
-                m_SpawnedRoadsThisRun = 0;
-                m_SkippedRoadsThisRun = 0;
-                m_SnappedNodesThisRun = 0;
-                WriteStatus($"Queued {count:N0} backbone road/rail spans from sintanjin_roads.bin for Modification1 generation...");
-            }
-            catch (Exception ex)
-            {
-                WriteStatus($"ERROR in StartRoadSpawn: {ex}");
-            }
-        }
-
-        private void ClearRoadsAndTracks()
-        {
-            try
-            {
-                m_PendingRoads = null;
-                CleanupRoadDefinitions();
-                using var edges = m_NetEdgeQuery.ToEntityArray(Allocator.Temp);
-                using var nodes = m_NetNodeQuery.ToEntityArray(Allocator.Temp);
-                if (edges.Length > 0)
-                    EntityManager.AddComponent<Deleted>(edges);
-                if (nodes.Length > 0)
-                    EntityManager.AddComponent<Deleted>(nodes);
-                WriteStatus($"Cleared {edges.Length:N0} net edges and {nodes.Length:N0} net nodes (queued Game.Common.Deleted).");
-            }
-            catch (Exception ex)
-            {
-                WriteStatus($"ERROR in ClearRoadsAndTracks: {ex}");
-            }
-        }
-
-        private static long CellKey(int cx, int cz) => ((long)cx << 32) ^ (uint)cz;
-
-        private void RebuildNodeGrid()
-        {
-            m_NodeGrid.Clear();
-            using var nodes = m_NetNodeQuery.ToEntityArray(Allocator.Temp);
-            for (int i = 0; i < nodes.Length; i++)
-            {
-                Entity e = nodes[i];
-                Game.Net.Node nd = EntityManager.GetComponentData<Game.Net.Node>(e);
-                float elevMid = 0f;
-                if (EntityManager.HasComponent<Game.Net.Elevation>(e))
-                {
-                    float2 el = EntityManager.GetComponentData<Game.Net.Elevation>(e).m_Elevation;
-                    elevMid = 0.5f * (el.x + el.y);
-                }
-                int cx = (int)math.floor(nd.m_Position.x * 0.25f);
-                int cz = (int)math.floor(nd.m_Position.z * 0.25f);
-                long key = CellKey(cx, cz);
-                if (!m_NodeGrid.TryGetValue(key, out var list))
-                {
-                    list = new List<(Entity, float3, float)>(2);
-                    m_NodeGrid[key] = list;
-                }
-                list.Add((e, nd.m_Position, elevMid));
-            }
-        }
-
-        private bool TryFindExistingNode(float3 targetPos, float targetElev, out Entity matchEntity, out float3 matchPos)
-        {
-            matchEntity = Entity.Null;
-            matchPos = targetPos;
-            int cx = (int)math.floor(targetPos.x * 0.25f);
-            int cz = (int)math.floor(targetPos.z * 0.25f);
-            float bestD2 = 2.25f; // within 1.5m XZ radius
-
-            for (int dx = -1; dx <= 1; dx++)
-            {
-                for (int dz = -1; dz <= 1; dz++)
-                {
-                    if (!m_NodeGrid.TryGetValue(CellKey(cx + dx, cz + dz), out var bucket))
-                        continue;
-                    for (int i = 0; i < bucket.Count; i++)
-                    {
-                        var (candEntity, candPos, candElev) = bucket[i];
-                        if (math.abs(candElev - targetElev) > 5.5f || math.abs(candPos.y - targetPos.y) > 5.5f)
-                            continue;
-                        float2 d = candPos.xz - targetPos.xz;
-                        float d2 = math.lengthsq(d);
-                        if (d2 < bestD2)
-                        {
-                            bestD2 = d2;
-                            matchEntity = candEntity;
-                            matchPos = candPos;
-                        }
-                    }
-                }
-            }
-            return matchEntity != Entity.Null;
-        }
-
-        private void ProcessRoadBatch(int batchSize)
-        {
-            try
-            {
-                TerrainHeightData hData = m_TerrainSystem.GetHeightData(false);
-                if (!hData.isCreated)
-                    return;
-
-                RebuildNodeGrid();
-
-                int end = Math.Min(m_PendingRoadCursor + batchSize, m_PendingRoads.Count);
-                for (int i = m_PendingRoadCursor; i < end; i++)
-                {
-                    RoadRecord rec = m_PendingRoads[i];
-                    if (rec.Kind >= m_NetPrefabs.Length || m_NetPrefabs[rec.Kind] == Entity.Null)
-                    {
-                        m_SkippedRoadsThisRun++;
-                        continue;
-                    }
-
-                    float e0 = math.abs(rec.Elev0) < 0.05f ? 0f : rec.Elev0;
-                    float e1 = math.abs(rec.Elev1) < 0.05f ? 0f : rec.Elev1;
-
-                    float t0 = TerrainUtils.SampleHeight(ref hData, new float3(rec.P0x, 0f, rec.P0z));
-                    float t3 = TerrainUtils.SampleHeight(ref hData, new float3(rec.P3x, 0f, rec.P3z));
-
-                    float3 p0 = new float3(rec.P0x, t0 + e0, rec.P0z);
-                    float3 p3 = new float3(rec.P3x, t3 + e1, rec.P3z);
-                    if (math.lengthsq(p3.xz - p0.xz) < 1.0f)
-                    {
-                        m_SkippedRoadsThisRun++;
-                        continue;
-                    }
-
-                    float3 p1 = new float3(rec.P1x, p0.y + (rec.P1y - rec.P0y), rec.P1z);
-                    float3 p2 = new float3(rec.P2x, p3.y + (rec.P2y - rec.P3y), rec.P2z);
-
-                    Entity startNodeEntity = Entity.Null;
-                    Entity endNodeEntity = Entity.Null;
-                    if (TryFindExistingNode(p0, e0, out Entity mStartE, out float3 mStartPos))
-                    {
-                        startNodeEntity = mStartE;
-                        p0 = mStartPos;
-                        m_SnappedNodesThisRun++;
-                    }
-                    if (TryFindExistingNode(p3, e1, out Entity mEndE, out float3 mEndPos))
-                    {
-                        endNodeEntity = mEndE;
-                        p3 = mEndPos;
-                        m_SnappedNodesThisRun++;
-                    }
-
-                    if ((startNodeEntity != Entity.Null && startNodeEntity == endNodeEntity) ||
-                        math.lengthsq(p3.xz - p0.xz) < 1.0f)
-                    {
-                        m_SkippedRoadsThisRun++;
-                        continue;
-                    }
-
-                    Bezier4x3 bezier = new Bezier4x3(p0, p1, p2, p3);
-                    float3 tan0 = MathUtils.Tangent(bezier, 0f);
-                    float3 tan1 = MathUtils.Tangent(bezier, 1f);
-                    if (math.lengthsq(tan0) < 1e-4f) tan0 = p3 - p0;
-                    if (math.lengthsq(tan1) < 1e-4f) tan1 = p3 - p0;
-
-                    CoursePosFlags sFlags = CoursePosFlags.IsFirst;
-                    CoursePosFlags eFlags = CoursePosFlags.IsLast;
-                    if (math.abs(e0) > 0.05f) sFlags |= CoursePosFlags.FreeHeight;
-                    if (math.abs(e1) > 0.05f) eFlags |= CoursePosFlags.FreeHeight;
-                    if ((rec.Flags & 4) != 0) sFlags |= CoursePosFlags.ForceElevatedNode;
-                    if ((rec.Flags & 8) != 0) eFlags |= CoursePosFlags.ForceElevatedNode;
-                    if ((rec.Flags & 1) != 0)
-                    {
-                        sFlags |= CoursePosFlags.ForceElevatedEdge;
-                        eFlags |= CoursePosFlags.ForceElevatedEdge;
-                    }
-
-                    CoursePos startPos = new CoursePos
-                    {
-                        m_Entity = startNodeEntity,
-                        m_Position = p0,
-                        m_Rotation = NetUtils.GetNodeRotation(tan0),
-                        m_Elevation = new float2(e0),
-                        m_CourseDelta = 0f,
-                        m_SplitPosition = 0f,
-                        m_Flags = sFlags,
-                        m_ParentMesh = -1,
-                    };
-
-                    CoursePos endPos = new CoursePos
-                    {
-                        m_Entity = endNodeEntity,
-                        m_Position = p3,
-                        m_Rotation = NetUtils.GetNodeRotation(tan1),
-                        m_Elevation = new float2(e1),
-                        m_CourseDelta = 1f,
-                        m_SplitPosition = 0f,
-                        m_Flags = eFlags,
-                        m_ParentMesh = -1,
-                    };
-
-                    NetCourse course = new NetCourse
-                    {
-                        m_StartPosition = startPos,
-                        m_EndPosition = endPos,
-                        m_Curve = bezier,
-                        m_Elevation = new float2(e0, e1),
-                        m_Length = MathUtils.Length(bezier),
-                        m_FixedIndex = -1,
-                    };
-
-                    CreationDefinition def = new CreationDefinition
-                    {
-                        m_Prefab = m_NetPrefabs[rec.Kind],
-                        m_SubPrefab = Entity.Null,
-                        m_Original = Entity.Null,
-                        m_Owner = Entity.Null,
-                        m_Attached = Entity.Null,
-                        m_Flags = CreationFlags.Permanent | CreationFlags.SubElevation,
-                        m_RandomSeed = (i * 1973) ^ 0x51A7,
-                    };
-
-                    Entity defEntity = EntityManager.CreateEntity();
-                    EntityManager.AddComponentData(defEntity, def);
-                    EntityManager.AddComponentData(defEntity, course);
-                    EntityManager.AddComponent<Updated>(defEntity);
-                    m_CreatedRoadDefs.Add(defEntity);
-                    m_SpawnedRoadsThisRun++;
-                }
-
-                m_PendingRoadCursor = end;
-                if (m_PendingRoadCursor >= m_PendingRoads.Count)
-                {
-                    WriteStatus($"SUCCESS: Queued {m_SpawnedRoadsThisRun:N0} permanent backbone road/rail spans ({m_SnappedNodesThisRun:N0} cross-batch node snaps, skipped {m_SkippedRoadsThisRun:N0}).");
-                    m_PendingRoads = null;
-                }
-            }
-            catch (Exception ex)
-            {
-                WriteStatus($"ERROR in ProcessRoadBatch: {ex}");
-                m_PendingRoads = null;
             }
         }
     }

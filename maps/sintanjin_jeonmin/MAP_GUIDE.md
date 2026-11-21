@@ -30,14 +30,14 @@ Generated PNG files and download caches are not versioned. Run the commands belo
 | `resources_overlay_4096.png` | - | **Image Overlay 모드용 4096×4096 천연자원 배치 가이드** (비옥·석유·광물·지하수·산림) |
 | `sintanjin_resources_256.bin` | - | `SintanjinMapBuilder` 모드용 `256×256` 천연자원 바이너리 (비옥·광물·석유·어업·지하수) |
 | `sintanjin_trees.bin` | - | `SintanjinMapBuilder` 모드용 실측 위성·DEM 기반 산림/수변 식생 바이너리 (~8.4만 그루) |
-| `sintanjin_roads.bin` | - | `SintanjinMapBuilder` 모드용 Method A 간선도로·고속도로·철도 백본 바이너리 (IC 램프 제외) |
+| `sintanjin_roads.bin` | - | (모드에서 도로 배치 삭제됨, 참고용) Method A 간선도로·고속도로·철도 백본 바이너리 (IC 램프 제외) |
 
 ## 3. 적용 방법
 1. `%UserProfile%\AppData\LocalLow\Colossal Order\Cities Skylines II\Heightmaps\` 폴더에 원하는 하이트맵 복사
 2. (선택) `...\Overlays\` 폴더에 `satellite_overlay_4096.png` 복사
 3. CS2 **Map Editor → Terrain → Import Heightmap**에서 하이트맵 선택 후 **Height Scale**을 표에 맞게 설정 (`1024 m` 권장, 월드맵 쓰면 **Import Worldmap**도 동일 스케일로 선택)
 4. **Water → Sea Level**을 **`24.0 m`** 로 맞추면 금강·갑천 수로가 즉시 채워집니다.
-5. `SintanjinMapBuilder` 모드가 설치되어 있으므로 에디터 또는 게임에서 **`F6`** (전체: 천연자원+실측 숲+백본 도로/철도 자동 구축), **`Ctrl+Shift+R`** (천연자원만), **`Ctrl+Shift+T`** (숲/나무만), **`Ctrl+Shift+H`** (간선 도로/고속도로/철도 백본만), **`Ctrl+Shift+X`** (심은 나무 초기화) 단축키로 즉시 자동 반영됩니다.
+5. `SintanjinMapBuilder` 모드가 설치되어 있으므로 에디터 또는 게임에서 **`F6`** (전체: 천연자원+실측 숲), **`Ctrl+Shift+R`** (천연자원만), **`Ctrl+Shift+T`** (숲/나무만), **`Ctrl+Shift+X`** (심은 나무 초기화), **`Ctrl+Shift+W`** (풍향 북북서→남남동) 단축키로 즉시 자동 반영됩니다. `Sintanjin_Command.txt` 명령은 `ALL`/`RESOURCE`/`TREE`/`CLEAR`/`WIND`입니다. 도로·철도 자동 배치 기능은 모드에서 삭제되었습니다(`sintanjin_roads.bin`은 참고용으로만 남음).
 6. 백본 도로 깔기 후 회덕JC·신탄진IC·북대전IC 연결 램프만 바닐라 도로 커브 + `Move It`으로 매끄럽게 이어 주면 1:1 대전 북부 도로망이 완성됩니다.
 
 ## Recreating local images
