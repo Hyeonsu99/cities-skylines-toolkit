@@ -528,6 +528,9 @@ namespace SintanjinMapBuilder
                     ecb.SetComponent(e, new PrefabRef(prefab));
                     ecb.SetComponent(e, tr);
                     ecb.SetComponent(e, treeComp);
+                    // Archetype ships Decoration enabled; vanilla placement (GenerateObjectsSystem) disables it.
+                    // Enabled = decorative: AreaResourceSystem skips it for wood and TreeGrowthSystem never grows it.
+                    ecb.SetComponentEnabled<Decoration>(e, false);
                     if (m_PrefabsWithSeed.Contains(prefab))
                         ecb.SetComponent(e, new PseudoRandomSeed((ushort)rng.NextInt(1, 65536)));
 
