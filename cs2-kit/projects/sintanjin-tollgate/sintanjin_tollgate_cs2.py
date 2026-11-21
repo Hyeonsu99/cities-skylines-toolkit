@@ -552,7 +552,7 @@ def make_atlas(size=4096):
     # 1024x1024 히어로 타일 및 다중 배너 팩킹 (4K 아틀라스 공간 효율 극대화)
     add("polycarb", color=(135, 170, 178), metal=0.05, gloss=0.88, px=1024, tile=(4.0, 2.5), painter=_paint_polycarb, normal_strength=1.4)
     add("blue_fascia", color=(46, 140, 202), metal=0.22, gloss=0.54, px=1024, tile=(6.0, 1.50), painter=_paint_blue_fascia, normal_strength=2.2)
-    add("signs_sjt", color=(22, 52, 92), gloss=0.44, emissive=(90, 96, 102), px=1024, painter=_paint_signs_sjt)
+    add("signs_sjt", color=(22, 52, 92), gloss=0.44, emissive=None, px=1024, painter=_paint_signs_sjt)  # 타이틀 글자 발광 제거(인게임 번짐), 글자는 알베도로 읽힘
     add("led_banners", color=(14, 46, 86), gloss=0.48, emissive=(115, 102, 58), px=1024, painter=_paint_led_banners)
     add("concrete", color=(206, 208, 202), metal=0.0, gloss=0.20, px=1024, tile=(3.0, 3.0), painter=_paint_concrete, normal_strength=2.6)
     add("soffit", color=(114, 96, 78), metal=0.30, gloss=0.42, px=1024, tile=(3.0, 3.0), painter=_paint_soffit, normal_strength=3.2)
