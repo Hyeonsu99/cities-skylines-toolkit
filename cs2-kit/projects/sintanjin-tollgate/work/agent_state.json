@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "sintanjin_tollgate_cs2.py",
- "generator_hash": "c658fb3627ffb4efcf766701f54e2e8e190f84841a1f8b86fb331300b3985a13",
- "current_preview_hash": "b08c46c04bfa1e7bd54668632fe0e93a7b3ffafda8206eed78274305ca31fbce",
+ "generator_hash": "07c79ffa04054d78a0641abd75123b34260f89a70e5bcfc748d7a3623c489542",
+ "current_preview_hash": "3305b1e451ec26aeb7ee4b6edfcc9e6fb8c851deed654d5ce81244d2b5e87cc9",
  "last_gate": {
   "status": "PASS",
   "project": "sintanjin-tollgate",
@@ -29,8 +29,8 @@
    "report": "output\\SintanjinTollgate_L1_6x4\\_check\\report.json"
   },
   "asset": "SintanjinTollgate_L1_6x4",
-  "label": "albedo",
-  "time": "2026-11-20 23:42:53",
+  "label": "canopy_glass",
+  "time": "2026-11-21 10:04:01",
   "build": {
    "asset": "SintanjinTollgate_L1_6x4",
    "fbx": true,
@@ -52,18 +52,22 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 20272,
+     "main": 19412,
      "win": 48,
-     "lod1": 3484,
+     "gls": 1472,
+     "lod1": 3240,
      "lod1_win": 48,
+     "lod1_gls": 460,
      "lod2": 482,
      "lod2_win": 48
     },
     "verts": {
-     "main": 41054,
+     "main": 39334,
      "win": 96,
-     "lod1": 6968,
+     "gls": 2944,
+     "lod1": 6480,
      "lod1_win": 96,
+     "lod1_gls": 920,
      "lod2": 964,
      "lod2_win": 96
     },
@@ -71,6 +75,8 @@
      "main": 0,
      "lod1": 0,
      "lod2": 0,
+     "gls": 0,
+     "lod1_gls": 0,
      "win": 0
     },
     "textures": {
@@ -86,8 +92,8 @@
      "LOD2_Emissive": "1024x1024 RGB"
     },
     "texel_px_per_m": {
-     "p10": 102.8,
-     "median": 323.5,
+     "p10": 85.2,
+     "median": 341.0,
      "p90": 341.0
     },
     "windows": 24,
@@ -120,14 +126,14 @@
   "lod": {
    "checked": true,
    "status": "PASS",
-   "line": "LODCHECK PASS main max 0.007% (az 225, el +5) bad_views 0/64 | lod1 max 0.004% (az 45, el +5) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\SintanjinTollgate_L1_6x4",
+   "line": "LODCHECK PASS main max 0.008% (az 68, el +5) bad_views 0/64 | lod1 max 0.007% (az 45, el +5) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\SintanjinTollgate_L1_6x4",
    "notes": []
   },
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 41054,
-    "LOD1": 6968,
+    "LOD0": 39334,
+    "LOD1": 6480,
     "LOD2": 964
    },
    "action_tags": [],
@@ -145,13 +151,13 @@
   "reason": "all requested checks passed"
  },
  "project": "sintanjin-tollgate",
- "updated_at": "2026-11-20T23:43:11",
- "visual_review_note": "알베도 상한 적용: 형상 동일, 원색 도장 채도·순백 명도만 하향, 간판·신호 원색 유지",
+ "updated_at": "2026-11-21T10:04:16",
+ "visual_review_note": "아치 폴리카보네이트 외피 _Gls 반투명(판 alpha 110, 멀리온 255), 눈높이 yaw20/200 pitch4·하부 pitch-6에서 리브·부스 비침 확인, LOD2 불투명 유지",
  "visual_review_artifacts": [
   {
    "file": "previews/SintanjinTollgate_L1_6x4.png",
-   "sha256": "b08c46c04bfa1e7bd54668632fe0e93a7b3ffafda8206eed78274305ca31fbce"
+   "sha256": "3305b1e451ec26aeb7ee4b6edfcc9e6fb8c851deed654d5ce81244d2b5e87cc9"
   }
  ],
- "reviewed_preview_hash": "b08c46c04bfa1e7bd54668632fe0e93a7b3ffafda8206eed78274305ca31fbce"
+ "reviewed_preview_hash": "3305b1e451ec26aeb7ee4b6edfcc9e6fb8c851deed654d5ce81244d2b5e87cc9"
 }

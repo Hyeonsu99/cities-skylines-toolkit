@@ -189,6 +189,16 @@ def _paint_polycarb(ctx):
     ctx.gloss[mullion] = 0.45
     ctx.gloss[gasket] = 0.22
     ctx.stains(amount=0.02, scale_px=64, streaks=0.15, seed=43)
+    return mullion | gasket
+
+
+POLYCARB_ALPHA = 110   # 복층 폴리카보네이트 판 불투명도(약 43%). 멀리온·가스켓은 255 (방음벽 투명판 76 선례보다 탁한 유백 판)
+
+
+def _paint_polycarb_glass(ctx):
+    # _Gls 메시용: 같은 그림 + 판 부분만 반투명 알파
+    frame = _paint_polycarb(ctx)
+    ctx.alpha[...] = np.where(frame, 255.0, float(POLYCARB_ALPHA))
 
 
 def _paint_concrete(ctx):
@@ -546,6 +556,7 @@ def make_atlas(size=4096):
     # 발광 강도: 석봉센터·엑슬루103 승인값 수준(간판 30~100, 창 70~100, 조명 60~115, 신호 ~150)에 맞춤 (2026-11-21, 이전 값의 0.40~0.68배)
     # 1024x1024 히어로 타일 및 다중 배너 팩킹 (4K 아틀라스 공간 효율 극대화)
     add("polycarb", color=(156, 214, 218), metal=0.05, gloss=0.88, px=1024, tile=(4.0, 2.5), painter=_paint_polycarb, normal_strength=1.4)
+    add("polycarb_glass", color=(156, 214, 218), metal=0.05, gloss=0.88, px=1024, tile=(4.0, 2.5), painter=_paint_polycarb_glass, normal_strength=1.4)
     add("blue_fascia", color=(46, 140, 202), metal=0.22, gloss=0.54, px=1024, tile=(6.0, 1.50), painter=_paint_blue_fascia, normal_strength=2.2)
     add("signs_sjt", color=(22, 52, 92), gloss=0.44, emissive=(90, 96, 102), px=1024, painter=_paint_signs_sjt)
     add("led_banners", color=(14, 46, 86), gloss=0.48, emissive=(115, 102, 58), px=1024, painter=_paint_led_banners)
@@ -720,9 +731,17 @@ def arch_profile_circular(x0, x1, z_edge, z_crown, n_seg, half_mode=None):
 
 
 def build_closed_arch_vault(mb, A, x0, x1, y0, y1, z_edge, z_crown, thick, n_seg,
-                            tag, edge_tag=None, half_mode=None, skip_bottom=False):
-    """완전 폐합 이중외피(thick) 아치 지붕 쉘 + CCW 외향 법선 + 평면 사각형."""
+                            tag, edge_tag=None, half_mode=None, skip_bottom=False, skin_mb=None, skin_tag=None):
+    """완전 폐합 이중외피(thick) 아치 지붕 쉘 + CCW 외향 법선 + 평면 사각형.
+    skin_mb 를 주면 위·아래 외피는 그 메시(_Gls)에 skin_tag 로, 마구리는 mb 에 남긴다."""
     edge_tag = edge_tag or tag
+    smb, stag = (skin_mb, skin_tag or tag) if skin_mb is not None else (mb, tag)
+    two_sided = skin_mb is not None   # 외피가 빠지면 마구리 띠 안쪽이 드러나므로 뒷면도 만든다
+
+    def cap(pts, uv, t):
+        mb.quad(pts, uv, t)
+        if two_sided:
+            mb.quad(pts[::-1], uv[::-1], t)
     prof = arch_profile_circular(x0, x1, z_edge, z_crown, n_seg, half_mode=half_mode)
     bot = [(x, z - 0.5 * thick) for (x, z) in prof]
     top = [(x, z + 0.5 * thick) for (x, z) in prof]
@@ -730,7 +749,7 @@ def build_closed_arch_vault(mb, A, x0, x1, y0, y1, z_edge, z_crown, thick, n_seg
     # Y방향 타일 쪼개기 (스테이지 0/1에서만 적절히 분할, LOD2는 1단)
     tw_m, th_m = A.tile_size(tag) if (A is not None and A.is_tiled(tag)) else (y1 - y0, 4.0)
     y_len = y1 - y0
-    ny = max(1, math.ceil(y_len / tw_m - 1e-6)) if mb.split_tiles else 1
+    ny = max(1, math.ceil(y_len / tw_m - 1e-6)) if smb.split_tiles else 1
 
     for j in range(ny):
         ya = y0 + (y_len * j) / ny
@@ -741,12 +760,12 @@ def build_closed_arch_vault(mb, A, x0, x1, y0, y1, z_edge, z_crown, thick, n_seg
             _, zb0 = bot[i]
             _, zb1 = bot[i + 1]
             seg_len = math.hypot(xa1 - xa0, zt1 - zt0)
-            uv_top = _uv_seg(A, tag, yb - ya, seg_len)
+            uv_top = _uv_seg(A, stag, yb - ya, seg_len)
             # Top (+Z)
-            mb.quad([(xa0, ya, zt0), (xa1, ya, zt1), (xa1, yb, zt1), (xa0, yb, zt0)], uv_top, tag)
+            smb.quad([(xa0, ya, zt0), (xa1, ya, zt1), (xa1, yb, zt1), (xa0, yb, zt0)], uv_top, stag)
             # Bottom (-Z)
             if not skip_bottom:
-                mb.quad([(xa1, ya, zb1), (xa0, ya, zb0), (xa0, yb, zb0), (xa1, yb, zb1)], uv_top, tag)
+                smb.quad([(xa1, ya, zb1), (xa0, ya, zb0), (xa0, yb, zb0), (xa1, yb, zb1)], uv_top, stag)
 
     # Front (-Y at y0) & Back (+Y at y1) 마구리 면
     for i in range(n_seg):
@@ -755,14 +774,14 @@ def build_closed_arch_vault(mb, A, x0, x1, y0, y1, z_edge, z_crown, thick, n_seg
         _, zb0 = bot[i]
         _, zb1 = bot[i + 1]
         uv_end = _uv_seg(A, edge_tag, math.hypot(xa1 - xa0, zt1 - zt0), thick)
-        mb.quad([(xa0, y0, zb0), (xa1, y0, zb1), (xa1, y0, zt1), (xa0, y0, zt0)], uv_end, edge_tag)
-        mb.quad([(xa1, y1, zb1), (xa0, y1, zb0), (xa0, y1, zt0), (xa1, y1, zt1)], uv_end, edge_tag)
+        cap([(xa0, y0, zb0), (xa1, y0, zb1), (xa1, y0, zt1), (xa0, y0, zt0)], uv_end, edge_tag)
+        cap([(xa1, y1, zb1), (xa0, y1, zb0), (xa0, y1, zt0), (xa1, y1, zt1)], uv_end, edge_tag)
 
     # Left (-X) & Right (+X) 측면 마구리
     uv_side = _uv_seg(A, edge_tag, y_len, thick)
-    mb.quad([(bot[0][0], y1, bot[0][1]), (bot[0][0], y0, bot[0][1]),
+    cap([(bot[0][0], y1, bot[0][1]), (bot[0][0], y0, bot[0][1]),
              (top[0][0], y0, top[0][1]), (top[0][0], y1, top[0][1])], uv_side, edge_tag)
-    mb.quad([(bot[-1][0], y0, bot[-1][1]), (bot[-1][0], y1, bot[-1][1]),
+    cap([(bot[-1][0], y0, bot[-1][1]), (bot[-1][0], y1, bot[-1][1]),
              (top[-1][0], y1, top[-1][1]), (top[-1][0], y0, top[-1][1])], uv_side, edge_tag)
 
 
@@ -982,6 +1001,8 @@ def build_island(mb, A, x0, x1, y0, y1, nose_len, stage):
 def build_stage(A, stage):
     mb = K.MeshBuilder(A, split_tiles=(stage < 2))
     wins = K.WindowSet() if stage == 0 else None
+    # 아치 폴리카보네이트 외피는 반투명 _Gls 메시로 (LOD2 는 유리 메시가 없어 불투명 polycarb 유지)
+    gls = K.MeshBuilder(A, split_tiles=True) if stage < 2 else None
     z_isl = 0.56
 
     # 1. 아일랜드 1~6 + 북/남 연석 0,7 (X ∈ [-20.30, +20.30], Y ∈ [-14.20, +14.20])
@@ -1088,6 +1109,7 @@ def build_stage(A, stage):
         build_closed_arch_vault(
             mb, A, ax0, ax1, ay0, ay1, ze, zc, arch_thick, n_arch,
             tag="polycarb", edge_tag="trim_white", half_mode=hm,
+            skin_mb=gls, skin_tag="polycarb_glass",
         )
 
     # 5. 아치 골짜기 백색 배수거터 빔 + 곡선 강관 트러스 리브
@@ -1528,7 +1550,7 @@ def build_stage(A, stage):
             mb.box(lx_f - 0.025, lx_f + 0.025, gy_e1 - 0.04, gy_e1 + 0.04, 4.98, 5.19, "gantry_grey", skip=("bottom", "top"))
         mb.box(-16.15, -15.85, gy_e1 - 0.10, gy_e1 + 0.26, 4.68, 4.92, "trim_white")
 
-    return dict(mb=mb, wins=wins)
+    return dict(mb=mb, wins=wins, gls=gls)
 
 
 def main():
@@ -1549,7 +1571,7 @@ def main():
     res = K.export_asset(
         "SintanjinTollgate",
         level=1,
-        meshes=dict(main=s0["mb"], lod1=s1["mb"], lod2=s2["mb"], windows=s0["wins"]),
+        meshes=dict(main=s0["mb"], lod1=s1["mb"], lod2=s2["mb"], gls=s0["gls"], lod1_gls=s1["gls"], windows=s0["wins"]),
         atlas=A,
         out_root=out_dir,
         lod2_tex=1024,
