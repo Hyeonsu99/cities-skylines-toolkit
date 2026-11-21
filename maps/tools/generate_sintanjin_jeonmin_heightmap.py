@@ -9,6 +9,7 @@ import io
 import json
 import math
 import os
+import shutil
 import struct
 import urllib.parse
 import urllib.request
@@ -26,7 +27,18 @@ REAL_SIDE_M = CS2_SIDE_M / SCALE_FACTOR  # 9886.8965 m
 
 WORLD_MULTIPLIER = 4  # CS2 WorldMap = 4x Playable width (57,344 m)
 WATER_SEA_LEVEL_M = 24.0
-START_AQUIFER = ("지하수: 시작 지역 신탄진·석봉동", 36.4510, 127.4235, 620.0, 520.0, 1.0)
+# Screenshot 3.png: IC east-side 3x3 area, inferred on the 23x23 tile grid.
+# Indices are zero-based from west/south; saved selection is unavailable.
+START_TILE_COLS = (16, 18)
+START_TILE_ROWS = (15, 17)
+START_AQUIFER = ("지하수: 시작 지역 신탄진IC 동쪽", 36.44284, 127.43195, 420.0, 380.0, 1.0)
+RESOURCE_HEIGHTMAPS = {
+    "resource_oil": "Oil",
+    "resource_ore": "Ore",
+    "resource_fertile": "Fertile",
+    "resource_forest": "Forest",
+    "resource_underground_water": "Groundwater",
+}
 
 M_PER_DEG_LAT = 111132.95
 M_PER_DEG_LON = (
@@ -950,6 +962,11 @@ def generate_resources(
         "resource_underground_water": gw,
     }
     for base, arr in res_work.items():
+        # Resample float intensity before quantization; PNG rows remain north->south.
+        field = np.array(Image.fromarray(arr, mode="F").resize(
+            (elev.shape[1], elev.shape[0]), Image.BILINEAR), dtype=np.float32)
+        save_uint16_png(field, 1.0, os.path.join(
+            out_dir, f"Sintanjin_Jeonmin_145x_{RESOURCE_HEIGHTMAPS[base]}_16bit.png"))
         u8_w = np.clip(np.round(arr * 255.0), 0, 255).astype(np.uint8)
         im_w = Image.fromarray(u8_w, mode="L")
         im_w.resize((4096, 4096), Image.BICUBIC).save(os.path.join(out_dir, f"{base}_4096.png"))
@@ -981,6 +998,38 @@ def generate_resources(
     ], axis=-1)
     bin_arr.astype("<u2").tofile(os.path.join(out_dir, "sintanjin_resources_256.bin"))
     return res_work, labels
+
+
+def install_resource_heightmaps(out_dir: str):
+    """Install only aligned 16-bit resource PNGs, then remove the obsolete overlay."""
+    target = os.path.join(os.path.expanduser("~"), "AppData", "LocalLow",
+                          "Colossal Order", "Cities Skylines II", "Heightmaps")
+    reference = os.path.join(target, "Sintanjin_Jeonmin_145x_1024m_16bit.png")
+    with Image.open(reference) as im:
+        size = im.size
+    with open(reference, "rb") as f:
+        header = f.read(26)
+    if header[:8] != b"\x89PNG\r\n\x1a\n" or header[24:26] != b"\x10\x00":
+        raise ValueError("Reference must be a 16-bit grayscale PNG")
+    paths = [os.path.join(out_dir, f"Sintanjin_Jeonmin_145x_{name}_16bit.png")
+             for name in RESOURCE_HEIGHTMAPS.values()]
+    for path in paths:
+        with Image.open(path) as im:
+            if im.size != size:
+                raise ValueError(f"Resource/reference dimensions differ: {path}")
+        with open(path, "rb") as f:
+            if f.read(26)[24:26] != header[24:26]:
+                raise ValueError(f"Resource is not 16-bit grayscale: {path}")
+    for path in paths:
+        shutil.copy2(path, target)
+    # Delete only after all five installed files match their generated sources.
+    for path in paths:
+        with open(path, "rb") as src, open(os.path.join(target, os.path.basename(path)), "rb") as dst:
+            if src.read() != dst.read():
+                raise IOError(f"Resource copy differs: {path}")
+    overlay = os.path.join(target, "Sintanjin_Jeonmin_145x_Resources_Overlay.png")
+    if os.path.isfile(overlay):
+        os.remove(overlay)
 
 
 def generate_realistic_trees(
@@ -2623,6 +2672,8 @@ def main():
     parser.add_argument("--cache-dir", default=os.path.join(default_out, "_cache"))
     parser.add_argument("--resources-only", action="store_true",
                         help="Reuse saved 1024m heightmap and satellite; rebuild resources, trees and resource previews only")
+    parser.add_argument("--install-resource-heightmaps", action="store_true",
+                        help="Install five aligned 16-bit resource PNGs into the game Heightmaps folder")
     args = parser.parse_args()
 
     out_dir = args.out_dir
@@ -2643,6 +2694,8 @@ def main():
         res_work, labels = generate_resources(elev, water_mask, masks, lat_n, lat_s, lon_w, lon_e, out_dir)
         generate_realistic_trees(elev, water_mask, masks, sat_img, res_work, out_dir)
         build_resource_visuals(elev, water_mask, sat_img, res_work, labels, lat_n, lat_s, lon_w, lon_e, out_dir)
+        if args.install_resource_heightmaps:
+            install_resource_heightmaps(out_dir)
         return
     print(f"Playable bounds ({REAL_SIDE_M:.1f}m -> {CS2_SIDE_M:.0f}m @ {SCALE_FACTOR}x):")
     print(f"  N={lat_n:.5f}, S={lat_s:.5f}, W={lon_w:.5f}, E={lon_e:.5f}")
@@ -2726,6 +2779,9 @@ def main():
     build_resource_visuals(elev_final, water_mask, sat_img, res_work, res_labels, lat_n, lat_s, lon_w, lon_e, out_dir)
     write_docs_and_meta(out_dir, lat_n, lat_s, lon_w, lon_e, elev_final, world_max_m)
     print(f"Done! Output directory: {out_dir}")
+
+    if args.install_resource_heightmaps:
+        install_resource_heightmaps(out_dir)
 
 
 if __name__ == "__main__":

@@ -7,29 +7,48 @@
 | 석유 | 목상·문평 대덕3·4산단(36.4408, 127.4025), 평촌·신일, 탑립·관평 동측, 벤처협동화·원촌 북측의 저지대. 기존 공업 축의 특화 후보다. |
 | 광석 | 불무산, 신탄진 동측·계족산 서사면·회덕 동측과 화암·자운·송강 서측 능선. 산단 외곽 암반 지형을 채굴 후보로 유지한다. |
 | 비옥한 토지 | 미호·금강 북안·구즉·금고·송강 서측·전민 갑천변의 완경사 충적평야. 시가지와 도로는 감쇠한다. |
-| 숲 | 산지·구릉과 기존 식생 마스크. 농지·시가지·도로 및 광산/유전 중심부는 감쇠하며 실제 나무 바이너리도 함께 갱신했다(83,349그루). |
-| 지하수 | 금강·갑천 연안 대수층을 유지하고 **시작 권역 신탄진·석봉동에 추가 보장**. 채굴 자원 중심부는 제외한다. |
+| 숲 | 산지·구릉과 기존 식생 마스크. 농지·시가지·도로 및 광산/유전 중심부는 감쇠하며 실제 나무 바이너리도 함께 다시 생성했다. |
+| 지하수 | 금강·갑천 연안 대수층을 유지하고 **시작 권역 신탄진IC 바로 동쪽에 추가 보장**. 채굴 자원 중심부는 제외한다. |
 
 광석→석유→농지 순으로 중심부 겹침을 줄이고, 숲·지하수도 채굴 강도 0.5 이상에서 비운다. 경계는 연속적으로 감쇠한다. 256셀로 줄인 배포 바이너리에서도 각각 강도 3,000/10,000을 넘는 광석·석유·농지 간 중복 및 광석/석유–지하수 중복은 0셀이다. 어업 채널은 기존 수면 마스크를 유지한다.
 
 ## 시작 지하수
 
-- 총괄을 통해 확인된 시작 권역: **신탄진·석봉동**. 실제 선택 타일 파일은 저장소에 없다.
-- 중심 **36.4510°N, 127.4235°E**, CS2 맵 중심 기준 **X +2,471m / Z +4,995m**(동·북).
-- 타원 크기 매개변수: 실측 동서 620m·남북 520m, 게임 축척 약 899m·754m. 가장자리로 부드럽게 감소한다.
-- 중심 고도 약 33.5m, 배포 셀 지하수 **9,425/10,000**, 석유·광석 **0**. 수면·고속도로·급경사를 피하고 고도 감쇠로 시작 대수층이 사라지는 것을 방지했다.
+- 사용자 스크린샷 `3.png`의 점선 사각형: **신탄진IC 바로 동쪽**. 기존 석봉동 시작 지하수 중심은 잘못된 해석이어서 남서쪽으로 옮겼다. 석봉·금강의 일반 대수층은 유지한다.
+- 새 중심 **36.44284°N, 127.43195°E**, CS2 맵 중심 기준 **X +3,570m / Z +3,681m**(동·북). 게임용 배치 좌표이며 측량값이 아니다.
+- 23×23 격자에서 서쪽·남쪽부터 0 기반 **열 17, 행 17**(1 기반 18열·18행). 시작 구역은 스크린샷에서 추정한 **열 16~18, 행 15~17의 3×3 구역**이며 저장된 실제 타일 선택 데이터는 없어 인게임 확정 번호는 미확인이다.
+- 타원 반경 매개변수: 실제 거리 동서 420m·남북 380m, 게임 축척 약 609m·551m. 가장자리로 부드럽게 감소한다. 수면·고속도로·급경사와 채굴 중심부를 피한다.
+- 생성 결과: 중심 고도 약 **57.42m**, 256셀 배포 바이너리 지하수 **7,819/10,000**, 광석·석유 **0**. 중심 16bit PNG 값 **62,202/65,535**. 고속도로 마스크를 피한 지점이며 시작 구역에서 강도 7,000 이상의 셀을 별도로 검사했다.
 
 ## 재생성과 적용
 
-기존 `heightmap_cs2_4096_1024m.png`와 `satellite_overlay_4096.png`가 `maps/sintanjin_jeonmin/`에 필요하다. 이번 생성은 원래 Desktop 체크아웃의 두 이미지를 복사해 사용했다. OSM은 기본 `_cache/osm_area.json`으로 저장하며 같은 캐시를 사용해야 같은 배치가 재현된다(2026-11-20 SHA256 `9effc6d211721cbafc0b7f66dd401878f6e5259e05133fca7de67a379bb2c1ac`).
+기존 `heightmap_cs2_4096_1024m.png`와 `satellite_overlay_4096.png`가 `maps/sintanjin_jeonmin/`에 필요하다. 주인 폴더 `C:/Users/johye/Desktop/CitiesSimulator`에서 생성한다. 이전 OSM 캐시가 없어 2026-11-21 다시 받은 `_cache/osm_area.json`을 사용했다. 같은 캐시를 보관해야 같은 배치가 재현된다.
+
+이번 캐시 SHA256: `08e1479cc1200d3522a14279d6df3d228397190f590a5954dff89a3e76875e36`. 나무는 **83,338그루**로 다시 생성했다(기존 83,349그루). 지하수만의 변경 외에도 새 OSM 캐시가 시가지·도로·자원 마스크에 반영되므로 자원·나무 바이너리 두 파일을 함께 배포한다.
 
 ```powershell
-python maps/tools/generate_sintanjin_jeonmin_heightmap.py --resources-only
+python maps/tools/generate_sintanjin_jeonmin_heightmap.py --resources-only --install-resource-heightmaps
 python maps/tools/test_resources.py
 ```
 
-기존 전체 생성 경로에도 동일한 배치가 적용된다. 자원 전용 명령은 높이맵·월드맵·도로를 다시 만들지 않는다. PNG와 다운로드 캐시는 기존 관례대로 제외하며 `sintanjin_resources_256.bin`과 `sintanjin_trees.bin`을 갱신한다. 검토 이미지는 `preview_resources_combined.png`, `preview_forest_trees.png`, 오버레이는 `resources_overlay_4096.png`다.
+기존 전체 생성 경로에도 동일한 배치가 적용된다. 자원 전용 명령은 지형 높이맵·월드맵·도로를 다시 만들지 않는다. PNG와 다운로드 캐시는 기존 관례대로 커밋에서 제외하며 `sintanjin_resources_256.bin`과 `sintanjin_trees.bin`을 갱신한다. 검토 이미지는 `preview_resources_combined.png`, `preview_forest_trees.png`다.
 
-게임 반영은 두 바이너리를 `%USERPROFILE%\AppData\LocalLow\Colossal Order\Cities Skylines II\Sintanjin_Jeonmin_Pack\`에 복사한 다음 같은 맵에서 `Ctrl+Shift+R`(자원), 기존 생성 나무 교체가 필요하면 `Ctrl+Shift+X` 후 `Ctrl+Shift+T`(나무)로 수행한다. 나무 초기화는 맵의 기존 야생 나무를 지우므로 별도 맵 복사본에서 실행한다. **이번 작업은 로컬 생성·자동 검증까지이며 게임 파일 설치·인게임 적용은 미실시**다.
+`preview_start_location.png`는 위성 이미지에 추정 시작 구역(노랑)과 새 지하수 중심(청록)을 표시한 이번 검토용 이미지다.
 
-검증: `test_resources.py` PASS(수면 배제, 시작 대수층, 채널·남북 방향·크기·범위, 고강도 중복, 나무팩/채굴 중심부 배제), 생성 이미지 확인. 독립 검토는 총괄에게 인계한다. 배포는 사용자 승인 및 `HandOff.md` 규칙에 따라 PR 없이 `main`에 직접 반영한다.
+## 자원별 16bit 높이맵
+
+아래 다섯 파일은 생성 폴더와 게임 `%USERPROFILE%/AppData/LocalLow/Colossal Order/Cities Skylines II/Heightmaps/`에 있다.
+
+- `Sintanjin_Jeonmin_145x_Oil_16bit.png`
+- `Sintanjin_Jeonmin_145x_Ore_16bit.png`
+- `Sintanjin_Jeonmin_145x_Fertile_16bit.png`
+- `Sintanjin_Jeonmin_145x_Forest_16bit.png`
+- `Sintanjin_Jeonmin_145x_Groundwater_16bit.png`
+
+기존 `Sintanjin_Jeonmin_145x_1024m_16bit.png`와 동일한 **4096×4096, PNG 16bit 그레이스케일(색 유형 0)**이다. 좌표 범위와 북쪽이 위·동쪽이 오른쪽인 방향도 동일하며 바이너리처럼 남북 반전하지 않는다. 값은 지형 고도가 아니라 **자원 강도 0~1을 0~65535로 변환**한 값이다. 512셀 원본 float에서 직접 보간·양자화하여 8bit PNG를 확대 변환하지 않았다. 숲은 같은 생성기의 식생 강도이고 나무 개체 자체는 `sintanjin_trees.bin`에 있다.
+
+설치 옵션은 기존 높이맵과 해상도·비트 깊이를 대조하고 다섯 파일 복사를 검증한 뒤 `Heightmaps/Sintanjin_Jeonmin_145x_Resources_Overlay.png`만 삭제한다. 저장소의 검토용 오버레이는 유지한다. 게임의 자원 가져오기 동작은 인게임 미확인이다.
+
+다시 생성한 두 바이너리와 대응 자원 PNG도 `%USERPROFILE%\AppData\LocalLow\Colossal Order\Cities Skylines II\Sintanjin_Jeonmin_Pack\`에 복사했다. 같은 맵에서 `Ctrl+Shift+R`(자원), 기존 생성 나무 교체가 필요하면 `Ctrl+Shift+X` 후 `Ctrl+Shift+T`(나무)로 적용한다. 나무 초기화는 맵의 기존 야생 나무를 지우므로 별도 맵 복사본에서 실행한다. **로컬 생성·자동 검증·파일 설치 완료, 인게임 적용은 미실시**다.
+
+검증: `test_resources.py`는 수면 배제, IC 동쪽 시작 구역 내 지하수, 채널·남북 방향·크기·범위, 16bit 정밀도, 고강도 중복, 나무팩/채굴 중심부 배제를 확인한다. 독립 검토와 인게임 확인은 총괄에게 인계한다. PR 없이 `main`에 직접 커밋·푸시한다.
