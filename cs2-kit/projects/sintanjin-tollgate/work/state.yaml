@@ -595,14 +595,39 @@
     "key": null
    },
    "fbx": null
+  },
+  "canopy_opaque": {
+   "at": "2026-11-21T10:16:17",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "canopy_opaque",
+   "gate": "output/SintanjinTollgate_L1_6x4/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "cb1e91ae68d64f801573dbeb88e06ae3c59c317c3d87c6e969c51db4a053c8f4",
+   "preview": {
+    "path": "previews/SintanjinTollgate_L1_6x4.png",
+    "exists": true,
+    "sha256": "27d440d18c3ad3d56e86a3db3561bcff2923227523cf9145a80c7b24c2d18cb2",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-21T10:04:01",
+ "updated_at": "2026-11-21T10:16:17",
  "current_stage": "final:INCOMPLETE",
  "generator": "sintanjin_tollgate_cs2.py",
- "generator_hash": "07c79ffa04054d78a0641abd75123b34260f89a70e5bcfc748d7a3623c489542",
+ "generator_hash": "cb1e91ae68d64f801573dbeb88e06ae3c59c317c3d87c6e969c51db4a053c8f4",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "fe53578923b447bebf548b66efc374e421b797d603f81dbee3da2d1cabf00a8a",
+ "reviewed_preview_hash": "3305b1e451ec26aeb7ee4b6edfcc9e6fb8c851deed654d5ce81244d2b5e87cc9",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",
