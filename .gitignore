@@ -20,3 +20,12 @@ maps/sintanjin_jeonmin/*.png
 output/road_lane_guide_detail.png
 output/satellite_quality_comparison.png
 cs2-import/
+
+# Local review captures and disposable regression builds (keep tracked evidence).
+/asset-viewer/check_*.png
+/cs2-kit/projects/seokbong-welfare-center/work/before_*.png
+/cs2-kit/projects/seokbong-welfare-center/work/after_*.png
+!/cs2-kit/projects/seokbong-welfare-center/work/before_color_*.png
+!/cs2-kit/projects/seokbong-welfare-center/work/after_color_*.png
+**/work/*_before_hashes.json
+**/work/*_regression/
