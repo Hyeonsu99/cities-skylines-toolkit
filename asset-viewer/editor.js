@@ -295,6 +295,17 @@ if (factorySel) {
  factorySel.onchange = () => {
   if (factorySel.value) loadPreviewStem(factorySel.value, factorySel.selectedOptions[0].textContent);
  };
+ // sync_preview.bat이 쓰는 list.txt에서 index.html에 아직 없는 에셋을 '새 에셋' 묶음으로 붙인다.
+ fetch('/preview/list.txt').then(r => r.ok && !r.headers.get('content-type')?.includes('text/html') ? r.text() : '').then(text => {
+  const known = new Set([...factorySel.options].map(o => o.value));
+  const stems = text.split(/\r?\n/).map(s => s.trim())
+   .filter(s => s && !/_(Win|Gls|LOD\d+)$/.test(s) && !s.startsWith('HighriseTower') && !known.has(s));
+  if (!stems.length) return;
+  const group = document.createElement('optgroup');
+  group.label = `새 에셋 · 목록 미등록 (${stems.length}종)`;
+  for (const s of stems) group.append(new Option('[새] ' + s, s));
+  factorySel.append(group);
+ }).catch(() => {});
 }
 
 const preview = new URLSearchParams(location.search).get('preview');

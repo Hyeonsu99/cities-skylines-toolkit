@@ -16,4 +16,6 @@ for /d %%P in ("%~dp0..\cs2-kit\projects\%PAT%") do (
   )
  )
 )
+rem The viewer adds any stem in list.txt that index.html does not list yet to the dropdown.
+> "%DST%\list.txt" (for %%F in ("%DST%\*.fbx") do @echo %%~nF)
 echo %N% assets copied to public\preview
