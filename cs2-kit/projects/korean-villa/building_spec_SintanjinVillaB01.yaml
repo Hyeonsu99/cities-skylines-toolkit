@@ -1,0 +1,43 @@
+name: SintanjinVillaB01
+lot: {width: 2, depth: 3} # estimated; 16x24 m, 실제 대지 측량 아님
+dimensions:
+  width_m: 11.6 # estimated; b08 정면 주차 1+2면과 좌측 계단실
+  depth_m: 12.0 # estimated; 측면은 이웃 건물에 가려짐
+  height_m: 12.4 # estimated; 필로티3.0+주거3x2.8+파라펫1.0
+floors: 4
+style: sintanjin_2000s_villa_B_charcoal_brick_piloti
+zone: ResidentialMedium # candidate, 인게임 등록 미확인
+signature: false
+archetype: villa_B_charcoal_piloti
+seed: 13
+evidence:
+  brief: STYLE_BRIEF.md 5.3 B
+  sources: work/roadview_extra/SOURCES.md
+  notes: shape_notes.md
+  primary_photos:
+    - work/roadview_extra/b08_full.png
+    - work/roadview_extra/b08_front.png
+    - work/roadview_extra/b08_left.png
+    - work/roadview_extra/b08_right.png
+    - work/roadview_extra/b08_piloti.png
+    - work/roadview_extra/b08_window.png
+    - work/roadview_extra/b07_w.png
+measured_from_photos:
+  - 덕암로221번길 차콜 명암 혼합 벽돌+밝은 회색 줄눈, 흰 PVC 미닫이창
+  - 왼쪽 계단실 수직 다크 유리띠와 정면 공동현관, 양옆 개방 필로티
+  - 창 하부 낮은 검정 살난간과 실외기, 황흑 기둥 보호띠, 평지붕 검정 갓돌
+estimated:
+  - 치수 전부 사진 비례 추정; 특정 번지 실측 복제가 아닌 대표형 # estimated
+  - 폭11.6m 깊이12m 층고2.8m 필로티 유효2.45m, 주차1+2면 # estimated
+  - 좌측 코어 x=-3.1~-0.7m, 깊이8m, 후면실 깊이4m # estimated
+  - 기둥0.5m각 4개, 창유리 후퇴0.145m, PVC 외틀95mm, 난간0.62m # estimated
+  - 차콜 BaseColor96/98/100, 흑화강석54/56/59; 직사광·청천반사 중화 # estimated
+  - 옥상 회녹 방수 바닥과 파라펫 내측, 위성 미확인; 물탱크/옥탑은 관측되지 않아 생략 # estimated
+  - 후측 창·실외기·우수관 배치는 브리프와 대표형 설계로 보충 # estimated
+  - 남색 가상 도로명 신탄골목길31, 우편함은 브리프 B 구성 보충 # estimated
+photo_mismatch_notes:
+  - 실사 왼쪽 주거 날개를 대표형 11.6m 폭으로 줄이고 좌측 계단실 위치를 유지했다.
+  - 실사 처마는 판넬 구획이 보이지만 브리프 B에 맞는 흑화강석 솔리드 띠로 재해석했다.
+  - 실사 공동현관 상부 상호 및 지붕모양 간판은 생략하고 무문자 평캐노피로 바꿨다.
+  - 사진상 직사광 벽돌은 밝게 보이며 그늘에는 차콜로 보인다; 사진 픽셀을 그대로 베끼지 않았다.
+  - 대표형이라 photo_refs 자동 픽셀 매칭 NOT_APPLICABLE, 총괄 사진대조 대기.

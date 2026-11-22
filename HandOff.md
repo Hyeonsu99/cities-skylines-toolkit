@@ -24,7 +24,7 @@
 | 에셋 | 석봉동 행정복지센터 | 완료 (남은 확인 있음) | `cs2-kit/projects/seokbong-welfare-center/` |
 | 에셋 | 고속도로 소품 7종 | 완료 (인게임 미확인) | `cs2-kit/projects/highway-props/` |
 | 에셋 | 신탄진형 단독주택 (저밀도) | 01 승인 유지, 02 제작·총괄 final/review PASS (2026-11-22), 인게임 미확인 | `cs2-kit/projects/korean-detached/` |
-| 에셋 | 신탄진형 다세대 빌라 (중밀도) | A01 제작·총괄 final/review PASS (2026-11-22), 인게임 미확인 | `cs2-kit/projects/korean-villa/` |
+| 에셋 | 신탄진형 다세대 빌라 (중밀도) | A01·B01 제작·총괄 final/review PASS (2026-11-22), 인게임 미확인 | `cs2-kit/projects/korean-villa/` |
 | 에셋 | 한국형 근린상가 01 (저밀도 상업 후보) | 제작·총괄 final/review PASS (2026-11-22), 인게임 미확인 | `cs2-kit/projects/korean-neighborhood-shop/` |
 | 에셋 | 1970~90년대풍 한국형 주택 4종 | **폐기** (2026-11-19) | git 기록 `748f6a5` |
 | 도구 | 로컬 키트 확장 `kitext`, 알베도 검사 | 완료 | `cs2-kit/local/kitext.py`, `tools/albedo_check.py` |
@@ -68,7 +68,8 @@
 - 1단계 완료. 빌라 24동의 거리뷰 120장을 조사하고 [빌라 설계 기준](cs2-kit/projects/korean-villa/STYLE_BRIEF.md)에 중밀도 주거 후보 4종을 정리했다.
 - 후보는 적갈색 벽돌과 흰 모서리의 4층 필로티형, 차콜색 벽돌과 석재의 4층 필로티형, 흰 미장과 돌출창의 4~5층 필로티형, 1층 상가 겸용형이다.
 - 2026-11-22: A형 `SintanjinVillaA01_L1_2x3` 제작. 적갈 벽돌·흰 띠/모서리·4층 필로티, main 14,782 / LOD1 5,462 / LOD2 222(+창 156). Claude 구현 후 Codex 총괄 final 재실행·근접 교차 review PASS, COPLANAR·알베도 경고 0. `cs2-import`·뷰어 동기화 완료, 인게임 미확인.
-- 기존 사진 원본은 이 PC에 없어 덕암동 거리뷰를 새로 확보했다. 대표형 합성이며 옥상 내부·물탱크 등은 추정/위성 미확인이다. B~D는 아직 제작하지 않았다. 후속 순서는 `docs/korean_asset_pack_plan.md` 참고.
+- 2026-11-22 후속 승인으로 B형 `SintanjinVillaB01_L1_2x3` 제작. 차콜 벽돌·좌측 수직 계단실·흑화강석 띠·1+2면 필로티, main18,794/LOD1 4,478/LOD2 216(+창144). 별도 Codex 구현 후 총괄 final 재실행·근접/야간 review PASS, 겹침면·알베도 경고0. A01 OBJ·PNG21파일 바이트 동일, Desktop output·cs2-import·뷰어 갱신.
+- 기존 사진 원본은 이 PC에 없어 덕암동 거리뷰를 새로 확보했다. 대표형 합성이며 옥상 내부 등은 추정/위성 미확인이다. C·D는 아직 제작하지 않았다. 후속 순서는 `docs/korean_asset_pack_plan.md` 참고. A·B 모두 인게임 미확인이다.
 
 ### 폐기: 1970~90년대풍 한국형 주택 4종 (`korean-lowrise`)
 - "너무 올드하고 모델링이 어색하다"는 판단으로 2026-11-19 삭제. 코드: `git show 748f6a5:cs2-kit/projects/korean-lowrise/house_core.py`.

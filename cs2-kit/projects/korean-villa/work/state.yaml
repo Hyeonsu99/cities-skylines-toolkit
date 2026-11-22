@@ -95,17 +95,129 @@
     "key": null
    },
    "fbx": null
+  },
+  "b01-mass": {
+   "at": "2026-11-22T19:53:41",
+   "mode": "quick",
+   "status": "FAIL",
+   "label": "b01-mass",
+   "gate": "output/SintanjinVillaB01_L1_2x3/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "FAIL",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "f0378dc47f136b4fcdf1f0a1b20787fdb38c28cda941fc62f854112e284d1a7c",
+   "preview": null,
+   "fbx": null
+  },
+  "b01-core-junction": {
+   "at": "2026-11-22T19:53:55",
+   "mode": "quick",
+   "status": "PASS",
+   "label": "b01-core-junction",
+   "gate": "output/SintanjinVillaB01_L1_2x3/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "0f3b8f9666e348733229e1a8309645ba589aaf9f5d153f4b48d03e26a50dda5b",
+   "preview": null,
+   "fbx": null
+  },
+  "b01-final": {
+   "at": "2026-11-22T19:54:16",
+   "mode": "final",
+   "status": "FAIL",
+   "label": "b01-final",
+   "gate": "output/SintanjinVillaB01_L1_2x3/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "FAIL",
+    "fbx": "PASS"
+   },
+   "generator_hash": "0f3b8f9666e348733229e1a8309645ba589aaf9f5d153f4b48d03e26a50dda5b",
+   "preview": {
+    "path": "previews/SintanjinVillaB01_L1_2x3.png",
+    "exists": true,
+    "sha256": "e97af8446f835433fbd2d5ab8c65fd455eece020313b50cca0e063f284f6c742",
+    "key": null
+   },
+   "fbx": null
+  },
+  "b01-roof-closure": {
+   "at": "2026-11-22T19:55:07",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "b01-roof-closure",
+   "gate": "output/SintanjinVillaB01_L1_2x3/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "15ced136ee5443020cc9011b7a981715550beb1c9c4092ef9564caacc8476063",
+   "preview": {
+    "path": "previews/SintanjinVillaB01_L1_2x3.png",
+    "exists": true,
+    "sha256": "deef21d25ce8ffa0c4c92a51f053297fc0ef37664b8bfac4ca3f983b63313f33",
+    "key": null
+   },
+   "fbx": null
+  },
+  "coordinator-b01": {
+   "at": "2026-11-22T19:58:53",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "coordinator-b01",
+   "gate": "output/SintanjinVillaB01_L1_2x3/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "15ced136ee5443020cc9011b7a981715550beb1c9c4092ef9564caacc8476063",
+   "preview": {
+    "path": "previews/SintanjinVillaB01_L1_2x3.png",
+    "exists": true,
+    "sha256": "7f6feba474e486624ba3e765abf7ef01682d753e4a176761c522dac1b7f8672f",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-22T15:54:26",
+ "updated_at": "2026-11-22T19:58:53",
  "current_stage": "final:INCOMPLETE",
- "generator": "sintanjin_villa_a01_cs2.py",
- "generator_hash": "3595c4d065e4ccc4e3a7f714b99ad206f5f09f0a12382d3203556b7b032e495f",
+ "generator": "sintanjin_villa_b01_cs2.py",
+ "generator_hash": "15ced136ee5443020cc9011b7a981715550beb1c9c4092ef9564caacc8476063",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": null,
+ "reviewed_preview_hash": "5d3eef1fe0fa486a4ed8dab30b7b27f56d4537b05860f3b0c4c60bf4bbb172a6",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",
-  "path": "output/SintanjinVillaA01_L1_2x3/_check/gate.json"
+  "path": "output/SintanjinVillaB01_L1_2x3/_check/gate.json"
  }
 }

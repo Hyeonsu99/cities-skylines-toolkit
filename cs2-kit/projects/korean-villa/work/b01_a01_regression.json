@@ -1,0 +1,114 @@
+{
+  "status": "PASS",
+  "compared": 21,
+  "obj": 6,
+  "png": 15,
+  "untouched_existing_textures": 15,
+  "rows": [
+    {
+      "file": "SintanjinVillaA01_L1_2x3_BaseColor.png",
+      "original": "08178eeb33bd58cf965884e6905cdee8f1f9df2f7735998334a3ebb5d5e2547b",
+      "regenerated": "08178eeb33bd58cf965884e6905cdee8f1f9df2f7735998334a3ebb5d5e2547b"
+    },
+    {
+      "file": "SintanjinVillaA01_L1_2x3_ControlMask.png",
+      "original": "1a73ba83853a7002a85d8e5e38b5d57665b735fdb2df728571bd6265e80f65b0",
+      "regenerated": "1a73ba83853a7002a85d8e5e38b5d57665b735fdb2df728571bd6265e80f65b0"
+    },
+    {
+      "file": "SintanjinVillaA01_L1_2x3_Emissive.png",
+      "original": "36046f0cbc0b30edead71c317bc47ebee87c803b1167a70fb29df788411529fa",
+      "regenerated": "36046f0cbc0b30edead71c317bc47ebee87c803b1167a70fb29df788411529fa"
+    },
+    {
+      "file": "SintanjinVillaA01_L1_2x3_LOD1_BaseColor.png",
+      "original": "08178eeb33bd58cf965884e6905cdee8f1f9df2f7735998334a3ebb5d5e2547b",
+      "regenerated": "08178eeb33bd58cf965884e6905cdee8f1f9df2f7735998334a3ebb5d5e2547b"
+    },
+    {
+      "file": "SintanjinVillaA01_L1_2x3_LOD1_ControlMask.png",
+      "original": "1a73ba83853a7002a85d8e5e38b5d57665b735fdb2df728571bd6265e80f65b0",
+      "regenerated": "1a73ba83853a7002a85d8e5e38b5d57665b735fdb2df728571bd6265e80f65b0"
+    },
+    {
+      "file": "SintanjinVillaA01_L1_2x3_LOD1_Emissive.png",
+      "original": "36046f0cbc0b30edead71c317bc47ebee87c803b1167a70fb29df788411529fa",
+      "regenerated": "36046f0cbc0b30edead71c317bc47ebee87c803b1167a70fb29df788411529fa"
+    },
+    {
+      "file": "SintanjinVillaA01_L1_2x3_LOD1_MaskMap.png",
+      "original": "a6b391a0903e97cd3bb14e5a215f269d90adae221664c2fabb7a73040b5134ee",
+      "regenerated": "a6b391a0903e97cd3bb14e5a215f269d90adae221664c2fabb7a73040b5134ee"
+    },
+    {
+      "file": "SintanjinVillaA01_L1_2x3_LOD1_Normal.png",
+      "original": "c2e28affc8be49545e7c3813103d76480b8ea09d565d25d3f589462a366da544",
+      "regenerated": "c2e28affc8be49545e7c3813103d76480b8ea09d565d25d3f589462a366da544"
+    },
+    {
+      "file": "SintanjinVillaA01_L1_2x3_LOD2_BaseColor.png",
+      "original": "1ce43c27c2dc88f7a76ef89045e7d76f3b62cde0b3f711853c5b4099f7b7a4e3",
+      "regenerated": "1ce43c27c2dc88f7a76ef89045e7d76f3b62cde0b3f711853c5b4099f7b7a4e3"
+    },
+    {
+      "file": "SintanjinVillaA01_L1_2x3_LOD2_ControlMask.png",
+      "original": "d103a0a59f5a60f9cf18bd049d1843346c1b7d7302133431292ef274f3c5bb12",
+      "regenerated": "d103a0a59f5a60f9cf18bd049d1843346c1b7d7302133431292ef274f3c5bb12"
+    },
+    {
+      "file": "SintanjinVillaA01_L1_2x3_LOD2_Emissive.png",
+      "original": "664b98be3d9e1d3e311fa68bc031a6ecec8be8ccb91b2a85a49d54876ceba4b5",
+      "regenerated": "664b98be3d9e1d3e311fa68bc031a6ecec8be8ccb91b2a85a49d54876ceba4b5"
+    },
+    {
+      "file": "SintanjinVillaA01_L1_2x3_LOD2_MaskMap.png",
+      "original": "6ea6ddda71f85a6aa185acdb1026884508f07c960f6675f986bf506170a7b0c0",
+      "regenerated": "6ea6ddda71f85a6aa185acdb1026884508f07c960f6675f986bf506170a7b0c0"
+    },
+    {
+      "file": "SintanjinVillaA01_L1_2x3_LOD2_Normal.png",
+      "original": "c6c0a31801cca21fa29013ea627dcccc0952a9b241e5b0e04194c07431846d3e",
+      "regenerated": "c6c0a31801cca21fa29013ea627dcccc0952a9b241e5b0e04194c07431846d3e"
+    },
+    {
+      "file": "SintanjinVillaA01_L1_2x3_MaskMap.png",
+      "original": "a6b391a0903e97cd3bb14e5a215f269d90adae221664c2fabb7a73040b5134ee",
+      "regenerated": "a6b391a0903e97cd3bb14e5a215f269d90adae221664c2fabb7a73040b5134ee"
+    },
+    {
+      "file": "SintanjinVillaA01_L1_2x3_Normal.png",
+      "original": "c2e28affc8be49545e7c3813103d76480b8ea09d565d25d3f589462a366da544",
+      "regenerated": "c2e28affc8be49545e7c3813103d76480b8ea09d565d25d3f589462a366da544"
+    },
+    {
+      "file": "_check\\SintanjinVillaA01_L1_2x3.obj",
+      "original": "e3e6dca9c50db6cbaf396668699ec8c42fc15fddd59e8c3f8d687c9623974519",
+      "regenerated": "e3e6dca9c50db6cbaf396668699ec8c42fc15fddd59e8c3f8d687c9623974519"
+    },
+    {
+      "file": "_check\\SintanjinVillaA01_L1_2x3_LOD1.obj",
+      "original": "df0f39942df4abd0977dba83805578c321bc1ca71e46451be90bde4c9bcd13fb",
+      "regenerated": "df0f39942df4abd0977dba83805578c321bc1ca71e46451be90bde4c9bcd13fb"
+    },
+    {
+      "file": "_check\\SintanjinVillaA01_L1_2x3_LOD1_Win.obj",
+      "original": "d761387feb9fb9dc97935614eaaf3b59a779e142deded82d1fb9c96734c79229",
+      "regenerated": "d761387feb9fb9dc97935614eaaf3b59a779e142deded82d1fb9c96734c79229"
+    },
+    {
+      "file": "_check\\SintanjinVillaA01_L1_2x3_LOD2.obj",
+      "original": "d0b9563052383ed9f972e901a56c1dd64b0ceaf3ea8bf1d85c4a3752ba685fbc",
+      "regenerated": "d0b9563052383ed9f972e901a56c1dd64b0ceaf3ea8bf1d85c4a3752ba685fbc"
+    },
+    {
+      "file": "_check\\SintanjinVillaA01_L1_2x3_LOD2_Win.obj",
+      "original": "7617594db605957a04ff0d2e4aa4927a73d4af4dd31420073632b48ac3b3aa61",
+      "regenerated": "7617594db605957a04ff0d2e4aa4927a73d4af4dd31420073632b48ac3b3aa61"
+    },
+    {
+      "file": "_check\\SintanjinVillaA01_L1_2x3_Win.obj",
+      "original": "d761387feb9fb9dc97935614eaaf3b59a779e142deded82d1fb9c96734c79229",
+      "regenerated": "d761387feb9fb9dc97935614eaaf3b59a779e142deded82d1fb9c96734c79229"
+    }
+  ]
+}

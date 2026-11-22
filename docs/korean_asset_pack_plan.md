@@ -9,7 +9,7 @@
 | 적갈 벽돌·흰 모서리 4층 필로티 빌라 A (`korean-villa`) | 완료 | 1 | `SintanjinVillaA01_L1_2x3` 총괄 final 재실행·근접 교차 review PASS, main 14,782 / LOD1 5,462 / LOD2 222, 인게임 미확인 |
 | 한국형 근린상가 (`korean-neighborhood-shop`, 기존 시제품 복구·이관) | 완료 | 2 | `SintanjinCornerShop01_L1_2x2` 제작·총괄 final/review PASS. 옛 모델 파일은 복구 실패, 세션 스크립트·사용자 사진 복구 후 3층+옥탑·석재·차양 방향을 키트로 재구성. 인게임 미확인 |
 | 신탄진형 단독주택 02 마당형 | 완료 | 3 | `SintanjinHouse02_L1_2x2` 마당·벽돌담장·대문·좁은 발코니. 총괄 final/review PASS, main 8,912 / LOD1 3,532 / LOD2+창 244. 01 변경 전후 OBJ·텍스처 바이트 동일, 인게임 미확인 |
-| 차콜 벽돌 4층 필로티 빌라 B | 새로 | 4 | 빌라 A 교차 검토 후 기존 브리프의 두 번째 대표형 |
+| 차콜 벽돌 4층 필로티 빌라 B | 완료 | 4 | `SintanjinVillaB01_L1_2x3` 차콜 벽돌·좌측 계단실·1+2면 필로티. 총괄 final/review PASS, main18,794 / LOD1 4,478 / LOD2+창360. A01 OBJ·PNG21파일 바이트 동일, 인게임 미확인 |
 | 단독 03 외부계단·흰 난간벽 / 04 상가겸용 | 새로 | 5 | 기존 후보. 01·02 기준과 비교 후 한 동씩 제작 |
 | 빌라 C 흰 미장·돌출창 / D 1층 상가복합 | 새로 | 6 | 기존 후보. A·B와 실제로 다른 매스·창 구성에 집중 |
 | 신탄진역 | 새로 | 7 | 기존 랜드마크 1순위. 파일럿 바닐라 역 대체, 기능·시점·사진 근거를 확보한 뒤 제작 |
@@ -41,7 +41,7 @@
 - 총괄 Codex: 계획·기존 기록 복구, 결과 diff 범위·줄끝·수치 검토, final 재실행·근접 렌더 교차 검토, main 커밋·푸시.
 - 빌라 A 구현: Claude (`ctx_030cec258cca`) 완료, Codex 총괄 교차 검토 완료. 배정 직전 사용량 max(session, weekly): Claude 55%, Codex 61%, Antigravity 100% 제외. 한 동에 집중하고 동시에 3명 이하를 유지한다.
 - 근린상가: Claude 구현 후 Codex 총괄 교차 검토 완료. 세로 간판 그림 비율·야간 발광 결함은 첫 review FAIL로 돌려보내 수정한 뒤 final 재실행·낮밤 재검토 PASS. main 9,580 / LOD1 3,440 / LOD2 154 + 창 102 = 256.
-- 후속 승인 범위는 단독02·빌라B 두 동. 단독02는 Claude 구현·Codex 교차 검토 완료(배정 당시 max 사용률 Claude63%, Codex65%). 다음은 빌라B이며 03·04/C·D 이후 후보는 이번 배정 범위 밖이다.
+- 후속 승인 범위 단독02·빌라B 두 동 완료. 단독02는 Claude 구현·Codex 교차 검토 완료(배정 당시 max 사용률 Claude63%, Codex65%). 빌라B는 Codex 구현·별도 총괄 Codex 교차 검토 완료(배정 당시 Codex65%, Claude84%). 03·04/C·D 이후 후보는 이번 배정 범위 밖이다.
 - 필수 완료: `agent.py cycle --mode final` PASS + 눈높이 약 1.6m 근접 렌더 확인 + `agent.py review`. 렌더는 해당 프로젝트 `previews/`에 저장한다.
 - 빌드 후 `python tools/sync_cs2_import.py <이름>` → `asset-viewer/sync_preview.bat <프로젝트>` 실행. 게임에서는 `cs2-import/<에셋>` 하나만 선택한다.
 - 원본 키트 수정·오염 띠·지면 바닥 메시·실제 상호 신규 사용 금지. 추정 치수는 표시하고 COPLANAR 0·알베도 경고 0·LOD 예산을 지킨다.

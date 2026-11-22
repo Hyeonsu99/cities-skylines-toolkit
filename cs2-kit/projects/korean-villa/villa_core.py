@@ -122,11 +122,11 @@ def _draw_bumper(W, H):
     return im
 
 
-def build_atlas(spec: VillaSpec) -> K.Atlas:
+def build_atlas(spec: VillaSpec, *, charcoal=False) -> K.Atlas:
     s = spec.seed
     a = K.Atlas(size=2048, pad=12)
     # 벽돌: 사진 a01 그늘 벽돌 면 (132,104,99) ~ 브리프 진적갈 (128,92,86). 줄눈 밝은 회색 시멘트 (규칙 18)
-    a.add("wall_main", color=(128, 92, 86), ctrl=(0, 255, 0), px=512, tile=(2.3, 2.4),
+    a.add("wall_main", color=(96, 98, 100) if charcoal else (128, 92, 86), ctrl=(0, 255, 0), px=512, tile=(2.3, 2.4),
           gloss=0.24, painter=_brick_painter(s, (188, 186, 185)))
     a.add("plaster_white", color=(212, 211, 208), ctrl=(0, 255, 0), px=384, tile=(2.4, 2.4),
           gloss=0.24, painter=DC._make_plaster_painter(s + 11))
@@ -162,6 +162,9 @@ def build_atlas(spec: VillaSpec) -> K.Atlas:
     a.add("address", px=256, gloss=0.48,
           painter=_plate_painter(f"addr_{spec.road_name}_{spec.road_no}", _draw_address(spec.road_name, spec.road_no)))
     a.add("bumper", px=128, gloss=0.46, painter=_plate_painter("bumper", _draw_bumper))
+    if charcoal:
+        a.add("granite", color=(54, 56, 59), px=256, tile=(1.2, 1.2),
+              gloss=0.46, painter=KX.stone_trim(s + 131))
     return a
 
 
