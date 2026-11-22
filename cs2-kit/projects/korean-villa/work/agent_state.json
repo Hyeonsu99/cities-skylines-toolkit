@@ -1,0 +1,169 @@
+{
+ "visual_review": "PASS",
+ "current_stage": "review:PASS",
+ "generator": "sintanjin_villa_a01_cs2.py",
+ "generator_hash": "3595c4d065e4ccc4e3a7f714b99ad206f5f09f0a12382d3203556b7b032e495f",
+ "current_preview_hash": "5d3eef1fe0fa486a4ed8dab30b7b27f56d4537b05860f3b0c4c60bf4bbb172a6",
+ "last_gate": {
+  "status": "PASS",
+  "project": "korean-villa",
+  "generator": "sintanjin_villa_a01_cs2.py",
+  "mode": "final",
+  "checks": {
+   "build": "PASS",
+   "geometry": "PASS",
+   "preview": "PASS",
+   "photo": "NOT_APPLICABLE",
+   "tiles": "NOT_APPLICABLE",
+   "lod": "PASS",
+   "fbx": "PASS",
+   "visual_review": "PASS"
+  },
+  "errors": [],
+  "next_action": {
+   "command": null,
+   "reason": "no fix needed"
+  },
+  "artifacts": {
+   "preview": "previews\\SintanjinVillaA01_L1_2x3.png",
+   "report": "output\\SintanjinVillaA01_L1_2x3\\_check\\report.json"
+  },
+  "asset": "SintanjinVillaA01_L1_2x3",
+  "label": "coordinator-final",
+  "time": "2026-11-22 15:54:26",
+  "build": {
+   "asset": "SintanjinVillaA01_L1_2x3",
+   "fbx": true,
+   "warnings": []
+  },
+  "check": {
+   "errors": [],
+   "warnings": [],
+   "info": {
+    "size": [
+     11.5,
+     13.3,
+     14.72
+    ],
+    "pivot_offset": [
+     0.0,
+     0.0
+    ],
+    "zmin": 0.0,
+    "coords": "generator coordinates (before pivot move)",
+    "tris": {
+     "main": 14782,
+     "win": 156,
+     "lod1": 5462,
+     "lod1_win": 156,
+     "lod2": 222,
+     "lod2_win": 156
+    },
+    "verts": {
+     "main": 29964,
+     "win": 312,
+     "lod1": 10936,
+     "lod1_win": 312,
+     "lod2": 444,
+     "lod2_win": 312
+    },
+    "coplanar": {
+     "main": 0,
+     "lod1": 0,
+     "lod2": 0,
+     "win": 0
+    },
+    "textures": {
+     "BaseColor": "2048x2048 RGBA",
+     "ControlMask": "2048x2048 RGBA",
+     "MaskMap": "2048x2048 RGBA",
+     "Normal": "2048x2048 RGB",
+     "Emissive": "2048x2048 RGB",
+     "LOD2_BaseColor": "512x512 RGBA",
+     "LOD2_ControlMask": "512x512 RGBA",
+     "LOD2_MaskMap": "512x512 RGBA",
+     "LOD2_Normal": "512x512 RGB",
+     "LOD2_Emissive": "512x512 RGB"
+    },
+    "texel_px_per_m": {
+     "p10": 159.6,
+     "median": 217.5,
+     "p90": 217.5
+    },
+    "windows": 78,
+    "win_dropped": 0,
+    "win_blocked": {
+     "win": 0,
+     "lod1_win": 0,
+     "lod2_win": 0
+    },
+    "time_s": 0.2
+   },
+   "report": "output\\SintanjinVillaA01_L1_2x3\\_check\\report.json"
+  },
+  "photo": {
+   "checked": false,
+   "mismatch": null,
+   "lines": [],
+   "status": "NOT_APPLICABLE"
+  },
+  "tiles": {
+   "checked": false,
+   "status": "NOT_APPLICABLE",
+   "simplified": [],
+   "detail": [],
+   "detail_color": [],
+   "color_off": [],
+   "tiles_off": 0,
+   "tiles_total": 0
+  },
+  "lod": {
+   "checked": true,
+   "status": "PASS",
+   "line": "LODCHECK PASS main max 0.006% (az 248, el -10) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\SintanjinVillaA01_L1_2x3",
+   "notes": []
+  },
+  "agent": {
+   "status": "PASS",
+   "verts": {
+    "LOD0": 29964,
+    "LOD1": 10936,
+    "LOD2": 444
+   },
+   "action_tags": [],
+   "exact_fix_instruction": "no fix needed"
+  },
+  "gate": {
+   "status": "PASS",
+   "reasons": [],
+   "incomplete": []
+  }
+ },
+ "mismatch_attempts": {},
+ "next_action": {
+  "command": null,
+  "reason": "all requested checks passed"
+ },
+ "project": "korean-villa",
+ "updated_at": "2026-11-22T15:55:09",
+ "visual_review_note": "총괄 교차 검토: 현재 4방향·근접 창틀·난간·모서리·필로티·현관·배관·옥상 렌더와 덕암동 사진 확인. 대표형이며 실측복제 아님; 인게임 미확인.",
+ "visual_review_artifacts": [
+  {
+   "file": "previews/SintanjinVillaA01_L1_2x3.png",
+   "sha256": "5d3eef1fe0fa486a4ed8dab30b7b27f56d4537b05860f3b0c4c60bf4bbb172a6"
+  },
+  {
+   "file": "previews/close_contact.png",
+   "sha256": "87d63533265d58ee2878ba6e679a956b07609d8aa3802fa0241faab0b56c6b32"
+  },
+  {
+   "file": "previews/close_entrance_door.png",
+   "sha256": "e5d694bdfcd5f44c7ab0f79c7d8ca7b0ad121054670820e89a54c9e68ec97f69"
+  },
+  {
+   "file": "previews/close_left_gas.png",
+   "sha256": "f3b5336865b335cc0badb4e2b0d6bee84c108088899bcc49d43d354391c11b93"
+  }
+ ],
+ "reviewed_preview_hash": "5d3eef1fe0fa486a4ed8dab30b7b27f56d4537b05860f3b0c4c60bf4bbb172a6"
+}

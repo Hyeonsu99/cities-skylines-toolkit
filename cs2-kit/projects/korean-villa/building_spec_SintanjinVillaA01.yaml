@@ -1,0 +1,43 @@
+name: SintanjinVillaA01
+lot: {width: 2, depth: 3}  # STYLE_BRIEF 5.1 핵심 lot (16 x 24 m)
+dimensions:
+  width_m: 10.6   # estimated; 정면 3칸 (a01), 브리프 소형 9.5~중형 12.5
+  depth_m: 12.4   # estimated; 측면 4칸 (a02), 브리프 11~14
+  height_m: 14.72 # 필로티 3.0 + 2~4층 8.4 + 띠 0.12 + 갈색 처마 0.80 + 옥탑 2.40
+floors: 4         # 1층 필로티 + 2~4층 주거 (a01·a02 실사)
+style: sintanjin_2000s_villa_A_red_brown_brick_piloti
+zone: ResidentialMedium  # candidate, 인게임 미확인
+signature: false
+archetype: villa_A_piloti_brick
+seed: 3
+evidence:
+  brief: STYLE_BRIEF.md (5.3 프리셋 A, 2장 치수, 3장 색, 4장 디테일)
+  sources: work/roadview_extra/SOURCES.md
+  notes: shape_notes.md
+  primary_photos:
+    - work/roadview_extra/a01_road_oblique.png
+    - work/roadview_extra/a02_side_bands.png
+    - work/roadview_extra/a03_rear_court.png
+    - work/roadview_extra/a04_entrance_plate.png
+    - work/roadview_extra/a05_row_from_south.png
+    - work/roadview_extra/a06_courtyard_2024.png
+measured_from_photos:
+  - 층 구성 필로티 + 벽돌 3개 층, 층마다 흰 슬래브 띠 (a01, a02)
+  - 다색 적갈·암자색 벽돌, 그늘 벽돌 면 평균 sRGB (132,104,99) S=0.25 (a01) -> BaseColor (128,92,86)
+  - 흰 도장 필로티 기둥, 정면 개방 주차 (a01, a05)
+  - 상단 갈색 경사 처마 (a01, a02), 벽면 적색 도시가스 배관 (a01, a02), 남색 건물번호판 (a04)
+estimated:
+  - 정면 폭 10.6 m, 깊이 12.4 m, 우측 계단실 코어 2.8 x 8.0 m, 후면 1층 실 깊이 4.4 m # estimated
+  - 필로티 유효 높이 2.45 m, 슬래브 띠 0.65 m, 기준층 2.80 m (브리프 2장) # estimated
+  - 흰 슬래브 띠 0.22 m 돌출 0.06 m, 흰 모서리 띠 폭 0.30 m 돌출 0.03 m (브리프 프리셋 A) # estimated
+  - 갈색 경사 처마 돌출 0.45 m, 높이 0.70 m, 내부 평지붕 # estimated
+  - 기둥 0.45 m 각 6개, 주차 3면 (2.5 m 간격) # estimated
+  - 창 배치(층당 13개), 큰 창 1.40 m, 작은 창 1.05 m, 창대 0.90/1.20 m (브리프 2장) # estimated
+  - 옥탑 계단실 2.4 x 3.2 x 2.4 m, 스텐 물탱크 1.2 x 1.5 m, 옥상 녹회 방수 바닥 (브리프 4장, 위성 미확인) # estimated
+  - 창 밀착형 다크 철제 방범 난간 0.65 m (브리프 4장) # estimated
+  - 도로명 건물번호판 '신탄골목길 27' (가상, 규칙 20) # estimated
+photo_mismatch_notes:
+  - 실사 기준 건물은 흰 모서리 대신 층마다 흰 띠가 주 특징이다. 브리프 프리셋 A의 '흰 모서리'를 30 cm 모서리 띠로 더했다.
+  - 실사 건물의 상호·동 표기 간판은 실제 이름이라 넣지 않았다(규칙 19).
+  - 단일 번지 복제가 아닌 대표형이라 photo_refs 자동 픽셀 매칭은 NOT_APPLICABLE.
+  - 로드뷰가 강한 직사광이라 밝은 벽돌 면이 V~225로 날아갔다. 색은 그늘 벽돌 면과 브리프 권장값으로 정했다.

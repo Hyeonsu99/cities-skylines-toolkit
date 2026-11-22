@@ -1,0 +1,111 @@
+{
+ "version": 1,
+ "project": "korean-villa",
+ "stages": {
+  "mass": {
+   "at": "2026-11-22T15:51:59",
+   "mode": "quick",
+   "status": "PASS",
+   "label": "mass",
+   "gate": "output/SintanjinVillaA01_L1_2x3/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "3595c4d065e4ccc4e3a7f714b99ad206f5f09f0a12382d3203556b7b032e495f",
+   "preview": null,
+   "fbx": null
+  },
+  "windows": {
+   "at": "2026-11-22T15:52:08",
+   "mode": "visual",
+   "status": "INCOMPLETE",
+   "label": "windows",
+   "gate": "output/SintanjinVillaA01_L1_2x3/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "3595c4d065e4ccc4e3a7f714b99ad206f5f09f0a12382d3203556b7b032e495f",
+   "preview": {
+    "path": "previews/SintanjinVillaA01_L1_2x3.png",
+    "exists": true,
+    "sha256": "79457e00fd3938218a826b95e451634cd3dfbd6096e021be826202c5ee882d03",
+    "key": null
+   },
+   "fbx": null
+  },
+  "final": {
+   "at": "2026-11-22T15:53:31",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "final",
+   "gate": "output/SintanjinVillaA01_L1_2x3/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "3595c4d065e4ccc4e3a7f714b99ad206f5f09f0a12382d3203556b7b032e495f",
+   "preview": {
+    "path": "previews/SintanjinVillaA01_L1_2x3.png",
+    "exists": true,
+    "sha256": "a13ebf0eca5dbe23a99d510cfac3442024d0a44de39ff1da466babf033fb1bb0",
+    "key": null
+   },
+   "fbx": null
+  },
+  "coordinator-final": {
+   "at": "2026-11-22T15:54:26",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "coordinator-final",
+   "gate": "output/SintanjinVillaA01_L1_2x3/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "3595c4d065e4ccc4e3a7f714b99ad206f5f09f0a12382d3203556b7b032e495f",
+   "preview": {
+    "path": "previews/SintanjinVillaA01_L1_2x3.png",
+    "exists": true,
+    "sha256": "5d3eef1fe0fa486a4ed8dab30b7b27f56d4537b05860f3b0c4c60bf4bbb172a6",
+    "key": null
+   },
+   "fbx": null
+  }
+ },
+ "updated_at": "2026-11-22T15:54:26",
+ "current_stage": "final:INCOMPLETE",
+ "generator": "sintanjin_villa_a01_cs2.py",
+ "generator_hash": "3595c4d065e4ccc4e3a7f714b99ad206f5f09f0a12382d3203556b7b032e495f",
+ "visual_review": "NOT_CHECKED",
+ "reviewed_preview_hash": null,
+ "last_gate": {
+  "mode": "final",
+  "status": "INCOMPLETE",
+  "path": "output/SintanjinVillaA01_L1_2x3/_check/gate.json"
+ }
+}
