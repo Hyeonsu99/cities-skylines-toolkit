@@ -1,0 +1,169 @@
+{
+ "visual_review": "PASS",
+ "current_stage": "review:PASS",
+ "generator": "sintanjin_corner_shop_01_cs2.py",
+ "generator_hash": "501f2dfb7332c150dd5c3f1838e346c508333c0125cf37550524c8926b4fe025",
+ "current_preview_hash": "c8430d0ab25328477beec909e18304c6551666a92f13b3dd035556c0045d4123",
+ "last_gate": {
+  "status": "PASS",
+  "project": "korean-neighborhood-shop",
+  "generator": "sintanjin_corner_shop_01_cs2.py",
+  "mode": "final",
+  "checks": {
+   "build": "PASS",
+   "geometry": "PASS",
+   "preview": "PASS",
+   "photo": "NOT_APPLICABLE",
+   "tiles": "NOT_APPLICABLE",
+   "lod": "PASS",
+   "fbx": "PASS",
+   "visual_review": "PASS"
+  },
+  "errors": [],
+  "next_action": {
+   "command": null,
+   "reason": "no fix needed"
+  },
+  "artifacts": {
+   "preview": "previews\\SintanjinCornerShop01_L1_2x2.png",
+   "report": "output\\SintanjinCornerShop01_L1_2x2\\_check\\report.json"
+  },
+  "asset": "SintanjinCornerShop01_L1_2x2",
+  "label": "coordinator-final-fixed",
+  "time": "2026-11-22 16:11:57",
+  "build": {
+   "asset": "SintanjinCornerShop01_L1_2x2",
+   "fbx": true,
+   "warnings": []
+  },
+  "check": {
+   "errors": [],
+   "warnings": [],
+   "info": {
+    "size": [
+     14.9,
+     13.52,
+     13.6
+    ],
+    "pivot_offset": [
+     0.0,
+     0.0
+    ],
+    "zmin": 0.0,
+    "coords": "generator coordinates (before pivot move)",
+    "tris": {
+     "main": 9580,
+     "win": 102,
+     "lod1": 3440,
+     "lod1_win": 102,
+     "lod2": 154,
+     "lod2_win": 102
+    },
+    "verts": {
+     "main": 19488,
+     "win": 204,
+     "lod1": 6884,
+     "lod1_win": 204,
+     "lod2": 312,
+     "lod2_win": 204
+    },
+    "coplanar": {
+     "main": 0,
+     "lod1": 0,
+     "lod2": 0,
+     "win": 0
+    },
+    "textures": {
+     "BaseColor": "2048x2048 RGBA",
+     "ControlMask": "2048x2048 RGBA",
+     "MaskMap": "2048x2048 RGBA",
+     "Normal": "2048x2048 RGB",
+     "Emissive": "2048x2048 RGB",
+     "LOD2_BaseColor": "512x512 RGBA",
+     "LOD2_ControlMask": "512x512 RGBA",
+     "LOD2_MaskMap": "512x512 RGBA",
+     "LOD2_Normal": "512x512 RGB",
+     "LOD2_Emissive": "512x512 RGB"
+    },
+    "texel_px_per_m": {
+     "p10": 106.3,
+     "median": 260.6,
+     "p90": 347.7
+    },
+    "windows": 51,
+    "win_dropped": 0,
+    "win_blocked": {
+     "win": 0,
+     "lod1_win": 0,
+     "lod2_win": 0
+    },
+    "time_s": 0.1
+   },
+   "report": "output\\SintanjinCornerShop01_L1_2x2\\_check\\report.json"
+  },
+  "photo": {
+   "checked": false,
+   "mismatch": null,
+   "lines": [],
+   "status": "NOT_APPLICABLE"
+  },
+  "tiles": {
+   "checked": false,
+   "status": "NOT_APPLICABLE",
+   "simplified": [],
+   "detail": [],
+   "detail_color": [],
+   "color_off": [],
+   "tiles_off": 0,
+   "tiles_total": 0
+  },
+  "lod": {
+   "checked": true,
+   "status": "PASS",
+   "line": "LODCHECK PASS main max 0.010% (az 158, el -10) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.009% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\SintanjinCornerShop01_L1_2x2",
+   "notes": []
+  },
+  "agent": {
+   "status": "PASS",
+   "verts": {
+    "LOD0": 19488,
+    "LOD1": 6884,
+    "LOD2": 312
+   },
+   "action_tags": [],
+   "exact_fix_instruction": "no fix needed"
+  },
+  "gate": {
+   "status": "PASS",
+   "reasons": [],
+   "incomplete": []
+  }
+ },
+ "mismatch_attempts": {},
+ "next_action": {
+  "command": null,
+  "reason": "all requested checks passed"
+ },
+ "project": "korean-neighborhood-shop",
+ "updated_at": "2026-11-22T16:12:53",
+ "visual_review_note": "총괄 재검토: 현재 4방향·근접·낮밤 세로 간판 확인. 영어수학 글자 비율과 야간 대비 수정 확인, 사용자 사진 방향의 대표형. 인게임 미확인.",
+ "visual_review_artifacts": [
+  {
+   "file": "previews/SintanjinCornerShop01_L1_2x2.png",
+   "sha256": "c8430d0ab25328477beec909e18304c6551666a92f13b3dd035556c0045d4123"
+  },
+  {
+   "file": "previews/close_contact.png",
+   "sha256": "996a011702a85f2427b5ef3855c30c783ace1cce5ffa97b4fffb3bc6e08c4e7a"
+  },
+  {
+   "file": "previews/close_vsign_front.png",
+   "sha256": "812aeb1b669905562b1bfea8d6f60f090a28db045401f757e01fbbda3b7a577c"
+  },
+  {
+   "file": "previews/night_vsign.png",
+   "sha256": "b714df6694d12e110c58cd4d16cefec2d1318a61cdcf9c98b73f572da61d23a0"
+  }
+ ],
+ "reviewed_preview_hash": "c8430d0ab25328477beec909e18304c6551666a92f13b3dd035556c0045d4123"
+}

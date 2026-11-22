@@ -25,6 +25,7 @@
 | 에셋 | 고속도로 소품 7종 | 완료 (인게임 미확인) | `cs2-kit/projects/highway-props/` |
 | 에셋 | 신탄진형 단독주택 (저밀도) | 1단계 완료. 2단계는 01 승인 후 중단 | `cs2-kit/projects/korean-detached/` |
 | 에셋 | 신탄진형 다세대 빌라 (중밀도) | A01 제작·총괄 final/review PASS (2026-11-22), 인게임 미확인 | `cs2-kit/projects/korean-villa/` |
+| 에셋 | 한국형 근린상가 01 (저밀도 상업 후보) | 제작·총괄 final/review PASS (2026-11-22), 인게임 미확인 | `cs2-kit/projects/korean-neighborhood-shop/` |
 | 에셋 | 1970~90년대풍 한국형 주택 4종 | **폐기** (2026-11-19) | git 기록 `748f6a5` |
 | 도구 | 로컬 키트 확장 `kitext`, 알베도 검사 | 완료 | `cs2-kit/local/kitext.py`, `tools/albedo_check.py` |
 | 도구 | 에셋 뷰어 | 사용 중 | `asset-viewer/` (`run.bat`) |
@@ -71,6 +72,11 @@
 ### 폐기: 1970~90년대풍 한국형 주택 4종 (`korean-lowrise`)
 - "너무 올드하고 모델링이 어색하다"는 판단으로 2026-11-19 삭제. 코드: `git show 748f6a5:cs2-kit/projects/korean-lowrise/house_core.py`.
 - 여기서 나온 지적 25건은 `reports/korean_housing_lessons.md`로 정리해 새 단독·빌라에 적용한다.
+
+### 한국형 근린상가 01
+- `SintanjinCornerShop01_L1_2x2`: 3층+옥탑·박공 파라펫, 석재 외벽·후퇴 창호·노란 간판·파란 차양·가상 상호. 11-09 옛 모델 파일은 복구 실패했으나 세션의 스크립트와 사용자 사진을 복구해 마지막 방향을 키트로 재구성했다.
+- 2026-11-22: Claude 구현 후 Codex 총괄 final 재실행·근접 낮밤 교차 review PASS. 세로 간판 비율·발광은 교차 검토 지적으로 수정했다. main 9,580/LOD1 3,440/LOD2 154(+창 102), 겹침 면·알베도 경고 0, `cs2-import`·뷰어 동기화 완료.
+- 사진 실측 복제가 아닌 대표형(치수 추정), 상업 Growable 등록·입주·야간·LOD는 인게임 미확인. 레벨 1~5 세트 미제작.
 
 ---
 

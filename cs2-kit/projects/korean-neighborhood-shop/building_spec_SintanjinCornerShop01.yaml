@@ -1,0 +1,40 @@
+name: SintanjinCornerShop01
+lot: {width: 2, depth: 2}   # estimated; 16 x 16 m, 6x6 이하 상업 Spawnable(Growable) 후보, 인게임 미확인
+dimensions:
+  width_m: 14.0   # estimated; 2026-11-09 시제품 14 m, 사용자 사진 정면 5칸
+  depth_m: 12.0   # estimated; 시제품 12 m, 후면 미관측
+  height_m: 13.6  # 1층 4.2 + 2층 3.4 + 3층 3.4 + 파라펫 1.0 + 박공 1.1 (옥탑 상단 13.6)
+floors: 3          # 3층 + 옥탑 계단실 (사용자 사진, 반복 4층 폐기)
+style: korean_neighborhood_corner_shop_stone_3f
+zone: Commercial   # 저밀도 상업 Growable 후보, 인게임 미확인
+signature: false
+archetype: corner_shop_3f_gable
+seed: 5
+single_address_copy: false   # 단일 번지 복제가 아닌 대표형
+evidence:
+  sources: work/roadview_extra/SOURCES.md
+  notes: shape_notes.md
+  primary_photos:
+    - work/roadview_extra/user_ref_corner_shop_2026-11-09.png   # 사용자 첨부 원본 (위치 미확인)
+    - work/roadview_extra/s01_granite_letters.png               # 신탄진동 화강석 상가
+    - work/roadview_extra/s02_granite_entrance.png
+    - work/roadview_extra/s03_granite_mass.png
+  recovered_prototype: work/roadview_extra/recovered_2026-11-09/   # 옛 Blender 스크립트 (참고만, 실행 안 함)
+from_user_photo:
+  - 3층 + 상부 박공형 파라펫, 베이지 석재 판 + 좌우 갈색 석재 기둥
+  - 3층 띠창 4칸 + 스텐 가로대 난간, 3층 아래 석재 띠 글자
+  - 2층 유리 간판 (짙은 유리 + 흰 글자)
+  - 1층 좌 노란 간판 + 파란 줄무늬 차양, 우 짙은 간판 띠, 모퉁이 측면
+estimated:
+  - 정면 14.0 m, 깊이 12.0 m, lot 2x2 # estimated
+  - 층고 1층 4.20 (간판 띠 2.95~3.85), 2·3층 3.40, 파라펫 1.0, 박공 1.02 m (상단 3.6 m 폭) # estimated
+  - 석재 판 0.9 x 0.6 m 줄눈, 베이지 (172,164,152), 갈색 (126,108,98) — 사진 그늘 차이로 색 추정 # estimated
+  - 2층은 칸마다 아래·위 유리 + 0.63 m 불투명 간판 띠 (사진은 유리 위 시트 글자) # estimated
+  - 차양 돌출 1.10 m, 벽 2.90 -> 앞 2.62 m, 가림막 2.48~2.57 m # estimated
+  - 모퉁이 세로 돌출 간판 0.70 x 3.00 m (z 4.80~7.80, 벽에서 0.10 m 띄움), 옥탑 3 x 3 x 2.5 m, 옥상 실외기 2대 # estimated
+  - 측면·후면·좌측 창 배치, 후면·좌측 미장 마감 # estimated (사진 미관측)
+  - 가상 상호 한빛 공인중개사 938-1472, 금강분식 932-6018, 세무회계 바른길, 신탄영어수학학원, 번호판 신탄상가길 12
+photo_mismatch_notes:
+  - 사용자 사진의 실제 상호·전화번호는 쓰지 않았다(규칙 19). 2026-11-09 시제품은 실제 상호를 그대로 썼다.
+  - 사진의 2층 유리 시트 글자를 불투명 간판 띠로 바꿨다(창 레이어 앞 판은 WIN_BLOCKED·z-fighting 위험).
+  - 사진 위치 미확인이라 photo_refs 자동 대조는 NOT_APPLICABLE.

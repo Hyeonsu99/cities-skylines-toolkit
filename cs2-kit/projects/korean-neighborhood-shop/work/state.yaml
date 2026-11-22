@@ -1,0 +1,210 @@
+{
+ "version": 1,
+ "project": "korean-neighborhood-shop",
+ "stages": {
+  "mass": {
+   "at": "2026-11-22T16:06:08",
+   "mode": "quick",
+   "status": "PASS",
+   "label": "mass",
+   "gate": "output/SintanjinCornerShop01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "501f2dfb7332c150dd5c3f1838e346c508333c0125cf37550524c8926b4fe025",
+   "preview": null,
+   "fbx": null
+  },
+  "visual": {
+   "at": "2026-11-22T16:06:14",
+   "mode": "visual",
+   "status": "INCOMPLETE",
+   "label": "visual",
+   "gate": "output/SintanjinCornerShop01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "501f2dfb7332c150dd5c3f1838e346c508333c0125cf37550524c8926b4fe025",
+   "preview": {
+    "path": "previews/SintanjinCornerShop01_L1_2x2.png",
+    "exists": true,
+    "sha256": "26a68fa366369205015279d690a72beff997619cc8cf674f8b47dbc0ebd6e9fd",
+    "key": null
+   },
+   "fbx": null
+  },
+  "glass_sign": {
+   "at": "2026-11-22T16:06:52",
+   "mode": "visual",
+   "status": "FAIL",
+   "label": "glass_sign",
+   "gate": "output/SintanjinCornerShop01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "FAIL",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "501f2dfb7332c150dd5c3f1838e346c508333c0125cf37550524c8926b4fe025",
+   "preview": {
+    "path": "previews/SintanjinCornerShop01_L1_2x2.png",
+    "exists": true,
+    "sha256": "6002cc5aa73ed9689abb86fcf01db195f4e800d57981bd7d03ceceb775d686fe",
+    "key": null
+   },
+   "fbx": null
+  },
+  "glass_band": {
+   "at": "2026-11-22T16:07:20",
+   "mode": "visual",
+   "status": "INCOMPLETE",
+   "label": "glass_band",
+   "gate": "output/SintanjinCornerShop01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "501f2dfb7332c150dd5c3f1838e346c508333c0125cf37550524c8926b4fe025",
+   "preview": {
+    "path": "previews/SintanjinCornerShop01_L1_2x2.png",
+    "exists": true,
+    "sha256": "54c57bbe7a3c1a08f79079b527ca76486d24689d708ad5cc811f82d6d25892d6",
+    "key": null
+   },
+   "fbx": null
+  },
+  "final": {
+   "at": "2026-11-22T16:08:34",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "final",
+   "gate": "output/SintanjinCornerShop01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "501f2dfb7332c150dd5c3f1838e346c508333c0125cf37550524c8926b4fe025",
+   "preview": {
+    "path": "previews/SintanjinCornerShop01_L1_2x2.png",
+    "exists": true,
+    "sha256": "d7101080ef8f2d60ac78871e8b584314d3cf3a54b0801f35f483b238d87c8dd7",
+    "key": null
+   },
+   "fbx": null
+  },
+  "coordinator-final": {
+   "at": "2026-11-22T16:09:51",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "coordinator-final",
+   "gate": "output/SintanjinCornerShop01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "501f2dfb7332c150dd5c3f1838e346c508333c0125cf37550524c8926b4fe025",
+   "preview": {
+    "path": "previews/SintanjinCornerShop01_L1_2x2.png",
+    "exists": true,
+    "sha256": "55173ef5ca91f085f8082d35b4e97d2a9d134921905ed3f0540465dce808127e",
+    "key": null
+   },
+   "fbx": null
+  },
+  "vsign_fix": {
+   "at": "2026-11-22T16:11:17",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "vsign_fix",
+   "gate": "output/SintanjinCornerShop01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "501f2dfb7332c150dd5c3f1838e346c508333c0125cf37550524c8926b4fe025",
+   "preview": {
+    "path": "previews/SintanjinCornerShop01_L1_2x2.png",
+    "exists": true,
+    "sha256": "9d55b85054bf90c5f9635d8c2634df82bb403e78dcfa675683de49c529088a0c",
+    "key": null
+   },
+   "fbx": null
+  },
+  "coordinator-final-fixed": {
+   "at": "2026-11-22T16:11:57",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "coordinator-final-fixed",
+   "gate": "output/SintanjinCornerShop01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "501f2dfb7332c150dd5c3f1838e346c508333c0125cf37550524c8926b4fe025",
+   "preview": {
+    "path": "previews/SintanjinCornerShop01_L1_2x2.png",
+    "exists": true,
+    "sha256": "c8430d0ab25328477beec909e18304c6551666a92f13b3dd035556c0045d4123",
+    "key": null
+   },
+   "fbx": null
+  }
+ },
+ "updated_at": "2026-11-22T16:11:57",
+ "current_stage": "final:INCOMPLETE",
+ "generator": "sintanjin_corner_shop_01_cs2.py",
+ "generator_hash": "501f2dfb7332c150dd5c3f1838e346c508333c0125cf37550524c8926b4fe025",
+ "visual_review": "NOT_CHECKED",
+ "reviewed_preview_hash": null,
+ "last_gate": {
+  "mode": "final",
+  "status": "INCOMPLETE",
+  "path": "output/SintanjinCornerShop01_L1_2x2/_check/gate.json"
+ }
+}
