@@ -4,7 +4,7 @@
 review:PASS
 
 ## Generator
-sintanjin_house_01_cs2.py
+sintanjin_house_02_cs2.py
 
 ## Last verification
 PASS

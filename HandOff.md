@@ -23,7 +23,7 @@
 | 에셋 | 신탄진IC 톨게이트 | 완료 | `cs2-kit/projects/sintanjin-tollgate/` |
 | 에셋 | 석봉동 행정복지센터 | 완료 (남은 확인 있음) | `cs2-kit/projects/seokbong-welfare-center/` |
 | 에셋 | 고속도로 소품 7종 | 완료 (인게임 미확인) | `cs2-kit/projects/highway-props/` |
-| 에셋 | 신탄진형 단독주택 (저밀도) | 1단계 완료. 2단계는 01 승인 후 중단 | `cs2-kit/projects/korean-detached/` |
+| 에셋 | 신탄진형 단독주택 (저밀도) | 01 승인 유지, 02 제작·총괄 final/review PASS (2026-11-22), 인게임 미확인 | `cs2-kit/projects/korean-detached/` |
 | 에셋 | 신탄진형 다세대 빌라 (중밀도) | A01 제작·총괄 final/review PASS (2026-11-22), 인게임 미확인 | `cs2-kit/projects/korean-villa/` |
 | 에셋 | 한국형 근린상가 01 (저밀도 상업 후보) | 제작·총괄 final/review PASS (2026-11-22), 인게임 미확인 | `cs2-kit/projects/korean-neighborhood-shop/` |
 | 에셋 | 1970~90년대풍 한국형 주택 4종 | **폐기** (2026-11-19) | git 기록 `748f6a5` |
@@ -60,7 +60,8 @@
 
 - 1단계 완료. 신탄진 일대 단독주택 24동의 거리뷰 120장을 조사하고 [단독주택 설계 기준](cs2-kit/projects/korean-detached/STYLE_BRIEF.md)에 유형별 치수와 색을 정리했다.
 - 2단계는 고동색 벽돌과 옥상 테라스를 갖춘 01호(2×3칸)까지 승인했다. 최종 검사에서 겹침 면은 0개였으며 인게임 확인은 남아 있다.
-- 02호(마당 단독주택), 03호(외부 계단과 흰 난간벽), 04호(1층 상가 겸용)는 보류했다.
+- 2026-11-22 후속 승인으로 02호 `SintanjinHouse02_L1_2x2`(2층 벽돌 마당형·모임지붕·좁은 발코니·현관 차양·담장/대문) 제작. 총괄 final 재실행·근접/야간 교차 review PASS, main 8,912/LOD1 3,532/LOD2 154(+창90), 겹침 면·알베도 경고 0. 01 변경 전후 OBJ·텍스처 바이트 동일 근거 확인. Desktop output·cs2-import·뷰어 동기화, 인게임 미확인.
+- 03호(외부 계단과 흰 난간벽), 04호(1층 상가 겸용)는 아직 미제작이다.
 
 ### 신탄진형 다세대 빌라
 

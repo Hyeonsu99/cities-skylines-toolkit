@@ -89,17 +89,130 @@
     "key": null
    },
    "fbx": null
+  },
+  "h02_mass": {
+   "at": "2026-11-22T19:40:27",
+   "mode": "quick",
+   "status": "PASS",
+   "label": "h02_mass",
+   "gate": "output/SintanjinHouse02_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "774b1982a81b296cb3c08aeb4e06762b17a8e17f68da9acb921161f893aa705d",
+   "preview": null,
+   "fbx": null
+  },
+  "h02_facade": {
+   "at": "2026-11-22T19:40:33",
+   "mode": "visual",
+   "status": "INCOMPLETE",
+   "label": "h02_facade",
+   "gate": "output/SintanjinHouse02_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "774b1982a81b296cb3c08aeb4e06762b17a8e17f68da9acb921161f893aa705d",
+   "preview": {
+    "path": "previews/SintanjinHouse02_L1_2x2.png",
+    "exists": true,
+    "sha256": "6e8a64e3e2515e15a5a8d586db8cf1aac2ecffc052b0efad47a227e9978ef2d6",
+    "key": null
+   },
+   "fbx": null
+  },
+  "h02_color": {
+   "at": "2026-11-22T19:40:52",
+   "mode": "quick",
+   "status": "PASS",
+   "label": "h02_color",
+   "gate": "output/SintanjinHouse02_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "774b1982a81b296cb3c08aeb4e06762b17a8e17f68da9acb921161f893aa705d",
+   "preview": null,
+   "fbx": null
+  },
+  "h02_final": {
+   "at": "2026-11-22T19:42:24",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "h02_final",
+   "gate": "output/SintanjinHouse02_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "774b1982a81b296cb3c08aeb4e06762b17a8e17f68da9acb921161f893aa705d",
+   "preview": {
+    "path": "previews/SintanjinHouse02_L1_2x2.png",
+    "exists": true,
+    "sha256": "149f1275f0bd333f26d18e25f342a6846eb743e4300292145e7e7497568d65a0",
+    "key": null
+   },
+   "fbx": null
+  },
+  "coordinator-h02": {
+   "at": "2026-11-22T19:43:11",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "coordinator-h02",
+   "gate": "output/SintanjinHouse02_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "774b1982a81b296cb3c08aeb4e06762b17a8e17f68da9acb921161f893aa705d",
+   "preview": {
+    "path": "previews/SintanjinHouse02_L1_2x2.png",
+    "exists": true,
+    "sha256": "3c36b0e78016927678e88c34be2104ccb73160f6feee846aeef04484edf3da79",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-19T16:15:56",
+ "updated_at": "2026-11-22T19:43:11",
  "current_stage": "final:INCOMPLETE",
- "generator": "sintanjin_house_01_cs2.py",
- "generator_hash": "519ff8b881b278b0a0c252b6295b5c74322d902a51ad3cfdd55e5638b899c3a6",
+ "generator": "sintanjin_house_02_cs2.py",
+ "generator_hash": "774b1982a81b296cb3c08aeb4e06762b17a8e17f68da9acb921161f893aa705d",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "8501b5577d2ac5ebf364168e12cf142424d644b0dfb33c96680f7c3a885aef7b",
+ "reviewed_preview_hash": "991ecb79a547442024db2116aae442313a7e3d4112f2820c7fb27e936b906cd8",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",
-  "path": "output/SintanjinHouse01_L1_2x3/_check/gate.json"
+  "path": "output/SintanjinHouse02_L1_2x2/_check/gate.json"
  }
 }

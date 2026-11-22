@@ -105,11 +105,11 @@ PRESETS = {
         roof_type="hip_tile_red",
         roof_rise=1.24,
         eave_out=0.50,
-        wall_palette="red_brown_brick",
+        wall_palette="dark_red_brown_brick",
         upper_plaster=False,
         sash_style="pvc_white",
         poly_tint="poly_green",
-        fence_style="brick_tiled_gate",
+        fence_style="brick_gate",          # d02_gate_balcony_up: 기와 대문 대신 평 콘크리트 대문 지붕
         stairs_side="none",
         roof_addon="none",
         road_name="덕암길",
@@ -509,6 +509,7 @@ def _make_shop_signs_painter(spec: DetachedSpec):
 PALETTE_RGB = {
     "dark_brown_brick": (84, 64, 60),    # S=0.286, V=84 (STYLE_BRIEF 권장 (76~98,58~76,56~70))
     "red_brown_brick":  (124, 82, 72),   # S=0.419, V=124 (STYLE_BRIEF 권장 (114~136,76~86,68~76))
+    "dark_red_brown_brick": (108, 76, 70),  # S=0.352, V=108 (02: d02_street_awning 직사광 벽돌 (106,83,87) 기준 암적갈)
     "charcoal_brick":   (74, 77, 83),    # S=0.108, V=83
     "offwhite_plaster": (196, 195, 192), # S=0.020, V=196
 }
@@ -1521,6 +1522,238 @@ def _build_front_terrace(mb: K.MeshBuilder, wins: K.WindowSet, spec: DetachedSpe
 
 
 # ---------------------------------------------------------------------------
+# 유형 T1 빌더: 2층 벽돌 모임지붕 마당형 (SintanjinHouse02)
+# 근거: work/roadview_extra/d02_*.png (석봉동 2층 벽돌 단독, SOURCES.md), STYLE_BRIEF 6.3
+# 좁은 전면 벽돌 발코니 + 흰 두겁 + 장식 블록, 현관 차양, 앞마당 벽돌 담장·철제 세로살·대문
+# ---------------------------------------------------------------------------
+def _fence_span(mb, s0, s1, fy0, fy1, stage):
+    """기둥 사이 낮은 벽돌 턱 + 흰 갓돌 + 검정 철제 세로살 (d02_brick_fence, d02_front_balcony)."""
+    if s1 - s0 < 0.15:
+        return
+    mb.box(s0, s1, fy0, fy1, 0.0, 0.70, "wall_main", skip=("bottom",))
+    mb.box(s0, s1, fy0 - 0.03, fy1 + 0.03, 0.70, 0.76, "plaster_white")
+    ym = 0.5 * (fy0 + fy1)
+    mb.box(s0, s1, ym - 0.02, ym + 0.02, 0.86, 0.89, "iron_dark")
+    mb.box(s0, s1, ym - 0.02, ym + 0.02, 1.38, 1.41, "iron_dark")
+    nb = max(2, int(round((s1 - s0) / (0.13 if stage == 0 else 0.36))) - 1)
+    for k in range(1, nb + 1):
+        bx = s0 + (s1 - s0) * k / (nb + 1)
+        mb.box(bx - 0.009, bx + 0.009, ym - 0.009, ym + 0.009, 0.76, 1.47, "iron_dark", skip=("bottom",))
+
+
+def _fence_pier(mb, cx, fy0, fy1, h=1.55, cap=True):
+    """벽돌 담장 기둥(0.40 m 각) + 콘크리트 캡 (d02_brick_fence)."""
+    mb.box(cx - 0.20, cx + 0.20, fy0 - 0.10, fy1 + 0.10, 0.0, h, "wall_main", skip=("bottom",))
+    if cap:
+        mb.box(cx - 0.24, cx + 0.24, fy0 - 0.14, fy1 + 0.14, h, h + 0.07, "concrete_light")
+
+
+def _build_standard_2f(mb: K.MeshBuilder, wins: K.WindowSet, spec: DetachedSpec, stage: int):
+    w, d = spec.width, spec.depth
+    x0, x1 = -w / 2.0, w / 2.0                    # -5.10 .. +5.10
+    zp = spec.plinth_h                             # 0.40
+    z_slab1 = zp + spec.h1                         # 3.30 (2층 바닥)
+    z_slab0 = z_slab1 - spec.slab_h                # 2.98
+    z_top = z_slab1 + spec.h2                      # 6.00
+    wall_t, t_pl, c_ov = 0.22, 0.025, 0.03
+
+    # 좁은 전면 발코니 (d02_front_balcony: 2층 중앙, 벽돌 막힌 난간 + 흰 두겁 + 장식 블록)
+    b0, b1, by0 = -1.90, 2.90, -0.90               # estimated: 폭 4.8 m, 돌출 0.9 m
+    pt = 0.18
+    z_pt = z_slab1 + 0.95
+
+    # 앞마당 담장 (lot 16x16 m 안, bbox 15.3 m -> 중앙 정렬 시 경계 안)
+    fy0, fy1 = -4.40, -4.20                        # 앞 담장 몸체 (도로면 y=-4.40, 앞마당 4.2 m)
+    sx = 7.60                                      # 좌우 담장 바깥선
+    ry0, ry1 = 10.60, 10.80                        # 뒷담 (뒷창 앞 1.6 m 확보 -> WIN_BLOCKED 0)
+    g0, g1 = -4.55, -2.15                          # 대문 개구부 2.4 m
+    gp = 0.40                                      # 대문 기둥 폭
+    gh = 2.25                                      # 대문 기둥 높이
+
+    if stage == 2:
+        mb.box(x0 - t_pl, x1 + t_pl, -t_pl, d + t_pl, 0.0, zp, "concrete_light", skip=("bottom",))
+        mb.box(x0, x1, 0.0, d, zp, z_slab0, "wall_main", skip=("bottom",))
+        mb.box(x0 - c_ov, x1 + c_ov, -c_ov, d + c_ov, z_slab0, z_slab1, "plaster_white")
+        mb.box(x0, x1, 0.0, d, z_slab1, z_top, "wall_main", skip=("bottom",))
+        mb.box(b0, b1, by0, -c_ov, z_slab0, z_pt, "wall_main")
+        add_hip_roof(mb, x0, x1, 0.0, d, z_top, spec.eave_out, spec.roof_rise, stage)
+        mb.box(-sx, g0 - gp, fy0, fy1, 0.0, 1.45, "wall_main", skip=("bottom",))
+        mb.box(g1 + gp, sx, fy0, fy1, 0.0, 1.45, "wall_main", skip=("bottom",))
+        mb.box(g0 - gp, g0, fy0 - 0.10, fy1 + 0.10, 0.0, gh, "wall_main", skip=("bottom",))
+        mb.box(g1, g1 + gp, fy0 - 0.10, fy1 + 0.10, 0.0, gh, "wall_main", skip=("bottom",))
+        mb.box(g0 - gp - 0.10, g1 + gp + 0.10, fy0 - 0.35, fy1 + 0.35, gh, gh + 0.15, "plaster_white")
+        mb.box(-sx, -sx + 0.20, fy1, ry0, 0.0, 1.55, "wall_main", skip=("bottom",))
+        mb.box(sx - 0.20, sx, fy1, ry0, 0.0, 1.55, "wall_main", skip=("bottom",))
+        mb.box(-sx, sx, ry0, ry1, 0.0, 1.55, "wall_main", skip=("bottom",))
+        return
+
+    # 1. 기단(통 블록) + 내부 코어 (외벽보다 2 cm 안쪽 -> 겹침 0)
+    mb.box(x0 - t_pl, x1 + t_pl, -t_pl, d + t_pl, 0.0, zp, "concrete_light", skip=("bottom",))
+    ci = wall_t + 0.02
+    mb.box(x0 + ci, x1 - ci, ci, d - ci, zp, z_slab0 - 0.01, "wall_main", skip=("bottom",))
+    mb.box(x0 + ci, x1 - ci, ci, d - ci, z_slab1 + 0.01, z_top - 0.01, "wall_main")
+
+    # 2. 1층 외벽 (z = zp .. z_slab0)
+    h1f_front = [
+        (-4.05, -3.05, zp, zp + 2.10, "door_glass", 0, 2),      # 현관문
+        (-2.20, 0.60, zp + 0.62, zp + 2.06, "window", 0, 3),     # 거실 3짝 (d02_front_balcony 1층 대형창)
+        (1.40, 3.00, zp + 0.78, zp + 2.02, "window", 0, 2),
+        (3.70, 4.60, zp + 1.30, zp + 2.02, "window", 0, 2),      # 욕실 소창
+    ]
+    add_recessed_wall(mb, wins, "y", 0.0, -1, x0, x1, zp, z_slab0, "wall_main",
+                      h1f_front, stage, spec.seed, wall_t=wall_t)
+    h1f_back = [
+        (-4.20, -2.70, zp + 0.78, zp + 2.02, "window", 0, 2),
+        (-1.40, -0.40, zp + 1.20, zp + 2.00, "window", 0, 2),
+        (0.80, 2.60, zp + 0.78, zp + 2.02, "window", 0, 2),
+        (3.40, 4.40, zp + 1.20, zp + 2.00, "window", 0, 2),
+    ]
+    add_recessed_wall(mb, wins, "y", d, 1, x0, x1, zp, z_slab0, "wall_main",
+                      h1f_back, stage, spec.seed + 1, wall_t=wall_t)
+    add_recessed_wall(mb, wins, "x", x0, -1, wall_t, d - wall_t, zp, z_slab0, "wall_main",
+                      [(1.60, 3.10, zp + 0.78, zp + 2.02, "window", 0, 2),
+                       (5.60, 7.10, zp + 0.78, zp + 2.02, "window", 0, 2)],
+                      stage, spec.seed + 2, wall_t=wall_t)
+    add_recessed_wall(mb, wins, "x", x1, 1, wall_t, d - wall_t, zp, z_slab0, "wall_main",
+                      [(1.40, 2.60, zp + 1.10, zp + 2.00, "window", 0, 2),
+                       (5.20, 6.90, zp + 0.78, zp + 2.02, "window", 0, 2)],
+                      stage, spec.seed + 3, wall_t=wall_t)
+
+    # 3. 흰 슬래브 띠 (모서리 감싸는 한 덩어리) + 발코니 바닥 슬래브
+    mb.box(x0 - c_ov, x1 + c_ov, -c_ov, d + c_ov, z_slab0, z_slab1, "plaster_white")
+    mb.box(b0, b1, by0, -c_ov, z_slab0, z_slab1,
+           {"default": "plaster_white", "top": "terrace_floor"}, skip=("back",))
+
+    # 4. 2층 외벽 (z = z_slab1 .. z_top)
+    h2f_front = [
+        (-4.20, -2.80, z_slab1 + 0.80, z_slab1 + 2.04, "window", 1, 2),
+        (-1.30, 0.20, z_slab1 + 0.80, z_slab1 + 2.04, "window", 1, 2),   # 난간 위 창 (d02_front_balcony)
+        (0.70, 2.40, z_slab1 + 0.80, z_slab1 + 2.04, "window", 1, 2),
+        (3.50, 4.60, z_slab1 + 0.80, z_slab1 + 2.04, "window", 1, 2),
+    ]
+    add_recessed_wall(mb, wins, "y", 0.0, -1, x0, x1, z_slab1, z_top, "wall_main",
+                      h2f_front, stage, spec.seed + 10, wall_t=wall_t)
+    add_recessed_wall(mb, wins, "y", d, 1, x0, x1, z_slab1, z_top, "wall_main",
+                      [(-3.90, -2.40, z_slab1 + 0.80, z_slab1 + 2.04, "window", 1, 2),
+                       (-0.80, 0.60, z_slab1 + 1.20, z_slab1 + 2.00, "window", 1, 2),
+                       (1.80, 3.60, z_slab1 + 0.80, z_slab1 + 2.04, "window", 1, 2)],
+                      stage, spec.seed + 11, wall_t=wall_t)
+    for side, xc, sd in ((-1, x0, 12), (1, x1, 13)):
+        add_recessed_wall(mb, wins, "x", xc, side, wall_t, d - wall_t, z_slab1, z_top, "wall_main",
+                          [(1.80, 3.30, z_slab1 + 0.80, z_slab1 + 2.04, "window", 1, 2),
+                           (5.60, 7.10, z_slab1 + 0.80, z_slab1 + 2.04, "window", 1, 2)],
+                          stage, spec.seed + sd, wall_t=wall_t)
+
+    # 5. 낮은 적갈 기와 모임지붕 + 목재 소핏 + 흰 처마 띠 (d02_mass_hip_roof, d02_street_awning)
+    add_hip_roof(mb, x0, x1, 0.0, d, z_top, spec.eave_out, spec.roof_rise, stage)
+
+    # 6. 좁은 전면 발코니: 벽돌 막힌 난간 + 장식 블록 개구부 + 흰 두겁 (모서리 감싸기)
+    lc0, lc1 = 0.10, 0.90                           # 장식 블록 0.8 x 0.5 m (estimated)
+    lz0, lz1 = z_slab1 + 0.30, z_slab1 + 0.80
+    fy_a, fy_b = by0, by0 + pt
+    mb.box(b0, lc0, fy_a, fy_b, z_slab1, z_pt, "wall_main", skip=("bottom",))
+    mb.box(lc1, b1, fy_a, fy_b, z_slab1, z_pt, "wall_main", skip=("bottom",))
+    mb.box(lc0, lc1, fy_a, fy_b, z_slab1, lz0, "wall_main", skip=("bottom",))
+    mb.box(lc0, lc1, fy_a, fy_b, lz1, z_pt, "wall_main")
+    mb.box(b0, b0 + pt, fy_b, 0.0, z_slab1, z_pt, "wall_main", skip=("bottom", "back", "front"))
+    mb.box(b1 - pt, b1, fy_b, 0.0, z_slab1, z_pt, "wall_main", skip=("bottom", "back", "front"))
+    mb.box(b0 - 0.03, b1 + 0.03, fy_a - 0.03, fy_b + 0.03, z_pt, z_pt + 0.06, "plaster_white")
+    mb.box(b0 - 0.03, b0 + pt + 0.03, fy_b + 0.03, 0.0, z_pt, z_pt + 0.06, "plaster_white", skip=("back",))
+    mb.box(b1 - pt - 0.03, b1 + 0.03, fy_b + 0.03, 0.0, z_pt, z_pt + 0.06, "plaster_white", skip=("back",))
+    ly0, ly1 = fy_a + 0.04, fy_b - 0.04
+    if stage == 0:
+        # 흰 콘크리트 장식 블록 격자: 외곽틀·십자(맞대기) + 좌우 사각 고리(얇게 다른 깊이 -> 겹침 0)
+        bw, zm, xm = 0.05, 0.5 * (lz0 + lz1), 0.5 * (lc0 + lc1)
+        mb.box(lc0, lc1, ly0, ly1, lz0, lz0 + bw, "plaster_white")
+        mb.box(lc0, lc1, ly0, ly1, lz1 - bw, lz1, "plaster_white")
+        mb.box(lc0, lc0 + bw, ly0, ly1, lz0 + bw, lz1 - bw, "plaster_white")
+        mb.box(lc1 - bw, lc1, ly0, ly1, lz0 + bw, lz1 - bw, "plaster_white")
+        mb.box(xm - 0.025, xm + 0.025, ly0, ly1, lz0 + bw, lz1 - bw, "plaster_white")
+        mb.box(lc0 + bw, xm - 0.025, ly0, ly1, zm - 0.025, zm + 0.025, "plaster_white")
+        mb.box(xm + 0.025, lc1 - bw, ly0, ly1, zm - 0.025, zm + 0.025, "plaster_white")
+        ra, rb = ly0 + 0.015, ly1 - 0.015
+        for qx in (lc0 + 0.20, lc1 - 0.20):
+            mb.box(qx - 0.10, qx + 0.10, ra, rb, zm + 0.07, zm + 0.10, "plaster_white")
+            mb.box(qx - 0.10, qx + 0.10, ra, rb, zm - 0.10, zm - 0.07, "plaster_white")
+            mb.box(qx - 0.10, qx - 0.07, ra, rb, zm - 0.07, zm + 0.07, "plaster_white")
+            mb.box(qx + 0.07, qx + 0.10, ra, rb, zm - 0.07, zm + 0.07, "plaster_white")
+    else:
+        mb.box(lc0, lc1, ly0, ly1, lz0, lz1, "plaster_white")
+
+    # 7. 현관: 2단 콘크리트 계단(틈 0, 기단에 맞대기) + 암녹 폴리카보네이트 차양 (d02_street_awning)
+    sx0, sx1 = -4.30, -2.80
+    mb.box(sx0, sx1, -0.80, -t_pl, 0.0, 0.20, "concrete_light", skip=("bottom", "back"))
+    mb.box(sx0, sx1, -0.42, -t_pl, 0.20, zp, "concrete_light", skip=("bottom", "back"))
+    ax0, ax1, ay0 = -4.45, -2.65, -1.05
+    az_f, az_b = 2.60, 2.84
+    add_tiled_slope_poly(mb, [(ax0, ay0, az_f + 0.016), (ax1, ay0, az_f + 0.016),
+                              (ax1, 0.0, az_b + 0.016), (ax0, 0.0, az_b + 0.016)], spec.poly_tint, stage)
+    add_tiled_slope_poly(mb, [(ax0, 0.0, az_b), (ax1, 0.0, az_b),
+                              (ax1, ay0, az_f), (ax0, ay0, az_f)], spec.poly_tint, stage)
+    if stage == 0:
+        for bx in (ax0 + 0.08, 0.5 * (ax0 + ax1), ax1 - 0.08):
+            add_beam(mb, (bx, ay0, az_f - 0.012), (bx, -0.02, az_b - 0.012), 0.015, 0.015, "iron_dark")
+        K.axbox(mb, "y", 0.0, -1, -3.62, -3.48, 0.0, 0.09, 2.56, 2.68, "lamp")
+
+    # 8. 앞마당 담장 + 대문 (d02_brick_fence, d02_front_balcony, d02_gate_balcony_up)
+    # 왼쪽 구간: 모서리 기둥 + 중간 기둥 + 대문 기둥
+    for cx in (-sx + 0.20, -6.20):
+        _fence_pier(mb, cx, fy0, fy1)
+    _fence_span(mb, -sx + 0.40, -6.40, fy0, fy1, stage)
+    _fence_span(mb, -6.00, g0 - gp, fy0, fy1, stage)
+    # 대문 기둥 2개 + 흰 콘크리트 대문 지붕 슬래브 (위 칠 없는 평 슬래브)
+    _fence_pier(mb, g0 - gp / 2, fy0, fy1, h=gh, cap=False)
+    _fence_pier(mb, g1 + gp / 2, fy0, fy1, h=gh, cap=False)
+    mb.box(g0 - gp - 0.10, g1 + gp + 0.10, fy0 - 0.35, fy1 + 0.35, gh, gh + 0.15, "plaster_white")
+    # 철제 대문 2짝 (하부 막힌 판 + 상부 세로살, 중앙 2 cm 틈)
+    gm = 0.5 * (g0 + g1)
+    gy0, gy1 = 0.5 * (fy0 + fy1) - 0.03, 0.5 * (fy0 + fy1) + 0.03
+    for la, lb in ((g0 + 0.01, gm - 0.01), (gm + 0.01, g1 - 0.01)):
+        mb.box(la, lb, gy0, gy1, 0.06, 1.30, "iron_dark")
+        mb.box(la, lb, gy0, gy1, 1.86, 1.92, "iron_dark")
+        mb.box(la, la + 0.05, gy0, gy1, 1.30, 1.86, "iron_dark")
+        mb.box(lb - 0.05, lb, gy0, gy1, 1.30, 1.86, "iron_dark")
+        if stage == 0:
+            nb = 6
+            for k in range(1, nb + 1):
+                bx = la + 0.05 + (lb - la - 0.10) * k / (nb + 1)
+                mb.box(bx - 0.01, bx + 0.01, gy0 + 0.02, gy1 - 0.02, 1.30, 1.86, "iron_dark")
+            # 판 보강 띠 (판 앞 2 cm)
+            mb.box(la + 0.06, lb - 0.06, gy0 - 0.02, gy0, 0.62, 0.68, "iron_dark")
+    # 대문 오른쪽 막힌 벽돌 벽 (계량기·우편함 부착, d02_gate_meter) + 갓돌
+    wr0, wr1 = g1 + gp, -0.55
+    mb.box(wr0, wr1, fy0, fy1, 0.0, 1.55, "wall_main", skip=("bottom",))
+    mb.box(wr0, wr1 - 0.04, fy0 - 0.03, fy1 + 0.03, 1.55, 1.61, "concrete_light")  # 옆 기둥 캡(-0.59)과 맞대기
+    # 오른쪽 구간 기둥 + 살 담장
+    piers_r = [-0.35, 1.75, 3.65, 5.55, sx - 0.20]
+    for cx in piers_r:
+        _fence_pier(mb, cx, fy0, fy1)
+    for a_p, b_p in zip(piers_r, piers_r[1:]):
+        _fence_span(mb, a_p + 0.20, b_p - 0.20, fy0, fy1, stage)
+    # 좌·우·뒤 벽돌 담장 (높이 1.55, 갓돌은 기둥 캡과 맞대기)
+    for s0_, s1_ in ((-sx, -sx + 0.20), (sx - 0.20, sx)):
+        mb.box(s0_, s1_, fy1 + 0.10, ry0, 0.0, 1.55, "wall_main", skip=("bottom",))
+        mb.box(s0_ - 0.03, s1_ + 0.03, fy1 + 0.14, ry0 - 0.03, 1.55, 1.61, "concrete_light")
+    mb.box(-sx, sx, ry0, ry1, 0.0, 1.55, "wall_main", skip=("bottom",))
+    mb.box(-sx - 0.03, sx + 0.03, ry0 - 0.03, ry1 + 0.03, 1.55, 1.61, "concrete_light")
+
+    # 9. 생활 디테일 (계량기 2개·우편함·번지판·대문등·우수관·실외기)
+    if stage == 0:
+        for mx in (-1.62, -1.36):
+            mb.box(mx - 0.10, mx + 0.10, fy0 - 0.14, fy0, 1.12, 1.42, "equip_gray", skip=("front", "back"))
+            mb.quad(K.face_pts("y", fy0 - 0.14, -1, mx - 0.10, mx + 0.10, 1.12, 1.42),
+                    mb.atlas.uv_full("meter_face"), "meter_face")
+        mb.box(-1.60, -1.40, fy0 - 0.05, fy0, 0.30, 1.12, "iron_dark", skip=("back",))   # 전선관
+        mb.box(-0.98, -0.72, fy0 - 0.10, fy0, 1.14, 1.44, "equip_gray", skip=("back",))  # 우편함
+        add_address_plate(mb, "y", fy0 - 0.10, -1, g0 - gp / 2, 1.70, stage)
+        mb.box(gm - 0.07, gm + 0.07, fy0 + 0.05, fy1 - 0.05, gh - 0.08, gh, "lamp", skip=("top",))
+        add_downspout(mb, "x", x0, -1, 0.30, 0.02, z_top - 0.02, eave_out=spec.eave_out)
+        add_downspout(mb, "x", x1, 1, d - 0.30, 0.02, z_top - 0.02, eave_out=spec.eave_out)
+    add_ac_unit(mb, "x", x1, 1, 4.10, 0.0, stage)
+    add_ac_unit(mb, "y", d, 1, 1.20, z_slab1 + 0.30, stage)
+
+
+# ---------------------------------------------------------------------------
 # 통합 빌드 및 익스포트
 # ---------------------------------------------------------------------------
 def build_stage(spec: DetachedSpec, a: K.Atlas, stage: int):
@@ -1528,6 +1761,8 @@ def build_stage(spec: DetachedSpec, a: K.Atlas, stage: int):
     wins = K.WindowSet()
     if spec.archetype == "front_terrace":
         _build_front_terrace(mb, wins, spec, stage)
+    elif spec.archetype == "standard_2f":
+        _build_standard_2f(mb, wins, spec, stage)
     else:
         raise NotImplementedError(f"Archetype {spec.archetype} pending checkpoint approval")
     return mb, wins

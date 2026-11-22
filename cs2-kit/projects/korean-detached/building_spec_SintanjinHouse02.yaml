@@ -1,0 +1,39 @@
+name: SintanjinHouse02
+lot: {width: 2, depth: 2}  # estimated; 저밀도 주거 구역 2x2 (16x16 m)
+dimensions:
+  width_m: 15.28  # 담장 갓돌 바깥 포함 (본채 10.2 m)  # estimated
+  depth_m: 15.6   # 앞 담장 기둥 캡 ~ 뒷담 갓돌 (본채 9.0 m)  # estimated
+  height_m: 7.48  # 기단 0.40 + 1층 2.90 + 2층 2.70 + 처마 0.24 + 모임지붕 1.24
+floors: 2
+style: sintanjin_2000s_detached_red_brown_brick_yard
+zone: ResidentialLow  # candidate
+signature: false
+archetype: standard_2f
+seed: 2
+evidence:
+  brief: STYLE_BRIEF.md
+  sources: work/roadview_extra/SOURCES.md
+  notes: shape_notes.md
+  primary_photos:
+    - work/roadview_extra/d02_front_balcony.png
+    - work/roadview_extra/d02_gate_balcony_up.png
+    - work/roadview_extra/d02_street_awning.png
+    - work/roadview_extra/d02_mass_hip_roof.png
+    - work/roadview_extra/d02_brick_fence.png
+    - work/roadview_extra/d02_gate_meter.png
+estimated:
+  - 본채 10.2 x 9.0 m, 앞마당 깊이 4.2 m, 측면 통로 2.3 m (2x2 로트 정합) # estimated
+  - 기단 0.40 m, 1층 2.90 m(흰 슬래브 띠 0.32 포함), 2층 벽 2.70 m (STYLE_BRIEF 3장 대표값) # estimated
+  - 처마 돌출 0.50 m, 모임지붕 용마루 높이 1.24 m (약 14도) # estimated
+  - 전면 발코니 폭 4.8 m, 돌출 0.9 m, 벽돌 막힌 난간 0.95 m + 흰 두겁 0.06 m # estimated
+  - 장식 블록 0.8 x 0.5 m (원·십자 문양을 사각 고리·십자로 단순화) # estimated
+  - 담장 높이 1.55 m, 살 담장 낮은 벽돌 턱 0.70 m + 세로살 0.71 m, 기둥 0.40 m 각 # estimated
+  - 대문 개구부 2.4 m, 대문 기둥 높이 2.25 m, 평 콘크리트 대문 지붕 0.15 m # estimated
+  - 현관 2단 계단 0.20 m x 2, 차양 1.8 x 1.05 m # estimated
+  - 도로명 건물번호판 '덕암길 27' (규칙 20 가상 도로명) # estimated
+photo_mismatch_notes:
+  - 석봉동 한 동(d02_*)을 중심으로 STYLE_BRIEF T1 대표형을 합성한 에셋이며 실측·특정 번지 복제가 아니므로 photo_refs 자동 픽셀 매칭은 NOT_APPLICABLE.
+  - 사진의 회청색 시멘트 기와 대신 브리프 빈도가 높은 적갈 기와(hip_tile_red)를 유지했다.
+  - 사진의 측면 외부계단(T3 성격)·흰 미장 대문 벽은 넣지 않고, 과제 지정대로 벽돌 담장·벽돌 대문 기둥으로 바꿨다.
+  - 사진의 녹색 천막형 현관 차양은 프리셋 poly_green 폴리카보네이트 경사판으로 표현했다.
+  - 골목 경사는 CS2 평지 로트에 맞춰 평탄화했다.
