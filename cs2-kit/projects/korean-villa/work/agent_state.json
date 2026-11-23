@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "sintanjin_villa_b01_cs2.py",
- "generator_hash": "15ced136ee5443020cc9011b7a981715550beb1c9c4092ef9564caacc8476063",
- "current_preview_hash": "7f6feba474e486624ba3e765abf7ef01682d753e4a176761c522dac1b7f8672f",
+ "generator_hash": "37b018ac9e7447b85ed7eb55f110dc5db06c901ff22bca2d900a26c10a501902",
+ "current_preview_hash": "9e4b051c30a1e4a06ecefd0bcd35655f7f274c9eb64806c2556136e153371971",
  "last_gate": {
   "status": "PASS",
   "project": "korean-villa",
@@ -29,8 +29,8 @@
    "report": "output\\SintanjinVillaB01_L1_2x3\\_check\\report.json"
   },
   "asset": "SintanjinVillaB01_L1_2x3",
-  "label": "coordinator-b01",
-  "time": "2026-11-22 19:58:53",
+  "label": "sync-b01",
+  "time": "2026-11-23 09:10:49",
   "build": {
    "asset": "SintanjinVillaB01_L1_2x3",
    "fbx": true,
@@ -145,45 +145,13 @@
   "reason": "all requested checks passed"
  },
  "project": "korean-villa",
- "updated_at": "2026-11-22T19:59:49",
- "visual_review_note": "총괄 교차검토: 현재 B01 4방향·필로티/현관·창/난간·모서리·계단실·지붕끝·야간 렌더와 덕암동 사진 대조. A01 21파일 바이트동일 회귀근거와 opt-in diff 확인. 대표형·옥상추정·인게임 미확인.",
+ "updated_at": "2026-11-23T09:15:12",
+ "visual_review_note": "총괄 근접 렌더 검토: 재빌드 미리보기가 기존 커밋본과 라벨 외 픽셀 동일, 눈높이 양방향 렌더 이상 없음 (A01·B01)",
  "visual_review_artifacts": [
   {
    "file": "previews/SintanjinVillaB01_L1_2x3.png",
-   "sha256": "7f6feba474e486624ba3e765abf7ef01682d753e4a176761c522dac1b7f8672f"
-  },
-  {
-   "file": "previews/B01_full_four.png",
-   "sha256": "c874ced4836d7fcf4636c0825745626998a7cfb636fd649b3d94fd95af4da98a"
-  },
-  {
-   "file": "previews/B01_piloti_entrance.png",
-   "sha256": "f207a87132d9c91dc3ee06b2965be1e824823fd9aee74e9b3f4b42cd1cd3b3e5"
-  },
-  {
-   "file": "previews/B01_window_railing.png",
-   "sha256": "f120b67ad61c83bb50208543eebec5b53854b75c4acecf66702fcb068e5564f3"
-  },
-  {
-   "file": "previews/B01_corner_plinth.png",
-   "sha256": "a14512fdfd11d25280774f3a9be2ed088bf85e5e38628af544ebb8e5e94d9186"
-  },
-  {
-   "file": "previews/B01_stairwell.png",
-   "sha256": "7011670ce7805f56b8ff95dc1e90d5e671f839d9b1ef20b700c7ca67a39c972c"
-  },
-  {
-   "file": "previews/B01_roof_edge.png",
-   "sha256": "1d2c4c42fd2731bab987fe4ea1b88e022a435e7f64b37bddf49c7e772b7320cb"
-  },
-  {
-   "file": "previews/B01_night.png",
-   "sha256": "b64f0344a655e0f3eb68dc78275435ea19cbbfccae7f649bb1ff563c65d156ee"
-  },
-  {
-   "file": "previews/B01_night_piloti.png",
-   "sha256": "06bc2f6d1d065e0cab1db4a9ef796901f60985a2a9e43f81caedd803c7df54e7"
+   "sha256": "9e4b051c30a1e4a06ecefd0bcd35655f7f274c9eb64806c2556136e153371971"
   }
  ],
- "reviewed_preview_hash": "7f6feba474e486624ba3e765abf7ef01682d753e4a176761c522dac1b7f8672f"
+ "reviewed_preview_hash": "9e4b051c30a1e4a06ecefd0bcd35655f7f274c9eb64806c2556136e153371971"
 }

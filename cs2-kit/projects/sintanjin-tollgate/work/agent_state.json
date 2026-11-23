@@ -3,7 +3,7 @@
  "current_stage": "review:PASS",
  "generator": "sintanjin_tollgate_cs2.py",
  "generator_hash": "df828926067e80fec1ae383941f0a7fdebaf61d3d7557310fc220b2554778467",
- "current_preview_hash": "9e9ed3aac9dd30b0af096111ddc2a598da1fbd2cf10a8ea3de7d17806f822760",
+ "current_preview_hash": "660f4da1a09cf45a20a65efc91fb4a5c0bee612b0936b429c2ee7bda6f10c77f",
  "last_gate": {
   "status": "PASS",
   "project": "sintanjin-tollgate",
@@ -29,8 +29,8 @@
    "report": "output\\SintanjinTollgate_L1_6x4\\_check\\report.json"
   },
   "asset": "SintanjinTollgate_L1_6x4",
-  "label": "sign_emis_off",
-  "time": "2026-11-21 11:25:33",
+  "label": "sync-toll",
+  "time": "2026-11-23 09:11:12",
   "build": {
    "asset": "SintanjinTollgate_L1_6x4",
    "fbx": true,
@@ -97,7 +97,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 0.4
+    "time_s": 0.8
    },
    "report": "output\\SintanjinTollgate_L1_6x4\\_check\\report.json"
   },
@@ -145,13 +145,13 @@
   "reason": "all requested checks passed"
  },
  "project": "sintanjin-tollgate",
- "updated_at": "2026-11-21T11:25:50",
- "visual_review_note": "타이틀 간판 signs_sjt 발광 제거, 야간 눈높이 글자 비발광·주간 판독 유지, 신호·LED·부스·조명 발광 동일",
+ "updated_at": "2026-11-23T09:15:12",
+ "visual_review_note": "총괄 근접 렌더 검토: 11/21 간판 발광 제거 반영 확인(야간 근접 렌더에서 타이틀 간판 비발광, 차로 신호만 발광), 눈높이 양방향 이상 없음",
  "visual_review_artifacts": [
   {
    "file": "previews/SintanjinTollgate_L1_6x4.png",
-   "sha256": "9e9ed3aac9dd30b0af096111ddc2a598da1fbd2cf10a8ea3de7d17806f822760"
+   "sha256": "660f4da1a09cf45a20a65efc91fb4a5c0bee612b0936b429c2ee7bda6f10c77f"
   }
  ],
- "reviewed_preview_hash": "9e9ed3aac9dd30b0af096111ddc2a598da1fbd2cf10a8ea3de7d17806f822760"
+ "reviewed_preview_hash": "660f4da1a09cf45a20a65efc91fb4a5c0bee612b0936b429c2ee7bda6f10c77f"
 }

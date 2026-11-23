@@ -3,7 +3,7 @@
  "current_stage": "review:PASS",
  "generator": "sintanjin_house_02_cs2.py",
  "generator_hash": "774b1982a81b296cb3c08aeb4e06762b17a8e17f68da9acb921161f893aa705d",
- "current_preview_hash": "3c36b0e78016927678e88c34be2104ccb73160f6feee846aeef04484edf3da79",
+ "current_preview_hash": "2e39e768cade91e9f85213fe50cc39c2d88aefd0335c6658c4571b0f9e329411",
  "last_gate": {
   "status": "PASS",
   "project": "korean-detached",
@@ -29,8 +29,8 @@
    "report": "output\\SintanjinHouse02_L1_2x2\\_check\\report.json"
   },
   "asset": "SintanjinHouse02_L1_2x2",
-  "label": "coordinator-h02",
-  "time": "2026-11-22 19:43:11",
+  "label": "sync-rebuild",
+  "time": "2026-11-23 09:10:19",
   "build": {
    "asset": "SintanjinHouse02_L1_2x2",
    "fbx": true,
@@ -97,7 +97,7 @@
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 0.1
+    "time_s": 0.2
    },
    "report": "output\\SintanjinHouse02_L1_2x2\\_check\\report.json"
   },
@@ -145,25 +145,13 @@
   "reason": "all requested checks passed"
  },
  "project": "korean-detached",
- "updated_at": "2026-11-22T19:43:25",
- "visual_review_note": "총괄 교차검토: 현재4방향·현관/대문·발코니·담장·처마/창모서리·야간 렌더와 석봉동 사진 확인. 01분기/공용함수 불변 diff와 워커 바이트일치 회귀근거 확인. 대표형·인게임 미확인.",
+ "updated_at": "2026-11-23T09:15:11",
+ "visual_review_note": "총괄 근접 렌더 검토: 재빌드 미리보기가 기존 커밋본과 라벨 외 픽셀 동일, 눈높이 양방향 렌더 이상 없음",
  "visual_review_artifacts": [
   {
    "file": "previews/SintanjinHouse02_L1_2x2.png",
-   "sha256": "3c36b0e78016927678e88c34be2104ccb73160f6feee846aeef04484edf3da79"
-  },
-  {
-   "file": "previews/h02_close_gate_entrance.png",
-   "sha256": "400e21f74f0fad39e701ed69c78b0a5d541c84c558822d7fdd606c165dc7c579"
-  },
-  {
-   "file": "previews/h02_close_balcony.png",
-   "sha256": "f6aeb521984e44e965041dd53908f82bea97f2d7bfd03deb542761bfe5804390"
-  },
-  {
-   "file": "previews/h02_night_4dir.png",
-   "sha256": "d4404b3c4bba5fbdc9ffa02063e7130ee5603002f22c4274b53f4209cf1bf6e1"
+   "sha256": "2e39e768cade91e9f85213fe50cc39c2d88aefd0335c6658c4571b0f9e329411"
   }
  ],
- "reviewed_preview_hash": "3c36b0e78016927678e88c34be2104ccb73160f6feee846aeef04484edf3da79"
+ "reviewed_preview_hash": "2e39e768cade91e9f85213fe50cc39c2d88aefd0335c6658c4571b0f9e329411"
 }

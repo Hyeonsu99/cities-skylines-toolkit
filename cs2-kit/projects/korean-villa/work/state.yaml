@@ -207,14 +207,64 @@
     "key": null
    },
    "fbx": null
+  },
+  "sync-a01": {
+   "at": "2026-11-23T09:10:37",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "sync-a01",
+   "gate": "output/SintanjinVillaA01_L1_2x3/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "73f95e104974a2a677f1ec50452d6758708f428b8e44b5bc080882be7caa263e",
+   "preview": {
+    "path": "previews/SintanjinVillaA01_L1_2x3.png",
+    "exists": true,
+    "sha256": "37bab635a5382f19d34f13c7b5d55941883302d0225555582abcfe6af4902e55",
+    "key": null
+   },
+   "fbx": null
+  },
+  "sync-b01": {
+   "at": "2026-11-23T09:10:49",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "sync-b01",
+   "gate": "output/SintanjinVillaB01_L1_2x3/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "37b018ac9e7447b85ed7eb55f110dc5db06c901ff22bca2d900a26c10a501902",
+   "preview": {
+    "path": "previews/SintanjinVillaB01_L1_2x3.png",
+    "exists": true,
+    "sha256": "9e4b051c30a1e4a06ecefd0bcd35655f7f274c9eb64806c2556136e153371971",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-22T19:58:53",
+ "updated_at": "2026-11-23T09:10:49",
  "current_stage": "final:INCOMPLETE",
  "generator": "sintanjin_villa_b01_cs2.py",
- "generator_hash": "15ced136ee5443020cc9011b7a981715550beb1c9c4092ef9564caacc8476063",
+ "generator_hash": "37b018ac9e7447b85ed7eb55f110dc5db06c901ff22bca2d900a26c10a501902",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "5d3eef1fe0fa486a4ed8dab30b7b27f56d4537b05860f3b0c4c60bf4bbb172a6",
+ "reviewed_preview_hash": "7f6feba474e486624ba3e765abf7ef01682d753e4a176761c522dac1b7f8672f",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",
