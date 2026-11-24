@@ -80,3 +80,9 @@ python tools/agent.py review --project korean-villa --status PASS --note "review
 ```text
 python tools/agent.py review --project korean-villa --status PASS --note "coordinator reviewed B01 photos, four sides, details and night" --artifact previews/SintanjinVillaB01_L1_2x3.png --artifact previews/B01_full_four.png --artifact previews/B01_piloti_entrance.png --artifact previews/B01_window_railing.png --artifact previews/B01_corner_plinth.png --artifact previews/B01_stairwell.png --artifact previews/B01_roof_edge.png --artifact previews/B01_night.png --artifact previews/B01_night_piloti.png --json
 ```
+
+## 2026-11-24 퀄리티 업 (A01 · B01)
+- 공용 벽돌 월드 좌표 연속 UV(`detached_core.add_recessed_wall`)와 야간 창 발광 강화를 두 빌라에 반영하고, `villa_core.py`에 무이음 옥상 방수 텍스처(`_roof_waterproof_painter`), PIL 로비폰 인터폰(`add_intercom`), 철제 방화문·보조문 디테일(`add_steel_door_details`), 천장 LED(`add_ceiling_lamp`), 계단실·현관 야간 점등 보장(`ensure_lit_windows`)을 추가했다.
+- **A01 (`SintanjinVillaA01_L1_2x3`)**: 정면 우측 2~4층 수직 계단실 유리 띠(층간 흰 띠 깔끔 분리, 3층별 야간 점등), 옥상 파라펫 턱·갓돌, 물탱크 고정 프레임·보강 띠·2단 돔/점검 뚜껑·유입/유출/밸브/오버플로우 배관, 옥탑 방화문 디테일, 필로티 후면 철제 보조문·공동현관(문턱·상부 현관등·인터폰·우편함 슬롯·천장 LED). main 16,832 / LOD1 5,484(32.6%) / LOD2 218+창150=368, COPLANAR/WIN_BLOCKED/알베도 경고 0, LODCHECK PASS(0/64). 총괄 체크포인트 승인 완료.
+- **B01 (`SintanjinVillaB01_L1_2x3`)**: 좌측 계단실 옥탑(차콜 벽돌·흑화강석 갓돌·철제 방화문), 환기 팬 2기, 배관·벤트 스택, TV 안테나, 무이음 옥상 방수 바닥, 좌측 4층 수직 계단실 유리 띠 3층별 상시 점등, 필로티 천장 LED·공동현관 캐노피/상부 조명·문턱·인터폰, 후면 철제 보조문 디테일 및 보행 동선 정렬(카스토퍼 간섭 해소), 우측 실외기 난간·모서리 간섭 해소(`x=5.18, z+0.30`). main 20,768 / LOD1 4,508(21.7%) / LOD2 226+창148=374, COPLANAR/WIN_BLOCKED/알베도 경고 0, LODCHECK PASS(0/64). B01 작업 중 `villa_core.py` 무수정으로 A01 출력 무변화 유지.
+- `agent.py review`는 총괄 검수 후 기록(미기록). 인게임 배치·야간·LOD는 미확인.

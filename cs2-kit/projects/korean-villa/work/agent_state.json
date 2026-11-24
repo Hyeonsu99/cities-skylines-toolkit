@@ -2,8 +2,8 @@
  "visual_review": "PASS",
  "current_stage": "review:PASS",
  "generator": "sintanjin_villa_b01_cs2.py",
- "generator_hash": "37b018ac9e7447b85ed7eb55f110dc5db06c901ff22bca2d900a26c10a501902",
- "current_preview_hash": "9e4b051c30a1e4a06ecefd0bcd35655f7f274c9eb64806c2556136e153371971",
+ "generator_hash": "69547a5764494593b4f67c7a5561145f097507003212f96ca8661805373b6fb3",
+ "current_preview_hash": "b92c8a4a333ceeb0acc9a28f4b4ceea223d5c584b0d268115e914d3fa9ec69d1",
  "last_gate": {
   "status": "PASS",
   "project": "korean-villa",
@@ -29,8 +29,8 @@
    "report": "output\\SintanjinVillaB01_L1_2x3\\_check\\report.json"
   },
   "asset": "SintanjinVillaB01_L1_2x3",
-  "label": "sync-b01",
-  "time": "2026-11-23 09:10:49",
+  "label": "b01-qup-final2",
+  "time": "2026-11-24 16:21:29",
   "build": {
    "asset": "SintanjinVillaB01_L1_2x3",
    "fbx": true,
@@ -42,8 +42,8 @@
    "info": {
     "size": [
      11.97,
-     13.08,
-     12.4
+     13.09,
+     15.55
     ],
     "pivot_offset": [
      0.0,
@@ -52,20 +52,20 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 18794,
-     "win": 144,
-     "lod1": 4478,
-     "lod1_win": 144,
-     "lod2": 216,
-     "lod2_win": 144
+     "main": 20768,
+     "win": 148,
+     "lod1": 4508,
+     "lod1_win": 148,
+     "lod2": 226,
+     "lod2_win": 148
     },
     "verts": {
-     "main": 37936,
-     "win": 288,
-     "lod1": 8956,
-     "lod1_win": 288,
-     "lod2": 432,
-     "lod2_win": 288
+     "main": 42028,
+     "win": 296,
+     "lod1": 9016,
+     "lod1_win": 296,
+     "lod2": 452,
+     "lod2_win": 296
     },
     "coplanar": {
      "main": 0,
@@ -86,18 +86,18 @@
      "LOD2_Emissive": "512x512 RGB"
     },
     "texel_px_per_m": {
-     "p10": 106.2,
+     "p10": 212.5,
      "median": 217.5,
      "p90": 217.5
     },
-    "windows": 72,
+    "windows": 74,
     "win_dropped": 0,
     "win_blocked": {
      "win": 0,
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 0.2
+    "time_s": 0.3
    },
    "report": "output\\SintanjinVillaB01_L1_2x3\\_check\\report.json"
   },
@@ -120,15 +120,15 @@
   "lod": {
    "checked": true,
    "status": "PASS",
-   "line": "LODCHECK PASS main max 0.004% (az 315, el -10) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\SintanjinVillaB01_L1_2x3",
+   "line": "LODCHECK PASS main max 0.014% (az 248, el -10) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\SintanjinVillaB01_L1_2x3",
    "notes": []
   },
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 37936,
-    "LOD1": 8956,
-    "LOD2": 432
+    "LOD0": 42028,
+    "LOD1": 9016,
+    "LOD2": 452
    },
    "action_tags": [],
    "exact_fix_instruction": "no fix needed"
@@ -145,13 +145,13 @@
   "reason": "all requested checks passed"
  },
  "project": "korean-villa",
- "updated_at": "2026-11-23T09:15:12",
- "visual_review_note": "총괄 근접 렌더 검토: 재빌드 미리보기가 기존 커밋본과 라벨 외 픽셀 동일, 눈높이 양방향 렌더 이상 없음 (A01·B01)",
+ "updated_at": "2026-11-24T16:24:34",
+ "visual_review_note": "총괄 근접·야간 검수 통과(A01·B01 퀄리티 업). 인게임 미확인",
  "visual_review_artifacts": [
   {
    "file": "previews/SintanjinVillaB01_L1_2x3.png",
-   "sha256": "9e4b051c30a1e4a06ecefd0bcd35655f7f274c9eb64806c2556136e153371971"
+   "sha256": "b92c8a4a333ceeb0acc9a28f4b4ceea223d5c584b0d268115e914d3fa9ec69d1"
   }
  ],
- "reviewed_preview_hash": "9e4b051c30a1e4a06ecefd0bcd35655f7f274c9eb64806c2556136e153371971"
+ "reviewed_preview_hash": "b92c8a4a333ceeb0acc9a28f4b4ceea223d5c584b0d268115e914d3fa9ec69d1"
 }

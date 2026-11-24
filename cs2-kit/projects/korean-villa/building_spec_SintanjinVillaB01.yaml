@@ -3,7 +3,7 @@ lot: {width: 2, depth: 3} # estimated; 16x24 m, 실제 대지 측량 아님
 dimensions:
   width_m: 11.6 # estimated; b08 정면 주차 1+2면과 좌측 계단실
   depth_m: 12.0 # estimated; 측면은 이웃 건물에 가려짐
-  height_m: 12.4 # estimated; 필로티3.0+주거3x2.8+파라펫1.0
+  height_m: 15.55 # estimated; 필로티3.0+주거3x2.8+옥탑2.36+TV안테나1.65
 floors: 4
 style: sintanjin_2000s_villa_B_charcoal_brick_piloti
 zone: ResidentialMedium # candidate, 인게임 등록 미확인
@@ -32,7 +32,7 @@ estimated:
   - 좌측 코어 x=-3.1~-0.7m, 깊이8m, 후면실 깊이4m # estimated
   - 기둥0.5m각 4개, 창유리 후퇴0.145m, PVC 외틀95mm, 난간0.62m # estimated
   - 차콜 BaseColor96/98/100, 흑화강석54/56/59; 직사광·청천반사 중화 # estimated
-  - 옥상 회녹 방수 바닥과 파라펫 내측, 위성 미확인; 물탱크/옥탑은 관측되지 않아 생략 # estimated
+  - 옥상 무이음 우레탄 회녹 방수 바닥, 좌측 계단실 옥탑(2.4x3.2x2.36 m, 흑화강석 갓돌·철제 방화문), 환기 팬 2기, 배관·벤트 스택, TV 안테나 (위성 미확인) # estimated
   - 후측 창·실외기·우수관 배치는 브리프와 대표형 설계로 보충 # estimated
   - 남색 가상 도로명 신탄골목길31, 우편함은 브리프 B 구성 보충 # estimated
 photo_mismatch_notes:

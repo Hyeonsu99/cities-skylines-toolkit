@@ -227,14 +227,39 @@
     "key": null
    },
    "fbx": null
+  },
+  "quality-up": {
+   "at": "2026-11-24T16:02:24",
+   "mode": "final",
+   "status": "INCOMPLETE",
+   "label": "quality-up",
+   "gate": "output/SintanjinHouse02_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "PASS",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "PASS",
+    "fbx": "PASS",
+    "visual_review": "NOT_CHECKED"
+   },
+   "generator_hash": "774b1982a81b296cb3c08aeb4e06762b17a8e17f68da9acb921161f893aa705d",
+   "preview": {
+    "path": "previews/SintanjinHouse02_L1_2x2.png",
+    "exists": true,
+    "sha256": "91c66bf704e3b2de0e63ef6c22839a5af8b817d8ba89cd797d53f63269eebff1",
+    "key": null
+   },
+   "fbx": null
   }
  },
- "updated_at": "2026-11-23T09:10:19",
+ "updated_at": "2026-11-24T16:02:24",
  "current_stage": "final:INCOMPLETE",
  "generator": "sintanjin_house_02_cs2.py",
  "generator_hash": "774b1982a81b296cb3c08aeb4e06762b17a8e17f68da9acb921161f893aa705d",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "3c36b0e78016927678e88c34be2104ccb73160f6feee846aeef04484edf3da79",
+ "reviewed_preview_hash": "3231f785295da86832ae95e62398b749bc44e828d811f220e09a838300a06c96",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",

@@ -3,7 +3,7 @@
  "current_stage": "review:PASS",
  "generator": "sintanjin_house_02_cs2.py",
  "generator_hash": "774b1982a81b296cb3c08aeb4e06762b17a8e17f68da9acb921161f893aa705d",
- "current_preview_hash": "2e39e768cade91e9f85213fe50cc39c2d88aefd0335c6658c4571b0f9e329411",
+ "current_preview_hash": "91c66bf704e3b2de0e63ef6c22839a5af8b817d8ba89cd797d53f63269eebff1",
  "last_gate": {
   "status": "PASS",
   "project": "korean-detached",
@@ -29,8 +29,8 @@
    "report": "output\\SintanjinHouse02_L1_2x2\\_check\\report.json"
   },
   "asset": "SintanjinHouse02_L1_2x2",
-  "label": "sync-rebuild",
-  "time": "2026-11-23 09:10:19",
+  "label": "quality-up",
+  "time": "2026-11-24 16:02:24",
   "build": {
    "asset": "SintanjinHouse02_L1_2x2",
    "fbx": true,
@@ -52,17 +52,17 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 8912,
+     "main": 9628,
      "win": 90,
-     "lod1": 3532,
+     "lod1": 3556,
      "lod1_win": 90,
      "lod2": 154,
      "lod2_win": 90
     },
     "verts": {
-     "main": 18082,
+     "main": 19514,
      "win": 180,
-     "lod1": 7130,
+     "lod1": 7178,
      "lod1_win": 180,
      "lod2": 310,
      "lod2_win": 180
@@ -126,8 +126,8 @@
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 18082,
-    "LOD1": 7130,
+    "LOD0": 19514,
+    "LOD1": 7178,
     "LOD2": 310
    },
    "action_tags": [],
@@ -145,13 +145,25 @@
   "reason": "all requested checks passed"
  },
  "project": "korean-detached",
- "updated_at": "2026-11-23T09:15:11",
- "visual_review_note": "총괄 근접 렌더 검토: 재빌드 미리보기가 기존 커밋본과 라벨 외 픽셀 동일, 눈높이 양방향 렌더 이상 없음",
+ "updated_at": "2026-11-24T16:03:07",
+ "visual_review_note": "외벽·발코니 벽돌 UV 월드 정렬, 현관문 차별화(다크프레임·하부패널·트랜섬), 녹색 차양 삼각 브래킷, 철제 대문 손잡이·자물쇠함·경첩, 우편함 투입구, 대문등 보강, 발코니 장식블록 그림자 깊이, 야간 4방향 발광 시각 검증 완료",
  "visual_review_artifacts": [
   {
    "file": "previews/SintanjinHouse02_L1_2x2.png",
-   "sha256": "2e39e768cade91e9f85213fe50cc39c2d88aefd0335c6658c4571b0f9e329411"
+   "sha256": "91c66bf704e3b2de0e63ef6c22839a5af8b817d8ba89cd797d53f63269eebff1"
+  },
+  {
+   "file": "previews/h02_close_gate_entrance.png",
+   "sha256": "abd77f6c3b3a4188fe327ae312af6b078040271f8755c258c30c0dc6edbe1d2e"
+  },
+  {
+   "file": "previews/h02_close_balcony.png",
+   "sha256": "a1af6370778877c7e236b2d35c655670d18703a919f2ecb1d0861433f83595f6"
+  },
+  {
+   "file": "previews/h02_night_4dir.png",
+   "sha256": "1003e19d581c2b44351a1c41fb17e4423b4fefc91322a16ab1d033a59381d4ac"
   }
  ],
- "reviewed_preview_hash": "2e39e768cade91e9f85213fe50cc39c2d88aefd0335c6658c4571b0f9e329411"
+ "reviewed_preview_hash": "91c66bf704e3b2de0e63ef6c22839a5af8b817d8ba89cd797d53f63269eebff1"
 }

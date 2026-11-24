@@ -298,16 +298,17 @@ def _make_terrace_floor_painter(seed):
 
 
 def _make_polycarb_painter(seed):
-    """철골 폴리카보네이트(렉산) 지붕 판재: 중공 리브 줄무늬 + 높은 반사광택."""
+    """철골 폴리카보네이트(렉산) 지붕 판재: 중공 리브 줄무늬 + 패널 이음 H-바 + 반투명 광택."""
     def painter(ctx):
         x, _ = ctx.meters()
-        rib = np.cos(x * 2.0 * np.pi / 0.06)
-        seam = (x % 0.65) < 0.015
-        ctx.rgb[...] = np.clip(ctx.rgb * (0.96 + 0.04 * rib)[..., None], 40, 215)
-        ctx.rgb[seam] *= 0.72
-        ctx.height[...] = 0.08 * rib - np.where(seam, 0.18, 0.0)
-        ctx.grain(amp=1.4, scale_px=3, height=0.02, seed=227 + seed)
-        ctx.gloss = np.clip(0.72 + 0.05 * rib - np.where(seam, 0.25, 0.0), 0.35, 0.84)
+        rib = np.cos(x * 2.0 * np.pi / 0.055)
+        seam = (x % 0.65) < 0.018
+        band = 0.03 * np.sin(x * 2.0 * np.pi / 0.65)
+        ctx.rgb[...] = np.clip(ctx.rgb * (0.95 + 0.05 * rib + band)[..., None], 38, 215)
+        ctx.rgb[seam] *= 0.66
+        ctx.height[...] = 0.10 * rib - np.where(seam, 0.22, 0.0)
+        ctx.grain(amp=1.2, scale_px=3, height=0.02, seed=227 + seed)
+        ctx.gloss = np.clip(0.82 + 0.06 * rib - np.where(seam, 0.30, 0.0), 0.42, 0.92)
     return painter
 
 
@@ -321,11 +322,11 @@ def _make_window_painter(seed):
         curtain = 0.5 + 0.5 * np.cos(cu * (2.0 * np.pi * 12.0))
         shade_v = 0.80 + 0.18 * (1.0 - cv)
         edge = (np.minimum(cu, 1.0 - cu) < 0.02) | (np.minimum(cv, 1.0 - cv) < 0.02)
-        # 절반 정도 세대/방만 야간 점등
-        lit_cells = tuple((k * 3 + seed) % (K.REF_GRID * K.REF_GRID) for k in range(10))
+        # 약 56% 세대/방 야간 점등 (따뜻하고 또렷한 실내 발광)
+        lit_cells = tuple((k * 3 + seed) % (K.REF_GRID * K.REF_GRID) for k in range(14))
         lit = np.isin(cell, lit_cells) & ~edge
         ctx.rgb[...] = np.clip(ctx.rgb * (shade_v * (0.86 + 0.12 * curtain))[..., None], 22, 185)
-        ctx.emis[...] = np.where(lit, (0.28 + 0.06 * (cell % 3)) * (0.72 + 0.28 * curtain), 0.0)
+        ctx.emis[...] = np.where(lit, (0.58 + 0.14 * (cell % 3)) * (0.76 + 0.24 * curtain), 0.0)
         nv = _var(ctx, scale_px=10, seed=241 + seed)
         ctx.gloss = np.where(edge, 0.62, np.clip(0.82 - 0.06 * curtain + 0.03 * nv, 0.68, 0.90))
     return painter
@@ -555,7 +556,7 @@ def build_atlas(spec: DetachedSpec) -> K.Atlas:
     # 창 유리 (야간 발광) + LOD2 뒷판
     win_col = (76, 98, 110)
     a.add("window", color=win_col, px=384, gloss=0.82,
-          emissive=(255, 220, 174), painter=_make_window_painter(s + 53))
+          emissive=(255, 214, 152), painter=_make_window_painter(s + 53))
     a.add("window_backing", color=win_col, px=32, gloss=0.78)
 
     # 창틀 (흰 PVC / 암회색 샷시)
@@ -572,21 +573,23 @@ def build_atlas(spec: DetachedSpec) -> K.Atlas:
     a.add("iron_dark", color=(56, 58, 62), px=128, metal=0.45, gloss=0.42,
           painter=_solid(2.4, 0.34, 0.48, s + 71))
 
-    # 폴리카보네이트(렉산) 차양 (밝은 반투명 회청 / 암녹)
-    a.add("poly_smoke", color=(174, 180, 184), px=256, tile=(1.3, 1.3), gloss=0.76,
+    # 폴리카보네이트(렉산) 차양 (청회 반투명 톤 / 암녹)
+    a.add("poly_smoke", color=(142, 162, 178), px=256, tile=(1.3, 1.3), gloss=0.82,
           painter=_make_polycarb_painter(s + 73))
-    a.add("poly_green", color=(88, 114, 108), px=256, tile=(1.3, 1.3), gloss=0.70,
+    a.add("poly_green", color=(88, 114, 108), px=256, tile=(1.3, 1.3), gloss=0.74,
           painter=_make_polycarb_painter(s + 79))
 
-    # 설비·현관문·배관·계량기·도로명판·조명
+    # 설비·현관문·배관·계량기·도로명판·조명·화분 식재·깊이 그림자
     a.add("door_wood", color=(94, 72, 58), px=128, gloss=0.34, painter=_solid(3.0, 0.28, 0.40, s + 83))
     a.add("equip_gray", color=(184, 186, 184), px=128, gloss=0.36, painter=_solid(2.2, 0.30, 0.42, s + 89))
     a.add("louver", color=(162, 166, 164), px=128, gloss=0.38, painter=_make_louver_painter(s + 97))
     a.add("meter_face", color=(188, 190, 188), px=128, gloss=0.36, painter=_make_meter_painter(s + 101))
     a.add("pipe_white", color=(196, 198, 198), px=64, gloss=0.48, painter=_solid(1.5, 0.42, 0.54, s + 103))
     a.add("address", px=256, gloss=0.48, painter=_make_address_painter(spec.road_name, spec.road_no))
-    a.add("lamp", color=(244, 224, 182), emissive=(255, 218, 156), px=32, gloss=0.62,
+    a.add("lamp", color=(244, 224, 182), emissive=(255, 224, 168), px=32, gloss=0.62,
           painter=_solid(1.0, 0.56, 0.66, s + 107))
+    a.add("foliage", color=(76, 102, 72), px=64, gloss=0.18, painter=_solid(5.5, 0.12, 0.24, s + 109))
+    a.add("shadow_recess", color=(34, 34, 38), px=32, gloss=0.10, painter=_solid(1.2, 0.08, 0.14, s + 111))
 
     if spec.roof_addon in ("solar", "both"):
         a.add("solar_panel", color=(54, 68, 88), px=256, gloss=0.78,
@@ -866,21 +869,110 @@ def add_hip_roof(mb: K.MeshBuilder, x0, x1, y0, y1, z_wall_top, eave_out, rise, 
             mb.box(ex1 - 0.06, ex1 + 0.045, cy - 0.065, cy + 0.065, zb - 0.015, zb + 0.075, trim_reg)
 
 
+def _world_tiled_rect(mb: K.MeshBuilder, pts, region: str):
+    """월드 좌표 기준 연속 타일 UV 매핑 (개구부 좌우·상하 벽돌 줄눈 위상 단절 방지)."""
+    A = mb.atlas
+    if A is None or not A.is_tiled(region) or not mb.split_tiles:
+        mb.rect(pts, region)
+        return
+    (p0x, p0y, p0z), (p1x, p1y, p1z), _p2, (p3x, p3y, p3z) = pts
+    dx, dy, dz = p1x - p0x, p1y - p0y, p1z - p0z
+    W = (dx * dx + dy * dy + dz * dz) ** 0.5
+    gx, gy, gz = p3x - p0x, p3y - p0y, p3z - p0z
+    H = (gx * gx + gy * gy + gz * gz) ** 0.5
+    if W < 1e-6 or H < 1e-6:
+        return
+    ex, ey, ez = dx / W, dy / W, dz / W
+    fx, fy, fz = gx / H, gy / H, gz / H
+    u0_w = p0x * ex + p0y * ey + p0z * ez
+    v0_w = p0x * fx + p0y * fy + p0z * fz
+    u1_w, v1_w = u0_w + W, v0_w + H
+    tw, th = A.tile_size(region)
+    i0, i1 = math.floor(u0_w / tw), math.ceil(u1_w / tw)
+    j0, j1 = math.floor(v0_w / th), math.ceil(v1_w / th)
+    e = 0.5 / A.size
+    quad = mb.quad
+    for j in range(j0, j1):
+        va = max(v0_w, j * th)
+        vb = min(v1_w, (j + 1) * th)
+        if vb - va < 1e-6:
+            continue
+        db0, db1 = va - v0_w, vb - v0_w
+        fv0 = max(0.0, min(1.0, (va - j * th) / th))
+        fv1 = max(0.0, min(1.0, (vb - j * th) / th))
+        bx0, by0, bz0 = fx * db0, fy * db0, fz * db0
+        bx1, by1, bz1 = fx * db1, fy * db1, fz * db1
+        for i in range(i0, i1):
+            ua = max(u0_w, i * tw)
+            ub = min(u1_w, (i + 1) * tw)
+            if ub - ua < 1e-6:
+                continue
+            da0, da1 = ua - u0_w, ub - u0_w
+            fu0 = max(0.0, min(1.0, (ua - i * tw) / tw))
+            fu1 = max(0.0, min(1.0, (ub - i * tw) / tw))
+            ax0, ay0, az0 = ex * da0, ey * da0, ez * da0
+            ax1, ay1, az1 = ex * da1, ey * da1, ez * da1
+            q = [(p0x + ax0 + bx0, p0y + ay0 + by0, p0z + az0 + bz0),
+                 (p0x + ax1 + bx0, p0y + ay1 + by0, p0z + az1 + bz0),
+                 (p0x + ax1 + bx1, p0y + ay1 + by1, p0z + az1 + bz1),
+                 (p0x + ax0 + bx1, p0y + ay0 + by1, p0z + az0 + bz1)]
+            au0, av0, au1, av1 = A._uvrect(region, variant=(i * 7 + j * 3))
+            ru0, rv0 = au0 + e, av0 + e
+            du, dv = au1 - au0 - 2.0 * e, av1 - av0 - 2.0 * e
+            uvs = [(ru0 + du * fu0, rv0 + dv * fv0),
+                   (ru0 + du * fu1, rv0 + dv * fv0),
+                   (ru0 + du * fu1, rv0 + dv * fv1),
+                   (ru0 + du * fu0, rv0 + dv * fv1)]
+            quad(q, uvs, region)
+
+
+def _world_tiled_box(mb: K.MeshBuilder, x0, x1, y0, y1, z0, z1, region, skip=()):
+    """월드 좌표 정렬 타일 UV 를 사용하는 축 정렬 박스."""
+    if x1 - x0 < 1e-5 or y1 - y0 < 1e-5 or z1 - z0 < 1e-5:
+        return
+    F = {
+        "front": [(x0, y0, z0), (x1, y0, z0), (x1, y0, z1), (x0, y0, z1)],
+        "back": [(x1, y1, z0), (x0, y1, z0), (x0, y1, z1), (x1, y1, z1)],
+        "left": [(x0, y1, z0), (x0, y0, z0), (x0, y0, z1), (x0, y1, z1)],
+        "right": [(x1, y0, z0), (x1, y1, z0), (x1, y1, z1), (x1, y0, z1)],
+        "top": [(x0, y0, z1), (x1, y0, z1), (x1, y1, z1), (x0, y1, z1)],
+        "bottom": [(x0, y1, z0), (x1, y1, z0), (x1, y0, z0), (x0, y0, z0)],
+    }
+    for face, pts in F.items():
+        if face in skip:
+            continue
+        reg = region if isinstance(region, str) else region.get(face, region.get("default"))
+        if reg:
+            _world_tiled_rect(mb, pts, reg)
+
+
+def _world_tiled_axbox(mb: K.MeshBuilder, axis, c, s, a0, a1, o0, o1, z0, z1, region, skip=()):
+    """K.axbox 와 동일한 좌표·skip 규칙을 따르며 월드 좌표 기준 타일 UV 적용."""
+    if abs(o0) < 1e-9:
+        skip = tuple(skip) + ({("y", -1): "back", ("y", 1): "front", ("x", -1): "right", ("x", 1): "left"}[(axis, s)],)
+    if axis == "y":
+        y0, y1 = sorted((c + s * o0, c + s * o1))
+        _world_tiled_box(mb, a0, a1, y0, y1, z0, z1, region, skip)
+    else:
+        x0, x1 = sorted((c + s * o0, c + s * o1))
+        _world_tiled_box(mb, x0, x1, a0, a1, z0, z1, region, skip)
+
+
 def add_recessed_wall(mb: K.MeshBuilder, wins: K.WindowSet, axis: str, c: float, side: int,
                       lo: float, hi: float, z_bot: float, z_top: float, wall_reg: str,
                       holes, stage: int, seed: int = 0, wall_t: float = 0.22,
                       sash_reg: str = "sash", reveal_reg: str = "concrete_light",
                       accent_plaster: bool = False):
-    """개구부(창·문)가 실제로 0.16~0.20 m 후퇴한 외벽 조각 생성.
+    """개구부(창·문)가 실제로 0.16~0.20 m 후퇴한 외벽 조각 생성 (월드 좌표 연속 UV).
 
     holes: [(a0, a1, z0, z1, kind, floor, panes), ...]
-      kind: 'window' | 'door_glass' | 'door_solid'
+      kind: 'window' | 'door_glass' | 'door_entry' | 'door_solid'
       panes: 2 또는 3 (창 유리 1장 유지, 샷시 세로/가로살은 유리 앞 3D 박스)
     """
     valid = [h for h in holes if h[0] > lo + 0.03 and h[1] < hi - 0.03 and h[2] >= z_bot - 1e-4 and h[3] <= z_top + 1e-4]
     cuts = sorted({lo, hi, *(v for h in valid for v in (h[0], h[1]))})
 
-    # 벽체 조각 생성 (개구부 구간 비움)
+    # 벽체 조각 생성 (개구부 구간 비움, 월드 좌표 연속 타일 UV)
     for left, right in zip(cuts, cuts[1:]):
         if right - left < 1e-4:
             continue
@@ -891,8 +983,8 @@ def add_recessed_wall(mb: K.MeshBuilder, wins: K.WindowSet, axis: str, c: float,
                 if stage == 2:
                     mb.rect(K.face_pts(axis, c, side, left, right, z, hz0), wall_reg)
                 else:
-                    K.axbox(mb, axis, c, side, left, right, -wall_t, 0.0, z, hz0, wall_reg,
-                            skip=("bottom",) if z <= 0.001 else ())
+                    _world_tiled_axbox(mb, axis, c, side, left, right, -wall_t, 0.0, z, hz0, wall_reg,
+                                       skip=("bottom",) if z <= 0.001 else ())
             z = max(z, hz1)
 
     # 개구부 창호·문 생성
@@ -963,6 +1055,45 @@ def add_recessed_wall(mb: K.MeshBuilder, wins: K.WindowSet, axis: str, c: float,
                             K.axbox(mb, axis, c, side, a0 - aw, a0 - 0.002, 0.003, 0.020, z0 + 0.006, z1 + 0.04, "plaster_white")
                         if a1 + aw < hi - 0.05:
                             K.axbox(mb, axis, c, side, a1 + 0.002, a1 + aw, 0.003, 0.020, z0 + 0.006, z1 + 0.04, "plaster_white")
+        elif kind == "door_entry":
+            # 주택 전용 현관문: 다크 프레임 + 하부 불투명 목재/금속 패널 + 상부 유리 + 트랜섬 + 수직 손잡이
+            efw = 0.075
+            z_mid = z0 + 0.96
+            z_tr = z1 - 0.36
+            if stage == 0:
+                wins.add_face(axis, c - side * 0.145, side, a0 + efw + 0.015, a1 - efw - 0.015,
+                              z_mid + 0.055, z_tr, floor, unit)
+                wins.items[-1]["pts2"] = K.face_pts(axis, c + side * 0.025, side,
+                                                    a0 + 0.06, a1 - 0.06, z_mid + 0.04, z_tr)
+                wins.add_face(axis, c - side * 0.145, side, a0 + efw + 0.015, a1 - efw - 0.015,
+                              z_tr + 0.055, z1 - efw, floor, unit)
+                wins.items[-1]["pts2"] = K.face_pts(axis, c + side * 0.025, side,
+                                                    a0 + 0.06, a1 - 0.06, z_tr + 0.04, z1 - 0.05)
+            if stage == 2:
+                mb.rect(K.face_pts(axis, c + side * 0.002, side, a0, a1, z0, z1), "door_wood")
+            else:
+                df_reg = "sash_dark"
+                o_in, o_out = -0.135, -0.015
+                K.axbox(mb, axis, c, side, a0, a1, o_in, o_out, z0, z0 + efw, df_reg)
+                K.axbox(mb, axis, c, side, a0, a1, o_in, o_out, z1 - efw, z1, df_reg)
+                K.axbox(mb, axis, c, side, a0, a0 + efw, o_in, o_out, z0 + efw, z1 - efw, df_reg)
+                K.axbox(mb, axis, c, side, a1 - efw, a1, o_in, o_out, z0 + efw, z1 - efw, df_reg)
+                # 중간 가로대 + 상부 트랜섬 바
+                K.axbox(mb, axis, c, side, a0 + efw, a1 - efw, -0.130, -0.030, z_mid, z_mid + 0.055, df_reg)
+                K.axbox(mb, axis, c, side, a0 + efw, a1 - efw, -0.130, -0.025, z_tr, z_tr + 0.055, df_reg)
+                # 하부 불투명 패널 (door_wood)
+                K.axbox(mb, axis, c, side, a0 + efw, a1 - efw, -0.135, -0.065, z0 + efw, z_mid, "door_wood")
+                if stage == 0:
+                    # 하부 패널 입체 몰딩 턱 + 스테인리스 수직 손잡이 + 자물쇠 플레이트
+                    K.axbox(mb, axis, c, side, a0 + efw + 0.09, a1 - efw - 0.09, -0.065, -0.048,
+                            z0 + efw + 0.09, z_mid - 0.09, "door_wood")
+                    hx = a1 - efw - 0.11
+                    K.axbox(mb, axis, c, side, hx - 0.015, hx + 0.015, -0.045, -0.012,
+                            z0 + 0.92, z0 + 1.22, "stainless")
+                    K.axbox(mb, axis, c, side, hx - 0.022, hx + 0.022, -0.062, -0.045,
+                            z0 + 0.80, z0 + 0.90, "iron_dark")
+                    KX.paint_reveal(mb, axis, c, side, a0, a1, z0, z1, 0.014, reveal_reg,
+                                    inset=0.002, sill=False, head=True)
         else:
             # 불투명 현관/보조문
             if stage == 2:
@@ -1086,9 +1217,14 @@ def add_polycarb_canopy(mb: K.MeshBuilder, x0, x1, y0, y1, z_deck, z_lo, z_hi, s
         mb.box(x0 + 0.10 - pw, x0 + 0.10 + pw, yp - pw, yp + pw, z_deck, z_lo - 0.06, frame_reg)
         mb.box(x1 - 0.10 - pw, x1 - 0.10 + pw, yp - pw, yp + pw, z_deck, z_hi - 0.06, frame_reg)
 
-    # 2) 종방향 도리 보 (좌·우 기둥 상단 연결)
+    # 2) 종방향 도리 보 (좌·우 기둥 상단 연결) + 모서리 보강 가새 (stage == 0)
     mb.box(x0 + 0.10 - pw, x0 + 0.10 + pw, y0 + 0.05, y1 - 0.05, z_lo - 0.06, z_lo, frame_reg)
     mb.box(x1 - 0.10 - pw, x1 - 0.10 + pw, y0 + 0.05, y1 - 0.05, z_hi - 0.06, z_hi, frame_reg)
+    if stage == 0:
+        # 기둥-도리 접합부 짧은 대각 가새(까치발)로 철골 프레임 이음 보강
+        for xp, zp_b in ((x0 + 0.10, z_lo - 0.06), (x1 - 0.10, z_hi - 0.06)):
+            add_beam(mb, (xp, y0 + 0.16, zp_b - 0.34), (xp, y0 + 0.50, zp_b), 0.014, 0.014, frame_reg)
+            add_beam(mb, (xp, y1 - 0.16, zp_b - 0.34), (xp, y1 - 0.50, zp_b), 0.014, 0.014, frame_reg)
 
     # 3) 3분할 완만한 곡면 아치형 폴리카보네이트 지붕판 + 횡방향 서까래
     n_seg = 3 if stage == 0 else 2
@@ -1128,6 +1264,13 @@ def add_polycarb_canopy(mb: K.MeshBuilder, x0, x1, y0, y1, z_deck, z_lo, z_hi, s
             mb.quad([(xa, y1, za), (xa, y0, za), (xa, y0, za + t_poly), (xa, y1, za + t_poly)], uvp, frame_reg)
         if s_i == n_seg - 1:
             mb.quad([(xb, y0, zb), (xb, y1, zb), (xb, y1, zb + t_poly), (xb, y0, zb + t_poly)], uvp, frame_reg)
+    if stage == 0:
+        # 상면 렉산 이음 쫄대(H-바) 2줄 (아치 분할선 강조)
+        for s_i in range(1, n_seg):
+            f_j = s_i / n_seg
+            xj = x0 - 0.08 + (x1 - x0 + 0.12) * f_j
+            zj = roof_z(f_j) + 0.056 + t_poly
+            mb.box(xj - 0.018, xj + 0.018, y0, y1, zj, zj + 0.014, frame_reg, skip=("bottom",))
 
 
 def add_downspout(mb: K.MeshBuilder, axis: str, c: float, side: int, a_pos: float,
@@ -1275,8 +1418,10 @@ def _build_front_terrace(mb: K.MeshBuilder, wins: K.WindowSet, spec: DetachedSpe
     # 1층 뒷벽 (+Y, 양쪽 코너 감싸기 x0 - t_pl .. x1 + t_pl, y = d - wall_t .. d + t_pl)
     mb.box(x0 - t_pl, x1 + t_pl, d - wall_t, d + t_pl, 0.0, zp, "concrete_light", skip=("bottom",))
 
-    # 좌측 현관 계단 턱 (y = 0.85 .. 2.55, z = 0 .. 0.16)
-    mb.box(x0 - 0.04, x0 + wall_t, 0.85, 2.55, 0.0, 0.16, "concrete_light", skip=("bottom",))
+    # 좌측 현관 2단 진입 계단 (y = 0.85 .. 2.55, 1단 z=0..0.08, 2단 랜딩 z=0..0.16, 틈 0)
+    mb.box(x0 - 0.42, x0 + wall_t, 0.85, 2.55, 0.0, 0.16, "concrete_light", skip=("bottom",))
+    if stage < 2:
+        mb.box(x0 - 0.78, x0 - 0.42, 0.85, 2.55, 0.0, 0.08, "concrete_light", skip=("bottom", "right"))
 
     # =========================================================================
     # 3. 1층 외벽 (좌측 앞 볼륨 z = zp ~ z_slab1-0.04, 우측 z = zp ~ z_slab0)
@@ -1292,7 +1437,7 @@ def _build_front_terrace(mb: K.MeshBuilder, wins: K.WindowSet, spec: DetachedSpe
         (0.90, 2.50, 0.16, 2.42, "door_glass", 0, 2),
         (5.25, 6.85, zp + 0.76, zp + 2.00, "window", 0, 2),
     ]
-    K.axbox(mb, "x", x0, -1, wall_t, 0.85, -wall_t, 0.0, zp, z_slab1 - 0.04, "wall_main")
+    _world_tiled_axbox(mb, "x", x0, -1, wall_t, 0.85, -wall_t, 0.0, zp, z_slab1 - 0.04, "wall_main")
     add_recessed_wall(mb, wins, "x", x0, -1, 0.85, 2.55, 0.16, z_slab1 - 0.04,
                       "wall_main", [h_1f_left[0]], stage, spec.seed + 1, wall_t=wall_t, sash_reg="sash_dark")
     add_recessed_wall(mb, wins, "x", x0, -1, 2.55, d - wall_t, zp, z_slab1 - 0.04,
@@ -1451,7 +1596,29 @@ def _build_front_terrace(mb: K.MeshBuilder, wins: K.WindowSet, spec: DetachedSpe
                         z_slab1, z_slab1 + 2.02, z_slab1 + 2.38, stage,
                         poly_reg=spec.poly_tint, frame_reg="iron_dark", mid_y=1.78)
 
-    # 1층 우측 끝 창 상부 소형 암녹색 폴리카보네이트 미니 차양 (user_ref 우측 끝 디테일!)
+    # 1층 좌측 현관 비막이 폴리카보네이트 캐노피 + 벽면 고정 삼각 브래킷 (현관 세트화)
+    if stage < 2:
+        ey0, ey1 = 0.68, 2.72
+        ex_out, ex_in = x0 - 0.92, x0
+        ez_out, ez_in = 2.74, 2.98
+        eq_top = [(ex_out, ey1, ez_out + 0.016), (ex_out, ey0, ez_out + 0.016),
+                  (ex_in, ey0, ez_in + 0.016), (ex_in, ey1, ez_in + 0.016)]
+        eq_bot = [(ex_in, ey1, ez_in), (ex_in, ey0, ez_in),
+                  (ex_out, ey0, ez_out), (ex_out, ey1, ez_out)]
+        add_tiled_slope_poly(mb, eq_top, spec.poly_tint, stage)
+        add_tiled_slope_poly(mb, eq_bot, spec.poly_tint, stage)
+        if stage == 0:
+            # 외곽 엣지 바 + 서까래 3줄 + 양 끝단 삼각 지지 브래킷(까치발)
+            mb.box(ex_out - 0.014, ex_out + 0.014, ey0, ey1, ez_out - 0.016, ez_out + 0.016, "iron_dark")
+            for by in (ey0 + 0.08, 0.5 * (ey0 + ey1), ey1 - 0.08):
+                add_beam(mb, (ex_out, by, ez_out - 0.012), (ex_in - 0.01, by, ez_in - 0.012),
+                         0.015, 0.015, "iron_dark")
+            for by in (ey0 + 0.08, ey1 - 0.08):
+                mb.box(x0 - 0.035, x0, by - 0.018, by + 0.018, 2.48, ez_in - 0.015, "iron_dark", skip=("right",))
+                zb_end = ez_out + (ez_in - ez_out) * (0.16 / (ex_in - ex_out)) - 0.015
+                add_beam(mb, (x0 - 0.035, by, 2.52), (ex_out + 0.16, by, zb_end), 0.014, 0.014, "iron_dark")
+
+    # 1층 우측 끝 창 상부 소형 암녹색 폴리카보네이트 미니 차양 + 벽면 삼각 브래킷 (user_ref 우측 끝 디테일!)
     if stage < 2:
         ax0, ax1 = 4.45, 6.25
         ay0, ay1 = 0.12, y_1f_r
@@ -1464,11 +1631,20 @@ def _build_front_terrace(mb: K.MeshBuilder, wins: K.WindowSet, spec: DetachedSpe
         add_tiled_slope_poly(mb, q_top, "poly_green", stage)
         add_tiled_slope_poly(mb, q_bot, "poly_green", stage)
         if stage == 0:
+            mb.box(ax0, ax1, ay0 - 0.014, ay0 + 0.014, az_front - 0.014, az_front + 0.016, "iron_dark")
             for bx in (ax0 + 0.08, 0.5 * (ax0 + ax1), ax1 - 0.08):
-                add_beam(mb, (bx, ay0, az_front - 0.012), (bx, ay1, az_back - 0.012), 0.015, 0.015, "iron_dark")
+                add_beam(mb, (bx, ay0, az_front - 0.012), (bx, ay1 - 0.01, az_back - 0.012),
+                         0.015, 0.015, "iron_dark")
+            # 양 끝 벽면 고정 삼각 브래킷(까치발, 창 폭 4.68..6.08 바깥 4.53/6.17 배치)
+            for bx in (ax0 + 0.08, ax1 - 0.08):
+                mb.box(bx - 0.018, bx + 0.018, ay1 - 0.035, ay1, az_front - 0.34, az_back - 0.015,
+                       "iron_dark", skip=("back",))
+                zb_m = az_front + (az_back - az_front) * (0.14 / (ay1 - ay0)) - 0.015
+                add_beam(mb, (bx, ay1 - 0.035, az_front - 0.30), (bx, ay0 + 0.14, zb_m),
+                         0.014, 0.014, "iron_dark")
 
     # =========================================================================
-    # 9. 생활 디테일 (계량기 3연접 · CCTV 2대 · 배관 · 우수관 · 번지판 · 실외기)
+    # 9. 생활 디테일 (계량기 3연접 · CCTV 2대 · 현관 세트 · 테라스 생활물 · 배관 · 우수관 · 번지판 · 실외기)
     # =========================================================================
     if stage == 0:
         # 1층 전면 좌측: 전력·가스 계량기함 3개 연접 + 검정 전선관 (user_ref 핵심!)
@@ -1490,9 +1666,55 @@ def _build_front_terrace(mb: K.MeshBuilder, wins: K.WindowSet, spec: DetachedSpe
         # 도로명 건물번호판 (좌측 코너 지상 1.52 m, 규칙 20)
         add_address_plate(mb, "y", 0.0, -1, -6.02, 1.52, stage)
 
-        # 좌측 현관 상단 조명 + 2층 테라스 벽등
-        mb.box(x0 - 0.09, x0, 1.62, 1.78, 2.52, 2.66, "lamp")
-        mb.box(x_2f0 - 0.09, x_2f0, 4.15, 4.30, z_slab1 + 2.10, z_slab1 + 2.24, "lamp")
+        # 좌측 현관 세트 부속: 도어벨/인터폰 + 우편함 + 프레임 현관등
+        mb.box(x0 - 0.032, x0, 0.62, 0.74, 1.32, 1.50, "iron_dark", skip=("right",))
+        mb.box(x0 - 0.038, x0 - 0.032, 0.635, 0.725, 1.335, 1.485, "equip_gray", skip=("right",))
+        mb.box(x0 - 0.044, x0 - 0.038, 0.665, 0.695, 1.42, 1.45, "iron_dark", skip=("right",))
+        mb.box(x0 - 0.044, x0 - 0.038, 0.665, 0.695, 1.36, 1.385, "iron_dark", skip=("right",))
+        # 좌측 현관 우편함 (본체 + 빗물 덮개 + 투입구 슬롯)
+        mb.box(x0 - 0.11, x0, 2.68, 2.94, 1.24, 1.56, "equip_gray", skip=("right",))
+        mb.box(x0 - 0.125, x0, 2.67, 2.95, 1.56, 1.585, "iron_dark", skip=("right",))
+        mb.box(x0 - 0.118, x0 - 0.11, 2.71, 2.91, 1.485, 1.515, "iron_dark", skip=("right",))
+        # 좌측 현관 상단 조명(하우징 + 발광 디퓨저) + 2층 테라스 벽등
+        mb.box(x0 - 0.10, x0, 1.56, 1.84, 2.50, 2.66, "iron_dark", skip=("right",))
+        mb.box(x0 - 0.115, x0 - 0.03, 1.59, 1.81, 2.52, 2.63, "lamp", skip=("right",))
+        mb.box(x_2f0 - 0.10, x_2f0, 4.12, 4.34, z_slab1 + 2.08, z_slab1 + 2.24, "iron_dark", skip=("right",))
+        mb.box(x_2f0 - 0.115, x_2f0 - 0.03, 4.15, 4.31, z_slab1 + 2.10, z_slab1 + 2.21, "lamp", skip=("right",))
+
+        # 2층 옥상 테라스 경량 생활 디테일: 2단 화분대(화분 3개) + 스테인리스 빨래대 + 배수구 + 벽 수도꼭지
+        # (1) 2단 화분대 + 토분 3개 (뒤쪽 난간 앞 x=-5.85..-4.45, y=8.35..8.75)
+        px0, px1, py0, py1 = -5.85, -4.45, 8.35, 8.75
+        for lx in (px0 + 0.03, px1 - 0.03):
+            for ly in (py0 + 0.03, py1 - 0.03):
+                mb.box(lx - 0.016, lx + 0.016, ly - 0.016, ly + 0.016, z_slab1, z_slab1 + 0.56,
+                       "iron_dark", skip=("bottom",))
+        mb.box(px0, px1, py0, py1, z_slab1 + 0.22, z_slab1 + 0.25, "iron_dark")
+        mb.box(px0, px1, py0, py1, z_slab1 + 0.56, z_slab1 + 0.59, "iron_dark")
+        for pot_x, pot_z, pot_r in ((-5.58, z_slab1 + 0.59, 0.12), (-5.15, z_slab1 + 0.59, 0.14),
+                                    (-4.72, z_slab1 + 0.59, 0.11)):
+            mb.box(pot_x - pot_r, pot_x + pot_r, 8.55 - pot_r, 8.55 + pot_r, pot_z, pot_z + 0.20,
+                   "clay_trim", skip=("bottom",))
+            mb.box(pot_x - pot_r * 1.15, pot_x + pot_r * 1.15, 8.55 - pot_r * 1.15, 8.55 + pot_r * 1.15,
+                   pot_z + 0.20, pot_z + 0.38, "foliage", skip=("bottom",))
+        # (2) 접이식 스테인리스 빨래 건조대 (햇빛 드는 개방 테라스 x=-4.60..-3.30, y=5.65..6.40)
+        rx0, rx1, ry0, ry1 = -4.60, -3.30, 5.65, 6.40
+        z_rack = z_slab1 + 0.96
+        for lx in (rx0 + 0.08, rx1 - 0.08):
+            add_beam(mb, (lx, ry0 + 0.06, z_slab1 + 0.01), (lx, ry1 - 0.06, z_rack), 0.012, 0.012, "stainless")
+            add_beam(mb, (lx, ry1 - 0.06, z_slab1 + 0.01), (lx, ry0 + 0.06, z_rack), 0.012, 0.012, "stainless")
+        mb.box(rx0, rx1, ry0, ry0 + 0.024, z_rack, z_rack + 0.024, "stainless")
+        mb.box(rx0, rx1, ry1 - 0.024, ry1, z_rack, z_rack + 0.024, "stainless")
+        for k in range(5):
+            ry_bar = ry0 + 0.12 + k * (ry1 - ry0 - 0.24) / 4.0
+            mb.box(rx0 + 0.02, rx1 - 0.02, ry_bar - 0.008, ry_bar + 0.008, z_rack + 0.004, z_rack + 0.020, "stainless")
+        # (3) 바닥 배수구 그레이팅 (x=-5.95..-5.65, y=7.50..7.80)
+        mb.box(-5.95, -5.65, 7.50, 7.80, z_slab1, z_slab1 + 0.012, "iron_dark", skip=("bottom",))
+        mb.box(-5.91, -5.69, 7.54, 7.76, z_slab1 + 0.012, z_slab1 + 0.018, "stainless", skip=("bottom",))
+        # (4) 2층 좌측 벽 물청소용 수도꼭지 + 호스 걸이 (x=x_2f0, y=4.95, z=z_slab1+0.55)
+        mb.box(x_2f0 - 0.04, x_2f0, 4.91, 4.99, z_slab1 + 0.51, z_slab1 + 0.59, "iron_dark", skip=("right",))
+        mb.box(x_2f0 - 0.16, x_2f0 - 0.04, 4.935, 4.965, z_slab1 + 0.535, z_slab1 + 0.565, "stainless", skip=("right",))
+        mb.box(x_2f0 - 0.16, x_2f0 - 0.13, 4.935, 4.965, z_slab1 + 0.47, z_slab1 + 0.535, "stainless", skip=("top",))
+        mb.box(x_2f0 - 0.11, x_2f0, 4.70, 4.82, z_slab1 + 0.72, z_slab1 + 0.84, "iron_dark", skip=("right",))
 
         # 흰색 원형 PVC 우수관 (전면 단차 코너 짧은 배수관 + 2층 우측/뒷쪽 모서리 우수관)
         add_downspout(mb, "y", 0.0, -1, x_split - 0.14, 0.02, 0.78, eave_out=0.0)
@@ -1595,7 +1817,7 @@ def _build_standard_2f(mb: K.MeshBuilder, wins: K.WindowSet, spec: DetachedSpec,
 
     # 2. 1층 외벽 (z = zp .. z_slab0)
     h1f_front = [
-        (-4.05, -3.05, zp, zp + 2.10, "door_glass", 0, 2),      # 현관문
+        (-4.05, -3.05, zp, zp + 2.10, "door_entry", 0, 1),       # 주택 전용 현관문 (다크 프레임 + 하부 패널 + 트랜섬)
         (-2.20, 0.60, zp + 0.62, zp + 2.06, "window", 0, 3),     # 거실 3짝 (d02_front_balcony 1층 대형창)
         (1.40, 3.00, zp + 0.78, zp + 2.02, "window", 0, 2),
         (3.70, 4.60, zp + 1.30, zp + 2.02, "window", 0, 2),      # 욕실 소창
@@ -1647,21 +1869,23 @@ def _build_standard_2f(mb: K.MeshBuilder, wins: K.WindowSet, spec: DetachedSpec,
     # 5. 낮은 적갈 기와 모임지붕 + 목재 소핏 + 흰 처마 띠 (d02_mass_hip_roof, d02_street_awning)
     add_hip_roof(mb, x0, x1, 0.0, d, z_top, spec.eave_out, spec.roof_rise, stage)
 
-    # 6. 좁은 전면 발코니: 벽돌 막힌 난간 + 장식 블록 개구부 + 흰 두겁 (모서리 감싸기)
+    # 6. 좁은 전면 발코니: 벽돌 막힌 난간(월드 UV 정렬) + 장식 블록 개구부 + 어두운 깊이 그림자 + 흰 두겁
     lc0, lc1 = 0.10, 0.90                           # 장식 블록 0.8 x 0.5 m (estimated)
     lz0, lz1 = z_slab1 + 0.30, z_slab1 + 0.80
     fy_a, fy_b = by0, by0 + pt
-    mb.box(b0, lc0, fy_a, fy_b, z_slab1, z_pt, "wall_main", skip=("bottom",))
-    mb.box(lc1, b1, fy_a, fy_b, z_slab1, z_pt, "wall_main", skip=("bottom",))
-    mb.box(lc0, lc1, fy_a, fy_b, z_slab1, lz0, "wall_main", skip=("bottom",))
-    mb.box(lc0, lc1, fy_a, fy_b, lz1, z_pt, "wall_main")
-    mb.box(b0, b0 + pt, fy_b, 0.0, z_slab1, z_pt, "wall_main", skip=("bottom", "back", "front"))
-    mb.box(b1 - pt, b1, fy_b, 0.0, z_slab1, z_pt, "wall_main", skip=("bottom", "back", "front"))
+    _world_tiled_box(mb, b0, lc0, fy_a, fy_b, z_slab1, z_pt, "wall_main", skip=("bottom",))
+    _world_tiled_box(mb, lc1, b1, fy_a, fy_b, z_slab1, z_pt, "wall_main", skip=("bottom",))
+    _world_tiled_box(mb, lc0, lc1, fy_a, fy_b, z_slab1, lz0, "wall_main", skip=("bottom",))
+    _world_tiled_box(mb, lc0, lc1, fy_a, fy_b, lz1, z_pt, "wall_main")
+    _world_tiled_box(mb, b0, b0 + pt, fy_b, 0.0, z_slab1, z_pt, "wall_main", skip=("bottom", "back", "front"))
+    _world_tiled_box(mb, b1 - pt, b1, fy_b, 0.0, z_slab1, z_pt, "wall_main", skip=("bottom", "back", "front"))
     mb.box(b0 - 0.03, b1 + 0.03, fy_a - 0.03, fy_b + 0.03, z_pt, z_pt + 0.06, "plaster_white")
     mb.box(b0 - 0.03, b0 + pt + 0.03, fy_b + 0.03, 0.0, z_pt, z_pt + 0.06, "plaster_white", skip=("back",))
     mb.box(b1 - pt - 0.03, b1 + 0.03, fy_b + 0.03, 0.0, z_pt, z_pt + 0.06, "plaster_white", skip=("back",))
     ly0, ly1 = fy_a + 0.04, fy_b - 0.04
     if stage == 0:
+        # 장식 블록 뒷면 어두운 그림자 깊이판 (투시 개구부 입체감 강조, 격자와 8 mm 이격)
+        mb.box(lc0 + 0.002, lc1 - 0.002, ly1 + 0.008, fy_b - 0.004, lz0 + 0.002, lz1 - 0.002, "shadow_recess")
         # 흰 콘크리트 장식 블록 격자: 외곽틀·십자(맞대기) + 좌우 사각 고리(얇게 다른 깊이 -> 겹침 0)
         bw, zm, xm = 0.05, 0.5 * (lz0 + lz1), 0.5 * (lc0 + lc1)
         mb.box(lc0, lc1, ly0, ly1, lz0, lz0 + bw, "plaster_white")
@@ -1680,7 +1904,7 @@ def _build_standard_2f(mb: K.MeshBuilder, wins: K.WindowSet, spec: DetachedSpec,
     else:
         mb.box(lc0, lc1, ly0, ly1, lz0, lz1, "plaster_white")
 
-    # 7. 현관: 2단 콘크리트 계단(틈 0, 기단에 맞대기) + 암녹 폴리카보네이트 차양 (d02_street_awning)
+    # 7. 현관: 2단 콘크리트 계단(틈 0, 기단에 맞대기) + 암녹 폴리카보네이트 차양 + 벽면 삼각 브래킷
     sx0, sx1 = -4.30, -2.80
     mb.box(sx0, sx1, -0.80, -t_pl, 0.0, 0.20, "concrete_light", skip=("bottom", "back"))
     mb.box(sx0, sx1, -0.42, -t_pl, 0.20, zp, "concrete_light", skip=("bottom", "back"))
@@ -1691,9 +1915,19 @@ def _build_standard_2f(mb: K.MeshBuilder, wins: K.WindowSet, spec: DetachedSpec,
     add_tiled_slope_poly(mb, [(ax0, 0.0, az_b), (ax1, 0.0, az_b),
                               (ax1, ay0, az_f), (ax0, ay0, az_f)], spec.poly_tint, stage)
     if stage == 0:
+        mb.box(ax0, ax1, ay0 - 0.014, ay0 + 0.014, az_f - 0.014, az_f + 0.016, "iron_dark")
         for bx in (ax0 + 0.08, 0.5 * (ax0 + ax1), ax1 - 0.08):
             add_beam(mb, (bx, ay0, az_f - 0.012), (bx, -0.02, az_b - 0.012), 0.015, 0.015, "iron_dark")
-        K.axbox(mb, "y", 0.0, -1, -3.62, -3.48, 0.0, 0.09, 2.56, 2.68, "lamp")
+        # 양 끝단 벽면 고정 삼각 브래킷(까치발, 현관문 -4.05..-3.05 바깥 -4.37/-2.73 배치)
+        for bx in (ax0 + 0.08, ax1 - 0.08):
+            mb.box(bx - 0.018, bx + 0.018, -0.035, 0.0, az_f - 0.44, az_b - 0.015, "iron_dark", skip=("back",))
+            zb_e = az_f + (az_b - az_f) * (0.18 / abs(ay0)) - 0.015
+            add_beam(mb, (bx, -0.035, az_f - 0.40), (bx, ay0 + 0.18, zb_e), 0.015, 0.015, "iron_dark")
+        # 현관등(프레임 + 발광 디퓨저) + 현관 초인종/인터폰
+        K.axbox(mb, "y", 0.0, -1, -3.68, -3.42, 0.0, 0.09, 2.54, 2.69, "iron_dark")
+        K.axbox(mb, "y", 0.0, -1, -3.65, -3.45, 0.02, 0.105, 2.56, 2.66, "lamp")
+        K.axbox(mb, "y", 0.0, -1, -2.96, -2.85, 0.0, 0.030, zp + 1.16, zp + 1.33, "iron_dark")
+        K.axbox(mb, "y", 0.0, -1, -2.945, -2.865, 0.030, 0.036, zp + 1.175, zp + 1.315, "equip_gray")
 
     # 8. 앞마당 담장 + 대문 (d02_brick_fence, d02_front_balcony, d02_gate_balcony_up)
     # 왼쪽 구간: 모서리 기둥 + 중간 기둥 + 대문 기둥
@@ -1705,10 +1939,10 @@ def _build_standard_2f(mb: K.MeshBuilder, wins: K.WindowSet, spec: DetachedSpec,
     _fence_pier(mb, g0 - gp / 2, fy0, fy1, h=gh, cap=False)
     _fence_pier(mb, g1 + gp / 2, fy0, fy1, h=gh, cap=False)
     mb.box(g0 - gp - 0.10, g1 + gp + 0.10, fy0 - 0.35, fy1 + 0.35, gh, gh + 0.15, "plaster_white")
-    # 철제 대문 2짝 (하부 막힌 판 + 상부 세로살, 중앙 2 cm 틈)
+    # 철제 대문 2짝 (하부 막힌 판 + 상부 세로살 + 문고리·자물쇠함·경첩, 중앙 2 cm 틈)
     gm = 0.5 * (g0 + g1)
     gy0, gy1 = 0.5 * (fy0 + fy1) - 0.03, 0.5 * (fy0 + fy1) + 0.03
-    for la, lb in ((g0 + 0.01, gm - 0.01), (gm + 0.01, g1 - 0.01)):
+    for leaf_idx, (la, lb) in enumerate(((g0 + 0.01, gm - 0.01), (gm + 0.01, g1 - 0.01))):
         mb.box(la, lb, gy0, gy1, 0.06, 1.30, "iron_dark")
         mb.box(la, lb, gy0, gy1, 1.86, 1.92, "iron_dark")
         mb.box(la, la + 0.05, gy0, gy1, 1.30, 1.86, "iron_dark")
@@ -1718,8 +1952,23 @@ def _build_standard_2f(mb: K.MeshBuilder, wins: K.WindowSet, spec: DetachedSpec,
             for k in range(1, nb + 1):
                 bx = la + 0.05 + (lb - la - 0.10) * k / (nb + 1)
                 mb.box(bx - 0.01, bx + 0.01, gy0 + 0.02, gy1 - 0.02, 1.30, 1.86, "iron_dark")
-            # 판 보강 띠 (판 앞 2 cm)
-            mb.box(la + 0.06, lb - 0.06, gy0 - 0.02, gy0, 0.62, 0.68, "iron_dark")
+            # 하부 강판 보강 띠 + 외곽 프레임 몰딩 (평면감 해소)
+            mb.box(la + 0.06, lb - 0.06, gy0 - 0.018, gy0, 0.64, 0.69, "iron_dark", skip=("back",))
+            mb.box(la + 0.06, lb - 0.06, gy0 - 0.014, gy0, 0.14, 0.18, "iron_dark", skip=("back",))
+            mb.box(la + 0.06, lb - 0.06, gy0 - 0.014, gy0, 1.18, 1.22, "iron_dark", skip=("back",))
+            # 경첩 2개 (바깥쪽 기둥-문짝 사이 핀 배럴, 기둥·문짝 면과 비겹침)
+            hx0_h, hx1_h = (g0 + 0.002, g0 + 0.036) if leaf_idx == 0 else (g1 - 0.036, g1 - 0.002)
+            for zh in (0.32, 1.54):
+                mb.box(hx0_h, hx1_h, gy0 - 0.016, gy1 + 0.016, zh, zh + 0.10, "rail_bronze")
+            # 문고리 (양 짝 중앙 측 스테인리스 수직 손잡이)
+            hx_pull = (lb - 0.13) if leaf_idx == 0 else (la + 0.11)
+            mb.box(hx_pull, hx_pull + 0.024, gy0 - 0.048, gy0 - 0.024, 0.92, 1.14, "stainless")
+            mb.box(hx_pull, hx_pull + 0.024, gy0 - 0.024, gy0, 0.92, 0.95, "stainless", skip=("back",))
+            mb.box(hx_pull, hx_pull + 0.024, gy0 - 0.024, gy0, 1.11, 1.14, "stainless", skip=("back",))
+            # 자물쇠함 (우측 문짝 내측) + 열쇠구멍 실린더
+            if leaf_idx == 1:
+                mb.box(la + 0.01, la + 0.09, gy0 - 0.022, gy1 + 0.022, 0.95, 1.15, "sash_dark")
+                mb.box(la + 0.035, la + 0.065, gy0 - 0.030, gy0 - 0.022, 1.02, 1.06, "stainless", skip=("back",))
     # 대문 오른쪽 막힌 벽돌 벽 (계량기·우편함 부착, d02_gate_meter) + 갓돌
     wr0, wr1 = g1 + gp, -0.55
     mb.box(wr0, wr1, fy0, fy1, 0.0, 1.55, "wall_main", skip=("bottom",))
@@ -1737,16 +1986,22 @@ def _build_standard_2f(mb: K.MeshBuilder, wins: K.WindowSet, spec: DetachedSpec,
     mb.box(-sx, sx, ry0, ry1, 0.0, 1.55, "wall_main", skip=("bottom",))
     mb.box(-sx - 0.03, sx + 0.03, ry0 - 0.03, ry1 + 0.03, 1.55, 1.61, "concrete_light")
 
-    # 9. 생활 디테일 (계량기 2개·우편함·번지판·대문등·우수관·실외기)
+    # 9. 생활 디테일 (계량기 2개·우편함 슬롯·번지판·대문등 보강·우수관·실외기)
     if stage == 0:
         for mx in (-1.62, -1.36):
             mb.box(mx - 0.10, mx + 0.10, fy0 - 0.14, fy0, 1.12, 1.42, "equip_gray", skip=("front", "back"))
             mb.quad(K.face_pts("y", fy0 - 0.14, -1, mx - 0.10, mx + 0.10, 1.12, 1.42),
                     mb.atlas.uv_full("meter_face"), "meter_face")
         mb.box(-1.60, -1.40, fy0 - 0.05, fy0, 0.30, 1.12, "iron_dark", skip=("back",))   # 전선관
-        mb.box(-0.98, -0.72, fy0 - 0.10, fy0, 1.14, 1.44, "equip_gray", skip=("back",))  # 우편함
+        # 우편함 (본체 + 빗물 덮개 + 투입구 슬롯 + 금속 플랩)
+        mb.box(-0.98, -0.72, fy0 - 0.10, fy0, 1.14, 1.44, "equip_gray", skip=("back",))
+        mb.box(-0.995, -0.705, fy0 - 0.122, fy0, 1.44, 1.466, "iron_dark", skip=("back",))
+        mb.box(-0.95, -0.75, fy0 - 0.108, fy0 - 0.10, 1.35, 1.378, "iron_dark", skip=("back",))
+        mb.box(-0.955, -0.745, fy0 - 0.114, fy0 - 0.10, 1.378, 1.392, "stainless", skip=("back",))
         add_address_plate(mb, "y", fy0 - 0.10, -1, g0 - gp / 2, 1.70, stage)
-        mb.box(gm - 0.07, gm + 0.07, fy0 + 0.05, fy1 - 0.05, gh - 0.08, gh, "lamp", skip=("top",))
+        # 대문 상단 조명 보강 (어두운 하우징 + 넓고 밝은 발광 디퓨저, 야간 도로면 시인성 확보)
+        mb.box(gm - 0.16, gm + 0.16, fy0 - 0.18, fy0 + 0.06, gh - 0.04, gh, "iron_dark", skip=("top",))
+        mb.box(gm - 0.13, gm + 0.13, fy0 - 0.15, fy0 + 0.03, gh - 0.11, gh - 0.04, "lamp", skip=("top",))
         add_downspout(mb, "x", x0, -1, 0.30, 0.02, z_top - 0.02, eave_out=spec.eave_out)
         add_downspout(mb, "x", x1, 1, d - 0.30, 0.02, z_top - 0.02, eave_out=spec.eave_out)
     add_ac_unit(mb, "x", x1, 1, 4.10, 0.0, stage)
