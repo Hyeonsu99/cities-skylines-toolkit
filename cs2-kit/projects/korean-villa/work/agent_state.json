@@ -1,13 +1,13 @@
 {
  "visual_review": "PASS",
  "current_stage": "review:PASS",
- "generator": "sintanjin_villa_b01_cs2.py",
- "generator_hash": "69547a5764494593b4f67c7a5561145f097507003212f96ca8661805373b6fb3",
- "current_preview_hash": "b92c8a4a333ceeb0acc9a28f4b4ceea223d5c584b0d268115e914d3fa9ec69d1",
+ "generator": "sintanjin_villa_d01_cs2.py",
+ "generator_hash": "6d0f11ea88f80f47333bb46ea740488234aee2e1d3e01ad84c1041aaef491d07",
+ "current_preview_hash": "bf36c1b9ec2e42b93539073c2c915156d88e3f439b6863f9c4eb005140712264",
  "last_gate": {
   "status": "PASS",
   "project": "korean-villa",
-  "generator": "sintanjin_villa_b01_cs2.py",
+  "generator": "sintanjin_villa_d01_cs2.py",
   "mode": "final",
   "checks": {
    "build": "PASS",
@@ -25,14 +25,14 @@
    "reason": "no fix needed"
   },
   "artifacts": {
-   "preview": "previews\\SintanjinVillaB01_L1_2x3.png",
-   "report": "output\\SintanjinVillaB01_L1_2x3\\_check\\report.json"
+   "preview": "previews\\SintanjinVillaD01_L1_3x3.png",
+   "report": "output\\SintanjinVillaD01_L1_3x3\\_check\\report.json"
   },
-  "asset": "SintanjinVillaB01_L1_2x3",
-  "label": "b01-qup-final2",
-  "time": "2026-11-24 16:21:29",
+  "asset": "SintanjinVillaD01_L1_3x3",
+  "label": "d01-final-1128",
+  "time": "2026-11-28 21:57:45",
   "build": {
-   "asset": "SintanjinVillaB01_L1_2x3",
+   "asset": "SintanjinVillaD01_L1_3x3",
    "fbx": true,
    "warnings": []
   },
@@ -41,9 +41,9 @@
    "warnings": [],
    "info": {
     "size": [
-     11.97,
-     13.09,
-     15.55
+     14.85,
+     13.72,
+     14.59
     ],
     "pivot_offset": [
      0.0,
@@ -52,20 +52,20 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 20768,
-     "win": 148,
-     "lod1": 4508,
-     "lod1_win": 148,
-     "lod2": 226,
-     "lod2_win": 148
+     "main": 17186,
+     "win": 200,
+     "lod1": 4974,
+     "lod1_win": 200,
+     "lod2": 142,
+     "lod2_win": 200
     },
     "verts": {
-     "main": 42028,
-     "win": 296,
-     "lod1": 9016,
-     "lod1_win": 296,
-     "lod2": 452,
-     "lod2_win": 296
+     "main": 34790,
+     "win": 400,
+     "lod1": 9970,
+     "lod1_win": 400,
+     "lod2": 286,
+     "lod2_win": 400
     },
     "coplanar": {
      "main": 0,
@@ -86,20 +86,20 @@
      "LOD2_Emissive": "512x512 RGB"
     },
     "texel_px_per_m": {
-     "p10": 212.5,
-     "median": 217.5,
+     "p10": 106.2,
+     "median": 212.5,
      "p90": 217.5
     },
-    "windows": 74,
+    "windows": 100,
     "win_dropped": 0,
     "win_blocked": {
      "win": 0,
      "lod1_win": 0,
      "lod2_win": 0
     },
-    "time_s": 0.3
+    "time_s": 0.2
    },
-   "report": "output\\SintanjinVillaB01_L1_2x3\\_check\\report.json"
+   "report": "output\\SintanjinVillaD01_L1_3x3\\_check\\report.json"
   },
   "photo": {
    "checked": false,
@@ -120,15 +120,15 @@
   "lod": {
    "checked": true,
    "status": "PASS",
-   "line": "LODCHECK PASS main max 0.014% (az 248, el -10) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\SintanjinVillaB01_L1_2x3",
+   "line": "LODCHECK PASS main max 0.008% (az 248, el -10) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.000% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\SintanjinVillaD01_L1_3x3",
    "notes": []
   },
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 42028,
-    "LOD1": 9016,
-    "LOD2": 452
+    "LOD0": 34790,
+    "LOD1": 9970,
+    "LOD2": 286
    },
    "action_tags": [],
    "exact_fix_instruction": "no fix needed"
@@ -145,13 +145,29 @@
   "reason": "all requested checks passed"
  },
  "project": "korean-villa",
- "updated_at": "2026-11-24T16:24:34",
- "visual_review_note": "총괄 근접·야간 검수 통과(A01·B01 퀄리티 업). 인게임 미확인",
+ "updated_at": "2026-11-28T21:57:45",
+ "visual_review_note": "D01 1층 근린상가 신규: 4면·쇼윈도·가상 간판·매립 현관·박공 근접 낮/밤 검토",
  "visual_review_artifacts": [
   {
-   "file": "previews/SintanjinVillaB01_L1_2x3.png",
-   "sha256": "b92c8a4a333ceeb0acc9a28f4b4ceea223d5c584b0d268115e914d3fa9ec69d1"
+   "file": "previews/SintanjinVillaD01_L1_3x3.png",
+   "sha256": "bf36c1b9ec2e42b93539073c2c915156d88e3f439b6863f9c4eb005140712264"
+  },
+  {
+   "file": "previews/D01_full_four.png",
+   "sha256": "5ede8fbdf8f72fb053ce46987fe22b05aa07c711b36cca62cc0a825c383662ca"
+  },
+  {
+   "file": "previews/D01_storefront.png",
+   "sha256": "14e06281acfaa9f82f0a5548a38b425de824f6c72c79f14f5727cf33c3e64348"
+  },
+  {
+   "file": "previews/D01_signs_roof.png",
+   "sha256": "d0d64bf8b79199145499cd704aa400671c4996fc89fc1f9bb0f02ccb0be29643"
+  },
+  {
+   "file": "previews/D01_eye_night.png",
+   "sha256": "e84890330aed46e715015ca26c523a99044adf523e207858d6cc649cdf7897c0"
   }
  ],
- "reviewed_preview_hash": "b92c8a4a333ceeb0acc9a28f4b4ceea223d5c584b0d268115e914d3fa9ec69d1"
+ "reviewed_preview_hash": "bf36c1b9ec2e42b93539073c2c915156d88e3f439b6863f9c4eb005140712264"
 }

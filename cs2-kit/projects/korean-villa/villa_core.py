@@ -169,12 +169,25 @@ def _draw_intercom(W, H):
     return im
 
 
-def build_atlas(spec: VillaSpec, *, charcoal=False) -> K.Atlas:
+def build_atlas(spec: VillaSpec, *, charcoal=False, wall=None) -> K.Atlas:
+    """wall: None(A 적갈 벽돌) | 'stucco_white'(C 흰 미장) | 'brick_brown'(D 고동 벽돌 + 연베이지 미장)."""
     s = spec.seed
     a = K.Atlas(size=2048, pad=12)
-    # 벽돌: 사진 a01 그늘 벽돌 면 (132,104,99) ~ 브리프 진적갈 (128,92,86). 줄눈 밝은 회색 시멘트 (규칙 18)
-    a.add("wall_main", color=(96, 98, 100) if charcoal else (128, 92, 86), ctrl=(0, 255, 0), px=512, tile=(2.3, 2.4),
-          gloss=0.24, painter=_brick_painter(s, (188, 186, 185)))
+    if wall == "stucco_white":
+        # 브리프 3.1 흰 미장 PBR 권장 (210,208,204) → V≤215 클램프 내 (206,204,200)
+        a.add("wall_main", color=(206, 204, 200), ctrl=(0, 255, 0), px=512, tile=(2.4, 2.4),
+              gloss=0.24, painter=DC._make_plaster_painter(s + 5))
+    else:
+        # 벽돌: A 진적갈 (128,92,86) / B 차콜 (96,98,100) / D 고동 (142,118,104). 줄눈 밝은 회색 시멘트 (규칙 18)
+        brick = (96, 98, 100) if charcoal else (142, 118, 104) if wall == "brick_brown" else (128, 92, 86)
+        a.add("wall_main", color=brick, ctrl=(0, 255, 0), px=512, tile=(2.3, 2.4),
+              gloss=0.24, painter=_brick_painter(s, (188, 186, 185)))
+    if wall:
+        # 밝은 화강석(포천석) 기단·기둥 (브리프 3.1 (178,176,178))
+        a.add("granite_light", color=(178, 176, 178), px=256, tile=(1.2, 1.2), gloss=0.40, painter=KX.stone_trim(s + 137))
+    if wall == "brick_brown":
+        a.add("plaster_beige", color=(196, 184, 168), ctrl=(0, 255, 0), px=384, tile=(2.4, 2.4),
+              gloss=0.24, painter=DC._make_plaster_painter(s + 9))
     a.add("plaster_white", color=(212, 211, 208), ctrl=(0, 255, 0), px=384, tile=(2.4, 2.4),
           gloss=0.24, painter=DC._make_plaster_painter(s + 11))
     a.add("concrete_light", color=(178, 180, 183), px=256, tile=(2.4, 2.4),
@@ -210,6 +223,11 @@ def build_atlas(spec: VillaSpec, *, charcoal=False) -> K.Atlas:
           painter=_plate_painter(f"addr_{spec.road_name}_{spec.road_no}", _draw_address(spec.road_name, spec.road_no)))
     a.add("bumper", px=128, gloss=0.46, painter=_plate_painter("bumper", _draw_bumper))
     a.add("intercom", px=128, gloss=0.50, painter=_plate_painter("intercom", _draw_intercom))
+    # 문 품질 (2026-11-24 인게임 피드백): 아노다이징 다크 알루미늄 문틀과 헤어라인 샴페인 문선을 창틀·철물과 구분
+    a.add("alu_dark", color=(64, 63, 61), px=128, metal=0.55, gloss=0.58,
+          painter=DC._solid(1.6, 0.50, 0.64, s + 141))
+    a.add("door_trim", color=(150, 146, 138), px=128, metal=0.60, gloss=0.56,
+          painter=DC._solid(1.8, 0.48, 0.62, s + 143))
     if charcoal:
         a.add("granite", color=(54, 56, 59), px=256, tile=(1.2, 1.2),
               gloss=0.46, painter=KX.stone_trim(s + 131))
@@ -305,6 +323,156 @@ def add_steel_door_details(mb, axis, c, side, a0, a1, z0, z1, *,
     if add_threshold:
         K.axbox(mb, axis, c, side, a0 - 0.03, a1 + 0.03, 0.002, 0.11, 0.0, max(0.05, z0 + 0.02),
                 "concrete_light", skip=("bottom",))
+
+
+def wall_with_doors(mb, wins, axis, c, side, lo, hi, z_bot, z_top, reg, holes, stage, seed, doors, **kw):
+    """벽에 문 개구부만 뚫는다(문 부재는 add_glass_entry_door/add_steel_door 로 따로 설치).
+    doors: [(a0, a1, z0, z1)]. 창(holes)은 문 사이 벽 조각에 그대로 나눠 넣는다."""
+    rh = DC.add_recessed_wall
+    pos = lo
+    for k, (a0, a1, dz0, dz1) in enumerate(sorted(doors)):
+        if a0 - pos > 1e-4:
+            rh(mb, wins, axis, c, side, pos, a0, z_bot, z_top, reg,
+               [h for h in holes if h[0] >= pos and h[1] <= a0], stage, seed + k * 7, **kw)
+        if dz0 > z_bot + 1e-4:
+            rh(mb, wins, axis, c, side, a0, a1, z_bot, dz0, reg, [], stage, seed + k * 7 + 1, **kw)
+        if dz1 < z_top - 1e-4:
+            rh(mb, wins, axis, c, side, a0, a1, dz1, z_top, reg,
+               [h for h in holes if h[0] >= a0 and h[1] <= a1 and h[2] >= dz1], stage, seed + k * 7 + 2, **kw)
+        pos = a1
+    if hi - pos > 1e-4:
+        rh(mb, wins, axis, c, side, pos, hi, z_bot, z_top, reg,
+           [h for h in holes if h[0] >= pos], stage, seed + 97, **kw)
+
+
+def add_door_casing(mb, axis, c, side, a0, a1, z0, z1, stage, reg="door_trim", w=0.09, head_h=0.12):
+    """문선(양옆 0.03 돌출) + 인방(상부 0.045 돌출, 문선을 덮음) + 개구부 옆면 리빌. 벽 바깥면에 붙인다."""
+    if stage == 2:
+        return
+    zb = 0.0 if z0 < 0.06 else z0                  # 지면 문은 문선을 바닥까지 (밑면 생략)
+    sk = ("top", "bottom") if zb <= 0.001 else ("top",)
+    K.axbox(mb, axis, c, side, a0 - w, a0, 0.0, 0.030, zb, z1, reg, skip=sk)
+    K.axbox(mb, axis, c, side, a1, a1 + w, 0.0, 0.030, zb, z1, reg, skip=sk)
+    K.axbox(mb, axis, c, side, a0 - w - 0.02, a1 + w + 0.02, 0.0, 0.045, z1, z1 + head_h, reg)
+    if stage == 0:
+        KX.paint_reveal(mb, axis, c, side, a0, a1, z0, z1, 0.045, reg, inset=0.002, sill=False, head=True)
+
+
+def add_glass_entry_door(mb, wins, axis, c, side, a0, a1, z0, z1, stage, unit=0, lit=None,
+                         frame_reg="alu_dark", casing_reg="door_trim", casing=True):
+    """공동현관 알루미늄 양개(폭 1.1 m 미만은 외짝) 유리문. 벽 개구부 a0..a1, z0..z1 안에 설치.
+
+    외곽 문틀 65 mm(아노다이징 다크) → 문짝 울거미(선대 60, 상대 70, 하대 170 + 스텐 킥플레이트)
+    → 유리 1장/짝(WindowSet, 분할 없음) → 스텐 세로 손잡이(받침 2개) · 도어체크 · 잠금장치
+    → 높은 개구부는 상부 고정창(트랜섬). 외부는 문선·인방·리빌. 겹침 면 0 (맞대기·이격만).
+    """
+    if stage == 2:
+        mb.rect(K.face_pts(axis, c + side * 0.002, side, a0, a1, z0, z1), "window_backing")
+        return
+    fw = 0.065
+    F0, F1 = -0.175, -0.045
+    h = z1 - z0
+    zt = min(z0 + 2.08, z1 - 0.30) if h >= 2.35 else None
+    lz1 = zt if zt else z1 - fw
+    # 외곽 문틀 (상·좌·우) + 스텐 문턱
+    K.axbox(mb, axis, c, side, a0, a1, F0, F1, z1 - fw, z1, frame_reg)
+    K.axbox(mb, axis, c, side, a0, a0 + fw, F0, F1, z0, z1 - fw, frame_reg, skip=("bottom",))
+    K.axbox(mb, axis, c, side, a1 - fw, a1, F0, F1, z0, z1 - fw, frame_reg, skip=("bottom",))
+    K.axbox(mb, axis, c, side, a0 + fw, a1 - fw, -0.205, -0.015, z0, z0 + 0.016, "stainless", skip=("bottom",))
+    if zt:
+        K.axbox(mb, axis, c, side, a0 + fw, a1 - fw, F0 + 0.005, F1 - 0.005, zt, zt + 0.07, frame_reg)
+    la0, la1, lz0 = a0 + fw + 0.004, a1 - fw - 0.004, z0 + 0.020
+    n = 2 if (a1 - a0) >= 1.10 else 1
+    mid = 0.5 * (la0 + la1)
+    leaves = [(la0, mid - 0.003, 1), (mid + 0.003, la1, -1)] if n == 2 else [(la0, la1, -1)]
+    L0, L1 = -0.150, -0.085           # 문짝 두께 (외곽 문틀보다 안쪽)
+    sw, tr, br = 0.060, 0.070, 0.170
+    for k, (b0, b1, hand) in enumerate(leaves):
+        # 울거미: 하대·상대·선대 (맞대기)
+        K.axbox(mb, axis, c, side, b0, b1, L0, L1, lz0, lz0 + br, frame_reg)
+        K.axbox(mb, axis, c, side, b0, b1, L0, L1, lz1 - tr, lz1, frame_reg)
+        K.axbox(mb, axis, c, side, b0, b0 + sw, L0, L1, lz0 + br, lz1 - tr, frame_reg)
+        K.axbox(mb, axis, c, side, b1 - sw, b1, L0, L1, lz0 + br, lz1 - tr, frame_reg)
+        if stage == 0:
+            ga0, ga1, gz0, gz1 = b0 + sw, b1 - sw, lz0 + br, lz1 - tr
+            wins.add_face(axis, c - side * 0.118, side, ga0, ga1, gz0, gz1, 0, unit + k)
+            wins.items[-1]["pts2"] = K.face_pts(axis, c + side * 0.025, side, b0, b1, lz0, lz1)
+            if lit is not None:
+                lit.append(len(wins.items) - 1)
+            # 유리 누름대(비드): 유리 앞 얇은 테 (선대 안쪽면과 맞대기)
+            for p in ((ga0, ga1, gz0, gz0 + 0.022), (ga0, ga1, gz1 - 0.022, gz1)):
+                K.axbox(mb, axis, c, side, p[0], p[1], L1, L1 + 0.012, p[2], p[3], frame_reg)
+            for p in ((ga0, ga0 + 0.022), (ga1 - 0.022, ga1)):
+                K.axbox(mb, axis, c, side, p[0], p[1], L1, L1 + 0.012, gz0 + 0.022, gz1 - 0.022, frame_reg)
+            # 스텐 킥플레이트 (하대 앞 6 mm)
+            K.axbox(mb, axis, c, side, b0 + 0.010, b1 - 0.010, L1, L1 + 0.006, lz0 + 0.020, lz0 + br - 0.025,
+                    "stainless")
+            # 세로 바 손잡이 (맞닿는 선대 쪽, 받침 2개 + 바)
+            hx = (b1 - 0.115) if hand > 0 else (b0 + 0.115)
+            hz0, hz1 = z0 + 0.72, z0 + 1.48
+            for sz in (hz0 + 0.08, hz1 - 0.10):      # 받침은 유리 바로 앞(3 mm)까지 관통 고정
+                K.axbox(mb, axis, c, side, hx - 0.009, hx + 0.009, -0.115, L1 + 0.052, sz, sz + 0.02, "stainless")
+            K.axbox(mb, axis, c, side, hx - 0.014, hx + 0.014, L1 + 0.052, L1 + 0.078, hz0, hz1, "stainless")
+            # 실린더 잠금장치 (선대 위)
+            lx = (b1 - sw * 0.5) if hand > 0 else (b0 + sw * 0.5)
+            K.axbox(mb, axis, c, side, lx - 0.018, lx + 0.018, L1, L1 + 0.010, z0 + 1.00, z0 + 1.16, "door_trim")
+            # 도어체크 (상대 위, 경첩 쪽)
+            cx0, cx1 = (b0 + 0.05, b0 + 0.33) if hand > 0 else (b1 - 0.33, b1 - 0.05)
+            K.axbox(mb, axis, c, side, cx0, cx1, L1, L1 + 0.048, lz1 - tr + 0.008, lz1 - 0.008, "iron_dark")
+        else:
+            mb.rect(K.face_pts(axis, c - side * 0.118, side, b0 + sw, b1 - sw, lz0 + br, lz1 - tr), "window_backing")
+    if zt and stage == 0:
+        wins.add_face(axis, c - side * 0.118, side, a0 + fw, a1 - fw, zt + 0.07, z1 - fw, 0, unit + 5)
+        wins.items[-1]["pts2"] = K.face_pts(axis, c + side * 0.025, side, a0 + fw, a1 - fw, zt + 0.07, z1 - fw)
+        if lit is not None:
+            lit.append(len(wins.items) - 1)
+    elif zt:
+        mb.rect(K.face_pts(axis, c - side * 0.118, side, a0 + fw, a1 - fw, zt + 0.07, z1 - fw), "window_backing")
+    if casing:
+        add_door_casing(mb, axis, c, side, a0, a1, z0, z1, stage, casing_reg)
+
+
+def add_steel_door(mb, axis, c, side, a0, a1, z0, z1, stage, *, surface=False, handle_right=True,
+                   casing=True, casing_reg="door_trim"):
+    """철제 방화문/보조문 한 벌: 문틀(도장 다크) + 회색 철판 문짝 + 패널·킥플레이트·레버·도어클로저
+    + 경첩 3개 + 문선·인방. surface=True 는 개구부 없는 벽(옥탑) 표면에 붙이는 형식."""
+    if stage == 2:
+        mb.rect(K.face_pts(axis, c + side * (0.002 if not surface else 0.004), side, a0, a1, z0, z1), "door_wood")
+        return
+    fw = 0.06
+    if surface:
+        F0, F1, L0, L1 = 0.0, 0.065, 0.0, 0.036
+    else:
+        F0, F1, L0, L1 = -0.150, -0.030, -0.160, -0.100
+    sk = ("bottom",) if z0 <= 0.001 else ()
+    K.axbox(mb, axis, c, side, a0, a1, F0, F1, z1 - fw, z1, "alu_dark")
+    K.axbox(mb, axis, c, side, a0, a0 + fw, F0, F1, z0, z1 - fw, "alu_dark", skip=sk)
+    K.axbox(mb, axis, c, side, a1 - fw, a1, F0, F1, z0, z1 - fw, "alu_dark", skip=sk)
+    K.axbox(mb, axis, c, side, a0 + fw, a1 - fw, L0, L1, z0, z1 - fw, "door_wood", skip=sk)
+    if stage == 0:
+        add_steel_door_details(mb, axis, c, side, a0, a1, z0, z1, leaf_o=L1, fw=fw,
+                               add_threshold=not surface and z0 <= 0.05, handle_right=handle_right)
+        hx0, hx1 = (a0 + fw - 0.012, a0 + fw + 0.006) if handle_right else (a1 - fw - 0.006, a1 - fw + 0.012)
+        for hz in (z0 + 0.25, z0 + 1.02, z1 - fw - 0.30):
+            K.axbox(mb, axis, c, side, hx0, hx1, L1, L1 + 0.016, hz, hz + 0.11, "iron_dark")
+    if casing:
+        if surface:
+            # 표면형: 외곽 문틀 바깥에 얇은 문선(문틀보다 낮게 0.02) + 인방
+            K.axbox(mb, axis, c, side, a0 - 0.07, a0, 0.0, 0.020, z0, z1, casing_reg, skip=("top", "bottom"))
+            K.axbox(mb, axis, c, side, a1, a1 + 0.07, 0.0, 0.020, z0, z1, casing_reg, skip=("top", "bottom"))
+            K.axbox(mb, axis, c, side, a0 - 0.09, a1 + 0.09, 0.0, 0.040, z1, z1 + 0.10, casing_reg)
+        else:
+            add_door_casing(mb, axis, c, side, a0, a1, z0, z1, stage, casing_reg, w=0.07, head_h=0.10)
+
+
+def add_rooftop_door(mb, axis, c, side, a0, a1, z0, z1, stage):
+    """옥탑 철제 방화문: 콘크리트 문턱 위 표면형 문 한 벌 + 상부 빗물막이 차양."""
+    if stage == 0:
+        K.axbox(mb, axis, c, side, a0 - 0.12, a1 + 0.12, 0.0, 0.16, z0, z0 + 0.05, "concrete_light", skip=("bottom",))
+        add_steel_door(mb, axis, c, side, a0, a1, z0 + 0.05, z1, stage, surface=True)
+        K.axbox(mb, axis, c, side, a0 - 0.14, a1 + 0.14, 0.0, 0.24, z1 + 0.12, z1 + 0.16, "sash_dark")
+    else:
+        add_steel_door(mb, axis, c, side, a0, a1, z0, z1, stage, surface=True, casing=stage != 2)
 
 
 def add_ceiling_lamp(mb, x0, x1, y0, y1, z_ceil, h=0.034):
@@ -423,21 +591,20 @@ def build_stage(spec: VillaSpec, a: K.Atlas, stage: int):
     rh(mb, wins, "y", 0.0, -1, x_core, x1, 0.0, zp, "wall_main",
        [(3.40, 4.40, 1.20, 2.05, "window", 0, 2)], stage, spec.seed, wall_t=WALL_T)
     # 코어 좌측면 (-X, 필로티 쪽): 공동현관 유리문 (알루미늄 다크 프레임)
-    w_before_ent = len(wins.items)
-    rh(mb, wins, "x", x_core, -1, WALL_T, y_rear + WALL_T, 0.0, zp, "wall_main",
-       [(1.00, 2.40, 0.03, 2.15, "door_glass", 0, 2), (5.20, 6.20, 1.25, 2.05, "window", 0, 2)],
-       stage, spec.seed + 1, wall_t=WALL_T, sash_reg="sash_dark")
-    if stage == 0:
-        # 공동현관 유리문 2짝 야간 점등 보장
-        lit_win_indices.extend(range(w_before_ent, min(w_before_ent + 2, len(wins.items))))
+    ent = (1.00, 2.40, 0.02, 2.24)
+    wall_with_doors(mb, wins, "x", x_core, -1, WALL_T, y_rear + WALL_T, 0.0, zp, "wall_main",
+                    [(5.20, 6.20, 1.25, 2.05, "window", 0, 2)], stage, spec.seed + 1, [ent], wall_t=WALL_T)
+    # 공동현관 양개 유리문 (문틀·울거미·손잡이·도어체크·문선/인방, 야간 점등 보장)
+    add_glass_entry_door(mb, wins, "x", x_core, -1, *ent, stage, unit=spec.seed * 5 + 7, lit=lit_win_indices)
     # 우측면 (+X) 전체 깊이
     rh(mb, wins, "x", x1, 1, WALL_T, D - WALL_T, 0.0, zp, "wall_main",
        [(4.00, 5.00, 1.25, 2.05, "window", 0, 2), (9.80, 11.00, 1.25, 2.05, "window", 0, 2)],
        stage, spec.seed + 2, wall_t=WALL_T)
     # 후면 실 정면 (주차장 쪽, -Y at y_rear): 철제문 + 창
-    rh(mb, wins, "y", y_rear, -1, x0, x_core, 0.0, zp, "wall_main",
-       [(-4.00, -2.80, 1.20, 2.05, "window", 0, 2), (-1.10, -0.15, 0.03, 2.10, "door_solid", 0, 1)],
-       stage, spec.seed + 3, wall_t=WALL_T)
+    svc = (-1.10, -0.15, 0.02, 2.10)
+    wall_with_doors(mb, wins, "y", y_rear, -1, x0, x_core, 0.0, zp, "wall_main",
+                    [(-4.00, -2.80, 1.20, 2.05, "window", 0, 2)], stage, spec.seed + 3, [svc], wall_t=WALL_T)
+    add_steel_door(mb, "y", y_rear, -1, *svc, stage)
     # 후면 실 좌측면 (-X)
     rh(mb, wins, "x", x0, -1, y_rear + WALL_T, D - WALL_T, 0.0, zp, "wall_main",
        [(9.60, 10.60, 1.25, 2.05, "window", 0, 2)], stage, spec.seed + 4, wall_t=WALL_T)
@@ -451,14 +618,9 @@ def build_stage(spec: VillaSpec, a: K.Atlas, stage: int):
     mb.box(x0 + ci, x1 - ci, y_rear + ci, D - ci, 0.0, zp - 0.01, "concrete_light", skip=("bottom",))
 
     if stage == 0:
-        # 후면 철제 보조문 디테일 (패널 요철·레버 손잡이·도어클로저·문턱)
-        add_steel_door_details(mb, "y", y_rear, -1, -1.10, -0.15, 0.03, 2.10, leaf_o=-0.10, fw=0.06)
-        # 공동현관 문턱 단차 + 미끄럼방지 스텐 논슬립
-        mb.box(x_core - 0.28, x_core - 0.002, 0.90, 2.50, 0.0, 0.065, "concrete_light", skip=("bottom",))
-        mb.box(x_core - 0.28, x_core - 0.245, 0.92, 2.48, 0.065, 0.074, "stainless", skip=("bottom",))
-        # 공동현관 상부 벽부 현관등 (다크 하우징 + 발광 디퓨저)
-        K.axbox(mb, "x", x_core, -1, 1.42, 1.98, 0.0, 0.085, 2.22, 2.36, "iron_dark")
-        K.axbox(mb, "x", x_core, -1, 1.46, 1.94, 0.085, 0.102, 2.245, 2.335, "lamp")
+        # 공동현관 문턱 단차 + 미끄럼방지 스텐 논슬립 (양옆 문선 사이에 맞대기)
+        mb.box(x_core - 0.28, x_core - 0.002, 1.00, 2.40, 0.0, 0.036, "concrete_light", skip=("bottom",))
+        mb.box(x_core - 0.28, x_core - 0.245, 1.02, 2.38, 0.036, 0.044, "stainless", skip=("bottom",))
         # 공동현관 옆 우편함 (빗물 덮개 + 3D 투입구 슬롯) · 인터폰 · 도로 쪽 번호판
         K.axbox(mb, "x", x_core, -1, 2.60, 3.20, 0.0, 0.15, 1.00, 1.80, "stainless")
         K.axbox(mb, "x", x_core, -1, 2.58, 3.22, 0.0, 0.18, 1.80, 1.825, "stainless")
@@ -625,19 +787,7 @@ def _roof(mb, spec, z_e0, z_e1, z_roof, stage):
     mb.box(px0 - 0.06, px1 + 0.06, py0 - 0.06, py1 + 0.06, zt, z_roof + ph,
            {"default": "plaster_white", "top": "concrete_light"})
     da0, da1, dz0, dz1 = 1.80, 2.70, z_roof, z_roof + 2.02
-    if stage == 0:
-        # 옥탑 철제 방화문 외틀 + 문짝 + 패널 요철·손잡이·도어클로저 + 상단 빗물막이
-        dfw = 0.055
-        K.axbox(mb, "x", px0, -1, da0, da1, 0.0, 0.06, dz1 - dfw, dz1, "sash_dark")
-        K.axbox(mb, "x", px0, -1, da0, da0 + dfw, 0.0, 0.06, dz0 + 0.05, dz1 - dfw, "sash_dark")
-        K.axbox(mb, "x", px0, -1, da1 - dfw, da1, 0.0, 0.06, dz0 + 0.05, dz1 - dfw, "sash_dark")
-        K.axbox(mb, "x", px0, -1, da0 - 0.03, da1 + 0.03, 0.0, 0.09, dz0, dz0 + 0.05, "concrete_light", skip=("bottom",))
-        K.axbox(mb, "x", px0, -1, da0 + dfw, da1 - dfw, 0.0, 0.034, dz0 + 0.05, dz1 - dfw, "door_wood")
-        add_steel_door_details(mb, "x", px0, -1, da0, da1, dz0 + 0.05, dz1,
-                               leaf_o=0.034, fw=dfw, add_threshold=False)
-        K.axbox(mb, "x", px0, -1, da0 - 0.06, da1 + 0.06, 0.0, 0.20, dz1 + 0.01, dz1 + 0.05, "sash_dark")
-    else:
-        K.axbox(mb, "x", px0, -1, da0, da1, 0.0, 0.04, dz0, dz1, "door_wood", skip=("bottom",))
+    add_rooftop_door(mb, "x", px0, -1, da0, da1, dz0, dz1, stage)
 
     # 물탱크 (스텐 원통 + 고정 프레임 + 상단 돔/뚜껑 + 유입·유출 배관) # estimated
     tx, ty = -3.2, D - 2.4

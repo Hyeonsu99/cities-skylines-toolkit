@@ -18,7 +18,12 @@ def build_stage(spec, atlas, stage):
     # Left-of-centre stair core leaves one parking bay left, two right (b08_left/right).
     ca, cb, rear = -3.10, -0.70, 8.0
     cols = [(x, y) for x in (x0 + .25, x1 - .25) for y in (.25, 5.70)]
-    for x, y in cols:
+    # 11/24 인게임 피드백: 8 m 길이 현관 코어를 없애고 공동현관을 주차 후면 벽(y=rear) 라인으로 옮김.
+    # 계단실 코어 아래는 기둥 2열이 받치는 보행 통로(폭 1.4 m)가 된다.
+    walk_cols = [(x, y) for x in (ca + .25, cb - .25) for y in (.25, 5.70)]
+    ent = (ca + .48, cb - .48, .02, 2.24)          # 공동현관 개구부 (후면 벽)
+    svc = (9.40, 10.30, .02, 2.10)                  # 보조문: 후면실 우측 벽(측면 마당)
+    for x, y in cols + (walk_cols if stage < 2 else []):
         if stage == 0:
             V.KX.bevel_box(mb, x-.25, x+.25, y-.25, y+.25, 0, zp, "granite", bevel=.018)
         else:
@@ -36,8 +41,8 @@ def build_stage(spec, atlas, stage):
              ("x", x1, 1, .22, D-.22, side),
              ("y", D, 1, x0, x1, back)]
     if stage == 2:
-        mb.box(ca, cb, 0, rear, 0, zp, "granite", skip=("bottom",))
         mb.box(x0, x1, rear, D, 0, zp, "wall_main", skip=("bottom",))
+        K.paint(mb, "y", rear, -1, ent[0], ent[1], ent[2], ent[3], "window_backing")
         mb.box(x0, x1, 0, D, zu, zroof+.90, "wall_main", skip=("bottom",))
         # 옥탑 매스 (좌측 계단실 코어 상부)
         mb.box(ca, cb, 0.55, 3.75, zroof+.14, zroof+2.50, "wall_main", skip=("bottom",))
@@ -50,23 +55,15 @@ def build_stage(spec, atlas, stage):
     else:
         rh = DC.add_recessed_wall
         lit_win_indices = []
-        w_ent0 = len(wins.items)
-        rh(mb, wins, "y", 0, -1, ca, cb, 0, zp, "granite",
-           [(ca+.48, cb-.48, .03, 2.16, "door_glass", 0, 2)], stage, 13, sash_reg="sash_dark")
-        if stage == 0:
-            lit_win_indices.extend(range(w_ent0, len(wins.items)))
-        # Core side walls and rear rooms, with actual openings into the parking area.
-        for c, s in ((ca, -1), (cb, 1)):
-            rh(mb, wins, "x", c, s, .22, rear-.002, 0, zp, "granite", [], stage, 14)
-        # 후면 철제 보조문을 코어 우측 보행 동선(-0.35..0.55)에 정렬해 주차 카스토퍼 간섭 해소
-        rh(mb, wins, "y", rear, -1, x0, x1, 0, zp, "wall_main",
-           [(-4.8, -3.8, 1.20, 2.10, "window", 0, 2),
-            (-.35, .55, .03, 2.12, "door_solid", 0, 1)], stage, 15)
-        for c, s in ((x0,-1),(x1,1)):
-            rh(mb, wins, "x", c, s, rear+.22, D-.22, 0, zp, "wall_main", [], stage, 16)
+        # 주차 후면 벽: 공동현관(통로 정면) + 창, 카스토퍼 라인과 같은 깊이
+        V.wall_with_doors(mb, wins, "y", rear, -1, x0, x1, 0, zp, "wall_main",
+                          [(-4.8, -3.8, 1.20, 2.10, "window", 0, 2)], stage, 15, [ent])
+        V.add_glass_entry_door(mb, wins, "y", rear, -1, *ent, stage, unit=71, lit=lit_win_indices)
+        rh(mb, wins, "x", x0, -1, rear+.22, D-.22, 0, zp, "wall_main", [], stage, 16)
+        V.wall_with_doors(mb, wins, "x", x1, 1, rear+.22, D-.22, 0, zp, "wall_main", [], stage, 18, [svc])
+        V.add_steel_door(mb, "x", x1, 1, *svc, stage, handle_right=False)
         rh(mb, wins, "y", D, 1, x0, x1, 0, zp, "wall_main",
            [(-4.5,-3.4,1.20,2.10,"window",0,2),(2.1,3.2,1.20,2.10,"window",0,2)], stage, 17)
-        mb.box(ca+.24, cb-.24, .24, rear-.02, 0, zp-.01, "concrete_light", skip=("bottom",))
         mb.box(x0+.24, x1-.24, rear+.24, D-.24, 0, zp-.01, "concrete_light", skip=("bottom",))
         for k, (axis,c,s,lo,hi,hs) in enumerate(faces):
             holes = [(a,b,3+f*2.8+sill,3+f*2.8+head,"window",f+1,panes)
@@ -98,18 +95,7 @@ def build_stage(spec, atlas, stage):
         mb.box(px0, px1, py0, py1, zdeck, zt, "wall_main", skip=("bottom",))
         mb.box(px0 - 0.05, px1 + 0.05, py0 - 0.05, py1 + 0.05, zt, zdeck + ph, "granite")
         da0, da1, dz0, dz1 = 1.65, 2.55, zdeck, zdeck + 2.02
-        if stage == 0:
-            dfw = 0.055
-            K.axbox(mb, "x", px1, 1, da0, da1, 0.0, 0.06, dz1 - dfw, dz1, "sash_dark")
-            K.axbox(mb, "x", px1, 1, da0, da0 + dfw, 0.0, 0.06, dz0 + 0.05, dz1 - dfw, "sash_dark")
-            K.axbox(mb, "x", px1, 1, da1 - dfw, da1, 0.0, 0.06, dz0 + 0.05, dz1 - dfw, "sash_dark")
-            K.axbox(mb, "x", px1, 1, da0 - 0.03, da1 + 0.03, 0.0, 0.09, dz0, dz0 + 0.05, "concrete_light", skip=("bottom",))
-            K.axbox(mb, "x", px1, 1, da0 + dfw, da1 - dfw, 0.0, 0.034, dz0 + 0.05, dz1 - dfw, "door_wood")
-            V.add_steel_door_details(mb, "x", px1, 1, da0, da1, dz0 + 0.05, dz1,
-                                     leaf_o=0.034, fw=dfw, add_threshold=False)
-            K.axbox(mb, "x", px1, 1, da0 - 0.06, da1 + 0.06, 0.0, 0.20, dz1 + 0.01, dz1 + 0.05, "sash_dark")
-        else:
-            K.axbox(mb, "x", px1, 1, da0, da1, 0.0, 0.04, dz0, dz1, "door_wood", skip=("bottom",))
+        V.add_rooftop_door(mb, "x", px1, 1, da0, da1, dz0, dz1, stage)
         # 옥상 설비: 환기 팬 2기 + 옥상 배관/벤트 스택 + TV 안테나 (main 전용) # estimated
         if stage == 0:
             # 환기 팬 2기 (콘크리트 패드 + 덕트 원통 + 버섯형 루버 후드)
@@ -139,34 +125,27 @@ def build_stage(spec, atlas, stage):
     mb.box(x0-.05,x0+.23,.23,D-.23,zroof+.90,zroof+1.00,"granite")
     mb.box(x1-.23,x1+.05,.23,D-.23,zroof+.90,zroof+1.00,"granite")
     if stage == 0:
-        # Closed steel canopy, no real building name; soffit is a solid lower box + 상부 공동현관 조명.
-        mb.box(ca+.16,cb-.16,-.65,-.005,2.24,2.32,"granite")
-        # 공동현관 캐노피 하부 평판 LED + 캐노피 전면 LED 바 + 문 상부 현관등 (야간 전 각도 또렷한 가시성)
-        V.add_ceiling_lamp(mb, ca + 0.48, cb - 0.48, -0.50, -0.16, 2.24, h=0.028)
-        K.axbox(mb, "y", -0.65, -1, ca + 0.42, cb - 0.42, 0.0, 0.018, 2.255, 2.305, "lamp")
-        K.axbox(mb, "y", 0.0, -1, ca + 0.52, cb - 0.52, 0.0, 0.09, 2.165, 2.235, "iron_dark")
-        K.axbox(mb, "y", 0.0, -1, ca + 0.56, cb - 0.56, 0.09, 0.11, 2.178, 2.222, "lamp")
-        # 공동현관 문턱 단차 + 스텐 논슬립
-        mb.box(ca + 0.36, cb - 0.36, -0.26, -0.002, 0.0, 0.06, "concrete_light", skip=("bottom",))
-        mb.box(ca + 0.38, cb - 0.38, -0.26, -0.225, 0.06, 0.07, "stainless", skip=("bottom",))
-        # 후면 철제 보조문 디테일 (손잡이·도어클로저·패널 요철·문턱)
-        V.add_steel_door_details(mb, "y", rear, -1, -.35, .55, .03, 2.12, leaf_o=-0.10, fw=0.06)
-        for x,y in cols:
+        # 공동현관 앞 문턱(스텐 논슬립) + 천장 LED: 캐노피 없이 필로티 슬래브가 비막이 역할 (정면 돌출 0)
+        mb.box(ent[0], ent[1], rear-.30, rear-.002, 0, .036, "concrete_light", skip=("bottom",))
+        mb.box(ent[0]+.02, ent[1]-.02, rear-.30, rear-.265, .036, .044, "stainless", skip=("bottom",))
+        for ly in (1.30, 4.30, rear-.70):
+            V.add_ceiling_lamp(mb, -2.20, -1.60, ly, ly+.40, zp)
+        for x,y in cols + walk_cols:
             V.decal_plate(mb,"y",y-.25,-1,x-.21,x+.21,.35,1.15,.005,"bumper")
-        # 카스토퍼: 좌측 1면(-4.45) + 우측 2면(1.75, 4.00) -> 보조문(-0.35..0.55) 앞 동선 완전 개방
+        # 카스토퍼: 좌측 1면(-4.45) + 우측 2면(1.75, 4.00), 가운데 통로(-2.6..-1.2)는 공동현관까지 개방
         for x in (-4.45, 1.75, 4.00):
             mb.box(x-.60,x+.60,6.90,7.08,0,.12,"stopper",skip=("bottom",))
             # 필로티 천장 LED 평판등 (전면 열 + 후면 열)
             V.add_ceiling_lamp(mb, x-.32, x+.32, 1.15, 1.55, zp)
             V.add_ceiling_lamp(mb, x-.32, x+.32, 4.25, 4.60, zp)
-        # 공동현관 인터폰 (버튼·카메라·화면 PIL 페이스플레이트 + 비막이 후드)
-        V.add_intercom(mb, "y", 0, -1, ca + .08, ca + .34, 1.28, 1.58)
-        V.decal_plate(mb,"y",0,-1,cb-.34,cb-.07,1.80,2.02,.014,"address")
-        K.axbox(mb,"x",cb,1,.65,1.35,0,.15,1.0,1.75,"stainless")
-        K.axbox(mb,"x",cb,1,.63,1.37,0,.18,1.75,1.775,"stainless")
+        # 공동현관 인터폰(문 왼쪽) · 우편함(문 오른쪽) · 남색 번호판(도로 쪽 통로 기둥)
+        V.add_intercom(mb, "y", rear, -1, ent[0] - .40, ent[0] - .16, 1.28, 1.58)
+        V.decal_plate(mb,"y",0,-1,cb-.25-.135,cb-.25+.135,1.80,2.02,.014,"address")
+        K.axbox(mb,"y",rear,-1,ent[1]+.20,ent[1]+.80,0,.15,1.0,1.75,"stainless")
+        K.axbox(mb,"y",rear,-1,ent[1]+.18,ent[1]+.82,0,.18,1.75,1.775,"stainless")
         # Separate letter slots, not a solid featureless mailbox block.
         for z in (1.12,1.34,1.56):
-            K.axbox(mb,"x",cb+.15,1,.70,1.30,.002,.008,z,z+.025,"iron_dark")
+            K.axbox(mb,"y",rear-.15,-1,ent[1]+.25,ent[1]+.75,.002,.008,z,z+.025,"iron_dark")
         for axis,c,s,lo,hi,hs in faces:
             for f in range(3):
                 z = 3+f*2.8

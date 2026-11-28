@@ -1,0 +1,27 @@
+name: SintanjinVillaC01
+lot: {width: 2, depth: 3} # estimated; 16x24 m, 실제 대지 측량 아님
+dimensions:
+  width_m: 12.4 # estimated; 브리프 중형 11.0~14.0, 주차 3면 + 보행 통로
+  depth_m: 12.4 # estimated; 브리프 11~14
+  height_m: 17.0 # estimated; 필로티3.0+주거4x2.8+파라펫1.0+옥탑2.4
+floors: 5 # 1층 필로티 + 2~5층 주거
+style: sintanjin_2000s_villa_C_white_stucco_bay_piloti
+zone: ResidentialMedium # candidate, 인게임 등록 미확인
+signature: false
+archetype: villa_C_white_stucco_bay_piloti
+seed: 23
+evidence:
+  brief: STYLE_BRIEF.md 5.3 C, 2장 치수, 3.1 흰 미장·밝은 화강석 색
+  brief_photos: [v02_front.png, v08_front.png, v20_det_bay.png, v23_det_bay.png, user_ref_alley_piloti_villas.png]
+  notes: shape_notes.md
+measured_from_photos:
+  - 브리프 집계 기준 흰 미장 주조, 돌출 발코니창 깊이 0.60~0.90 m, 5층 표본(v08·v09), 스텐 난간, 다크 창틀(v02·v23)
+estimated:
+  - 이번 작업은 새 로드뷰를 수집하지 않은 브리프 기반 대표형이다. 특정 번지 복제가 아님 # estimated
+  - 흰 미장 BaseColor (206,204,200), 밝은 화강석 (178,176,178) (브리프 3.1 권장값) # estimated
+  - 정면 수직 돌출창 2열 폭 3.0 m 깊이 0.60 m, 층별 화강석 창대 띠, 확장형 창 2.3x1.75 m 창대 0.55 m + 스텐 난간 0.75 m # estimated
+  - 필로티 기둥 0.5 m각 5열x2, 주차 3면(2.5 m) + 우측 보행 통로 2.4 m, 공동현관은 통로 끝 주차 후면 벽(y=8.0) # estimated
+  - 우측면 후면 계단실 수직 유리(y 9.05~10.45), 옥탑 2.45x3.0x2.4 m, 물탱크, 계단형 파라펫 중앙 상승 0.55 m # estimated
+  - 남색 가상 도로명 신탄골목길45 # estimated
+photo_mismatch_notes:
+  - 대표형이라 photo_refs 자동 픽셀 매칭 NOT_APPLICABLE. 사진 근거는 STYLE_BRIEF 집계와 수치뿐이며 이 PC 에 v 시리즈 원본이 없다(A01·B01 메모 참고).

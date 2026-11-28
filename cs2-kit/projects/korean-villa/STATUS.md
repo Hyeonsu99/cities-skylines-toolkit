@@ -4,7 +4,7 @@
 review:PASS
 
 ## Generator
-sintanjin_villa_b01_cs2.py
+sintanjin_villa_d01_cs2.py
 
 ## Last verification
 PASS
