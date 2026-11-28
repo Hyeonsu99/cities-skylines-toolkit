@@ -1,0 +1,29 @@
+name: SintanjinHouse04
+lot: {width: 2, depth: 2}  # estimated; 저밀도 (상가 겸용) 2x2 — 구역 등록 방식 인게임 미확인
+dimensions:
+  width_m: 12.25  # 본채 11.4 m + 세로 간판·실외기 돌출  # estimated
+  depth_m: 11.389  # 본채 10.0 m + 어닝 0.95 m  # estimated
+  height_m: 8.34  # 1층 3.35 + 2층 2.85 + 파라펫 0.85 + 옥상 물탱크 함체
+floors: 2
+style: sintanjin_2000s_shop_house_red_brown_brick
+zone: ResidentialLow  # candidate (상업 겸용 저밀도, 등록 구역 미정)
+signature: false
+archetype: shop_1f
+seed: 4
+evidence:
+  brief: STYLE_BRIEF.md
+  sources: work/roadview_extra/SOURCES.md
+  notes: shape_notes.md
+  primary_photos:
+    - work/roadview_extra/d04_alley_shop.png
+estimated:
+  - 본채 11.4 x 10.0 m, 1층 층고 3.35 m(STYLE_BRIEF 3.15~3.55), 2층 2.85 m, 평지붕 파라펫 0.75 + 두겁 0.10 m # estimated
+  - 상가 2곳(유리문 1.5 m + 쇼윈도 2.5 m) + 오른쪽 주택 전용 현관 0.95 m # estimated
+  - 가로 판류 간판 4.6 x 0.82 m / 4.3 x 0.82 m, 세로 돌출 간판 0.48 x 1.50 m # estimated
+  - 천막 어닝 깊이 0.95 m, 처짐 0.24 m, 드림 0.10 m — 쇼윈도 상단 1.98 m 로 WIN_BLOCKED 0 # estimated
+  - 옥상 보온 물탱크 함체 1.8 x 1.8 x 2.1 m (STYLE_BRIEF 5장) # estimated
+  - 가상 상호 '대청철물·건재', '한밭분식' / 가상 도로명 '신탄길 8' (규칙 19·20) # estimated
+photo_mismatch_notes:
+  - 원래 근거(h19~h24) 원본이 이 PC에 없어 STYLE_BRIEF T4 실측 표·서술과 같은 골목 상가 사진(d04_alley_shop) 하나로 합성했다. photo_refs 자동 매칭은 NOT_APPLICABLE.
+  - 사진의 실제 상호는 쓰지 않고 가상 상호로 바꿨다. 보도 포장·입간판 등 z=0 바닥 메시는 넣지 않았다.
+  - 화분은 2026-11-24 사용자 요청으로 모델링하지 않는다.

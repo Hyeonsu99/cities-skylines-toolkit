@@ -1,0 +1,33 @@
+name: SintanjinHouse03
+lot: {width: 2, depth: 2}  # estimated; 저밀도 주거 구역 2x2 (16x16 m)
+dimensions:
+  width_m: 15.26  # 담장 갓돌 바깥 포함 (본채 9.8 m)  # estimated
+  depth_m: 14.692  # 앞 대문 기둥 ~ 뒷담 갓돌 (본채 9.0 m)  # estimated
+  height_m: 7.55  # 기단 0.40 + 1층 2.90 + 2층 2.72 + 처마 0.24 + 모임지붕 1.18
+floors: 2
+style: sintanjin_2000s_detached_charcoal_brick_ext_stairs
+zone: ResidentialLow  # candidate
+signature: false
+archetype: ext_stairs
+seed: 3
+evidence:
+  brief: STYLE_BRIEF.md
+  sources: work/roadview_extra/SOURCES.md
+  notes: shape_notes.md
+  primary_photos:
+    - work/roadview_extra/d03_stair_side.png
+    - work/roadview_extra/d03_street_stair.png
+    - work/roadview_extra/d02_mass_hip_roof.png
+estimated:
+  - 본채 9.8 x 9.0 m, 앞마당 3.5 m(대문~현관), 뒷마당 1.6 m # estimated
+  - 외부계단 18단(단 0.183 m, 디딤 0.27 m, 폭 1.08 m), 랜딩 1.56 x 1.08 m, 앞벽을 따라 오른쪽 -> 왼쪽 상승 # estimated
+  - 막힌 난간벽 두께 0.22 m, 높이 0.95 m + 콘크리트 갓돌 0.08 m, 스테인리스 핸드레일 갓돌 위 0.20 m # estimated (STYLE_BRIEF 3장 T3 값)
+  - 계단 밑 창고문 0.80 x 1.95 m (사진의 아치문을 사각 문으로 단순화) # estimated
+  - 흰 미장 담장 1.45 m + 갓돌, 대문 기둥 2.20 m, 대문 개구부 2.4 m # estimated
+  - 도로명 건물번호판 '석봉길 32' (규칙 20 가상 도로명) # estimated
+photo_mismatch_notes:
+  - 석봉동 골목 한 동(d03_*, d02_mass_hip_roof)의 외부계단 구성 + STYLE_BRIEF T3 대표값으로 합성한 대표형이며 번지 복제가 아니므로 photo_refs 자동 매칭은 NOT_APPLICABLE.
+  - 사진의 계단은 측면 골목을 따라 오르나, 저밀도 로트 정면에서 계단 매스가 보이도록 앞벽을 따라 오르게 배치했다.
+  - 사진의 계단 밑 아치문은 사각 통짝 철문 + 화강석 문선으로 단순화했다(아치 곡면 삼각형 절약).
+  - 사진의 파란 금속 창고 지붕·전신주·전선은 제외했다. 태양광(roof_addon)은 넣지 않았다.
+  - 화분은 2026-11-24 사용자 요청으로 모델링하지 않는다.
