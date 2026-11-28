@@ -3,7 +3,7 @@
  "current_stage": "review:PASS",
  "generator": "sintanjin_corner_shop_01_cs2.py",
  "generator_hash": "1e565236c9ea5ee5c9f8820d2e155bd5bfe1872cefd987ccf2577ed8745acad8",
- "current_preview_hash": "93b677b7ee950a178ed7464da985568d55d29ad8fa9387019e4586b49afee8e0",
+ "current_preview_hash": "89b92426afc808c3bf54b421b7e3de3086f18fcd0a3941578e390c28a4b819f0",
  "last_gate": {
   "status": "PASS",
   "project": "korean-neighborhood-shop",
@@ -29,8 +29,8 @@
    "report": "output\\SintanjinCornerShop01_L1_2x2\\_check\\report.json"
   },
   "asset": "SintanjinCornerShop01_L1_2x2",
-  "label": "sync-shop",
-  "time": "2026-11-23 09:11:00",
+  "label": "final",
+  "time": "2026-11-28 21:43:15",
   "build": {
    "asset": "SintanjinCornerShop01_L1_2x2",
    "fbx": true,
@@ -42,7 +42,7 @@
    "info": {
     "size": [
      14.9,
-     13.52,
+     13.8,
      13.6
     ],
     "pivot_offset": [
@@ -52,17 +52,17 @@
     "zmin": 0.0,
     "coords": "generator coordinates (before pivot move)",
     "tris": {
-     "main": 9580,
+     "main": 12860,
      "win": 102,
-     "lod1": 3440,
+     "lod1": 3910,
      "lod1_win": 102,
      "lod2": 154,
      "lod2_win": 102
     },
     "verts": {
-     "main": 19488,
+     "main": 26276,
      "win": 204,
-     "lod1": 6884,
+     "lod1": 7824,
      "lod1_win": 204,
      "lod2": 312,
      "lod2_win": 204
@@ -120,14 +120,14 @@
   "lod": {
    "checked": true,
    "status": "PASS",
-   "line": "LODCHECK PASS main max 0.010% (az 158, el -10) bad_views 0/64 | lod1 max 0.000% (az 0, el -10) bad_views 0/64 | lod2 max 0.009% (az 0, el -10) bad_views 0/64  -> previews\\lod_check\\SintanjinCornerShop01_L1_2x2",
+   "line": "LODCHECK PASS main max 0.011% (az 202, el -10) bad_views 0/64 | lod1 max 0.001% (az 202, el +5) bad_views 0/64 | lod2 max 0.009% (az 45, el -10) bad_views 0/64  -> previews\\lod_check\\SintanjinCornerShop01_L1_2x2",
    "notes": []
   },
   "agent": {
    "status": "PASS",
    "verts": {
-    "LOD0": 19488,
-    "LOD1": 6884,
+    "LOD0": 26276,
+    "LOD1": 7824,
     "LOD2": 312
    },
    "action_tags": [],
@@ -145,13 +145,25 @@
   "reason": "all requested checks passed"
  },
  "project": "korean-neighborhood-shop",
- "updated_at": "2026-11-23T09:15:12",
- "visual_review_note": "총괄 근접 렌더 검토: 재빌드 미리보기가 기존 커밋본과 라벨 외 픽셀 동일, 눈높이 양방향 렌더 이상 없음",
+ "updated_at": "2026-11-28T21:43:46",
+ "visual_review_note": "11-24 피드백 수정: 기본4방향·낮밤 전후 비교·눈높이 근접·문 근접 확인, 과발광/겹침/틈 없음",
  "visual_review_artifacts": [
   {
    "file": "previews/SintanjinCornerShop01_L1_2x2.png",
-   "sha256": "93b677b7ee950a178ed7464da985568d55d29ad8fa9387019e4586b49afee8e0"
+   "sha256": "89b92426afc808c3bf54b421b7e3de3086f18fcd0a3941578e390c28a4b819f0"
+  },
+  {
+   "file": "previews/cmp_1124fix_night.png",
+   "sha256": "af4395fbda5a3d319fc8370f5d0388fe97471b41a46ab1071e7b4a52394bc584"
+  },
+  {
+   "file": "previews/cmp_1124fix_eye_night.png",
+   "sha256": "19898b5cde7ea2359a939378db3d4dc05dceb37e18f16eb93fc773c811635fa3"
+  },
+  {
+   "file": "previews/doors_1124fix.png",
+   "sha256": "69d638dc17ef0ca7844cd05a53d0f799729a60a5d9a050e675ecd79f5c367549"
   }
  ],
- "reviewed_preview_hash": "93b677b7ee950a178ed7464da985568d55d29ad8fa9387019e4586b49afee8e0"
+ "reviewed_preview_hash": "89b92426afc808c3bf54b421b7e3de3086f18fcd0a3941578e390c28a4b819f0"
 }

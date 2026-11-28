@@ -57,6 +57,12 @@ SIGNS = [
 ]
 SIGN_STRIP_H = 1024
 
+# 2026-11-24 인게임: 간판·조명이 블룸으로 하얗게 날아감 -> 발광 배율 대폭 하향 (게임 블룸 기준 노브)
+EMIS_SIGN = 0.22    # 간판 글자 (이전 0.90). 바탕 발광은 이 배율의 약 1/3
+EMIS_VSIGN = 0.20   # 세로 돌출 간판 (이전 0.85)
+EMIS_LAMP = 0.28    # 처마 다운라이트·옥탑등 (이전 1.00)
+EMIS_WIN = 0.55     # 창 실내등 (DC 창 0.58~0.86 -> 0.32~0.47)
+
 
 # ---------------------------------------------------------------------------
 # 간판 그림 (굵은 한글 간판 글꼴, 칸 전체 UV — 규칙 12·19)
@@ -92,9 +98,9 @@ def _draw_signs(W):
         r0, r1 = rows[name]
         return int(r0 * s), int(r1 * s)
 
-    def text(x, y, t, font, fill, glow=0, stroke=0, sc=None):
+    def text(x, y, t, font, fill, glow=None, stroke=0, sc=None):
         d.text((x, y), t, font=font, fill=fill, anchor="mm", stroke_width=stroke, stroke_fill=sc or fill)
-        if glow:
+        if glow is not None:
             de.text((x, y), t, font=font, fill=glow, anchor="mm", stroke_width=stroke)
 
     # 1층 좌: 노란 바탕 + 검정 굵은 글자 + 빨간 전화번호 (사용자 사진 'OK 공인중개사' 문법, 가상 상호)
@@ -102,11 +108,12 @@ def _draw_signs(W):
     d.rectangle([0, y0, W - 1, y1 - 1], fill=(222, 178, 40))
     d.rectangle([int(W * 0.012), y0 + int(h * 0.07), W - 1 - int(W * 0.012), y1 - 1 - int(h * 0.07)],
                 outline=(60, 50, 40), width=max(2, int(h * 0.035)))
-    de.rectangle([0, y0, W - 1, y1 - 1], fill=70)
-    text(W * 0.12, y0 + h * 0.52, "한빛", F(F_HEAD, h * 0.60), (24, 26, 34), glow=230)
-    text(W * 0.44, y0 + h * 0.38, "공인중개사", F(F_GOTH, h * 0.36), (24, 26, 34), glow=230)
-    text(W * 0.44, y0 + h * 0.76, "아파트 · 상가 · 토지", F(F_GOTH, h * 0.20), (40, 40, 44), glow=200)
-    text(W * 0.81, y0 + h * 0.52, "938-1472", F(F_NUM, h * 0.38), (172, 32, 36), glow=230)
+    # 밤: 노란 아크릴 바탕만 내부 조명으로 은은하게, 검정·빨강 글자는 어둡게 남겨 대비 유지 (11-24 과발광 수정)
+    de.rectangle([0, y0, W - 1, y1 - 1], fill=200)
+    text(W * 0.12, y0 + h * 0.52, "한빛", F(F_HEAD, h * 0.60), (24, 26, 34), glow=0)
+    text(W * 0.44, y0 + h * 0.38, "공인중개사", F(F_GOTH, h * 0.36), (24, 26, 34), glow=0)
+    text(W * 0.44, y0 + h * 0.76, "아파트 · 상가 · 토지", F(F_GOTH, h * 0.20), (40, 40, 44), glow=0)
+    text(W * 0.81, y0 + h * 0.52, "938-1472", F(F_NUM, h * 0.38), (172, 32, 36), glow=0)
 
     # 1층 우: 짙은 회색 간판 띠 + 흰·청록 글자 (분식)
     y0, y1 = strip("sg_dark"); h = y1 - y0
@@ -147,7 +154,7 @@ def _signs_painter():
             z = np.load(cache)
             rgb, e = z["rgb"], z["e"]
         ctx.rgb[...] = rgb
-        ctx.emis[...] = e * 0.9
+        ctx.emis[...] = e * EMIS_SIGN
         ctx.grain(amp=1.0, scale_px=2, height=0.02, seed=701)
         ctx.gloss = np.clip(0.50 + 0.03 * DC._var(ctx, 8, 703), 0.42, 0.58)
     return painter
@@ -227,22 +234,41 @@ def _vsign_painter():
             z = np.load(cache)
             rgb, e = z["rgb"], z["e"]
         ctx.rgb[...] = rgb
-        ctx.emis[...] = e * 0.85
+        ctx.emis[...] = e * EMIS_VSIGN
         ctx.gloss = np.clip(0.46 + 0.03 * DC._var(ctx, 8, 257), 0.38, 0.54)
     return painter
 
 
 def _granite_painter(seed, cols=2, rows=2):
-    """석재 판 (0.9 x 0.6 m 줄눈, 반점) — 사용자 사진 베이지 석재, s01 화강석 판."""
+    """석재 판 (0.9 x 0.6 m 줄눈, 반점) — 사용자 사진 베이지 석재, s01 화강석 판.
+    11-24 인게임 '디테일 아쉬움': 줄눈 폭·깊이·명암, 판별 색조·광택 편차, 흑백 반점을 키워 원경에서도 판 결이 읽히게."""
     def painter(ctx):
-        d = ctx.joints(cols=cols, rows=rows, width_m=0.006, depth=0.25, darken=0.18, tone=6, seed=801 + seed)
-        ctx.grain(amp=7.5, scale_px=1, height=0.10, seed=803 + seed)
-        pores = ctx.noise(scale_px=1, amp=1.0, octaves=1, seed=805 + seed) > 2.1
-        ctx.rgb[pores] *= 0.80
+        d = ctx.joints(cols=cols, rows=rows, width_m=0.010, depth=0.60, darken=0.36, tone=8, seed=801 + seed)
+        ctx.grain(amp=9.0, scale_px=1, height=0.14, seed=803 + seed)
+        dark = ctx.noise(scale_px=1, amp=1.0, octaves=1, seed=805 + seed) > 1.9
+        light = ctx.noise(scale_px=1, amp=1.0, octaves=1, seed=806 + seed) > 2.2
+        ctx.rgb[dark] *= 0.74
+        ctx.rgb[light] *= 1.12
+        ctx.height[dark] -= 0.12
+        # 판마다 광택·색 온도 편차 (연마 화강석 판의 로트 차이)
+        x, z = ctx.meters()
+        pid = np.floor(x / (ctx.tile[0] / cols)) * 7.0 + np.floor(z / (ctx.tile[1] / rows)) * 13.0 + ctx.vi * 31.0
+        h = np.sin(pid * 12.9898 + seed * 78.233) * 43758.5453
+        pg = (h - np.floor(h)) - 0.5
+        ctx.rgb[..., 0] *= 1.0 + 0.025 * pg
+        ctx.rgb[..., 2] *= 1.0 - 0.025 * pg
         v = DC._var(ctx, scale_px=10, seed=807 + seed)
         ctx.rgb[...] = np.clip(ctx.rgb, 30, 212)
-        ctx.gloss = np.clip((0.34 + 0.05 * v) * (1.0 - d) + 0.16 * d, 0.14, 0.44)
+        ctx.gloss = np.clip((0.38 + 0.12 * pg + 0.05 * v) * (1.0 - d) + 0.12 * d, 0.10, 0.52)
     return painter
+
+
+def _dim(painter, k):
+    """페인터 결과 발광만 k 배 (DC 창·단색 칸 재사용)."""
+    def p(ctx):
+        painter(ctx)
+        ctx.emis[...] *= k
+    return p
 
 
 def _awning_painter(seed):
@@ -274,7 +300,7 @@ def build_atlas(spec: ShopSpec) -> K.Atlas:
           painter=DC._make_terrace_floor_painter(s + 9))
     win_col = (66, 88, 100)
     a.add("window", color=win_col, px=384, gloss=0.84, emissive=(255, 226, 184),
-          painter=DC._make_window_painter(s + 11))
+          painter=_dim(DC._make_window_painter(s + 11), EMIS_WIN))
     a.add("window_backing", color=win_col, px=32, gloss=0.80)
     a.add("sash", color=(64, 68, 72), px=128, gloss=0.50, painter=DC._solid(1.8, 0.44, 0.56, s + 13))
     a.add("sash_dark", color=(54, 58, 62), px=128, gloss=0.50, painter=DC._solid(1.8, 0.44, 0.56, s + 15))
@@ -290,8 +316,8 @@ def build_atlas(spec: ShopSpec) -> K.Atlas:
     a.add("vsign", px=256, gloss=0.50, emissive=(255, 244, 222), painter=_vsign_painter())
     a.add("address", px=256, gloss=0.48,
           painter=_plate_painter(f"addr_{spec.road_name}_{spec.road_no}", _draw_address(spec.road_name, spec.road_no)))
-    a.add("lamp", color=(244, 224, 182), emissive=(255, 218, 156), px=32, gloss=0.62,
-          painter=DC._solid(1.0, 0.56, 0.66, s + 31))
+    a.add("lamp", color=(232, 220, 196), emissive=(255, 218, 156), px=32, gloss=0.62,
+          painter=_dim(DC._solid(1.0, 0.56, 0.66, s + 31), EMIS_LAMP))
     return a
 
 
@@ -390,6 +416,56 @@ def gable_parapet(mb, zb, zt, stage, xb=5.4, xt=1.8, y0=0.0, y1=WT):
     _rect_facing(mb, [(-xt, y0, zt), (xt, y0, zt), (xt, y1, zt), (-xt, y1, zt)], (0, 0, 1), "stone_brown")
     _rect_facing(mb, [(-xb, y0, zb), (-xt, y0, zt), (-xt, y1, zt), (-xb, y1, zb)], (-1, 0, 1), "stone_brown")
     _rect_facing(mb, [(xb, y0, zb), (xt, y0, zt), (xt, y1, zt), (xb, y1, zb)], (1, 0, 1), "stone_brown")
+
+
+def steel_door_details(mb, axis, c, side, a0, a1, z0, z1, *, leaf_o=-0.10, fw=0.06, handle_right=True):
+    """철제 방화문 디테일: 상·하 패널 요철, 킥플레이트, 레버 손잡이, 도어클로저.
+    (korean-villa/villa_core.add_steel_door_details 와 같은 문법. 병렬 작업 폴더 의존을 피하려 복사)"""
+    la0, la1, lz1 = a0 + fw, a1 - fw, z1 - fw
+    w, h = la1 - la0, lz1 - z0
+    K.axbox(mb, axis, c, side, la0 + 0.015, la1 - 0.015, leaf_o + 0.002, leaf_o + 0.010, z0 + 0.015, z0 + 0.14, "iron_dark")
+    pm = min(0.11, w * 0.15)
+    for pz0, pz1 in ((z0 + 0.22, z0 + h * 0.45), (z0 + h * 0.53, lz1 - 0.18)):
+        K.axbox(mb, axis, c, side, la0 + pm, la1 - pm, leaf_o + 0.002, leaf_o + 0.014, pz0, pz1, "sash_dark")
+        K.axbox(mb, axis, c, side, la0 + pm + 0.028, la1 - pm - 0.028, leaf_o + 0.014, leaf_o + 0.024,
+                pz0 + 0.028, pz1 - 0.028, "door_wood")
+    hx = (la1 - 0.095) if handle_right else (la0 + 0.095)
+    hz = z0 + 0.96
+    K.axbox(mb, axis, c, side, hx - 0.024, hx + 0.024, leaf_o + 0.002, leaf_o + 0.014, hz - 0.085, hz + 0.055, "iron_dark")
+    K.axbox(mb, axis, c, side, hx - 0.011, hx + 0.011, leaf_o + 0.014, leaf_o + 0.052, hz - 0.011, hz + 0.011, "stainless")
+    lx0, lx1 = (hx - 0.115, hx + 0.012) if handle_right else (hx - 0.012, hx + 0.115)
+    K.axbox(mb, axis, c, side, lx0, lx1, leaf_o + 0.044, leaf_o + 0.062, hz - 0.011, hz + 0.011, "stainless")
+    cx0, cx1 = (la0 + 0.08, la0 + 0.30) if handle_right else (la1 - 0.30, la1 - 0.08)
+    K.axbox(mb, axis, c, side, cx0, cx1, leaf_o + 0.002, leaf_o + 0.042, lz1 - 0.095, lz1 - 0.025, "iron_dark")
+    ax0, ax1 = (cx1 - 0.02, cx1 + 0.12) if handle_right else (cx0 - 0.12, cx0 + 0.02)
+    K.axbox(mb, axis, c, side, ax0, ax1, leaf_o + 0.028, leaf_o + 0.046, lz1 - 0.052, lz1 - 0.004, "iron_dark")
+
+
+def door_canopy(mb, axis, c, side, a0, a1, z, depth, stage, lamp=True):
+    """출입문 위 콘크리트 캔틸레버 차양 (물끊기 턱) + 밑면 등."""
+    if stage == 0:
+        KX.ax_bevel(mb, axis, c, side, a0, a1, 0.0, depth, z, z + 0.10, "concrete_light", bevel=0.015)
+        K.axbox(mb, axis, c, side, a0 + 0.01, a1 - 0.01, depth - 0.05, depth - 0.03, z - 0.025, z - 0.002, "concrete_light")
+        if lamp:
+            m = 0.5 * (a0 + a1)
+            K.axbox(mb, axis, c, side, m - 0.09, m + 0.09, 0.14, 0.26, z - 0.022, z - 0.002, "lamp")
+    else:
+        K.axbox(mb, axis, c, side, a0, a1, 0.0, depth, z, z + 0.10, "concrete_light")
+
+
+def _penthouse_door(mb, c, a0, a1, z0, z1, stage):
+    """옥탑 계단실 철문 (-Y 면): 3D 문틀 + 문짝 + 패널·손잡이·클로저 + 문턱 + 차양·등."""
+    if stage == 2:
+        return
+    fw = 0.06
+    K.axbox(mb, "y", c, -1, a0, a1, 0.0, 0.06, z1 - fw, z1, "sash_dark")
+    K.axbox(mb, "y", c, -1, a0, a0 + fw, 0.0, 0.06, z0 + 0.05, z1 - fw, "sash_dark")
+    K.axbox(mb, "y", c, -1, a1 - fw, a1, 0.0, 0.06, z0 + 0.05, z1 - fw, "sash_dark")
+    K.axbox(mb, "y", c, -1, a0 - 0.04, a1 + 0.04, 0.0, 0.10, z0, z0 + 0.05, "concrete_light", skip=("bottom",))
+    K.axbox(mb, "y", c, -1, a0 + fw, a1 - fw, 0.0, 0.034, z0 + 0.05, z1 - fw, "door_wood")
+    if stage == 0:
+        steel_door_details(mb, "y", c, -1, a0, a1, z0 + 0.05, z1, leaf_o=0.034, fw=fw)
+    door_canopy(mb, "y", c, -1, a0 - 0.15, a1 + 0.15, z1 + 0.22, 0.45, stage)
 
 
 # ---------------------------------------------------------------------------
@@ -505,7 +581,7 @@ def build_stage(spec: ShopSpec, a: K.Atlas, stage: int):
     # 옥탑 계단실 # estimated
     mb.box(2.0, 5.0, 6.0, 9.0, z3, z3 + 2.50, "plaster", skip=("bottom",))
     mb.box(1.94, 5.06, 5.94, 9.06, z3 + 2.50, z3 + 2.60, {"default": "stone_brown", "top": "concrete_light"})
-    K.axbox(mb, "y", 6.0, -1, 3.0, 3.9, 0.0, 0.03, z3, z3 + 2.05, "door_wood")
+    _penthouse_door(mb, 6.0, 3.0, 3.9, z3, z3 + 2.05, stage)
 
     # ---------------- 1층 간판·차양 (사용자 사진) ----------------
     ys = -PIER_O                    # 간판 뒷면: 기둥 앞면과 같은 선에서 시작 (판 두께 0.12)
@@ -517,8 +593,11 @@ def build_stage(spec: ShopSpec, a: K.Atlas, stage: int):
     awning_plate(mb, ax0, ax1, stage)
     mb.box(ax0, ax1, -1.10, -1.06, 2.48, 2.57, "awning")   # 판 앞 끝면(2.57~2.62) 아래에 맞대기
     if stage == 0:
-        for xa in (-6.0, -3.4, -0.8):
-            DC.add_oct_tube(mb, (xa, -0.02, 2.70), (xa, -1.00, 2.64), 0.018, "iron_dark", n=6)
+        for xa in (-6.25, -4.55, -0.52):
+            K.axbox(mb, "y", 0.0, -1, xa - 0.035, xa + 0.035, 0.0, 0.03, 2.18, 2.32, "iron_dark")
+            DC.add_oct_tube(mb, (xa, -0.03, 2.25), (xa, -0.98, 2.575), 0.017, "iron_dark", n=6)
+        # 벽 쪽 천막 걸이 레일 (판 윗면 2.90 위 5 mm, 간판 아래 5 mm)
+        K.axbox(mb, "y", 0.0, -1, ax0, ax1, 0.0, 0.05, 2.905, 2.945, "iron_dark")
 
     # ---------------- 2층 유리 간판 띠 (아래·위 유리 사이 불투명 띠 위 글자 판) ----------------
     if stage == 0:
@@ -554,9 +633,6 @@ def build_stage(spec: ShopSpec, a: K.Atlas, stage: int):
 
         # 번호판 (우측 기둥 앞, 규칙 20)
         sign_board(mb, "y", -PIER_O, -1, x1 - 0.48, x1 - 0.21, 1.70, 1.92, 0.014, a.uv_full("address"), region="address")
-        # 1층 점포 처마 조명 (간판 아래 다운라이트)
-        for xl in (2.0, 4.6):
-            mb.box(xl - 0.12, xl + 0.12, -0.20, 0.0, 2.84, 2.90, "lamp")
 
         # 실외기: 측면 2·3층, 후면 각 층, 옥상 2대
         for zf in (z1, z2):
@@ -569,7 +645,104 @@ def build_stage(spec: ShopSpec, a: K.Atlas, stage: int):
         # 우수관 (후면 양 모서리)
         for xd in (x0 + 0.40, x1 - 0.40):
             DC.add_downspout(mb, "y", D, 1, xd, 0.0, z3 + 0.6)
+    _detail_pass(mb, spec, stage, front, right, back)
     return mb, wins
+
+
+def _sill(mb, axis, c, side, a0, a1, ztop, reg, stage, depth=0.07, h=0.06):
+    """창대 (DC 창 하부 림 아래 2 mm). main 은 모따기."""
+    if stage == 0:
+        KX.ax_bevel(mb, axis, c, side, a0 - 0.08, a1 + 0.08, 0.0, depth, ztop - h, ztop, reg, bevel=0.012)
+    else:
+        K.axbox(mb, axis, c, side, a0 - 0.08, a1 + 0.08, 0.0, depth, ztop - h, ztop, reg)
+
+
+def _detail_pass(mb, spec, stage, front, right, back):
+    """11-24 인게임 '디테일 아쉬움' 보강: 상가 전면 (셔터박스·가이드레일·걸레받이·간판 테·문 손잡이/중간대/문턱),
+    상층 창대·인방, 코핑 아래 띠, 측·후면 실외기 배관, 후면 계단실 철문·차양."""
+    W2, D = spec.width / 2.0, spec.depth
+    x0, x1 = -W2, W2
+    z1, z2, zp = spec.z1, spec.z2, spec.z_par
+    main = stage == 0
+
+    # ---- 1층 상가 전면 ----
+    for (a0, a1, hz0, hz1, kind, *_r) in front[0]:
+        if kind == "window":   # 진열창 아래 화강석 걸레받이 (DC 창 림 0.455 아래)
+            K.axbox(mb, "y", 0.0, -1, a0 - 0.02, a1 + 0.02, 0.0, 0.035, 0.0, hz0 - 0.05, "stone_brown", skip=("bottom",))
+        else:                  # 유리문 화강석 문턱
+            K.axbox(mb, "y", 0.0, -1, a0, a1, 0.002, 0.24, 0.0, 0.03, "stone_brown", skip=("bottom",))
+        if a0 > 0.0:           # 우측 점포 셔터 가이드 레일 (창 림 바깥)
+            for r0 in (a0 - 0.08, a1 + 0.035):
+                K.axbox(mb, "y", 0.0, -1, r0, r0 + 0.045, 0.0, 0.06, 0.0, 2.76, "iron_dark", skip=("bottom",))
+        if main and kind == "door_glass":
+            mid, fw = 0.5 * (a0 + a1), 0.075
+            # 중간 가로대 (중앙 세로살과 맞대기)
+            for t0, t1 in ((a0 + fw, mid - 0.028), (mid + 0.028, a1 - fw)):
+                K.axbox(mb, "y", 0.0, -1, t0, t1, -0.125, -0.045, 2.20, 2.255, "sash_dark")
+            # 긴 스테인리스 당김 손잡이 + 받침
+            for hx in (mid - 0.12, mid + 0.12):
+                K.axbox(mb, "y", 0.0, -1, hx - 0.0125, hx + 0.0125, -0.030, -0.006, 0.72, 1.78, "stainless")
+                for hz in (0.80, 1.70):
+                    K.axbox(mb, "y", 0.0, -1, hx - 0.010, hx + 0.010, -0.045, -0.030, hz - 0.010, hz + 0.010, "stainless")
+    # 우측 점포 셔터 박스 (창·문 머리 2.75 위, 간판 2.95 아래) + 밑면 등
+    sb0, sb1 = 0.55, 6.15
+    if main:
+        KX.ax_bevel(mb, "y", 0.0, -1, sb0, sb1, 0.0, 0.20, 2.76, 2.94, "sash", bevel=0.012)
+        for xl in (2.5, 5.4):
+            K.axbox(mb, "y", 0.0, -1, xl - 0.08, xl + 0.08, 0.06, 0.14, 2.745, 2.758, "lamp")
+    else:
+        K.axbox(mb, "y", 0.0, -1, sb0, sb1, 0.0, 0.20, 2.76, 2.94, "sash")
+    # 1층 간판 테 (판 앞면 둘레 몰딩 -> 상자 간판 입체감)
+    if main:
+        for g0, g1 in ((-6.30, -0.50), (0.50, 6.30)):
+            o0, o1, e = 0.14, 0.165, 0.045
+            K.axbox(mb, "y", 0.0, -1, g0, g1, o0, o1, 2.95, 2.95 + e, "stainless")
+            K.axbox(mb, "y", 0.0, -1, g0, g1, o0, o1, 3.85 - e, 3.85, "stainless")
+            K.axbox(mb, "y", 0.0, -1, g0, g0 + e, o0, o1, 2.95 + e, 3.85 - e, "stainless")
+            K.axbox(mb, "y", 0.0, -1, g1 - e, g1, o0, o1, 2.95 + e, 3.85 - e, "stainless")
+
+    # ---- 상층 창대·인방 ----
+    for (h0, h1, hz0, hz1, *_r) in front[1]:
+        if hz0 < z1 + 1.0:      # 2층 아래 유리: 창대
+            _sill(mb, "y", 0.0, -1, h0, h1, hz0 - 0.047, "stone_brown", stage)
+        else:                   # 2층 위 유리: 인방 (아래는 유리 간판)
+            K.axbox(mb, "y", 0.0, -1, h0 - 0.06, h1 + 0.06, 0.0, 0.04, hz1 + 0.005, hz1 + 0.085, "stone_brown")
+    for (h0, h1, hz0, hz1, *_r) in front[2]:   # 3층 띠창: 인방 (창대 자리는 난간 팔·석재 글자 띠)
+        K.axbox(mb, "y", 0.0, -1, h0 - 0.06, h1 + 0.06, 0.0, 0.04, hz1 + 0.005, hz1 + 0.085, "stone_brown")
+    for f in (1, 2):
+        for (h0, h1, hz0, hz1, *_r) in right[f]:
+            _sill(mb, "x", x1, 1, h0, h1, hz0 - 0.047, "stone_brown", stage)
+            K.axbox(mb, "x", x1, 1, h0 - 0.06, h1 + 0.06, 0.0, 0.04, hz1 + 0.005, hz1 + 0.085, "stone_brown")
+        for (h0, h1, hz0, hz1, *_r) in back[f]:
+            _sill(mb, "y", D, 1, h0, h1, hz0 - 0.047, "concrete_light", stage)
+    # 측면 1층 진열창 걸레받이
+    for (a0, a1, hz0, hz1, *_r) in right[0]:
+        K.axbox(mb, "x", x1, 1, a0 - 0.02, a1 + 0.02, 0.0, 0.035, 0.0, hz0 - 0.05, "stone_brown", skip=("bottom",))
+
+    # ---- 코핑 아래 2단 띠 (모서리: 후면 띠가 감싸고 측면 띠는 맞댐) ----
+    zb0, ob = zp - 0.10, 0.025
+    K.axbox(mb, "y", 0.0, -1, x0 + 0.60, x1 - 0.60, 0.0, ob, zb0, zp, "stone_brown")
+    mb.box(x0 - ob, x1 + ob, D, D + ob, zb0, zp, "stone_brown")
+    mb.box(x1, x1 + ob, 0.602, D, zb0, zp, "stone_brown")
+    mb.box(x0 - ob, x0, 0.002, D, zb0, zp, "stone_brown")
+
+    # ---- 후면 계단실 철문 + 차양 ----
+    for (a0, a1, hz0, hz1, kind, *_r) in back[0]:
+        if kind == "door_solid":
+            if main:
+                steel_door_details(mb, "y", D, 1, a0 + 0.06, a1 - 0.06, hz0, hz1 - 0.06, leaf_o=-0.10, fw=0.0,
+                                   handle_right=False)
+                K.axbox(mb, "y", D, 1, a0 - 0.03, a1 + 0.03, 0.002, 0.24, 0.0, 0.03, "concrete_light", skip=("bottom",))
+            door_canopy(mb, "y", D, 1, a0 - 0.30, a1 + 0.30, hz1 + 0.18, 0.70, stage)
+
+    if not main:
+        return
+    # ---- 실외기 추가 (측면 1층) + 냉매관 입상 덕트 (석재 띠에서 끊어 맞댐) ----
+    DC.add_ac_unit(mb, "x", x1, 1, 5.60, 0.0, stage)
+    for axis, c, side, pos in (("x", x1, 1, 7.60), ("y", D, 1, 1.80)):
+        d0, d1 = pos + 0.41, pos + 0.49
+        for za, zb in ((z1 + 0.30 + 0.85, z2), (z2 + 0.12, z2 + 0.30 + 0.10)):
+            K.axbox(mb, axis, c, side, d0, d1, 0.0, 0.07, za, zb, "pipe_white")
 
 
 def build_and_export(spec: ShopSpec, out_root=None):

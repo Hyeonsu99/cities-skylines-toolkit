@@ -96,7 +96,7 @@
    "fbx": null
   },
   "final": {
-   "at": "2026-11-22T16:08:34",
+   "at": "2026-11-28T21:43:15",
    "mode": "final",
    "status": "INCOMPLETE",
    "label": "final",
@@ -111,11 +111,11 @@
     "fbx": "PASS",
     "visual_review": "NOT_CHECKED"
    },
-   "generator_hash": "501f2dfb7332c150dd5c3f1838e346c508333c0125cf37550524c8926b4fe025",
+   "generator_hash": "1e565236c9ea5ee5c9f8820d2e155bd5bfe1872cefd987ccf2577ed8745acad8",
    "preview": {
     "path": "previews/SintanjinCornerShop01_L1_2x2.png",
     "exists": true,
-    "sha256": "d7101080ef8f2d60ac78871e8b584314d3cf3a54b0801f35f483b238d87c8dd7",
+    "sha256": "89b92426afc808c3bf54b421b7e3de3086f18fcd0a3941578e390c28a4b819f0",
     "key": null
    },
    "fbx": null
@@ -219,14 +219,52 @@
     "key": null
    },
    "fbx": null
+  },
+  "detail": {
+   "at": "2026-11-28T21:41:44",
+   "mode": "quick",
+   "status": "PASS",
+   "label": "detail",
+   "gate": "output/SintanjinCornerShop01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "1e565236c9ea5ee5c9f8820d2e155bd5bfe1872cefd987ccf2577ed8745acad8",
+   "preview": null,
+   "fbx": null
+  },
+  "emis": {
+   "at": "2026-11-28T21:42:23",
+   "mode": "quick",
+   "status": "PASS",
+   "label": "emis",
+   "gate": "output/SintanjinCornerShop01_L1_2x2/_check/gate.json",
+   "checks": {
+    "build": "PASS",
+    "geometry": "PASS",
+    "preview": "NOT_CHECKED",
+    "photo": "NOT_APPLICABLE",
+    "tiles": "NOT_APPLICABLE",
+    "lod": "NOT_CHECKED",
+    "fbx": "NOT_CREATED"
+   },
+   "generator_hash": "1e565236c9ea5ee5c9f8820d2e155bd5bfe1872cefd987ccf2577ed8745acad8",
+   "preview": null,
+   "fbx": null
   }
  },
- "updated_at": "2026-11-23T09:11:00",
+ "updated_at": "2026-11-28T21:43:15",
  "current_stage": "final:INCOMPLETE",
  "generator": "sintanjin_corner_shop_01_cs2.py",
  "generator_hash": "1e565236c9ea5ee5c9f8820d2e155bd5bfe1872cefd987ccf2577ed8745acad8",
  "visual_review": "NOT_CHECKED",
- "reviewed_preview_hash": "c8430d0ab25328477beec909e18304c6551666a92f13b3dd035556c0045d4123",
+ "reviewed_preview_hash": "93b677b7ee950a178ed7464da985568d55d29ad8fa9387019e4586b49afee8e0",
  "last_gate": {
   "mode": "final",
   "status": "INCOMPLETE",
